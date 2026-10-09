@@ -127,11 +127,15 @@ restored on restart:
 repository tab, that repository; otherwise null. Git actions, the title-bar branch widget
 and the status bar read it. This is the "data context" the actions doc lists as missing.
 
-**Refreshing.** Each open repository tab has a `FileSystemWatcher`, debounced (~300 ms),
-ignoring most of `.git/` except `HEAD`, `index`, `refs/`. Plus refresh on window activation,
-on tab activation, and after every command DevHub runs. Background tabs refresh lazily (when
-activated) so ten open repos don't all run `git status` on every save. Status uses
-`--no-optional-locks` so it never fights a terminal git.
+**Refreshing** (as built in G1). Each open repository tab has a `RepositoryWatcher`
+(`FileSystemWatcher`, debounced 300 ms) that ignores `.git/` except `index`, `HEAD`, `refs/`,
+`packed-refs`, the merge/cherry-pick/revert markers and `rebase-*`. A tab refreshes when it is
+created, when it becomes active (unless a refresh is already running), and on its watcher's
+events, **background tabs included**: the debounce plus the watcher only firing for that
+repository keeps this cheap (one `git status` per repository per burst of changes), and every
+tab keeps an accurate dirty dot. Later milestones also refresh after every command DevHub runs.
+Status runs with `GIT_OPTIONAL_LOCKS=0`, so it never fights a terminal git and never
+re-triggers its own watcher.
 
 ---
 
@@ -187,7 +191,9 @@ activated) so ten open repos don't all run `git status` on every save. Status us
 
 ## 8. Risks / open questions
 
-- **Many open repository tabs:** lazy refresh of background tabs (§4); one watcher each.
+- **Many open repository tabs:** one watcher each; a tab only refreshes when its own
+  repository changes (§4). If many busy repositories ever make this slow, fall back to
+  refreshing background tabs on activation only.
 - **Big repositories** (Unity): `--untracked-files=normal`, cancellation, virtualized lists,
   paged log.
 - **Line endings / encodings** in diffs: show "binary or unsupported encoding" rather than garbage.
