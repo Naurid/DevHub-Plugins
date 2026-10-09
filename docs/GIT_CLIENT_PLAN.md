@@ -78,7 +78,7 @@ changes; tooltip shows the path and branch.
 | **Actions** (menus, Find Action, shortcuts) | act on the active repository: Commit (Ctrl+K), Push (Ctrl+Shift+K), Update/Pull (Ctrl+T), Fetch, New Branch, Checkout…, Show Diff, Refresh, Open Repository. Disabled when no repository tab is active. |
 | **Git Console** (bottom tool window) | every git command DevHub ran: repository, command, duration, exit code, output on expand |
 | **Repositories tool window** | the launcher: opens repository tabs; later shows branch and a dirty marker per repository |
-| **Diff in its own tab** (optional) | "Open in Editor" from a diff pane, JetBrains-style, for a bigger view |
+| **Open in Editor** (F4) | the real file in the external editor tied to the repository's language (Settings → Open With: Rider / VS Code at the first changed line, Visual Studio, …), like JetBrains' Jump to Source. "Open in New Tab" shows the diff as its own tab for more room |
 
 New tokens: `Brush.Diff.Added/Removed/Modified` (+ line backgrounds) and graph lane colors,
 Dark and Light. New expui icons (branch, tag, stash, pull, history, …) added to NOTICE.md.
@@ -165,7 +165,7 @@ re-triggers its own watcher.
 |---|---|---|
 | **G0** | **Foundation + repository tabs:** `GitExecutable`, `GitRunner`, `GitCommandLog` (Core, tested with real git in temp repos); multi-instance documents (instance ids, factory, restore); `RepositoryDocumentViewModel` with an empty sidebar + header (name, path, branch); open from the Repositories tool window; `IActiveRepository`; read-only branch widget in the title bar; Git Console tool window | open three repos as tabs, restart → they come back; the title bar shows the active tab's branch; the Console lists the commands run |
 | **G1** | **Status:** porcelain v2 parser (branch, upstream, ahead/behind, ordinary/renamed/unmerged/untracked, merge/rebase in progress); watcher refresh; **Local Changes view** read-only (Unstaged/Staged lists); change count in the sidebar and a dirty dot on the tab | parser tests incl. renames, spaces/unicode, conflicts; lists update while editing files |
-| **G2** | **Diff:** unified-diff parser (hunks, line numbers, binary, renames, no-newline marker); diff pane in Local Changes (unified first, side-by-side later); "Open in Editor" tab | parser tests; selecting a file shows its diff |
+| **G2** | **Diff:** unified-diff parser (hunks, line numbers, binary, renames, no-newline marker); diff pane in Local Changes (unified first, side-by-side later); "Open in Editor" (F4) opens the file in the language's external editor; "Open in New Tab" diff tab | parser tests; selecting a file shows its diff |
 | **G3** | **Stage & commit:** stage/unstage/discard files (discard confirmed), commit message, amend, commit via stdin (`git commit -F -`), Commit & Push placeholder; later per-hunk/line staging (`git apply --cached`) | edit → stage → commit loop tested in Core; Ctrl+K commits in the active repo |
 | **G4** | **Branches:** sidebar Branches/Remotes sections (`for-each-ref`), checkout (dirty-tree: stash/cancel), create, rename, delete (unmerged → confirm); title-bar branch popup | switching branches from sidebar and popup; actions in Find Action |
 | G5 | **All Commits:** log parser + graph lane layout (Core, tested), virtualized list, commit details + diffs, branch/tag badges, search | this repo's history renders with merges laned correctly |
