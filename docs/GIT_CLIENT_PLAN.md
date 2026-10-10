@@ -92,6 +92,26 @@ changes; tooltip shows the path and branch.
   tool, offers the editor) and Mark as Resolved (= Space; warns if conflict markers are left).
   *As built:* `GitRepositoryClient` Merge/Rebase/Continue/Skip/Abort/Resolve return an
   `OperationOutcome` (Done / Conflicts / UpToDate); `ViewModels/Git/ConflictOperations`.
+- **Stashes, tags, cherry-pick / revert, blame, submodules** (G8). *As built:*
+  - **Stashes** section: list (message, branch, "untracked" badge) with the selected stash's
+    files and diffs below (the same `CommitDetailsView` as All Commits; untracked files come from
+    the stash's third parent). Stash Changes… (message, include untracked, keep staged; also
+    Git → Stash Changes…), Apply, Pop (a conflicting pop keeps the stash and shows Local
+    Changes), Drop… (confirmed). Stashes are found again by id, since `stash` shifts.
+  - **Tags** section: name, "annotated" badge, commit, message, date. New Tag… (on HEAD; on any
+    commit from All Commits), Push Tag (to `origin`, or the only remote; Push never sends tags),
+    Delete… and Delete from Remote… (both confirmed), New Branch from Here….
+  - **All Commits menu**: Cherry-Pick, Revert Commit (merges against their first parent, `-m 1`),
+    New Branch from Here…, New Tag Here…. Not confirmed (they add a commit and lose nothing,
+    like JetBrains); conflicts use the G7 banner; a cherry-pick whose changes are already there
+    is skipped and reported as "nothing to do".
+  - **Blame**: the diff pane's Blame button opens a tab (`Blame:` documents) with commit id,
+    author and date once per block of lines; the file on disk for a local change (uncommitted
+    lines say so), the file in that commit from All Commits / Stashes. Double-click / F4 opens
+    the editor at the line.
+  - **Submodules** section: path, state (up to date / other commit / not cloned / conflict),
+    Update Submodules (`submodule update --init --recursive`, status bar with Cancel), Open
+    (a submodule as its own repository tab). No git call when there's no `.gitmodules`.
 - **Fetch / Update / Push** (G6): buttons in the tab's header, the Git menu, Ctrl+T (Update),
   Ctrl+Shift+K (Push…), Ctrl+Alt+K (Commit and Push). *As built* (`ViewModels/Git/RemoteOperations`):
   fetch = `fetch --all --prune`; Update = `pull --ff-only`, and when both sides have new commits
