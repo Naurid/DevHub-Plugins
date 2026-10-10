@@ -67,6 +67,12 @@ changes; tooltip shows the path and branch.
   pane for the selected file, and the commit box (message, Amend, Commit / Commit & Push).
 - **All Commits view** (G5): commit graph + list (subject, author, date, branch/tag badges),
   and below it the selected commit's details and changed files with their diffs.
+  *As built:* `git log --all --topo-order` (stashes and notes excluded), 1,000 commits per
+  page with "Load more"; lanes laid out in Core (`CommitGraph`, tested) and drawn by
+  `CommitGraphCell`; a merge's files are compared with its first parent; loaded the first time
+  the section opens, reloaded only when HEAD or a branch tip moves. Search hides the graph
+  (with commits left out its lines would be wrong). Not yet: actions on a commit (checkout,
+  branch here, copy id, cherry-pick/revert in G8); the id and message are selectable for Ctrl+C.
 - Each tab keeps its own selection, scroll and commit message; switching tabs is instant.
 
 ### JetBrains integration around it
