@@ -39,7 +39,7 @@ machine formats: `--porcelain=v2 -z`, `--format` with NUL separators, `-z` for p
 
 ### The repository tab (Fork's workspace, JetBrains' look)
 
-Opened from the Repositories tool window (double-click / Enter / "Open Repository"), or
+Opened from the Projects tool window (double-click / Enter / "Open Repository"), or
 restored at startup. Tab title: repository name, with a dot when there are uncommitted
 changes; tooltip shows the path and branch.
 
@@ -125,7 +125,12 @@ changes; tooltip shows the path and branch.
     (`POST /user/repos`, private by default; done inside the dialog so "name taken" shows
     there), adds it as a remote, pushes the current branch with `-u`. A failed later step says
     what already happened.
-  - **Clone Repository…** (Git menu, Repositories tool window): your GitHub repositories
+  - **Push with no remote** offers Publish to GitHub… or Add a remote by URL…, and then pushes.
+  - **Avatars:** your GitHub picture in Settings → GitHub and next to your own commits in All Commits
+    (recognised by user.email, your login's no-reply address or your name); other authors show
+    their initial (no Gravatar: no e-mail hashes sent to a third party). The picture comes from
+    `avatars.githubusercontent.com` without the token.
+  - **Clone Repository…** (Git menu, Projects tool window): your GitHub repositories
     (`GET /user/repos`, all pages, fuzzy search) or any URL; into a scan folder by default. Runs in
     the status bar with Cancel (a cancelled clone is removed), then opens as a tab and rescans.
 - **Fetch / Update / Push** (G6): buttons in the tab's header, the Git menu, Ctrl+T (Update),
@@ -149,7 +154,7 @@ changes; tooltip shows the path and branch.
 | **Status bar** | branch + ahead/behind of the active repo; progress of running operations (fetch/push) with cancel |
 | **Actions** (menus, Find Action, shortcuts) | act on the active repository: Commit (Ctrl+K), Push (Ctrl+Shift+K), Update/Pull (Ctrl+T), Fetch, New Branch, Checkout…, Show Diff, Refresh, Open Repository. Disabled when no repository tab is active. |
 | **Git Console** (bottom tool window) | every git command DevHub ran: repository, command, duration, exit code, output on expand |
-| **Repositories tool window** | the launcher: opens repository tabs; later shows branch and a dirty marker per repository |
+| **Projects tool window** (code: `RepositoriesViewModel`) | the launcher: opens repository tabs; later shows branch and a dirty marker per repository |
 | **Open in Editor** (F4) | the real file in the external editor tied to the repository's language (Settings → Open With: Rider / VS Code at the first changed line, Visual Studio, …), like JetBrains' Jump to Source. "Open in New Tab" shows the diff as its own tab for more room |
 
 New tokens: `Brush.Diff.Added/Removed/Modified` (+ line backgrounds) and graph lane colors,
