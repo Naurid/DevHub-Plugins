@@ -112,6 +112,22 @@ changes; tooltip shows the path and branch.
   - **Submodules** section: path, state (up to date / other commit / not cloned / conflict),
     Update Submodules (`submodule update --init --recursive`, status bar with Cancel), Open
     (a submodule as its own repository tab). No git call when there's no `.gitmodules`.
+- **Remotes and GitHub** (G9). *As built:*
+  - **Manage Remotes…** (Remotes section header, Git menu): add (name + URL), edit (rename and
+    / or new URL), remove (confirmed; the server is untouched). Adding one fetches it at once.
+  - **GitHub account = Git Credential Manager** (`Core/GitHub/GitCredentialManager`): Settings →
+    GitHub lists GCM's GitHub accounts (each checked with `GET /user`), Sign In… (GCM's own
+    window, `credential-manager github login`, the only `Interactive` git command) and Sign Out…
+    (confirmed). DevHub stores no credentials: for each API call it borrows the token with
+    `git credential fill` (`Sensitive`: the Git Console shows the command, never the output;
+    `GCM_INTERACTIVE=never`).
+  - **Publish to GitHub…** (Remotes section, Git menu): creates an empty repository on the account
+    (`POST /user/repos`, private by default; done inside the dialog so "name taken" shows
+    there), adds it as a remote, pushes the current branch with `-u`. A failed later step says
+    what already happened.
+  - **Clone Repository…** (Git menu, Repositories tool window): your GitHub repositories
+    (`GET /user/repos`, all pages, fuzzy search) or any URL; into a scan folder by default. Runs in
+    the status bar with Cancel (a cancelled clone is removed), then opens as a tab and rescans.
 - **Fetch / Update / Push** (G6): buttons in the tab's header, the Git menu, Ctrl+T (Update),
   Ctrl+Shift+K (Push…), Ctrl+Alt+K (Commit and Push). *As built* (`ViewModels/Git/RemoteOperations`):
   fetch = `fetch --all --prune`; Update = `pull --ff-only`, and when both sides have new commits
@@ -212,6 +228,10 @@ re-triggers its own watcher.
    names its repository; no global "current directory".
 8. **Paths in Core are git paths** (forward slashes, relative to the repo root), converted at
    the UI boundary.
+9. **Credentials only from Git Credential Manager.** DevHub never asks for, stores or logs a
+   password or token: it borrows GCM's token in memory for one API call (`git credential fill`
+   with `Sensitive`), and API errors never include it. GitHub API calls only go to
+   `api.github.com` (paging links elsewhere are not followed).
 
 ---
 
@@ -228,6 +248,7 @@ re-triggers its own watcher.
 | G6 | **Remotes:** fetch / pull (`--ff-only` default, rebase option) / push with progress + cancel; auth errors explained | push/pull against a local bare repo in tests |
 | G7 | **Merge / rebase / conflicts:** state banner, continue/abort/skip, conflict list, external merge tool, ours/theirs | conflict scenario test |
 | G8 | Stashes and Tags sections, cherry-pick, revert, blame, submodules | — |
+| G9 | **Remotes & GitHub:** manage remotes; GitHub account via Git Credential Manager (sign in / out); Publish to GitHub; Clone (your repositories or a URL) | remotes + clone against local bare repos; API with a fake HTTP handler |
 
 **First release = G0–G4.** Each milestone ends in something that builds, with Core tests.
 
