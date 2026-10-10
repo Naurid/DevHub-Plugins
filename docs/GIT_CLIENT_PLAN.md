@@ -62,9 +62,24 @@ changes; tooltip shows the path and branch.
 - **Sidebar** (inside the tab, like Fork): Local Changes (with count), All Commits,
   Branches (local; current marked; ahead/behind), Remotes (with their branches), Tags,
   Stashes, later Submodules. Built from `TreeView` + `Badge` + `SearchField`.
+  *As built:* a `TreeView` of `SidebarNode`s (`ViewModels/Documents/RepositorySidebar.cs`).
+  Branches and Remotes (→ each remote, URL in its tooltip) fold open to their branches, put in
+  folders by "/" (`Core/Formatting/PathTree`, tested). Selecting a branch shows All Commits at its
+  commit (`CommitLog.Reveal`), double-click / Enter checks it out, right-click has the branch
+  menu; the group rows have New Branch… / Manage Remotes… / Publish to GitHub… / Fetch All.
+  What's unfolded survives refreshes; folders holding the current branch start unfolded.
+  The tree is only rebuilt when the branches or remotes change.
+  Labels: **Changes** (was Local Changes), All Commits, **Local** (the branches), Remotes, Tags,
+  Stashes, Submodules. No icons; names start at the left edge and the fold arrow sits on the
+  right (the `SidebarItem` TreeViewItem theme in `RepositoryDocumentView`, rows indented by level).
+  Commit / stash details list their files in folders too (same switch as Changes, `ChangeRows`).
 - **Local Changes view** (Fork's staging view): Unstaged and Staged lists (stage by
   double-click / button / Space, unstage the same way, discard with confirmation), a diff
   pane for the selected file, and the commit box (message, Amend, Commit / Commit & Push).
+  *Tree view* (Fork's, the "Folders" switch, saved in settings `Git.ChangesAsTree`, on by
+  default): the lists show folders with fold arrows (single-child chains merged:
+  "src/DevHub.App") as rows in the same ListBox, so multi-select, Space and the menus work as
+  before; a selected folder means every file in it. Left / Right fold, double-click toggles.
 - **All Commits view** (G5): commit graph + list (subject, author, date, branch/tag badges),
   and below it the selected commit's details and changed files with their diffs.
   *As built:* `git log --all --topo-order` (stashes and notes excluded), 1,000 commits per
