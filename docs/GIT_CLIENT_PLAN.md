@@ -73,6 +73,17 @@ changes; tooltip shows the path and branch.
   the section opens, reloaded only when HEAD or a branch tip moves. Search hides the graph
   (with commits left out its lines would be wrong). Not yet: actions on a commit (checkout,
   branch here, copy id, cherry-pick/revert in G8); the id and message are selectable for Ctrl+C.
+- **Fetch / Update / Push** (G6): buttons in the tab's header, the Git menu, Ctrl+T (Update),
+  Ctrl+Shift+K (Push…), Ctrl+Alt+K (Commit and Push). *As built* (`ViewModels/Git/RemoteOperations`):
+  fetch = `fetch --all --prune`; Update = `pull --ff-only`, and when both sides have new commits
+  it offers a rebase (`pull --rebase --autostash`); Push shows the outgoing commits first, publishes
+  a branch without upstream to `origin` with `-u`, and on "rejected" offers "Rebase and Push";
+  Force Push is a separate, confirmed action using `--force-with-lease`. Each runs in the status
+  bar (step + progress parsed from `--progress`, Cancel kills git), one at a time per repository.
+  Failures are recognised in Core (`RemoteErrorExplainer`: auth, SSH host key, network, repository
+  not found, rejected, no upstream, diverged, local changes in the way, conflicts) and explained in
+  a dialog with git's own lines below. git's stdin is closed, so ssh can't hang waiting for a
+  passphrase nobody can type; credential-manager windows still appear as usual.
 - Each tab keeps its own selection, scroll and commit message; switching tabs is instant.
 
 ### JetBrains integration around it
