@@ -73,6 +73,25 @@ changes; tooltip shows the path and branch.
   the section opens, reloaded only when HEAD or a branch tip moves. Search hides the graph
   (with commits left out its lines would be wrong). Not yet: actions on a commit (checkout,
   branch here, copy id, cherry-pick/revert in G8); the id and message are selectable for Ctrl+C.
+- **Partial staging** (G3.1): both file lists take Ctrl/Shift+click and Ctrl+A, and Stage /
+  Unstage / Discard / Space act on all selected files. In the diff pane each hunk header has
+  Stage / Discard / Unstage Hunk, and selected lines get Stage / Discard / Unstage Lines (Space
+  toggles). *As built:* `Core/Git/PatchBuilder` turns the chosen lines into a patch for
+  `git apply` (`--cached` to stage, `--cached --reverse` to unstage, `--reverse` to discard):
+  an unselected change is kept as context on the side git checks and dropped from the other,
+  and the other side's hunk starts are recomputed. CRLF lines and "no newline at end of file"
+  are kept byte for byte (`DiffLine.HasCarriageReturn`). Not offered for binary, conflicted,
+  renamed or cut-off diffs (stage the whole file).
+- **Merge / rebase / conflicts** (G7): the branch menu has Merge into Current Branch… and Rebase
+  Current Branch onto This… (both confirmed). A merge / rebase / cherry-pick / revert in progress
+  shows a banner with what to do next and Continue (enabled once no conflict is left), Skip
+  Commit… (rebase only) and Abort… (confirmed: resolutions are lost). Conflicted files are first
+  in Unstaged, in red; their menu has Accept Yours… / Accept Theirs… (DevHub maps these to git's
+  `--ours` / `--theirs`, which swap meaning during a rebase), Open in Merge Tool (the user's
+  `merge.tool`, waited for in the status bar with Cancel; double-click does the same; without a
+  tool, offers the editor) and Mark as Resolved (= Space; warns if conflict markers are left).
+  *As built:* `GitRepositoryClient` Merge/Rebase/Continue/Skip/Abort/Resolve return an
+  `OperationOutcome` (Done / Conflicts / UpToDate); `ViewModels/Git/ConflictOperations`.
 - **Fetch / Update / Push** (G6): buttons in the tab's header, the Git menu, Ctrl+T (Update),
   Ctrl+Shift+K (Push…), Ctrl+Alt+K (Commit and Push). *As built* (`ViewModels/Git/RemoteOperations`):
   fetch = `fetch --all --prune`; Update = `pull --ff-only`, and when both sides have new commits
