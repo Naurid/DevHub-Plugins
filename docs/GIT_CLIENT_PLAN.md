@@ -73,6 +73,9 @@ changes; tooltip shows the path and branch.
   Stashes, Submodules. No icons; names start at the left edge and the fold arrow sits on the
   right (the `SidebarItem` TreeViewItem theme in `RepositoryDocumentView`, rows indented by level).
   Commit / stash details list their files in folders too (same switch as Changes, `ChangeRows`).
+  **Open Terminal** (header button next to Push, Git menu, Alt+F12): Git Bash in the repository
+  folder (else Windows Terminal, else PowerShell; `Core/Git/GitTerminal`, tested), for any git
+  command DevHub doesn't offer. Branch folders in the sidebar have a folder icon.
 - **Local Changes view** (Fork's staging view): Unstaged and Staged lists (stage by
   double-click / button / Space, unstage the same way, discard with confirmation), a diff
   pane for the selected file, and the commit box (message, Amend, Commit / Commit & Push).
