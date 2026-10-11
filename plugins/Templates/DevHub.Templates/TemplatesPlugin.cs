@@ -4,6 +4,7 @@ using DevHub.Integration;
 using DevHub.Sdk.Core.Plugins;
 using DevHub.Services;
 using DevHub.ViewModels.Documents;
+using DevHub.ViewModels.ToolWindows;
 using Microsoft.Extensions.DependencyInjection;
 
 [assembly: DevHub.Plugins.DevHubPlugin(typeof(DevHub.Plugins.TemplatesPlugin))]
@@ -41,6 +42,8 @@ public sealed class TemplatesPlugin : IPlugin
         services.AddSingleton<TemplatesViewModel>();
         services.AddSingleton<DocumentViewModelBase>(sp => sp.GetRequiredService<TemplatesViewModel>());
         services.AddSingleton<IDocumentFactory, TemplateEditorFactory>();
+        services.AddSingleton<TemplatesToolWindowViewModel>();
+        services.AddSingleton<ToolWindowViewModelBase>(sp => sp.GetRequiredService<TemplatesToolWindowViewModel>());
         services.AddSingleton<DocumentViewModelBase, ImportViewModel>();
 
         services.AddSingleton<IActionProvider, TemplatesActionProvider>();
