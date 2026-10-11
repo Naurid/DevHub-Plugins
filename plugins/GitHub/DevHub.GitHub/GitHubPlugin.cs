@@ -16,7 +16,7 @@ public sealed class GitHubPlugin : IPlugin
 
     public PluginInfo Info { get; } = new(Id, "GitHub",
         "Sign in to GitHub through Git Credential Manager, publish a repository to your account, clone your repositories, show avatars.",
-        [GitPlugin.Id]) { Category = "Version control", Order = 300 };
+        [GitPlugin.Id]) { Category = "Version control", Order = 300, Presets = ["Git client"] };
 
     public void ConfigureServices(IServiceCollection services, PluginContext context)
     {

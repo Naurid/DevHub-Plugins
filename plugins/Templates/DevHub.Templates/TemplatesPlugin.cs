@@ -14,7 +14,7 @@ public sealed class TemplatesPlugin : IPlugin
     // Requires Projects by id only: nothing of Projects is used yet, so no assembly reference.
     public PluginInfo Info { get; } = new(Id, "Templates",
         "Create new projects and files from templates with variables, or turn an existing folder into a template.",
-        ["devhub.projects"]) { Category = "Templates", Order = 400 };
+        ["devhub.projects"]) { Category = "Templates", Order = 400, Presets = ["Project templates"] };
 
     public void ConfigureServices(IServiceCollection services, PluginContext context)
     {

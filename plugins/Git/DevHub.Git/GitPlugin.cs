@@ -26,7 +26,7 @@ public sealed class GitPlugin : IPlugin
     // No requirements: works without Projects (Open Repository…), links up with it when both are on.
     public PluginInfo Info { get; } = new(Id, "Git",
         "A Fork-style Git client: changes, staging per line, commits, history graph, branches, remotes, merge and rebase, stashes, blame.",
-        []) { Category = "Version control", Order = 200 };
+        []) { Category = "Version control", Order = 200, Presets = ["Git client"] };
 
     /// <summary>Git's own design tokens (diff and graph colors, list widths), merged into the app's resources.</summary>
     public IEnumerable<Uri> Resources => [new("avares://DevHub.Git/Themes/GitTokens.axaml")];

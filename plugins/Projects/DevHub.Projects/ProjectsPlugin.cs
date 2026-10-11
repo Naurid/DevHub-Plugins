@@ -19,7 +19,7 @@ public sealed class ProjectsPlugin : IPlugin
 
     public PluginInfo Info { get; } = new(Id, "Projects",
         "The Projects tool window: choose folders, find the git repositories in them, see their language and open them in the right tool.",
-        []) { Category = "Projects", Order = 100 };
+        []) { Category = "Projects", Order = 100, Presets = ["Git client", "Project templates"] };
 
     public void ConfigureServices(IServiceCollection services, PluginContext context)
     {
