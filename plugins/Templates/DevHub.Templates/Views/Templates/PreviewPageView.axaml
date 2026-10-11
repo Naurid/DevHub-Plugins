@@ -1,0 +1,94 @@
+<!--
+  New Project, step 3: the project as it will be (still in staging), as a tree marking where each file
+  came from (template / the base command, moved from …). New Folder, Rename, Move, Delete change it for
+  this project (also on the right-click menu, F2 and Delete); Save to Template keeps the edits as steps.
+  Create writes it into the target folder.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:t="using:DevHub.ViewModels.Templates"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Templates.PreviewPageView"
+             x:DataType="t:PreviewPageViewModel">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Spacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.BlockBelow}">
+            <TextBlock Classes="header" Text="Preview" />
+            <SelectableTextBlock Classes="secondary" Text="{Binding TargetPath, StringFormat='Will be created as {0}'}" TextWrapping="Wrap" />
+            <TextBlock Classes="small secondary" Text="{Binding Summary}" TextWrapping="Wrap" />
+        </StackPanel>
+
+        <StackPanel DockPanel.Dock="Bottom" Spacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.BlockAbove}">
+            <TextBlock Text="{Binding Error}" TextWrapping="Wrap" Foreground="{DynamicResource Brush.Status.Error}"
+                       IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            <TextBlock Classes="secondary" Text="{Binding Message}" TextWrapping="Wrap"
+                       IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                <Button Content="{Binding SaveText}" Command="{Binding SaveToTemplateCommand}"
+                        ToolTip.Tip="{Binding SaveToolTip}" ToolTip.ShowOnDisabled="True" />
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="{DynamicResource Spacing}">
+                    <Button Content="Back" Command="{Binding BackCommand}"
+                            ToolTip.Tip="Back to the form: this preview is thrown away; nothing was written to your folder." />
+                    <Button Classes="accent" Content="Create" Command="{Binding CreateCommand}" />
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+
+        <Border BorderBrush="{DynamicResource Brush.Border.Control}" BorderThickness="1" CornerRadius="{DynamicResource Radius.Control}">
+            <DockPanel>
+                <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,0,1"
+                        Padding="{DynamicResource Padding.Toolbar}">
+                    <c:Toolbar>
+                        <c:ActionButton IconKind="add" ToolTip.Tip="New Folder" AutomationProperties.Name="New Folder"
+                                        Command="{Binding NewFolderCommand}" />
+                        <c:ActionButton IconKind="edit" ToolTip.Tip="Rename (F2)" AutomationProperties.Name="Rename"
+                                        Command="{Binding RenameCommand}" />
+                        <c:ActionButton IconKind="folder" ToolTip.Tip="Move to…" AutomationProperties.Name="Move to"
+                                        Command="{Binding MoveCommand}" />
+                        <c:ActionButton IconKind="delete" ToolTip.Tip="Delete (Delete)" AutomationProperties.Name="Delete"
+                                        Command="{Binding DeleteCommand}" />
+                    </c:Toolbar>
+                </Border>
+                <TreeView ItemsSource="{Binding Nodes}" SelectedItem="{Binding SelectedNode}" Background="Transparent"
+                          AutomationProperties.Name="Project files">
+                    <TreeView.KeyBindings>
+                        <KeyBinding Gesture="F2" Command="{Binding RenameCommand}" />
+                        <KeyBinding Gesture="Delete" Command="{Binding DeleteCommand}" />
+                    </TreeView.KeyBindings>
+                    <TreeView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="New Folder…" Command="{Binding NewFolderCommand}" />
+                            <MenuItem Header="Rename…" InputGesture="F2" Command="{Binding RenameCommand}" />
+                            <MenuItem Header="Move to…" Command="{Binding MoveCommand}" />
+                            <MenuItem Header="Delete" InputGesture="Delete" Command="{Binding DeleteCommand}" />
+                        </ContextMenu>
+                    </TreeView.ContextMenu>
+                    <TreeView.Styles>
+                        <Style Selector="TreeViewItem" x:DataType="t:PreviewNodeViewModel">
+                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                            <Setter Property="AutomationProperties.Name" Value="{Binding Name}" />
+                        </Style>
+                    </TreeView.Styles>
+                    <TreeView.DataTemplates>
+                        <TreeDataTemplate DataType="t:PreviewNodeViewModel" ItemsSource="{Binding Children}">
+                            <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="{DynamicResource Spacing.Small}"
+                                  Margin="{DynamicResource Margin.RowEnd}" Background="Transparent">
+                                <Panel Width="{DynamicResource Size.Icon}" VerticalAlignment="Center">
+                                    <c:Icon Kind="folder" IsVisible="{Binding IsFolder}" />
+                                </Panel>
+                                <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center" />
+                                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}"
+                                            Margin="{DynamicResource Margin.InnerLeft}">
+                                    <c:Badge Classes="accent" Content="template" IsVisible="{Binding IsFromTemplate}" VerticalAlignment="Center" />
+                                    <TextBlock Classes="small secondary" Text="{Binding Origin}" VerticalAlignment="Center"
+                                               IsVisible="{Binding !IsFromTemplate}" />
+                                    <TextBlock Classes="small" Text="{Binding MovedText}" VerticalAlignment="Center"
+                                               Foreground="{DynamicResource Brush.Status.Warning}" IsVisible="{Binding IsMoved}" />
+                                </StackPanel>
+                            </Grid>
+                        </TreeDataTemplate>
+                    </TreeView.DataTemplates>
+                </TreeView>
+            </DockPanel>
+        </Border>
+    </DockPanel>
+</UserControl>

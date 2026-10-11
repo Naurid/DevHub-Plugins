@@ -63,6 +63,9 @@ public static class PathRenderer
         return new RenderedPath(string.Join('/', rendered), null);
     }
 
+    /// <summary>Why a typed file or folder name can't be used (the preview's New Folder / Rename), or null.</summary>
+    public static string? NameProblem(string name) => Problem(name, allowGlobs: false) is { } problem ? $"\"{name}\" {problem}." : null;
+
     private static string? Problem(string name, bool allowGlobs)
     {
         if (name.Length == 0 || string.IsNullOrWhiteSpace(name))

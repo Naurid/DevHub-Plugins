@@ -1,0 +1,31 @@
+<!--
+  While a generation runs: what it's doing, the live output, Cancel. If it failed: the error (nothing
+  was written to your folder), the output, and Back to the form.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:t="using:DevHub.ViewModels.Templates"
+             x:Class="DevHub.Views.Templates.RunPageView"
+             x:DataType="t:RunPageViewModel">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Spacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.BlockBelow}">
+            <TextBlock Classes="header" Text="{Binding Title}" TextWrapping="Wrap" />
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing}" IsVisible="{Binding IsRunning}">
+                <StackPanel Spacing="{DynamicResource Spacing.Small}" VerticalAlignment="Center">
+                    <TextBlock Classes="secondary" Text="{Binding Step}" TextTrimming="CharacterEllipsis" />
+                    <ProgressBar IsIndeterminate="True" />
+                </StackPanel>
+                <Button Grid.Column="1" Content="Cancel" Command="{Binding CancelCommand}" IsCancel="True" />
+            </Grid>
+            <Border IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                    Background="{DynamicResource Brush.Status.Error.Subtle}" CornerRadius="{DynamicResource Radius.Control}"
+                    Padding="{DynamicResource Padding.Banner}">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                    <SelectableTextBlock Text="{Binding Error}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                    <Button Grid.Column="1" Content="Back" Command="{Binding BackCommand}" VerticalAlignment="Center" />
+                </Grid>
+            </Border>
+        </StackPanel>
+        <ContentControl Content="{Binding Log}" />
+    </DockPanel>
+</UserControl>

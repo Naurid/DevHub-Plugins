@@ -35,6 +35,15 @@ public sealed class TemplatesSettings : ISettingsSection
 
     /// <summary>More library folders, in the order they're shown.</summary>
     public List<string> ExtraLibraries { get; set; } = new();
+
+    /// <summary>The <c>{{Author}}</c> built-in; null = the Windows user name.</summary>
+    public string? Author { get; set; }
+
+    /// <summary>The folder the last project was created in (the next New Project starts there).</summary>
+    public string? LastLocation { get; set; }
+
+    /// <summary>The browser groups by language (true) or by category (false, the default).</summary>
+    public bool GroupByLanguage { get; set; }
 }
 
 /// <summary>Works out the libraries in use from the settings.</summary>
@@ -42,6 +51,9 @@ public static class TemplateLibraries
 {
     /// <summary>The personal library's default folder under a base folder (the roaming AppData folder in the app).</summary>
     public static string DefaultPersonalRoot(string appDataRoot) => Path.Combine(appDataRoot, "DevHub", "templates");
+
+    /// <summary>The built-in templates, shipped next to the app (copied from this project's BuiltInTemplates folder).</summary>
+    public static string BuiltInRoot => Path.Combine(AppContext.BaseDirectory, "BuiltInTemplates");
 
     /// <summary>Personal first, then the extra folders (named after the folder; duplicates and the personal one skipped), then the built-ins.</summary>
     /// <param name="appDataRoot">Base for the default personal library (the app passes %APPDATA% or DEVHUB_DATA_DIR).</param>

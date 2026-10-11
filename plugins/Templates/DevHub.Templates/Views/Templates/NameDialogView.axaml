@@ -1,0 +1,15 @@
+<!-- New Folder / Rename in the preview: where, the name, and why it isn't allowed (if it isn't). -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:t="using:DevHub.ViewModels.Templates"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Templates.NameDialogView"
+             x:DataType="t:NameDialogViewModel">
+    <StackPanel Margin="{DynamicResource Padding.Dialog}" Spacing="{DynamicResource Spacing}">
+        <TextBlock Classes="small secondary" Text="{Binding Context}" TextTrimming="CharacterEllipsis" />
+        <TextBlock Classes="secondary" Text="{Binding Label}" />
+        <TextBox Text="{Binding Name}" AutomationProperties.Name="{Binding Label}" c:FocusOnLoad.IsEnabled="True" />
+        <TextBlock Text="{Binding Error}" TextWrapping="Wrap" Foreground="{DynamicResource Brush.Status.Error}"
+                   IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+    </StackPanel>
+</UserControl>

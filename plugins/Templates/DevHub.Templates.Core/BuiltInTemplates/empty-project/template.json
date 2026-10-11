@@ -1,0 +1,23 @@
+{
+  // A folder template: no tool, just folders and a README. Shows that a template doesn't need a
+  // base command: the content and the steps make the whole project.
+  "schemaVersion": 1,
+  "id": "empty-project",
+  "kind": "project",
+  "name": "Empty Project",
+  "description": "src, docs and tests folders with a README; any language.",
+  "language": "Any",
+  "categories": ["General"],
+  "variables": [
+    { "name": "Name", "label": "Project name", "required": true },
+    { "name": "Git", "label": "Create a git repository", "type": "bool", "default": true }
+  ],
+  "steps": [
+    { "op": "createFolder", "path": "src" },
+    { "op": "createFolder", "path": "docs" },
+    { "op": "createFolder", "path": "tests" }
+  ],
+  "postCreate": [
+    { "name": "Initialize git", "command": "git", "args": ["init"], "when": "Git", "continueOnError": true }
+  ]
+}

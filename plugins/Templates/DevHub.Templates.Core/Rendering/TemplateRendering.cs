@@ -53,8 +53,9 @@ public static class TemplateRendering
             .ToList();
 
     /// <summary>Every command this generation will run, in order: what the confirmation lists (§4).</summary>
-    public static IReadOnlyList<RenderedCommand> AllCommands(TemplateManifest manifest, RenderContext context) =>
-        [.. BaseCommand(manifest, context) is { } b ? [b] : Array.Empty<RenderedCommand>(), .. PostCreate(manifest, context)];
+    /// <param name="raw">A raw project (§4): only the base command runs.</param>
+    public static IReadOnlyList<RenderedCommand> AllCommands(TemplateManifest manifest, RenderContext context, bool raw = false) =>
+        [.. BaseCommand(manifest, context) is { } b ? [b] : Array.Empty<RenderedCommand>(), .. raw ? [] : PostCreate(manifest, context)];
 
     /// <summary>The steps with their paths rendered (globs allowed in from / path) and checked.</summary>
     public static IReadOnlyList<RenderedStep> Steps(TemplateManifest manifest, RenderContext context) =>

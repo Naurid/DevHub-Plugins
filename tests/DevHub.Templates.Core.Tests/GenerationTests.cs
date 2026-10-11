@@ -224,17 +224,91 @@ public class ProjectGeneratorTests : GenerationTestBase
     {
         var template = await Template(Manifest(), ("a.txt", "a"));
         var parent = Dir("projects");
-        Write(Path.Combine(parent, "Taken", "mine.txt"), "keep");
         Directory.CreateDirectory(Path.Combine(parent, "Empty"));
         var generator = new ProjectGenerator(new CommandRunner());
 
-        var taken = await (await generator.StageAsync(template, Context(("Name", "Taken")), parent)).Staged!.PlaceAsync();
+        // Something appears in the folder while the preview is open.
+        var stagedTaken = (await generator.StageAsync(template, Context(("Name", "Taken")), parent)).Staged!;
+        Write(Path.Combine(parent, "Taken", "mine.txt"), "keep");
+        var taken = await stagedTaken.PlaceAsync();
         var empty = await (await generator.StageAsync(template, Context(("Name", "Empty")), parent)).Staged!.PlaceAsync();
 
         Assert.Contains("isn't empty", taken.Error);
         Assert.Equal(["mine.txt"], Files(Path.Combine(parent, "Taken")));
         Assert.True(empty.Succeeded);
         Assert.Equal(["a.txt"], Files(Path.Combine(parent, "Empty")));
+    }
+
+    [Fact]
+    public async Task Stage_ReportsTheCommandsOutputInOrder()
+    {
+        var tool = Tool("chatty", "for /L %%i in (1,1,60) do @echo line %%i");
+        var template = await Template(Manifest(new BaseCommand { Command = tool }));
+        var lines = new List<string>();
+
+        await new ProjectGenerator(new CommandRunner()).StageAsync(template, Context(("Name", "x")), Dir("p"),
+            progress: new SyncProgress<GenerationProgress>(p => { if (p.Output is { } o) lock (lines) lines.Add(o.Text); }));
+
+        Assert.Equal(Enumerable.Range(1, 60).Select(i => $"line {i}"), lines);
+    }
+
+    [Fact]
+    public async Task Stage_IntoANonEmptyFolder_IsRefusedBeforeAnythingRuns()
+    {
+        var template = await Template(Manifest(new BaseCommand { Command = Tool("never", "exit /b 9") }));
+        var parent = Dir("projects");
+        Write(Path.Combine(parent, "Taken", "mine.txt"), "keep");
+
+        var staged = await new ProjectGenerator(new CommandRunner()).StageAsync(template, Context(("Name", "Taken")), parent);
+
+        Assert.Contains("isn't empty", staged.Errors[0]);
+        Assert.Null(staged.CommandResult);
+        Assert.Empty(StagingFolders(parent));
+    }
+
+    [Theory]
+    [InlineData("relative\\folder", "Choose the folder")]
+    [InlineData("", "Choose the folder")]
+    public void TargetFor_NeedsAFullParentPath(string parent, string error) =>
+        Assert.Contains(error, ProjectGenerator.TargetFor(Manifest(), Context(("Name", "x")), parent).Error);
+
+    [Fact]
+    public void TargetFor_GivesTheFolderName()
+    {
+        var target = ProjectGenerator.TargetFor(Manifest() with { RootFolder = "{{Name:kebab}}" }, Context(("Name", "My Game")), Root);
+
+        Assert.Equal("my-game", target.Path);
+        Assert.Contains("doesn't exist", ProjectGenerator.TargetFor(Manifest(), Context(("Name", "x")), Path.Combine(Root, "missing")).Error);
+    }
+
+    [Fact]
+    public async Task Raw_OnlyTheBaseCommand_NoContentNoSteps()
+    {
+        var template = await Template(
+            Manifest(new BaseCommand { Command = FakeDotnetNew(), Args = ["{{Name}}"] },
+                new TemplateStep { Op = StepOp.Move, From = "*.cs", To = "src/" }) with
+            {
+                PostCreate = [new PostCreateCommand { Name = "Init", Command = "git", Args = ["init"] }],
+            },
+            ("extra.txt", "from the template"));
+        var parent = Dir("projects");
+
+        var staged = await new ProjectGenerator(new CommandRunner()).StageAsync(template, Context(("Name", "Raw")), parent, raw: true);
+        await staged.Staged!.PlaceAsync();
+
+        Assert.Equal(["Program.cs", "Raw.csproj", "README.md"], Files(Path.Combine(parent, "Raw")));
+        Assert.Equal(["Base command"], TemplateRendering.AllCommands(template.Manifest!, Context(("Name", "Raw")), raw: true).Select(c => c.Name));
+        Assert.Equal(2, TemplateRendering.AllCommands(template.Manifest!, Context(("Name", "Raw"))).Count);
+    }
+
+    [Fact]
+    public async Task Raw_WithoutABaseCommand_IsRefused()
+    {
+        var template = await Template(Manifest(), ("a.txt", "a"));
+
+        var staged = await new ProjectGenerator(new CommandRunner()).StageAsync(template, Context(("Name", "x")), Dir("p"), raw: true);
+
+        Assert.Contains("no base command", staged.Errors[0]);
     }
 
     [Fact]

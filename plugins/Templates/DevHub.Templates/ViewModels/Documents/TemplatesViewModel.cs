@@ -9,5 +9,5 @@ public class TemplatesViewModel : DocumentViewModelBase
     public override DocumentNavigation Navigation => new() { Menu = "File", MenuOrder = 100, WelcomeOrder = 30 };
 
     public string Description =>
-        "Browse your project and file templates. (Coming in M1 / M4.)";
+        "Create and edit your templates (coming in M5). To browse and use them, open New Project (Ctrl+N).";
 }

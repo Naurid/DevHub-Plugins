@@ -1,0 +1,46 @@
+<!--
+  New Project, step 2: every command that will run, rendered (name, the command line, where), before
+  anything runs. Back returns to the form; Run starts.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:t="using:DevHub.ViewModels.Templates"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Templates.CommandsPageView"
+             x:DataType="t:CommandsPageViewModel">
+    <DockPanel MaxWidth="{DynamicResource Size.TemplatePageMax}" HorizontalAlignment="Left">
+        <StackPanel DockPanel.Dock="Top" Spacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.BlockBelow}">
+            <TextBlock Classes="header" Text="{Binding TemplateName, StringFormat='Commands of {0}'}" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding Intro}" TextWrapping="Wrap" />
+            <SelectableTextBlock Classes="secondary" Text="{Binding TargetPath, StringFormat='Project folder: {0}'}" TextWrapping="Wrap" />
+        </StackPanel>
+
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="{DynamicResource Spacing}"
+                    Margin="{DynamicResource Margin.BlockAbove}">
+            <Button Content="Back" Command="{Binding BackCommand}" IsCancel="True" />
+            <Button Classes="accent" Content="Run" Command="{Binding RunCommand}" IsDefault="True" />
+        </StackPanel>
+
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+            <ItemsControl ItemsSource="{Binding Commands}" AutomationProperties.Name="Commands">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="t:CommandRowViewModel">
+                        <Border Background="{DynamicResource Brush.Bg.Panel}" CornerRadius="{DynamicResource Radius.Control}"
+                                Padding="{DynamicResource Padding.Banner}" Margin="{DynamicResource Margin.BlockBelow}">
+                            <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                                    <c:Icon Kind="run" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Name}" FontWeight="SemiBold"
+                                               TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                    <c:Badge Grid.Column="2" Content="continues if it fails" IsVisible="{Binding ContinuesOnError}" />
+                                </Grid>
+                                <SelectableTextBlock Classes="code" Text="{Binding Text}" TextWrapping="Wrap" />
+                                <TextBlock Classes="small secondary" Text="{Binding Where}" />
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>

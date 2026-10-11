@@ -1,0 +1,109 @@
+<!--
+  New Project, step 1: the template (name, description, language, categories, library), then its
+  variables as a form, the location, Raw, the folder it will create (live), and Next.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:t="using:DevHub.ViewModels.Templates"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Templates.TemplateFormView"
+             x:DataType="t:TemplateFormViewModel">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Spacing="{DynamicResource Spacing.Large}" MaxWidth="{DynamicResource Size.TemplatePageMax}"
+                    HorizontalAlignment="Left">
+            <!-- What it is -->
+            <StackPanel Spacing="{DynamicResource Spacing}">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Spacing}">
+                    <c:Icon Kind="template" Width="{DynamicResource Size.StripeIcon}" Height="{DynamicResource Size.StripeIcon}"
+                            VerticalAlignment="Center" />
+                    <SelectableTextBlock Grid.Column="1" Classes="header" Text="{Binding Name}" TextWrapping="Wrap"
+                                         VerticalAlignment="Center" />
+                </Grid>
+                <TextBlock Classes="secondary" Text="{Binding Description}" TextWrapping="Wrap" IsVisible="{Binding HasDescription}" />
+                <WrapPanel Orientation="Horizontal">
+                    <c:Badge Classes="accent" Content="{Binding Language}" Margin="{DynamicResource Margin.RowEnd}"
+                             ToolTip.Tip="Language" IsVisible="{Binding !IsBroken}" />
+                    <ItemsControl ItemsSource="{Binding Categories}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <c:Badge Content="{Binding}" Margin="{DynamicResource Margin.RowEnd}" ToolTip.Tip="Category" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock Classes="small secondary" Text="{Binding LibraryText, StringFormat='Library: {0}'}"
+                               VerticalAlignment="Center" />
+                </WrapPanel>
+            </StackPanel>
+
+            <!-- Broken: why -->
+            <Border IsVisible="{Binding IsBroken}" Background="{DynamicResource Brush.Status.Error.Subtle}"
+                    CornerRadius="{DynamicResource Radius.Control}" Padding="{DynamicResource Padding.Banner}">
+                <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                    <TextBlock Text="This template can't be used until its template.json is fixed:" FontWeight="SemiBold" TextWrapping="Wrap" />
+                    <ItemsControl ItemsSource="{Binding Problems}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <SelectableTextBlock Classes="code" Text="{Binding}" TextWrapping="Wrap" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <!-- Item template: not from here -->
+            <Border IsVisible="{Binding IsItem}" Background="{DynamicResource Brush.Bg.Panel}"
+                    CornerRadius="{DynamicResource Radius.Control}" Padding="{DynamicResource Padding.Banner}">
+                <TextBlock TextWrapping="Wrap"
+                           Text="This is an item template: it adds files to a folder you already have instead of creating a project. Applying it to a folder (from the Projects tool window or a repository tab) comes with milestone M6." />
+            </Border>
+
+            <!-- The form -->
+            <StackPanel IsVisible="{Binding IsProject}" Spacing="{DynamicResource Spacing}">
+                <ItemsControl ItemsSource="{Binding Fields}" IsVisible="{Binding HasFields}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="t:VariableFieldViewModel">
+                            <c:SettingsRow Label="{Binding Label}" ToolTip.Tip="{Binding ToolTip}">
+                                <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                                    <TextBox Text="{Binding Text}" IsVisible="{Binding IsText}"
+                                             AutomationProperties.Name="{Binding Label}" />
+                                    <CheckBox IsChecked="{Binding IsChecked}" IsVisible="{Binding IsBool}"
+                                              AutomationProperties.Name="{Binding Label}" />
+                                    <ComboBox ItemsSource="{Binding Choices}" SelectedItem="{Binding SelectedChoice}"
+                                              IsVisible="{Binding IsChoice}" HorizontalAlignment="Stretch"
+                                              AutomationProperties.Name="{Binding Label}" />
+                                    <TextBlock Text="{Binding Error}" TextWrapping="Wrap" Classes="small"
+                                               Foreground="{DynamicResource Brush.Status.Error}"
+                                               IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                </StackPanel>
+                            </c:SettingsRow>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <c:SettingsRow Label="Location" Description="The project folder is created in here.">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}">
+                        <TextBox Text="{Binding Location}" AutomationProperties.Name="Location" />
+                        <Button Grid.Column="1" Content="Browse…" Command="{Binding BrowseCommand}" />
+                    </Grid>
+                </c:SettingsRow>
+
+                <CheckBox IsChecked="{Binding Raw}" IsVisible="{Binding CanBeRaw}">
+                    <TextBlock Text="{Binding RawText}" TextWrapping="Wrap" />
+                </CheckBox>
+
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.BlockBelow}">
+                    <Panel VerticalAlignment="Center">
+                        <SelectableTextBlock Classes="secondary" Text="{Binding TargetText}" TextWrapping="Wrap"
+                                             IsVisible="{Binding !TargetIsError}" />
+                        <TextBlock Text="{Binding TargetText}" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource Brush.Status.Error}" IsVisible="{Binding TargetIsError}" />
+                    </Panel>
+                    <Button Grid.Column="1" Classes="accent" Content="Next" Command="{Binding NextCommand}" IsDefault="True" />
+                </Grid>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

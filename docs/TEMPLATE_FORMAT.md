@@ -24,7 +24,7 @@ Every part is optional. Which parts a template has decides what it is:
 
 | Parts | Result |
 |---|---|
-| base command only | a **raw project**: exactly what the tool's own scaffold command makes |
+| base command only | a **raw project**: exactly what the tool's own scaffold command makes (any template with a base command can also be used raw: the **Raw** option skips its content, steps and post-create commands) |
 | content only | a **folder template**: your folders and starter files |
 | base command + content + steps | the tool's project, with your files on top, rearranged your way |
 | item: content (+ move steps) | a script / file set / folder structure for an existing project |
@@ -42,7 +42,7 @@ Every part is optional. Which parts a template has decides what it is:
 |---|---|---|
 | **Personal** | `%APPDATA%/DevHub/templates/` (a setting may move it) | yes |
 | **Extra libraries** | folders you add in Settings → Templates (a git repo of team templates, a project's `templates/` folder) | yes, if writable |
-| **Built-in** | shipped with the Templates plugin, updated with DevHub | no: **Duplicate** copies one into a writable library |
+| **Built-in** | shipped with the Templates plugin (`BuiltInTemplates/` next to DevHub), updated with DevHub | no: **Duplicate** copies one into a writable library; **Save to Template** from a preview saves into such a copy in Personal |
 
 `<template-id>` is lowercase kebab-case, unique within its library, and equals the `id` field.
 The same id in two libraries is allowed; the reference is `<library>/<id>`. Templates aren't

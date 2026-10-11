@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <!--
-      The Templates plugin's UI. For now the placeholder pages (Templates, New Project, Import);
-      milestone M1 adds DevHub.Templates.Core (the engine) next to it.
+      The Templates plugin's UI: New Project (browser + generation flow), its actions and dialogs.
+      The engine is DevHub.Templates.Core (no Avalonia).
     -->
 
     <PropertyGroup>
@@ -16,6 +16,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\DevHub.Sdk\DevHub.Sdk.csproj" />
+        <ProjectReference Include="..\DevHub.Templates.Core\DevHub.Templates.Core.csproj" />
     </ItemGroup>
 
 </Project>

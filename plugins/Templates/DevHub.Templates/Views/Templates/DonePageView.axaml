@@ -1,0 +1,50 @@
+<!--
+  New Project, step 4: the project is in place. How each post-create command ended, their output, and
+  what's next: open it (as a repository tab when Git is on), show it in Explorer, or make another one.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:t="using:DevHub.ViewModels.Templates"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Templates.DonePageView"
+             x:DataType="t:DonePageViewModel">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Spacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.BlockBelow}"
+                    MaxWidth="{DynamicResource Size.TemplatePageMax}" HorizontalAlignment="Left">
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Spacing}">
+                <Panel VerticalAlignment="Center">
+                    <c:Icon Kind="success" IsVisible="{Binding AllSucceeded}" />
+                    <c:Icon Kind="warning" IsVisible="{Binding !AllSucceeded}" />
+                </Panel>
+                <TextBlock Grid.Column="1" Classes="header" Text="{Binding Title}" TextWrapping="Wrap" />
+            </Grid>
+            <TextBlock Text="{Binding Summary}" TextWrapping="Wrap" />
+            <SelectableTextBlock Classes="secondary" Text="{Binding ProjectPath}" TextWrapping="Wrap" />
+
+            <ItemsControl ItemsSource="{Binding Results}" IsVisible="{Binding HasResults}" AutomationProperties.Name="Commands">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="t:CommandResultRowViewModel">
+                        <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="{DynamicResource Spacing}"
+                              ToolTip.Tip="{Binding Text}">
+                            <c:Icon Kind="{Binding IconKind}" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="2" Classes="small" Text="{Binding Error}" TextWrapping="Wrap"
+                                       Foreground="{DynamicResource Brush.Status.Error}" VerticalAlignment="Center"
+                                       IsVisible="{Binding !Succeeded}" />
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.BlockAbove}">
+                <Button Classes="accent" Content="Open in DevHub" Command="{Binding OpenInDevHubCommand}"
+                        IsVisible="{Binding CanOpenInDevHub}" />
+                <Button Content="Show in Explorer" Command="{Binding ShowInExplorerCommand}" />
+                <Button Content="New Project" Command="{Binding NewProjectCommand}"
+                        ToolTip.Tip="Another project from the same template" />
+            </StackPanel>
+        </StackPanel>
+
+        <ContentControl Content="{Binding Log}" IsVisible="{Binding HasLog}" />
+    </DockPanel>
+</UserControl>

@@ -1,0 +1,15 @@
+<!--
+  The Templates plugin's own tokens (TemplatesPlugin.Resources); same rules as the Sdk's
+  (docs/UI_GUIDE.md §3). Shared tokens stay in DevHub.Sdk.
+-->
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- New Project: the template list on the left. -->
+    <x:Double x:Key="Size.TemplateList">300</x:Double>
+    <!-- New Project: the widest the form / pages on the right get (long lines are hard to read). -->
+    <x:Double x:Key="Size.TemplatePageMax">820</x:Double>
+    <!-- Space above a row of buttons at the bottom of a page (the mirror of Margin.BlockBelow). -->
+    <Thickness x:Key="Margin.BlockAbove">0,12,0,0</Thickness>
+    <!-- The live output of commands. -->
+    <x:Double x:Key="Size.OutputLogHeight">260</x:Double>
+</ResourceDictionary>

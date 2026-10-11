@@ -32,17 +32,21 @@ public sealed class ProjectGenerator(CommandRunner runner)
     /// On any failure the staging folder is deleted and the errors returned.
     /// </summary>
     /// <param name="parentFolder">Where the project folder will go (must exist).</param>
+    /// <param name="raw">
+    /// A raw project (§4): only the base command; the template's content and steps are skipped
+    /// (and the caller skips the post-create commands, see <see cref="TemplateRendering.AllCommands"/>).
+    /// </param>
     public async Task<StageResult<StagedProject>> StageAsync(TemplateEntry template, RenderContext context, string parentFolder,
-        IProgress<GenerationProgress>? progress = null, CancellationToken ct = default)
+        bool raw = false, IProgress<GenerationProgress>? progress = null, CancellationToken ct = default)
     {
         if (template is not { IsUsable: true, Manifest: { Kind: TemplateKind.Project } manifest })
             return Fail(template.Problems.Count > 0 ? [.. template.Problems] : ["This isn't a project template."]);
-        if (!Directory.Exists(parentFolder))
-            return Fail($"The folder {parentFolder} doesn't exist.");
+        if (raw && manifest.BaseCommand is null)
+            return Fail("This template has no base command, so there's no raw project to make.");
 
-        var root = TemplateRendering.RootFolder(manifest, context);
-        if (!root.Succeeded)
-            return Fail("Project folder: " + root.Error);
+        var root = TargetFor(manifest, context, parentFolder);
+        if (root.Error is { } targetError)
+            return Fail(targetError);
         var rootName = root.Path!;
 
         var staging = Staging.Create(parentFolder);
@@ -59,7 +63,7 @@ public sealed class ProjectGenerator(CommandRunner runner)
                 var runIn = manifest.BaseCommand!.RunIn == RunIn.Root ? workRoot : work;
                 Directory.CreateDirectory(runIn);
                 progress?.Report(new GenerationProgress($"Running {command.DisplayText}"));
-                var output = progress is null ? null : new Progress<CommandOutputLine>(l => progress.Report(new GenerationProgress("", l)));
+                var output = progress is null ? null : new InlineProgress<CommandOutputLine>(l => progress.Report(new GenerationProgress("", l)));
                 commandResult = await runner.RunAsync(command, runIn, output, ct);
                 if (!commandResult.Succeeded)
                 {
@@ -76,6 +80,9 @@ public sealed class ProjectGenerator(CommandRunner runner)
                 project.Tree = FileTree.Scan(workRoot, EntryOrigin.Command);
             }
 
+            if (raw)
+                return new StageResult<StagedProject>(project, [], commandResult);
+
             // 2. The template's content on top.
             progress?.Report(new GenerationProgress("Copying the template's files"));
             if (await Staging.OverlayAsync(template, manifest, context, project.Tree, Path.Combine(staging, "content"), ct) is { } overlayError)
@@ -85,6 +92,7 @@ public sealed class ProjectGenerator(CommandRunner runner)
             }
 
             // 3. Steps.
+            progress?.Report(new GenerationProgress("Arranging the files"));
             if (Staging.ApplySteps(manifest, context, project.Tree) is { } stepError)
             {
                 project.Dispose();
@@ -97,6 +105,26 @@ public sealed class ProjectGenerator(CommandRunner runner)
             project.Dispose();
             throw;
         }
+    }
+
+    /// <summary>
+    /// The project folder the values make under <paramref name="parentFolder"/>, or why it can't be
+    /// used: a bad name, a parent that doesn't exist, a file there, or a folder that isn't empty.
+    /// The form checks this before anything runs; placing checks it again.
+    /// </summary>
+    /// <returns>The folder name in <see cref="RenderedPath.Path"/>, or the error.</returns>
+    public static RenderedPath TargetFor(TemplateManifest manifest, RenderContext context, string parentFolder)
+    {
+        var root = TemplateRendering.RootFolder(manifest, context);
+        if (!root.Succeeded)
+            return new RenderedPath(null, "Project folder: " + root.Error);
+        if (string.IsNullOrWhiteSpace(parentFolder) || !Path.IsPathFullyQualified(parentFolder))
+            return new RenderedPath(null, "Choose the folder to create the project in.");
+        if (!Directory.Exists(parentFolder))
+            return new RenderedPath(null, $"The folder {parentFolder} doesn't exist.");
+        return StagedProject.TargetProblem(Path.Combine(parentFolder, root.Path!)) is { } problem
+            ? new RenderedPath(null, problem)
+            : root;
     }
 
     private static StageResult<StagedProject> Fail(params string[] errors) => new(null, errors);
@@ -143,10 +171,8 @@ public sealed class StagedProject : IDisposable
     public Task<PlaceResult> PlaceAsync(CancellationToken ct = default)
     {
         var target = TargetPath;
-        if (Directory.Exists(target) && Directory.EnumerateFileSystemEntries(target).Any())
-            return Task.FromResult(new PlaceResult(null, $"{target} already exists and isn't empty. Pick another name or folder."));
-        if (File.Exists(target))
-            return Task.FromResult(new PlaceResult(null, $"{target} is a file. Pick another name."));
+        if (TargetProblem(target) is { } problem)
+            return Task.FromResult(new PlaceResult(null, problem));
 
         var final = Path.Combine(StagingFolder, "final", RootName);
         Staging.Materialize(Tree, final, ct);
@@ -167,6 +193,13 @@ public sealed class StagedProject : IDisposable
     }
 
     public void Dispose() => Staging.Delete(StagingFolder);
+
+    /// <summary>Why a project can't be placed at <paramref name="target"/> (a file, or a folder that isn't empty), or null.</summary>
+    internal static string? TargetProblem(string target) =>
+        File.Exists(target) ? $"{target} is a file. Pick another name."
+        : Directory.Exists(target) && Directory.EnumerateFileSystemEntries(target).Any()
+            ? $"{target} already exists and isn't empty. Pick another name or folder."
+        : null;
 }
 
 /// <summary>What project and item generation share: the staging folder, overlay, steps, edits.</summary>
@@ -275,4 +308,14 @@ internal static class Staging
             File.Move(entry.Source!, path);
         }
     }
+}
+
+/// <summary>
+/// Passes each report straight on, on the reporting thread. <see cref="Progress{T}"/> would queue
+/// every line separately to the thread pool when there's no UI context (inside Task.Run), and the
+/// lines could then arrive out of order; the caller's own progress does the marshalling.
+/// </summary>
+internal sealed class InlineProgress<T>(Action<T> report) : IProgress<T>
+{
+    public void Report(T value) => report(value);
 }
