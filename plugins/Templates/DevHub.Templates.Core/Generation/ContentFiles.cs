@@ -41,37 +41,50 @@ public static class ContentFiles
     }
 
     /// <summary>Copies <paramref name="source"/> to <paramref name="target"/>: rendered when it's text, as is when binary.</summary>
-    public static async Task CopyAsync(string source, string target, RenderContext context,
+    public static Task CopyAsync(string source, string target, RenderContext context,
+        IReadOnlyCollection<string> extraBinaryExtensions, CancellationToken ct = default) =>
+        TransformAsync(source, target, text => PlaceholderRenderer.Render(text, context), extraBinaryExtensions, ct);
+
+    /// <summary>
+    /// Copies <paramref name="source"/> to <paramref name="target"/>, changing a text file's text with
+    /// <paramref name="transform"/> (encoding, BOM and line endings kept). Binary files, and text that
+    /// isn't UTF-8 without a BOM (an old ANSI file), are copied unchanged: the only safe thing.
+    /// </summary>
+    public static async Task TransformAsync(string source, string target, Func<string, string> transform,
         IReadOnlyCollection<string> extraBinaryExtensions, CancellationToken ct = default)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(target)!);
-        if (IsBinary(source, extraBinaryExtensions))
+        if (IsBinary(source, extraBinaryExtensions) || await ReadAsync(source, ct) is not { } file)
         {
             File.Copy(source, target, overwrite: true);
             return;
         }
 
-        var bytes = await File.ReadAllBytesAsync(source, ct);
+        await using var output = File.Create(target);
+        if (file.Bom is not null)
+            await output.WriteAsync(file.Bytes.AsMemory(0, file.Bom.Length), ct);
+        await output.WriteAsync(file.Encoding.GetBytes(transform(file.Text)), ct);
+    }
+
+    /// <summary>A text file's text, or null when it's binary or can't be decoded (see <see cref="TransformAsync"/>).</summary>
+    public static async Task<string?> ReadTextAsync(string path, IReadOnlyCollection<string> extraBinaryExtensions, CancellationToken ct = default) =>
+        IsBinary(path, extraBinaryExtensions) ? null : (await ReadAsync(path, ct))?.Text;
+
+    private sealed record TextFile(byte[] Bytes, Bom? Bom, Encoding Encoding, string Text);
+
+    private static async Task<TextFile?> ReadAsync(string path, CancellationToken ct)
+    {
+        var bytes = await File.ReadAllBytesAsync(path, ct);
         var bom = DetectBom(bytes);
         var encoding = bom?.Encoding ?? new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
-        string text;
         try
         {
-            text = encoding.GetString(bytes, bom?.Length ?? 0, bytes.Length - (bom?.Length ?? 0));
+            return new TextFile(bytes, bom, encoding, encoding.GetString(bytes, bom?.Length ?? 0, bytes.Length - (bom?.Length ?? 0)));
         }
         catch (DecoderFallbackException)
         {
-            // Not UTF-8 and no BOM (e.g. an old ANSI file): copying it unchanged is the only safe thing.
-            File.Copy(source, target, overwrite: true);
-            return;
+            return null;
         }
-
-        var rendered = PlaceholderRenderer.Render(text, context);
-        await using var output = File.Create(target);
-        if (bom is not null)
-            await output.WriteAsync(bytes.AsMemory(0, bom.Length), ct);
-        var data = encoding.GetBytes(rendered);
-        await output.WriteAsync(data, ct);
     }
 
     private sealed record Bom(Encoding Encoding, int Length);

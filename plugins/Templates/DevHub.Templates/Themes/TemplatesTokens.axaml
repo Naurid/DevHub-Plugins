@@ -15,6 +15,10 @@
     <x:Double x:Key="Size.EditorList">240</x:Double>
     <x:Double x:Key="Size.TemplateDescription">64</x:Double>
     <x:Double x:Key="Size.TemplateArgs">96</x:Double>
+    <!-- Import: the settings column, the gap between replacement rows, how faded left-out items are. -->
+    <x:Double x:Key="Size.ImportSettings">400</x:Double>
+    <Thickness x:Key="Margin.ListGap">0,0,0,4</Thickness>
+    <x:Double x:Key="Opacity.LeftOut">0.5</x:Double>
     <!-- The live output of commands. -->
     <x:Double x:Key="Size.OutputLogHeight">260</x:Double>
 </ResourceDictionary>

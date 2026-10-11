@@ -82,6 +82,10 @@ public sealed partial class TemplatesViewModel : DocumentViewModelBase
         OpenDocument?.Invoke(_generate.Id);
     }
 
+    /// <summary>Opens Import Folder as Template.</summary>
+    [RelayCommand]
+    private void ImportFolder() => OpenDocument?.Invoke("Import");
+
     [RelayCommand]
     private async Task NewTemplateAsync()
     {

@@ -19,7 +19,10 @@
             <c:EmptyState IconKind="template" Title="Templates"
                           Description="Pick a template on the left to see it, edit it (double-click) or use it. Built-in templates are read-only: duplicate one to make it yours."
                           IsVisible="{Binding !HasSelection}">
-                <Button Classes="accent" Content="New Template…" Command="{Binding NewTemplateCommand}" />
+<StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}">
+                                    <Button Classes="accent" Content="New Template…" Command="{Binding NewTemplateCommand}" />
+                    <Button Content="Import Folder…" Command="{Binding ImportFolderCommand}" />
+                </StackPanel>
             </c:EmptyState>
 
             <ScrollViewer IsVisible="{Binding HasSelection}" HorizontalScrollBarVisibility="Disabled">

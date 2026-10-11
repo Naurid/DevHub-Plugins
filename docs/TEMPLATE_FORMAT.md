@@ -212,8 +212,17 @@ kept (a UTF-8 BOM stays). `template.json` is never copied into the output.
 
 Default ignore globs: `.git/`, `.vs/`, `.idea/`, `bin/`, `obj/`, `node_modules/`, `Library/`,
 `Temp/`, `Logs/`, `dist/`, `build/`, `__pycache__/`, `*.user` (editable before importing).
+Ignore patterns work like `.gitignore`: `name` matches at any depth, `name/` only folders, a pattern
+with a slash inside (`/out`, `src/gen/`) a path from the top; `*`, `**`, `?`; `#` comments. Left-out
+folders aren't looked into.
+
 Optional literal → variable replacement (e.g. `LumberjackHollow` → `{{Name}}`) in names and text
-contents, with hits per file in the preview.
+contents, with hits per file in the preview. A literal of several words is also found in its other
+spellings, each becoming that transform (`lumberjack-hollow` → `{{Name:kebab}}`, in file names
+`{{Name.kebab}}`); a one-word literal only as typed. Longest first, one pass. Text that would already
+render (a `{{Name}}` in a Handlebars file, Name being a variable) is escaped as `\{{Name}}`. Binary
+files and non-UTF-8 text without a BOM are copied as they are. Two files that would get the same
+name stop the import before anything is written.
 
 ## 11. Not in v1
 
