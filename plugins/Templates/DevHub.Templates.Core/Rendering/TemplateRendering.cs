@@ -5,6 +5,9 @@ namespace DevHub.Templates.Core.Rendering;
 /// <param name="WorkingDirectory">Relative to the project root (item: the target folder).</param>
 public sealed record RenderedCommand(string Name, string Command, IReadOnlyList<string> Args, string WorkingDirectory)
 {
+    /// <summary>Post-create: keep going with the next command when this one fails.</summary>
+    public bool ContinueOnError { get; init; }
+
     /// <summary>How it reads in the confirmation: <c>dotnet new console -n "My App"</c> (display only, never run as a string).</summary>
     public string DisplayText => string.Join(' ', new[] { Command }.Concat(Args.Select(Quote)));
 
@@ -43,7 +46,10 @@ public static class TemplateRendering
                 PlaceholderRenderer.Render(c.Name, context),
                 PlaceholderRenderer.Render(c.Command, context),
                 c.Args.Select(a => PlaceholderRenderer.Render(a, context)).ToList(),
-                c.WorkingDirectory == "." ? "." : PlaceholderRenderer.Render(c.WorkingDirectory, context)))
+                c.WorkingDirectory == "." ? "." : PlaceholderRenderer.Render(c.WorkingDirectory, context))
+            {
+                ContinueOnError = c.ContinueOnError,
+            })
             .ToList();
 
     /// <summary>Every command this generation will run, in order: what the confirmation lists (§4).</summary>

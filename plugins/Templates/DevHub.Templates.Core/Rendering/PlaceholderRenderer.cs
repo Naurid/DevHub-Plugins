@@ -19,7 +19,13 @@ public static class PlaceholderRenderer
 {
     public static string Render(string text, RenderContext context) => RenderWithInfo(text, context).Text;
 
-    public static RenderedText RenderWithInfo(string text, RenderContext context)
+    public static RenderedText RenderWithInfo(string text, RenderContext context) => RenderWithInfo(text, context, pathSyntax: false);
+
+    /// <param name="pathSyntax">
+    /// Also accept <c>{{Name.transform}}</c>: Windows forbids <c>:</c> in file names, so a content
+    /// file can't be called <c>{{Name:kebab}}.md</c> (§5).
+    /// </param>
+    internal static RenderedText RenderWithInfo(string text, RenderContext context, bool pathSyntax)
     {
         // Fast path: most file contents have no braces at all.
         if (!text.Contains("{{", StringComparison.Ordinal))
@@ -52,7 +58,7 @@ public static class PlaceholderRenderer
             }
 
             var inner = text[(i + 2)..close];
-            if (TryRender(inner, context, out var value, out var name))
+            if (TryRender(inner, context, pathSyntax, out var value, out var name))
             {
                 output.Append(value);
                 if (!used.Contains(name))
@@ -70,11 +76,13 @@ public static class PlaceholderRenderer
         return new RenderedText(output.ToString(), used);
     }
 
-    /// <summary>"Name" or "Name:transform", exactly: letters/digits, no spaces, a known name and transform.</summary>
-    private static bool TryRender(string inner, RenderContext context, out string value, out string name)
+    /// <summary>"Name" or "Name:transform" (in paths also "Name.transform"), exactly: letters/digits, no spaces, a known name and transform.</summary>
+    private static bool TryRender(string inner, RenderContext context, bool pathSyntax, out string value, out string name)
     {
         value = "";
         var colon = inner.IndexOf(':');
+        if (colon < 0 && pathSyntax)
+            colon = inner.IndexOf('.');
         name = colon < 0 ? inner : inner[..colon];
         var transform = colon < 0 ? null : inner[(colon + 1)..];
 

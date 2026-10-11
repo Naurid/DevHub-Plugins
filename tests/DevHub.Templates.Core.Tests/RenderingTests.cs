@@ -139,6 +139,18 @@ public class PathRendererTests
         Assert.Equal("src/Timber/Timber.csproj", PathRenderer.RenderPath("src/{{Name}}/{{Name}}.csproj", Context("Timber")).Path);
 
     [Fact]
+    public void RenderPath_DotTransform_ForFileNamesWindowsAllows() =>
+        Assert.Equal("docs/my-game.md/MyGame", PathRenderer.RenderPath("docs/{{Name.kebab}}.md/{{Name:pascal}}", Context("my game")).Path);
+
+    [Fact]
+    public void Render_DotTransform_OnlyInPaths() =>
+        Assert.Equal("{{Name.kebab}}", PlaceholderRenderer.Render("{{Name.kebab}}", Context("my game")));
+
+    [Fact]
+    public void RenderPath_DotWithUnknownTransform_StaysAsWritten() =>
+        Assert.Equal("{{Name.ext}}", PathRenderer.RenderPath("{{Name.ext}}", Context("x")).Path);
+
+    [Fact]
     public void RenderPath_KeepsAFolderTargetsTrailingSlash() =>
         Assert.Equal("src/Timber/", PathRenderer.RenderPath("src/{{Name}}/", Context("Timber")).Path);
 

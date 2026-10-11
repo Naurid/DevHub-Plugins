@@ -122,7 +122,9 @@ never touched.
 
 ## 5. Placeholders
 
-Syntax: `{{Name}}` or `{{Name:transform}}`, no spaces inside the braces.
+Syntax: `{{Name}}` or `{{Name:transform}}`, no spaces inside the braces. In paths (content file
+and folder names, `rootFolder`, step paths) `{{Name.transform}}` works too: Windows doesn't allow
+`:` in a file name, so a content file is called `{{Name.kebab}}.md`.
 
 | Transform | `My cool_game` → |
 |---|---|
@@ -169,11 +171,17 @@ Paths are relative to the root (item: the target folder), use `/`, and are rende
 path must stay inside the root. Item templates may move files already in the target (e.g.
 `*.cs` into `src/`), shown in the preview first.
 
+A `move` into a folder creates it only when something moves. A folder that a move leaves empty is
+removed (only `createFolder` makes empty folders).
+
 ## 7. Applying an item template
 
 You pick the target folder. The result is computed in staging (content rendered, then steps),
 then previewed: what's added and moved, with conflicts marked (overwritten only if you choose).
 Edits work as in §4 step 4. Then it's written into the target and `postCreate` runs there.
+Version control and generated folders (`.git`, `.vs`, `.idea`, `node_modules`, `Library`, `Temp`,
+`obj`, `bin`) aren't shown and steps can't touch them. Staging is a hidden `.devhub-staging-*`
+folder inside the target (same drive, so moves are instant), removed afterwards.
 Example: a C# class with a `Namespace` variable pre-filled from the folder and nearest `.csproj`.
 
 ## 8. Files

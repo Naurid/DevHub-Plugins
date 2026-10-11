@@ -47,7 +47,7 @@ public static class PathRenderer
                 continue;
             }
 
-            var result = PlaceholderRenderer.RenderWithInfo(segment, context);
+            var result = PlaceholderRenderer.RenderWithInfo(segment, context, pathSyntax: true);
             if (Problem(result.Text, allowGlobs) is { } problem)
             {
                 var because = result.UsedVariables.Count switch
