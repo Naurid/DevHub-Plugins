@@ -1,0 +1,9 @@
+<!-- Placeholder until this feature is built (see docs/ROADMAP.md). -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:docs="using:DevHub.ViewModels.Documents"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Documents.ImportView"
+             x:DataType="docs:ImportViewModel">
+    <c:EmptyState IconKind="{Binding Icon}" Title="{Binding Title}" Description="{Binding Description}" />
+</UserControl>

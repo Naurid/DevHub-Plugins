@@ -1,0 +1,92 @@
+<!--
+  The selected commit (All Commits) or stash (Stashes): id, author, date, parents and message,
+  the files it changed (resizable), and the selected file's diff. "Nothing selected" sits on
+  the panel color so it never blends into the list above it.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Git"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Git.CommitDetailsView"
+             x:DataType="vm:CommitDetailsViewModel">
+
+    <!-- F4 = JetBrains' Jump to Source: the selected file in the external editor. -->
+    <UserControl.KeyBindings>
+        <KeyBinding Gesture="F4" Command="{Binding Diff.OpenInEditorCommand}" />
+    </UserControl.KeyBindings>
+
+    <UserControl.Styles>
+        <StyleInclude Source="avares://DevHub.Git/Views/Git/FileChangeStyles.axaml" />
+    </UserControl.Styles>
+
+    <Panel>
+        <Border Background="{DynamicResource Brush.Bg.Panel}" IsVisible="{Binding !HasCommit}">
+            <c:EmptyState IconKind="commit" Title="{Binding EmptyTitle}" Description="{Binding EmptyText}" />
+        </Border>
+
+        <DockPanel IsVisible="{Binding HasCommit}">
+            <!-- Message + files (left), resizable. -->
+            <Border DockPanel.Dock="Left" Width="{Binding Layout.CommitFilesWidth}"
+                    Background="{DynamicResource Brush.Bg.Panel}">
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Top" Margin="{DynamicResource Padding.PaneHeader}"
+                                Spacing="{DynamicResource Spacing.Small}">
+                        <!-- Selectable, so the id (or any of it) can be copied with Ctrl+C. -->
+                        <SelectableTextBlock Classes="code small" Text="{Binding IdText}" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Classes="small secondary" Text="{Binding AuthorText}" TextTrimming="CharacterEllipsis"
+                                   ToolTip.Tip="{Binding AuthorText}" />
+                        <TextBlock Classes="small secondary" Text="{Binding DateText}" />
+                        <TextBlock Classes="small secondary" Text="{Binding ParentsText}" TextWrapping="Wrap" />
+                        <ScrollViewer MaxHeight="{DynamicResource Size.CommitDetailsMessageMax}"
+                                      HorizontalScrollBarVisibility="Disabled">
+                            <SelectableTextBlock Text="{Binding Message}" TextWrapping="Wrap" />
+                        </ScrollViewer>
+                        <SelectableTextBlock Classes="small" Text="{Binding Error}" TextWrapping="Wrap"
+                                             Foreground="{DynamicResource Brush.Status.Error}"
+                                             IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                    </StackPanel>
+
+                    <Border DockPanel.Dock="Top" Classes="listGroupHeader" BorderThickness="0,1,0,1">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Classes="secondary" Text="{Binding FilesText}" VerticalAlignment="Center" />
+                            <!-- The same Folders switch as in Changes (one setting for both). -->
+                            <ToggleButton Grid.Column="1" Theme="{StaticResource IconToggle}" IsChecked="{Binding ChangesAsTree}"
+                                          AutomationProperties.Name="Show folders"
+                                          ToolTip.Tip="Show folders: the files in their folders (on) or as one flat list (off)">
+                                <c:Icon Kind="folder" />
+                            </ToggleButton>
+                        </Grid>
+                    </Border>
+                    <ListBox Background="Transparent" AutomationProperties.Name="Changed files"
+                             ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow}">
+                        <ListBox.DataTemplates>
+                            <DataTemplate DataType="vm:ChangeFolderRowViewModel">
+                                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource FolderRow}" />
+                            </DataTemplate>
+                            <DataTemplate DataType="vm:FileChangeViewModel">
+                                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource FileRow}" />
+                            </DataTemplate>
+                        </ListBox.DataTemplates>
+                        <ListBox.KeyBindings>
+                            <KeyBinding Gesture="Left" Command="{Binding CollapseFolderCommand}" />
+                            <KeyBinding Gesture="Right" Command="{Binding ExpandFolderCommand}" />
+                        </ListBox.KeyBindings>
+                        <ListBox.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Blame" Command="{Binding Diff.AnnotateCommand}"
+                                          ToolTip.Tip="Who last changed each line, as of this commit" />
+                                <MenuItem Header="Open in Editor" InputGesture="F4" Command="{Binding Diff.OpenInEditorCommand}"
+                                          ToolTip.Tip="The file as it is on disk now" />
+                            </ContextMenu>
+                        </ListBox.ContextMenu>
+                    </ListBox>
+                </DockPanel>
+            </Border>
+            <c:SplitterThumb DockPanel.Dock="Left" Minimum="200" MaximumFraction="0.6"
+                             Value="{Binding Layout.CommitFilesWidth}" />
+
+            <!-- The selected file's diff (the same view as in Local Changes). -->
+            <ContentControl Content="{Binding Diff}" />
+        </DockPanel>
+    </Panel>
+</UserControl>

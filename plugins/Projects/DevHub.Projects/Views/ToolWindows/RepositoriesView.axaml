@@ -1,0 +1,104 @@
+<!--
+  Projects tool window (ids and class names still say "Repositories"): scan folders as tree roots, repositories as children.
+  Right-click a repository to open it / reveal it; right-click a folder to remove it.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.ToolWindows"
+             xmlns:c="using:DevHub.Controls"
+             xmlns:a="using:DevHub.Actions"
+             x:Class="DevHub.Views.ToolWindows.RepositoriesView"
+             x:DataType="vm:RepositoriesViewModel">
+
+    <c:ToolWindowFrame Header="{Binding Title}">
+        <c:ToolWindowFrame.HeaderActions>
+            <c:Toolbar>
+                <c:ActionButton Action="{a:Action Repositories.AddFolder}" />
+                <c:ActionButton Action="{a:Action Git.Clone}" />
+                <c:ActionButton Action="{a:Action Repositories.Rescan}" />
+                <c:ToolbarSeparator />
+                <c:ActionButton IconKind="close" ToolTip.Tip="Hide" Command="{Binding ToggleCommand}" />
+            </c:Toolbar>
+        </c:ToolWindowFrame.HeaderActions>
+
+        <DockPanel>
+            <c:SearchField DockPanel.Dock="Top" Margin="8,0,8,4"
+                           Text="{Binding Filter}"
+                           IsVisible="{Binding HasFolders}" />
+            <ProgressBar DockPanel.Dock="Top" IsIndeterminate="True" Height="2" MinHeight="2"
+                         IsVisible="{Binding IsScanning}" />
+
+            <Panel>
+                <c:EmptyState IconKind="folder" Title="No folders yet"
+                              Description="Add a folder and DevHub finds the projects (git repositories) inside it."
+                              IsVisible="{Binding !HasFolders}">
+                    <Button Classes="accent" Content="Add Folder…" Command="{Binding AddFolderCommand}" />
+                </c:EmptyState>
+
+                <TreeView ItemsSource="{Binding Roots}" Background="Transparent"
+                          SelectedItem="{Binding SelectedNode}"
+                          IsVisible="{Binding HasFolders}">
+                    <!-- Enter opens the selected repository as a tab. On the TreeView itself: key
+                         events start at the focused row and bubble up to here. -->
+                    <TreeView.KeyBindings>
+                        <KeyBinding Gesture="Enter" Command="{Binding OpenSelectedCommand}" />
+                    </TreeView.KeyBindings>
+                    <TreeView.Styles>
+                        <!-- Two-way: the tree remembers expanded/collapsed on the node. -->
+                        <Style Selector="TreeViewItem" x:DataType="vm:ScanFolderNode">
+                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                            <!-- Screen-reader name (the item's content is a Grid, so it had none).
+                                 ReflectionBinding: rows are folders or repositories, and both have a
+                                 Name, which a compiled binding typed to one of them can't express. -->
+                            <Setter Property="AutomationProperties.Name" Value="{ReflectionBinding Name}" />
+                        </Style>
+                    </TreeView.Styles>
+                    <TreeView.DataTemplates>
+                        <!-- Scan folder (root): children = its repositories. -->
+                        <TreeDataTemplate DataType="vm:ScanFolderNode" ItemsSource="{Binding Repositories}">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}" Margin="{DynamicResource Margin.RowEnd}"
+                                  Background="Transparent" ToolTip.Tip="{Binding Path}">
+                                <Grid.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Remove Folder" Command="{Binding RemoveCommand}" />
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
+                                <c:Icon Kind="folder" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="1" Text="{Binding Name}" FontWeight="SemiBold"
+                                           TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                <c:Badge Grid.Column="2" Content="{Binding CountText}" />
+                            </Grid>
+                        </TreeDataTemplate>
+
+                        <!-- Repository (leaf). Double-click opens it as a tab (Fork / JetBrains style). -->
+                        <DataTemplate DataType="vm:RepositoryNode">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}" Margin="{DynamicResource Margin.RowEnd}"
+                                  Background="Transparent" ToolTip.Tip="{Binding Path}"
+                                  c:DoubleTap.Command="{Binding OpenInDevHubCommand}">
+                                <Grid.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Open in DevHub" Command="{Binding OpenInDevHubCommand}"
+                                                  FontWeight="SemiBold">
+                                            <MenuItem.Icon><c:Icon Kind="vcs" /></MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Open in External Tool" Command="{Binding OpenCommand}">
+                                            <MenuItem.Icon><c:Icon Kind="externalTools" /></MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Open in Explorer" Command="{Binding RevealCommand}">
+                                            <MenuItem.Icon><c:Icon Kind="folder" /></MenuItem.Icon>
+                                        </MenuItem>
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
+                                <c:Icon Kind="vcs" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="1" Text="{Binding Name}"
+                                           TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="2" Classes="small secondary" Text="{Binding Language}"
+                                           VerticalAlignment="Center" />
+                            </Grid>
+                        </DataTemplate>
+                    </TreeView.DataTemplates>
+                </TreeView>
+            </Panel>
+        </DockPanel>
+    </c:ToolWindowFrame>
+</UserControl>

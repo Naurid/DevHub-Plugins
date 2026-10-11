@@ -1,0 +1,19 @@
+<!-- New Tag: what is tagged, the name, git's objection (if any), and an optional message. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Git"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Git.TagDialogView"
+             x:DataType="vm:TagDialogViewModel">
+    <StackPanel Margin="{DynamicResource Padding.Dialog}" Spacing="{DynamicResource Spacing}">
+        <TextBlock Classes="secondary" Text="{Binding Target}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Target}" />
+        <TextBlock Classes="secondary" Text="Tag name" />
+        <TextBox Text="{Binding Name}" PlaceholderText="v1.0.0"
+                 AutomationProperties.Name="Tag name" c:FocusOnLoad.IsEnabled="True" />
+        <TextBlock Text="{Binding Error}" TextWrapping="Wrap" Foreground="{DynamicResource Brush.Status.Error}"
+                   IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        <TextBlock Classes="secondary" Text="Message (optional: makes an annotated tag, as releases usually are)" TextWrapping="Wrap" />
+        <TextBox Text="{Binding Message}" AcceptsReturn="True" TextWrapping="Wrap" VerticalContentAlignment="Top"
+                 MinHeight="{DynamicResource Size.TagMessage}" AutomationProperties.Name="Tag message" />
+    </StackPanel>
+</UserControl>

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!--
+      The Projects plugin's UI: the Projects tool window, the Open With settings page, its actions.
+      Builds on DevHub.Sdk + its own logic (DevHub.Projects.Core). Never references Git or GitHub:
+      links to them only through DevHub.Integration (in the Sdk).
+    -->
+
+    <PropertyGroup>
+        <RootNamespace>DevHub</RootNamespace>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="12.1.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\DevHub.Sdk\DevHub.Sdk.csproj" />
+        <ProjectReference Include="..\DevHub.Projects.Core\DevHub.Projects.Core.csproj" />
+    </ItemGroup>
+
+</Project>

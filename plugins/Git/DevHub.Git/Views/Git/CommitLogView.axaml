@@ -1,0 +1,148 @@
+<!--
+  All Commits (G5): Fork's history view in JetBrains style.
+  Top: search + commit count + "Load more". Middle: the commit list, newest first: graph,
+  branch/tag badges and subject, author, date, short id. Bottom (resizable): the selected
+  commit: id, author, date, parents and message, the files it changed, and the selected file's
+  diff. Rows are virtualized, so thousands of commits only create controls for what's visible.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Git"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Git.CommitLogView"
+             x:DataType="vm:CommitLogViewModel">
+
+    <!-- F4 = JetBrains' Jump to Source: the selected file in the external editor. -->
+    <UserControl.KeyBindings>
+        <KeyBinding Gesture="F4" Command="{Binding Details.Diff.OpenInEditorCommand}" />
+    </UserControl.KeyBindings>
+
+    <UserControl.Styles>
+        <StyleInclude Source="avares://DevHub.Git/Views/Git/FileChangeStyles.axaml" />
+
+        <!-- Commit rows: content stretches to the full row height so the graph lines of
+             neighbouring rows meet; the text is centered by itself. -->
+        <Style Selector="ListBox.commits > ListBoxItem">
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        </Style>
+        <!-- While searching, rows are left out, so the graph would be wrong: hide it. -->
+        <Style Selector="ListBox.filtering c|CommitGraphCell">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="TextBlock.head">
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+    </UserControl.Styles>
+
+    <DockPanel>
+        <!-- Search, count, load more: a toolbar strip on the panel color (JetBrains' Log
+             toolbar), so it stands apart from the list on the editor color in Dark and Light. -->
+        <Border DockPanel.Dock="Top" Classes="listGroupHeader"
+                Background="{DynamicResource Brush.Bg.Panel}" BorderBrush="{DynamicResource Brush.Separator}">
+            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                <c:SearchField Text="{Binding Filter}" PlaceholderText="Search: message, author, id, branch"
+                               MaxWidth="{DynamicResource Size.CommitFilter}" HorizontalAlignment="Stretch" />
+                <TextBlock Grid.Column="1" Classes="small secondary" Text="{Binding CountText}" VerticalAlignment="Center" />
+                <Button Grid.Column="2" Classes="flat" Content="Load more" Command="{Binding LoadMoreCommand}"
+                        IsVisible="{Binding HasMore}"
+                        ToolTip.Tip="Load the next 1,000 older commits" />
+            </Grid>
+        </Border>
+
+        <!-- Selected commit, resizable from its top edge. Hidden when the list is empty (no
+             commits yet, or no search matches): the list's message then fills the section.
+             The top line uses Brush.Separator: list and diff are both on the editor color, where
+             Brush.Border is invisible in Dark. -->
+        <Border DockPanel.Dock="Bottom" Height="{Binding Layout.CommitDetailsHeight}" IsVisible="{Binding HasRows}"
+                BorderBrush="{DynamicResource Brush.Separator}" BorderThickness="0,1,0,0">
+            <!-- CommitDetailsViewModel → CommitDetailsView (shared with Stashes). -->
+            <ContentControl Content="{Binding Details}" />
+        </Border>
+        <c:SplitterThumb DockPanel.Dock="Bottom" Orientation="Horizontal" Invert="True" IsVisible="{Binding HasRows}"
+                         Minimum="120" MaximumFraction="0.8" Value="{Binding Layout.CommitDetailsHeight}" />
+
+        <!-- The commit list. -->
+        <Panel>
+            <c:EmptyState IconKind="commit" Title="All Commits" Description="{Binding PlaceholderText}"
+                          IsVisible="{Binding PlaceholderText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+            <!-- No horizontal scrolling: rows get the list's width, so the subject column (*) can
+                 take what the fixed columns leave and trim with "…". -->
+            <ListBox Classes="commits" Classes.filtering="{Binding IsFiltering}" Background="Transparent"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     AutomationProperties.Name="Commits" IsVisible="{Binding HasRows}"
+                     ItemsSource="{Binding Rows}" SelectedItem="{Binding Selected}">
+                <!-- JetBrains' Log menu (G8). Right-click selects the row first. -->
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Cherry-Pick" Command="{Binding CherryPickCommand}"
+                                  ToolTip.Tip="Copy this commit's changes onto the current branch as a new commit" />
+                        <MenuItem Header="Revert Commit" Command="{Binding RevertCommand}"
+                                  ToolTip.Tip="Add a new commit that undoes this one (history isn't rewritten)" />
+                        <Separator />
+                        <MenuItem Header="New Branch from Here…" Command="{Binding NewBranchHereCommand}" />
+                        <MenuItem Header="New Tag Here…" Command="{Binding NewTagHereCommand}" />
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="vm:CommitRowViewModel">
+                        <!-- The subject keeps a minimum width: in a narrow pane the columns on the right get
+                             cut off before it does. -->
+                        <Grid ColumnSpacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.RowEnd}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <!-- StaticResource: a ColumnDefinition isn't in the visual tree, so it can't follow a DynamicResource. -->
+                                <ColumnDefinition Width="*" MinWidth="{StaticResource Size.CommitSubjectMin}" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <c:CommitGraphCell Row="{Binding Graph}" Lanes="{Binding GraphLanes}" IsHead="{Binding IsHead}"
+                                               LaneWidth="{DynamicResource Size.GraphLane}"
+                                               DotSize="{DynamicResource Size.GraphDot}"
+                                               LineThickness="{DynamicResource Size.GraphLine}" />
+
+                            <!-- Branch / tag badges, then the subject. -->
+                            <DockPanel Grid.Column="1" VerticalAlignment="Center">
+                                <ItemsControl DockPanel.Dock="Left" ItemsSource="{Binding Refs}" IsVisible="{Binding HasRefs}"
+                                              Margin="{DynamicResource Margin.ToolbarSeparator}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:RefBadgeViewModel">
+                                            <c:Badge Content="{Binding Name}" ToolTip.Tip="{Binding ToolTip}"
+                                                     Classes.accent="{Binding IsHead}"
+                                                     Classes.success="{Binding IsLocal}"
+                                                     Classes.warning="{Binding IsTag}" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <TextBlock Text="{Binding Subject}" Classes.head="{Binding IsHead}"
+                                           TextTrimming="CharacterEllipsis" VerticalAlignment="Center"
+                                           ToolTip.Tip="{Binding Subject}" />
+                            </DockPanel>
+
+                            <!-- Author with their picture (yours from GitHub; others: their initial), like Fork. -->
+                            <DockPanel Grid.Column="2" Width="{DynamicResource Size.CommitAuthor}" VerticalAlignment="Center"
+                                       ToolTip.Tip="{Binding DateToolTip}">
+                                <c:Avatar DockPanel.Dock="Left" ImageData="{Binding Avatar.Image, FallbackValue={x:Null}}" Text="{Binding Author}"
+                                          Width="{DynamicResource Size.AvatarSmall}" Height="{DynamicResource Size.AvatarSmall}"
+                                          Margin="{DynamicResource Margin.InnerRight}" />
+                                <TextBlock Classes="secondary" Text="{Binding Author}" TextTrimming="CharacterEllipsis"
+                                           VerticalAlignment="Center" />
+                            </DockPanel>
+                            <TextBlock Grid.Column="3" Classes="secondary" Text="{Binding Date}"
+                                       Width="{DynamicResource Size.CommitDate}" TextTrimming="CharacterEllipsis"
+                                       VerticalAlignment="Center" ToolTip.Tip="{Binding DateToolTip}" />
+                            <TextBlock Grid.Column="4" Classes="code small secondary" Text="{Binding ShortId}"
+                                       Width="{DynamicResource Size.CommitId}" VerticalAlignment="Center" />
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Panel>
+    </DockPanel>
+</UserControl>

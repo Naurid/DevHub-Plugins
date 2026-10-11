@@ -1,0 +1,174 @@
+<!--
+  Local Changes (read-only until G3): Fork's layout. Left: Unstaged (conflicts first, untracked
+  included) above Staged, each with a count. Right: the diff of the selected file (G2).
+  Rows use JetBrains' change colors: modified = accent, added = success, deleted = secondary,
+  untracked = warning, conflict = error. The letter is git's status letter (M, A, D, R, ?, U).
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Git"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Git.LocalChangesView"
+             x:DataType="vm:LocalChangesViewModel">
+
+    <!-- F4 = JetBrains' Jump to Source: the selected file in the external editor. -->
+    <UserControl.KeyBindings>
+        <KeyBinding Gesture="F4" Command="{Binding Diff.OpenInEditorCommand}" />
+    </UserControl.KeyBindings>
+
+    <!-- Change colors, the FileRow template and the list header style (shared with All Commits). -->
+    <UserControl.Styles>
+        <StyleInclude Source="avares://DevHub.Git/Views/Git/FileChangeStyles.axaml" />
+    </UserControl.Styles>
+
+    <DockPanel>
+        <!-- Left column, resizable: Unstaged, Staged, commit box. Stays visible without changes
+             (Fork does too), so Amend works on a clean tree. -->
+        <Border DockPanel.Dock="Left" Width="{Binding Layout.ChangesListWidth}"
+                Background="{DynamicResource Brush.Bg.Panel}">
+            <Grid RowDefinitions="Auto,*,Auto,*,Auto">
+                <!-- Group headers: name, count, bulk actions; a line below separates them from the rows. -->
+                <Border Classes="listGroupHeader">
+                    <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                        <TextBlock Classes="secondary" Text="Unstaged" VerticalAlignment="Center" />
+                        <c:Badge Grid.Column="1" Content="{Binding UnstagedCount}" />
+                        <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="{DynamicResource Spacing}">
+                            <!-- Fork's tree / flat switch, for both lists (remembered). An icon, so the header fits. -->
+                            <ToggleButton Theme="{StaticResource IconToggle}" IsChecked="{Binding ChangesAsTree}"
+                                          AutomationProperties.Name="Show folders"
+                                          ToolTip.Tip="Show folders: the changes in their folders (on) or as one flat list (off)">
+                                <c:Icon Kind="folder" />
+                            </ToggleButton>
+                            <Button Classes="flat" Content="Stage All" Command="{Binding StageAllCommand}"
+                                    ToolTip.Tip="Stage every unstaged change (one file: double-click or Space)" />
+                            <Button Classes="flat" Content="Discard All…" Command="{Binding DiscardAllCommand}"
+                                    ToolTip.Tip="Throw away all unstaged changes (asks first)" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                <!-- Several rows: Ctrl+click, Shift+click, Ctrl+A. Space stages the selected files
+                     (Ctrl+Alt+Z, discard, is a window-wide Git action); right-click for the menu. -->
+                <ListBox Grid.Row="1" Background="Transparent" AutomationProperties.Name="Unstaged changes"
+                         SelectionMode="Multiple" SelectedItems="{Binding UnstagedSelection}"
+                         ItemsSource="{Binding UnstagedRows}" SelectedItem="{Binding SelectedUnstagedRow}">
+                    <!-- Files and (tree view) folders: one template each. -->
+                    <ListBox.DataTemplates>
+                        <DataTemplate DataType="vm:ChangeFolderRowViewModel">
+                            <ContentControl Content="{Binding}" ContentTemplate="{StaticResource FolderRow}" />
+                        </DataTemplate>
+                        <DataTemplate DataType="vm:FileChangeViewModel">
+                            <ContentControl Content="{Binding}" ContentTemplate="{StaticResource FileRow}" />
+                        </DataTemplate>
+                    </ListBox.DataTemplates>
+                    <ListBox.KeyBindings>
+                        <KeyBinding Gesture="Space" Command="{Binding StageSelectedCommand}" />
+                        <KeyBinding Gesture="Left" Command="{Binding CollapseFolderCommand}" CommandParameter="{Binding SelectedUnstagedRow}" />
+                        <KeyBinding Gesture="Right" Command="{Binding ExpandFolderCommand}" CommandParameter="{Binding SelectedUnstagedRow}" />
+                    </ListBox.KeyBindings>
+                    <ListBox.ContextMenu>
+                        <ContextMenu>
+                            <!-- Conflicts (G7): shown when a conflicted file is selected. -->
+                            <MenuItem Header="Accept Yours…" Command="{Binding AcceptYoursCommand}"
+                                      IsVisible="{Binding HasConflictSelected}" ToolTip.Tip="{Binding Conflicts.YoursHint, FallbackValue=''}" />
+                            <MenuItem Header="Accept Theirs…" Command="{Binding AcceptTheirsCommand}"
+                                      IsVisible="{Binding HasConflictSelected}" ToolTip.Tip="{Binding Conflicts.TheirsHint, FallbackValue=''}" />
+                            <MenuItem Header="Open in Merge Tool" Command="{Binding OpenMergeToolCommand}"
+                                      IsVisible="{Binding HasConflictSelected}" ToolTip.Tip="Your configured git merge tool (double-click does the same)" />
+                            <MenuItem Header="Mark as Resolved" Command="{Binding MarkResolvedCommand}"
+                                      IsVisible="{Binding HasConflictSelected}" ToolTip.Tip="You fixed the file by hand: stage it as it is now" />
+                            <Separator IsVisible="{Binding HasConflictSelected}" />
+                            <MenuItem Header="Stage" InputGesture="Space" Command="{Binding StageSelectedCommand}" />
+                            <MenuItem Header="Discard Changes…" InputGesture="Ctrl+Alt+Z" Command="{Binding DiscardSelectedCommand}" />
+                            <Separator />
+                            <MenuItem Header="Open in Editor" InputGesture="F4" Command="{Binding Diff.OpenInEditorCommand}" />
+                            <MenuItem Header="Open Diff in New Tab" Command="{Binding Diff.OpenInTabCommand}" />
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
+                </ListBox>
+
+                <!-- Line above too: separates Staged from the Unstaged rows. -->
+                <Border Grid.Row="2" Classes="listGroupHeader" BorderThickness="0,1,0,1">
+                    <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                        <TextBlock Classes="secondary" Text="Staged" VerticalAlignment="Center" />
+                        <c:Badge Grid.Column="1" Content="{Binding StagedCount}" />
+                        <Button Grid.Column="3" Classes="flat" Content="Unstage All" Command="{Binding UnstageAllCommand}"
+                                ToolTip.Tip="Move everything back to Unstaged; your edits stay (one file: double-click or Space)" />
+                    </Grid>
+                </Border>
+                <ListBox Grid.Row="3" Background="Transparent" AutomationProperties.Name="Staged changes"
+                         SelectionMode="Multiple" SelectedItems="{Binding StagedSelection}"
+                         ItemsSource="{Binding StagedRows}" SelectedItem="{Binding SelectedStagedRow}">
+                    <ListBox.DataTemplates>
+                        <DataTemplate DataType="vm:ChangeFolderRowViewModel">
+                            <ContentControl Content="{Binding}" ContentTemplate="{StaticResource FolderRow}" />
+                        </DataTemplate>
+                        <DataTemplate DataType="vm:FileChangeViewModel">
+                            <ContentControl Content="{Binding}" ContentTemplate="{StaticResource FileRow}" />
+                        </DataTemplate>
+                    </ListBox.DataTemplates>
+                    <ListBox.KeyBindings>
+                        <KeyBinding Gesture="Space" Command="{Binding UnstageSelectedCommand}" />
+                        <KeyBinding Gesture="Left" Command="{Binding CollapseFolderCommand}" CommandParameter="{Binding SelectedStagedRow}" />
+                        <KeyBinding Gesture="Right" Command="{Binding ExpandFolderCommand}" CommandParameter="{Binding SelectedStagedRow}" />
+                    </ListBox.KeyBindings>
+                    <ListBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Unstage" InputGesture="Space" Command="{Binding UnstageSelectedCommand}" />
+                            <Separator />
+                            <MenuItem Header="Open in Editor" InputGesture="F4" Command="{Binding Diff.OpenInEditorCommand}" />
+                            <MenuItem Header="Open Diff in New Tab" Command="{Binding Diff.OpenInTabCommand}" />
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
+                </ListBox>
+
+                <!-- Commit box. Ctrl+K puts the cursor here (FocusRequest), Ctrl+Enter commits. -->
+                <Border Grid.Row="4" Padding="{DynamicResource Padding.CommitBox}"
+                        BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,1,0,0">
+                    <StackPanel Spacing="{DynamicResource Spacing}">
+                        <!-- Amend above the message (like JetBrains' commit options): it decides what the
+                             message is for, and ticking it fills the box with the last commit's message. -->
+                        <CheckBox Content="Amend" IsChecked="{Binding Commit.IsAmend}"
+                                  ToolTip.Tip="Replace the last commit instead of adding a new one (its message is filled in)" />
+                        <TextBox Text="{Binding Commit.Message}" PlaceholderText="Commit message"
+                                 AcceptsReturn="True" TextWrapping="Wrap" VerticalContentAlignment="Top"
+                                 MinHeight="{DynamicResource Size.CommitMessage}"
+                                 MaxHeight="{DynamicResource Size.CommitMessageMax}"
+                                 AutomationProperties.Name="Commit message"
+                                 c:FocusRequest.Token="{Binding Commit.FocusRequest}">
+                            <TextBox.KeyBindings>
+                                <KeyBinding Gesture="Ctrl+Enter" Command="{Binding Commit.CommitCommand}" />
+                                <KeyBinding Gesture="Ctrl+Alt+K" Command="{Binding Commit.CommitAndPushCommand}" />
+                            </TextBox.KeyBindings>
+                        </TextBox>
+
+                        <!-- Why the commit failed: git's / the hook's own words. -->
+                        <Border Padding="{DynamicResource Padding.Banner}" CornerRadius="{DynamicResource Radius.Control}"
+                                Background="{DynamicResource Brush.Status.Error.Subtle}"
+                                IsVisible="{Binding Commit.Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                            <ScrollViewer MaxHeight="{DynamicResource Size.CommitErrorMax}">
+                                <SelectableTextBlock Classes="small" Text="{Binding Commit.Error}" TextWrapping="Wrap" />
+                            </ScrollViewer>
+                        </Border>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="{DynamicResource Spacing}">
+                            <Button Content="Commit and Push" Command="{Binding Commit.CommitAndPushCommand}"
+                                    IsVisible="{Binding Commit.CanPush}"
+                                    ToolTip.Tip="Commit the staged changes, then push the branch (Ctrl+Alt+K)" />
+                            <Button Classes="accent" Content="{Binding Commit.CommitButtonText}"
+                                    Command="{Binding Commit.CommitCommand}" ToolTip.Tip="Commit the staged changes (Ctrl+Enter)" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+        <c:SplitterThumb DockPanel.Dock="Left" Value="{Binding Layout.ChangesListWidth}" Minimum="290" MaximumFraction="0.7" />
+
+        <Panel>
+            <c:EmptyState IconKind="success" Title="No local changes"
+                          Description="The working tree matches the last commit. Edits made anywhere show up here automatically."
+                          IsVisible="{Binding !HasChanges}" />
+            <!-- Diff of the selected file: DiffViewModel → DiffView (ViewLocator). -->
+            <ContentControl Content="{Binding Diff}" IsVisible="{Binding HasChanges}" />
+        </Panel>
+    </DockPanel>
+</UserControl>

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!--
+      The Templates plugin's UI. For now the placeholder pages (Templates, New Project, Import);
+      milestone M1 adds DevHub.Templates.Core (the engine) next to it.
+    -->
+
+    <PropertyGroup>
+        <RootNamespace>DevHub</RootNamespace>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="12.1.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\DevHub.Sdk\DevHub.Sdk.csproj" />
+    </ItemGroup>
+
+</Project>

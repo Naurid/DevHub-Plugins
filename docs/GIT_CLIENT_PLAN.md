@@ -193,14 +193,16 @@ plugins/DevHub.Git.Core/               (no Avalonia; unit-tested; was DevHub.Cor
   GitRepositoryClient  per-repository API: GetStatusAsync, StageAsync, CommitAsync, …
   Models               RepoStatus, FileChange, Diff/Hunk/Line, Commit, Branch, Remote, …
 
-DevHub.App/
+plugins/DevHub.Git/                    (the Git plugin's UI; was in DevHub.App before P4)
+  GitPlugin.cs         the plugin: info + every registration
   ViewModels/Documents/RepositoryDocumentViewModel   one per open repository (the tab):
                        owns its GitRepositoryClient, watcher, sidebar, current view
-  ViewModels/Git/      LocalChangesViewModel, CommitGraphViewModel, BranchesViewModel, …
-  Services/IActiveRepository   the repository of the active tab (or null) + Changed
-  ToolWindows/GitConsoleViewModel (bottom)
-  Dialogs/             New Branch, Push, Confirm destructive
-  Actions/Providers/GitActionProvider
+  ViewModels/Git/      LocalChangesViewModel, CommitLogViewModel, operations (Branch, Remote, …),
+                       ActiveRepositoryService (the repository of the active tab), IRemoteHost
+  ViewModels/ToolWindows/GitConsoleViewModel (bottom)
+  Actions/             GitActionIds, Providers/GitActionProvider
+  Themes/GitTokens.axaml   Git's own design tokens
+plugins/DevHub.GitHub/   GitHubRemoteHost (IRemoteHost), GitHubSession, Publish dialog, Settings → GitHub
 ```
 
 ### Multi-instance documents (needed first, in G0)

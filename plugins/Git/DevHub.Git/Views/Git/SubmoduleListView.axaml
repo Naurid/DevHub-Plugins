@@ -1,0 +1,59 @@
+<!--
+  Submodules section (G8): Update Submodules on top, then one row per submodule: path, state
+  badge (up to date / other commit / not cloned / conflict), commit and git's name for it.
+  Double-click or Enter opens one as its own repository tab.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Git"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Git.SubmoduleListView"
+             x:DataType="vm:SubmoduleListViewModel">
+
+    <UserControl.Styles>
+        <Style Selector="Border.paneHeader">
+            <Setter Property="Padding" Value="{DynamicResource Padding.PaneHeader}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+            <Setter Property="BorderThickness" Value="0,0,0,1" />
+        </Style>
+    </UserControl.Styles>
+
+    <DockPanel>
+        <Border DockPanel.Dock="Top" Classes="paneHeader">
+            <StackPanel Orientation="Horizontal">
+                <Button Classes="flat" Content="Update Submodules" Command="{Binding UpdateCommand}"
+                        ToolTip.Tip="Clone missing submodules and check each out at the commit this repository records" />
+                <Button Classes="flat" Content="Open" Command="{Binding OpenCommand}"
+                        ToolTip.Tip="Open the selected submodule as its own repository tab (Enter / double-click)" />
+            </StackPanel>
+        </Border>
+
+        <Panel>
+            <c:EmptyState IconKind="folder" Title="No submodules"
+                          Description="This repository doesn't include other repositories (no .gitmodules)."
+                          IsVisible="{Binding !HasItems}" />
+
+            <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding Selected}" Background="Transparent"
+                     AutomationProperties.Name="Submodules" IsVisible="{Binding HasItems}">
+                <ListBox.KeyBindings>
+                    <KeyBinding Gesture="Enter" Command="{Binding OpenCommand}" />
+                </ListBox.KeyBindings>
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="vm:SubmoduleItemViewModel">
+                        <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,*" ColumnSpacing="{DynamicResource Spacing}"
+                              Margin="{DynamicResource Margin.RowEnd}" Background="Transparent"
+                              ToolTip.Tip="{Binding ToolTip}" c:DoubleTap.Command="{Binding OpenCommand}">
+                            <c:Icon Kind="folder" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Text="{Binding Path}" VerticalAlignment="Center" />
+                            <c:Badge Grid.Column="2" Content="{Binding StateText}" Classes.success="{Binding IsUpToDate}"
+                                     Classes.warning="{Binding IsWarning}" Classes.error="{Binding IsError}" />
+                            <TextBlock Grid.Column="3" Classes="code small secondary" Text="{Binding ShortId}" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="4" Classes="small secondary" Text="{Binding Describe}"
+                                       TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Panel>
+    </DockPanel>
+</UserControl>

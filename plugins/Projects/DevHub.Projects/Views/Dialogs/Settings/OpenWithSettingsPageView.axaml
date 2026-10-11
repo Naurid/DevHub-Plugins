@@ -1,0 +1,43 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Dialogs.Settings"
+             xmlns:c="using:DevHub.Controls"
+             xmlns:proj="clr-namespace:DevHub.Projects.Core;assembly=DevHub.Projects.Core"
+             x:Class="DevHub.Views.Dialogs.Settings.OpenWithSettingsPageView"
+             x:DataType="vm:OpenWithSettingsPageViewModel">
+
+    <StackPanel Spacing="{DynamicResource Spacing}">
+        <TextBlock Classes="secondary" TextWrapping="Wrap"
+                   Text="Which tool opens a repository, by its language. Unchanged languages use a sensible default." />
+
+        <ItemsControl ItemsSource="{Binding LanguageTools}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:LanguageToolRowViewModel">
+                    <c:SettingsRow Label="{Binding LanguageDisplay}">
+                        <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                            <ComboBox MinWidth="240"
+                                      ItemsSource="{Binding AvailableTools}"
+                                      SelectedItem="{Binding SelectedTool, Mode=TwoWay}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="proj:DevTool">
+                                        <TextBlock Text="{Binding DisplayName}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+
+                            <!-- Custom executable (opened on the repo folder), only for "Custom".
+                                 Grid, not a fixed-width TextBox: the path takes whatever room is
+                                 left and Browse… always keeps its full size. -->
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}"
+                                  IsVisible="{Binding IsCustom}">
+                                <TextBox Text="{Binding CustomExe}" IsReadOnly="True"
+                                         PlaceholderText="No executable chosen" />
+                                <Button Grid.Column="1" Content="Browse…" Command="{Binding BrowseExeCommand}" />
+                            </Grid>
+                        </StackPanel>
+                    </c:SettingsRow>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </StackPanel>
+</UserControl>
