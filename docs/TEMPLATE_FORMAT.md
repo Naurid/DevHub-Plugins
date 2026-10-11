@@ -134,6 +134,11 @@ Syntax: `{{Name}}` or `{{Name:transform}}`, no spaces inside the braces.
 | `upper`  | `MY COOL_GAME` |
 | `lower`  | `my cool_game` |
 
+pascal / camel / kebab / snake split the value into words on spaces and other non-alphanumerics
+(`_`, `-`, `.`) and on case changes. Acronyms stay together and digits stay with the word before
+them: `myHTTPServer` → my, HTTP, Server (`MyHttpServer`); `version2Beta` → version2, Beta.
+upper / lower change the whole value as is. Variable names are case-sensitive.
+
 Built-ins (can't be redeclared): `Year`, `Date` (yyyy-MM-dd), `Author` (from settings),
 `Guid1`…`Guid9` (stable within one generation).
 
@@ -142,8 +147,13 @@ Built-ins (can't be redeclared): `Year`, `Date` (yyyy-MM-dd), `Author` (from set
    (`{{ item }}`, `${{ secrets.X }}`, `{{#each}}`, `{{Unknown}}`) stays **exactly** as written.
 3. `\{{` renders a literal `{{`.
 4. `bool` renders as `true` / `false`.
-5. A rendered path segment that's empty, contains a separator, is `..`, or has invalid file-name
-   characters fails with an error naming the variable.
+5. A rendered path segment fails with an error naming the variable when it:
+   - is empty, contains a separator, or is `.` or `..`
+   - has characters Windows forbids (`<>:"|?*`, control characters)
+   - ends in a dot or space
+   - is a reserved device name (`CON`, `NUL`, `COM1`…)
+
+   Step paths may contain the globs `*` and `?`.
 
 ## 6. Steps
 
