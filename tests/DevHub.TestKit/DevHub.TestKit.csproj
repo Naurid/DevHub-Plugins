@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!--
+      Shared test helpers (not a test project itself): TempGitRepo (a real git repository in a
+      temp folder, isolated from the user's git config) and [GitFact] / [GitTheory] (skip when
+      git isn't installed). Used by the Git and GitHub plugin tests.
+    -->
+
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>false</IsTestProject>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Just the attribute types ([GitFact] derives from FactAttribute); the full xunit package would make this look like a test project. -->
+        <PackageReference Include="xunit.extensibility.core" Version="2.9.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\plugins\DevHub.Git.Core\DevHub.Git.Core.csproj" />
+    </ItemGroup>
+
+</Project>

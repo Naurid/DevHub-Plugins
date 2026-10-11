@@ -1,6 +1,6 @@
 # DevHub Template Format — v1
 
-The single source of truth for what a template is. Code in `DevHub.Core` implements
+The single source of truth for what a template is. Code in the Templates plugin (`DevHub.Templates.Core`, planned) implements
 this document; if they disagree, fix one of them in the same change.
 
 ## Library layout

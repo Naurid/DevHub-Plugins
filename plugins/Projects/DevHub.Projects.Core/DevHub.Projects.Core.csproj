@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- Projects plugin logic: repository scanning, language detection, Open With. No Avalonia. -->
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\DevHub.Sdk.Core\DevHub.Sdk.Core.csproj" />
+    </ItemGroup>
+
+</Project>

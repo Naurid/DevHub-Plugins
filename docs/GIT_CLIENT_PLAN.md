@@ -64,7 +64,7 @@ changes; tooltip shows the path and branch.
   Stashes, later Submodules. Built from `TreeView` + `Badge` + `SearchField`.
   *As built:* a `TreeView` of `SidebarNode`s (`ViewModels/Documents/RepositorySidebar.cs`).
   Branches and Remotes (→ each remote, URL in its tooltip) fold open to their branches, put in
-  folders by "/" (`Core/Formatting/PathTree`, tested). Selecting a branch shows All Commits at its
+  folders by "/" (`Sdk.Core/Formatting/PathTree`, tested). Selecting a branch shows All Commits at its
   commit (`CommitLog.Reveal`), double-click / Enter checks it out, right-click has the branch
   menu; the group rows have New Branch… / Manage Remotes… / Publish to GitHub… / Fetch All.
   What's unfolded survives refreshes; folders holding the current branch start unfolded.
@@ -74,7 +74,7 @@ changes; tooltip shows the path and branch.
   right (the `SidebarItem` TreeViewItem theme in `RepositoryDocumentView`, rows indented by level).
   Commit / stash details list their files in folders too (same switch as Changes, `ChangeRows`).
   **Open Terminal** (header button next to Push, Git menu, Alt+F12): Git Bash in the repository
-  folder (else Windows Terminal, else PowerShell; `Core/Git/GitTerminal`, tested), for any git
+  folder (else Windows Terminal, else PowerShell; `Git.Core/GitTerminal`, tested), for any git
   command DevHub doesn't offer. Branch folders in the sidebar have a folder icon.
 - **Local Changes view** (Fork's staging view): Unstaged and Staged lists (stage by
   double-click / button / Space, unstage the same way, discard with confirmation), a diff
@@ -94,7 +94,7 @@ changes; tooltip shows the path and branch.
 - **Partial staging** (G3.1): both file lists take Ctrl/Shift+click and Ctrl+A, and Stage /
   Unstage / Discard / Space act on all selected files. In the diff pane each hunk header has
   Stage / Discard / Unstage Hunk, and selected lines get Stage / Discard / Unstage Lines (Space
-  toggles). *As built:* `Core/Git/PatchBuilder` turns the chosen lines into a patch for
+  toggles). *As built:* `Git.Core/PatchBuilder` turns the chosen lines into a patch for
   `git apply` (`--cached` to stage, `--cached --reverse` to unstage, `--reverse` to discard):
   an unselected change is kept as context on the side git checks and dropped from the other,
   and the other side's hunk starts are recomputed. CRLF lines and "no newline at end of file"
@@ -133,7 +133,7 @@ changes; tooltip shows the path and branch.
 - **Remotes and GitHub** (G9). *As built:*
   - **Manage Remotes…** (Remotes section header, Git menu): add (name + URL), edit (rename and
     / or new URL), remove (confirmed; the server is untouched). Adding one fetches it at once.
-  - **GitHub account = Git Credential Manager** (`Core/GitHub/GitCredentialManager`): Settings →
+  - **GitHub account = Git Credential Manager** (`GitHub.Core/GitCredentialManager`): Settings →
     GitHub lists GCM's GitHub accounts (each checked with `GET /user`), Sign In… (GCM's own
     window, `credential-manager github login`, the only `Interactive` git command) and Sign Out…
     (confirmed). DevHub stores no credentials: for each API call it borrows the token with
@@ -183,7 +183,7 @@ Dark and Light. New expui icons (branch, tag, stash, pull, history, …) added t
 ## 4. Architecture
 
 ```
-DevHub.Core/Git/                       (no Avalonia; unit-tested)
+plugins/DevHub.Git.Core/               (no Avalonia; unit-tested; was DevHub.Core/Git before P1)
   GitExecutable        find git.exe (PATH, Git for Windows default), check version >= 2.30
   GitRunner            run one command: ArgumentList, working dir, stdin, cancellation,
                        streamed stderr (progress), exit code → result / GitException
