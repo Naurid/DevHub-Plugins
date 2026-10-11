@@ -185,7 +185,11 @@ Edits work as in §4 step 4. Then it's written into the target and `postCreate` 
 Version control and generated folders (`.git`, `.vs`, `.idea`, `node_modules`, `Library`, `Temp`,
 `obj`, `bin`) aren't shown and steps can't touch them. Staging is a hidden `.devhub-staging-*`
 folder inside the target (same drive, so moves are instant), removed afterwards.
-Example: a C# class with a `Namespace` variable pre-filled from the folder and nearest `.csproj`.
+A variable named `Namespace` starts with the folder's C# namespace: the nearest `.csproj` (`RootNamespace`, else
+the project's name), `.asmdef` (`rootNamespace`) or Unity project (its name; folders under `Assets`, without
+a leading `Scripts`), plus the folders in between (`src/Player` under `Game.csproj` → `Game.src.Player`).
+The preview lists files already there (each overwritten only if you check it), your files that move or
+are deleted, and the post-create commands, which run after Apply.
 
 ## 8. Files
 

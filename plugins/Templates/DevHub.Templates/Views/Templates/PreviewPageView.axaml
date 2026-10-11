@@ -12,12 +12,54 @@
              x:DataType="t:PreviewPageViewModel">
     <DockPanel>
         <StackPanel DockPanel.Dock="Top" Spacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.BlockBelow}">
-            <TextBlock Classes="header" Text="Preview" />
-            <SelectableTextBlock Classes="secondary" Text="{Binding TargetPath, StringFormat='Will be created as {0}'}" TextWrapping="Wrap" />
+            <TextBlock Classes="header" Text="{Binding Heading}" TextWrapping="Wrap" />
+            <SelectableTextBlock Classes="secondary" Text="{Binding TargetText}" TextWrapping="Wrap" />
             <TextBlock Classes="small secondary" Text="{Binding Summary}" TextWrapping="Wrap" />
         </StackPanel>
 
         <StackPanel DockPanel.Dock="Bottom" Spacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.BlockAbove}">
+            <!-- Item templates: what happens to files already there, and what runs afterwards. -->
+            <Border IsVisible="{Binding HasConflicts}" Background="{DynamicResource Brush.Status.Warning.Subtle}"
+                    CornerRadius="{DynamicResource Radius.Control}" Padding="{DynamicResource Padding.Banner}">
+                <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                    <TextBlock FontWeight="SemiBold" TextWrapping="Wrap"
+                               Text="These files are already there. Check the ones the template may overwrite; the others stay as they are." />
+                    <ItemsControl ItemsSource="{Binding Conflicts}" AutomationProperties.Name="Files already there">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="t:ConflictRowViewModel">
+                                <CheckBox IsChecked="{Binding Overwrite}">
+                                    <TextBlock Classes="code" Text="{Binding Path, StringFormat='Overwrite {0}'}" TextWrapping="Wrap" />
+                                </CheckBox>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+            <Border IsVisible="{Binding HasDeleted}" Background="{DynamicResource Brush.Status.Error.Subtle}"
+                    CornerRadius="{DynamicResource Radius.Control}" Padding="{DynamicResource Padding.Banner}">
+                <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                    <TextBlock FontWeight="SemiBold" TextWrapping="Wrap" Text="Apply deletes these files of yours, permanently:" />
+                    <ItemsControl ItemsSource="{Binding Deleted}" AutomationProperties.Name="Files that get deleted">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <SelectableTextBlock Classes="code" Text="{Binding}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+            <StackPanel IsVisible="{Binding HasCommands}" Spacing="{DynamicResource Spacing.Small}">
+                <TextBlock Classes="secondary" Text="After Apply, these commands run in the folder:" />
+                <ItemsControl ItemsSource="{Binding Commands}" AutomationProperties.Name="Commands">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="t:CommandRowViewModel">
+                            <SelectableTextBlock Classes="code" TextWrapping="Wrap">
+                                <Run Text="{Binding Name}" FontWeight="SemiBold" /><Run Text=":  " /><Run Text="{Binding Text}" />
+                            </SelectableTextBlock>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
             <TextBlock Text="{Binding Error}" TextWrapping="Wrap" Foreground="{DynamicResource Brush.Status.Error}"
                        IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
             <TextBlock Classes="secondary" Text="{Binding Message}" TextWrapping="Wrap"
@@ -27,8 +69,8 @@
                         ToolTip.Tip="{Binding SaveToolTip}" ToolTip.ShowOnDisabled="True" />
                 <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="{DynamicResource Spacing}">
                     <Button Content="Back" Command="{Binding BackCommand}"
-                            ToolTip.Tip="Back to the form: this preview is thrown away; nothing was written to your folder." />
-                    <Button Classes="accent" Content="Create" Command="{Binding CreateCommand}" />
+                            ToolTip.Tip="Back to the form: this preview is thrown away; nothing was written to your folder yet." />
+                    <Button Classes="accent" Content="{Binding CreateText}" Command="{Binding CreateCommand}" />
                 </StackPanel>
             </Grid>
         </StackPanel>
@@ -37,16 +79,20 @@
             <DockPanel>
                 <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,0,1"
                         Padding="{DynamicResource Padding.Toolbar}">
-                    <c:Toolbar>
-                        <c:ActionButton IconKind="add" ToolTip.Tip="New Folder" AutomationProperties.Name="New Folder"
-                                        Command="{Binding NewFolderCommand}" />
-                        <c:ActionButton IconKind="edit" ToolTip.Tip="Rename (F2)" AutomationProperties.Name="Rename"
-                                        Command="{Binding RenameCommand}" />
-                        <c:ActionButton IconKind="folder" ToolTip.Tip="Move to…" AutomationProperties.Name="Move to"
-                                        Command="{Binding MoveCommand}" />
-                        <c:ActionButton IconKind="delete" ToolTip.Tip="Delete (Delete)" AutomationProperties.Name="Delete"
-                                        Command="{Binding DeleteCommand}" />
-                    </c:Toolbar>
+                    <DockPanel>
+                        <CheckBox DockPanel.Dock="Right" Content="Show unchanged files" IsChecked="{Binding ShowUnchanged}"
+                                  IsVisible="{Binding IsItem}" />
+                        <c:Toolbar>
+                            <c:ActionButton IconKind="add" ToolTip.Tip="New Folder" AutomationProperties.Name="New Folder"
+                                            Command="{Binding NewFolderCommand}" />
+                            <c:ActionButton IconKind="edit" ToolTip.Tip="Rename (F2)" AutomationProperties.Name="Rename"
+                                            Command="{Binding RenameCommand}" />
+                            <c:ActionButton IconKind="folder" ToolTip.Tip="Move to…" AutomationProperties.Name="Move to"
+                                            Command="{Binding MoveCommand}" />
+                            <c:ActionButton IconKind="delete" ToolTip.Tip="Delete (Delete)" AutomationProperties.Name="Delete"
+                                            Command="{Binding DeleteCommand}" />
+                        </c:Toolbar>
+                    </DockPanel>
                 </Border>
                 <TreeView ItemsSource="{Binding Nodes}" SelectedItem="{Binding SelectedNode}" Background="Transparent"
                           AutomationProperties.Name="Project files">
@@ -79,6 +125,7 @@
                                 <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}"
                                             Margin="{DynamicResource Margin.InnerLeft}">
                                     <c:Badge Classes="accent" Content="template" IsVisible="{Binding IsFromTemplate}" VerticalAlignment="Center" />
+                                    <c:Badge Classes="warning" Content="already there" IsVisible="{Binding IsConflict}" VerticalAlignment="Center" />
                                     <TextBlock Classes="small secondary" Text="{Binding Origin}" VerticalAlignment="Center"
                                                IsVisible="{Binding !IsFromTemplate}" />
                                     <TextBlock Classes="small" Text="{Binding MovedText}" VerticalAlignment="Center"

@@ -14,6 +14,9 @@
     <!-- The built-in library (read-only in the app): copied next to every project that uses this
          one, so the app and the tests both find it at <output>/BuiltInTemplates. -->
     <ItemGroup>
+        <!-- Template sources are text to copy (a {{Name}}.cs isn't C#): never compiled or embedded here. -->
+        <Compile Remove="BuiltInTemplates\**" />
+        <EmbeddedResource Remove="BuiltInTemplates\**" />
         <None Include="BuiltInTemplates\**" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 

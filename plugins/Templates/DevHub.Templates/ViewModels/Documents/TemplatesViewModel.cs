@@ -21,13 +21,16 @@ public sealed partial class TemplatesViewModel : DocumentViewModelBase
     private readonly IDialogService _dialogs;
     private readonly IStatusService _status;
     private readonly GenerateViewModel _generate;
+    private readonly AddFilesViewModel _addFiles;
 
-    public TemplatesViewModel(TemplatesService templates, IDialogService dialogs, IStatusService status, GenerateViewModel generate)
+    public TemplatesViewModel(TemplatesService templates, IDialogService dialogs, IStatusService status, GenerateViewModel generate,
+        AddFilesViewModel addFiles)
     {
         _templates = templates;
         _dialogs = dialogs;
         _status = status;
         _generate = generate;
+        _addFiles = addFiles;
         Browser = new TemplateBrowserViewModel(templates, OnSelected, Edit, TemplateBrowserViewModel.AllKinds);
     }
 
@@ -69,6 +72,12 @@ public sealed partial class TemplatesViewModel : DocumentViewModelBase
     {
         if (Selected is not { } summary)
             return;
+        if (summary.IsItem)
+        {
+            await _addFiles.SelectTemplateAsync(summary.Template.Reference);
+            OpenDocument?.Invoke(_addFiles.Id);
+            return;
+        }
         await _generate.SelectTemplateAsync(summary.Template.Reference);
         OpenDocument?.Invoke(_generate.Id);
     }
@@ -171,6 +180,10 @@ public sealed class TemplateSummaryViewModel(TemplateEntry template) : ViewModel
     public bool IsBroken => !Template.IsUsable;
     public IReadOnlyList<string> Problems => Template.Problems;
     public bool IsProject => Manifest?.Kind == TemplateKind.Project;
+    public bool IsItem => Manifest?.Kind == TemplateKind.Item;
+
+    /// <summary>The "use it" button: New Project for a project template, Add Files for an item template.</summary>
+    public string UseText => IsItem ? "Add to a Folder…" : "Use in New Project";
 
     public string CommandText => Manifest?.BaseCommand is { } command
         ? string.Join(' ', new[] { command.Command }.Concat(command.Args))

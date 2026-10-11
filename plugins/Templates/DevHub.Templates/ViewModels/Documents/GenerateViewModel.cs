@@ -205,34 +205,14 @@ public sealed partial class GenerateViewModel : DocumentViewModelBase
     /// <summary>Save to Template: the preview's edits become steps (in a personal copy when the template is read-only).</summary>
     private async Task<SaveOutcome> SaveEditsAsync(IReadOnlyList<TemplateStep> edits)
     {
-        var template = _template!;
-        var steps = PreviewEdits.ToTemplateSteps(edits, template.Manifest!, _form!.Values);
-        try
+        var (saved, outcome) = await TemplateFlow.SaveEditsAsync(_templates, _template!, _form!.Values, edits, "project");
+        if (saved is not null)
         {
-            var target = template;
-            if (template.Library.IsReadOnly)
-            {
-                var copy = await TemplateStore.DuplicateAsync(template, _templates.PersonalLibrary);
-                if (copy.Entry is not { } copied)
-                    return new SaveOutcome(false, "Couldn't copy the template: " + string.Join(" ", copy.Errors));
-                target = copied;
-            }
-
-            var saved = await TemplateStore.SaveAsync(target, target.Manifest! with { Steps = [.. target.Manifest!.Steps, .. steps] });
-            if (saved.Entry is not { } entry)
-                return new SaveOutcome(false, "Couldn't save the template: " + string.Join(" ", saved.Errors));
-
             // From now on this generation belongs to the saved template (a second save adds to it, not to another copy).
-            _template = entry;
-            _templates.NotifyChanged(); // the Templates tab and open editors see it too
-            await Browser.ReloadAsync(select: entry.Reference);
-            var count = steps.Count == 1 ? "1 step" : $"{steps.Count} steps";
-            return new SaveOutcome(true, $"Saved {count} to {entry.Reference}. The next project from it is arranged this way.");
+            _template = saved;
+            await Browser.ReloadAsync(select: saved.Reference);
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-        {
-            return new SaveOutcome(false, "Couldn't save the template: " + ex.Message);
-        }
+        return outcome;
     }
 
     // ── 4. Place → post-create → done ───────────────────────────────────────────
@@ -263,7 +243,7 @@ public sealed partial class GenerateViewModel : DocumentViewModelBase
         IReadOnlyList<CommandResult> results = [];
         var cancelled = false;
         if (commands.Count > 0)
-            (results, cancelled) = await RunPostCreateAsync(commands, path, log);
+            (results, cancelled) = await TemplateFlow.RunPostCreateAsync(_templates, _status, commands, path, log, run => SetPage(run, 3));
 
         await RescanProjectsAsync(staged.ParentFolder);
         _status.Show(cancelled || results.Any(r => !r.Succeeded) ? $"Created {path}; a command didn't finish." : $"Created {path}.");
@@ -271,53 +251,6 @@ public sealed partial class GenerateViewModel : DocumentViewModelBase
             _opener() is { } projectOpener ? () => projectOpener.Open(path) : null,
             () => TemplatesService.Reveal(path),
             () => ShowForm(_template)), 3);
-    }
-
-    private async Task<(IReadOnlyList<CommandResult>, bool Cancelled)> RunPostCreateAsync(
-        IReadOnlyList<RenderedCommand> commands, string path, OutputLogViewModel log)
-    {
-        var name = Path.GetFileName(path);
-        var cts = new CancellationTokenSource();
-        var run = new RunPageViewModel($"Setting up {name}", log, cts.Cancel, () => { });
-        SetPage(run, 3);
-        var task = _status.StartTask($"Setting up {name}…", cts.Cancel);
-
-        var results = new List<CommandResult>();
-        var cancelled = false;
-        try
-        {
-            // One at a time, so the log can say which command the output belongs to.
-            foreach (var command in commands)
-            {
-                run.Step = command.Name;
-                task.Report(command.Name, null);
-                log.Add("▶ " + command.Name + ": " + command.DisplayText, isHeader: true);
-                var output = new Progress<CommandOutputLine>(log.Add);
-                var ct = cts.Token;
-                var result = (await Task.Run(() => PostCreate.RunAsync(_templates.Runner, [command], path, output, ct), ct)).Single();
-                results.Add(result);
-                if (result.Error is { } error)
-                    log.Add(error, isError: true);
-                if (!result.Succeeded && !command.ContinueOnError)
-                    break;
-            }
-        }
-        catch (OperationCanceledException)
-        {
-            cancelled = true;
-        }
-        catch (Exception ex)
-        {
-            log.Add("Couldn't run the commands: " + ex.Message, isError: true);
-            cancelled = true;
-        }
-        finally
-        {
-            run.IsRunning = false;
-            task.Dispose();
-            cts.Dispose();
-        }
-        return (results, cancelled);
     }
 
     /// <summary>The new project shows up in the Projects tool window when it's in one of its folders.</summary>

@@ -54,14 +54,14 @@
             </Border>
 
             <!-- Item template: not from here -->
-            <Border IsVisible="{Binding IsItem}" Background="{DynamicResource Brush.Bg.Panel}"
+            <Border IsVisible="{Binding IsWrongKind}" Background="{DynamicResource Brush.Bg.Panel}"
                     CornerRadius="{DynamicResource Radius.Control}" Padding="{DynamicResource Padding.Banner}">
                 <TextBlock TextWrapping="Wrap"
-                           Text="This is an item template: it adds files to a folder you already have instead of creating a project. Applying it to a folder (from the Projects tool window or a repository tab) comes with milestone M6." />
+                           Text="{Binding WrongKindText}" />
             </Border>
 
             <!-- The form -->
-            <StackPanel IsVisible="{Binding IsProject}" Spacing="{DynamicResource Spacing}">
+            <StackPanel IsVisible="{Binding ShowsForm}" Spacing="{DynamicResource Spacing}">
                 <ItemsControl ItemsSource="{Binding Fields}" IsVisible="{Binding HasFields}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="t:VariableFieldViewModel">
@@ -74,6 +74,8 @@
                                     <ComboBox ItemsSource="{Binding Choices}" SelectedItem="{Binding SelectedChoice}"
                                               IsVisible="{Binding IsChoice}" HorizontalAlignment="Stretch"
                                               AutomationProperties.Name="{Binding Label}" />
+                                    <TextBlock Text="{Binding Hint}" TextWrapping="Wrap" Classes="small secondary"
+                                               IsVisible="{Binding Hint, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                                     <TextBlock Text="{Binding Error}" TextWrapping="Wrap" Classes="small"
                                                Foreground="{DynamicResource Brush.Status.Error}"
                                                IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
@@ -83,9 +85,9 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <c:SettingsRow Label="Location" Description="The project folder is created in here.">
+                <c:SettingsRow Label="{Binding LocationLabel}" Description="{Binding LocationDescription}">
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}">
-                        <TextBox Text="{Binding Location}" AutomationProperties.Name="Location" />
+                        <TextBox Text="{Binding Location}" AutomationProperties.Name="{Binding LocationLabel}" />
                         <Button Grid.Column="1" Content="Browse…" Command="{Binding BrowseCommand}" />
                     </Grid>
                 </c:SettingsRow>

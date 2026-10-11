@@ -1,0 +1,15 @@
+{
+  // An item template: one C# file in the folder you pick. Namespace is filled in from the nearest
+  // .csproj (RootNamespace or its name) and the folders in between; you can change it in the form.
+  "schemaVersion": 1,
+  "id": "csharp-class",
+  "kind": "item",
+  "name": "C# Class",
+  "description": "A class in its own file, in the folder's namespace.",
+  "language": "C#",
+  "categories": ["Code"],
+  "variables": [
+    { "name": "Name", "label": "Class name", "required": true, "pattern": "^[A-Za-z_][A-Za-z0-9_]*$" },
+    { "name": "Namespace", "required": true, "pattern": "^[A-Za-z_][A-Za-z0-9_]*([.][A-Za-z_][A-Za-z0-9_]*)*$" }
+  ]
+}

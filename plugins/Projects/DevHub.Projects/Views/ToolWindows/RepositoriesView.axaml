@@ -87,6 +87,10 @@
                                         <MenuItem Header="Open in Explorer" Command="{Binding RevealCommand}">
                                             <MenuItem.Icon><c:Icon Kind="folder" /></MenuItem.Icon>
                                         </MenuItem>
+                                        <MenuItem Header="Add Files from Template…" Command="{Binding AddFilesCommand}"
+                                                  IsVisible="{Binding CanAddFiles}">
+                                            <MenuItem.Icon><c:Icon Kind="template" /></MenuItem.Icon>
+                                        </MenuItem>
                                     </ContextMenu>
                                 </Grid.ContextMenu>
                                 <c:Icon Kind="vcs" VerticalAlignment="Center" />

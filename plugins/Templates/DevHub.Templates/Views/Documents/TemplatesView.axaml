@@ -81,7 +81,7 @@
                     <WrapPanel Orientation="Horizontal">
                         <Button Classes="accent" Content="Edit" Command="{Binding EditSelectedCommand}" Margin="{DynamicResource Margin.RowEnd}"
                                 ToolTip.Tip="Open it in its own editor tab (read-only for built-ins)" />
-                        <Button Content="Use in New Project" Command="{Binding UseInNewProjectCommand}" Margin="{DynamicResource Margin.RowEnd}" />
+                        <Button Content="{Binding Selected.UseText, FallbackValue=Use}" Command="{Binding UseInNewProjectCommand}" Margin="{DynamicResource Margin.RowEnd}" />
                         <Button Content="Duplicate" Command="{Binding DuplicateCommand}" Margin="{DynamicResource Margin.RowEnd}"
                                 ToolTip.Tip="A copy in your personal library, which you can change" />
                         <Button Content="Show in Explorer" Command="{Binding ShowInExplorerCommand}" Margin="{DynamicResource Margin.RowEnd}" />

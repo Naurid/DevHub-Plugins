@@ -35,6 +35,9 @@ public sealed class TemplatesPlugin : IPlugin
 
         services.AddSingleton<GenerateViewModel>();
         services.AddSingleton<DocumentViewModelBase>(sp => sp.GetRequiredService<GenerateViewModel>());
+        services.AddSingleton<AddFilesViewModel>();
+        services.AddSingleton<DocumentViewModelBase>(sp => sp.GetRequiredService<AddFilesViewModel>());
+        services.AddSingleton<IAddFilesFromTemplate, AddFilesOpener>(); // Projects and Git show "Add Files from Template…" with it
         services.AddSingleton<TemplatesViewModel>();
         services.AddSingleton<DocumentViewModelBase>(sp => sp.GetRequiredService<TemplatesViewModel>());
         services.AddSingleton<IDocumentFactory, TemplateEditorFactory>();

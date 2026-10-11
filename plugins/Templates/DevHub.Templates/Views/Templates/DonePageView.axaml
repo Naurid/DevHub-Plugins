@@ -40,8 +40,8 @@
                 <Button Classes="accent" Content="Open in DevHub" Command="{Binding OpenInDevHubCommand}"
                         IsVisible="{Binding CanOpenInDevHub}" />
                 <Button Content="Show in Explorer" Command="{Binding ShowInExplorerCommand}" />
-                <Button Content="New Project" Command="{Binding NewProjectCommand}"
-                        ToolTip.Tip="Another project from the same template" />
+                <Button Content="{Binding NewText}" Command="{Binding NewProjectCommand}"
+                        ToolTip.Tip="{Binding NewToolTip}" />
             </StackPanel>
         </StackPanel>
 

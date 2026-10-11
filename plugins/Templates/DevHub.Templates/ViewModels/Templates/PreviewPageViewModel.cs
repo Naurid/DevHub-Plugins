@@ -14,9 +14,17 @@ namespace DevHub.ViewModels.Templates;
 /// Save to Template appends those edits to the template's steps so the next project gets them
 /// too. Create writes it into the target folder.
 /// </summary>
+/// <remarks>
+/// For an item template (Add Files) the tree is the folder as it will be: only what changes is shown
+/// unless "Show unchanged files" is on; files the template would overwrite are listed with an
+/// Overwrite choice each; your files that move or get deleted are spelled out; the post-create
+/// commands are listed before Apply (they run only after it).
+/// </remarks>
 public sealed partial class PreviewPageViewModel : ViewModelBase
 {
-    private readonly StagedProject _staged;
+    private readonly IStagedResult _staged;
+    private readonly StagedItem? _item;
+    private readonly Dictionary<string, bool> _overwrite = new(StringComparer.OrdinalIgnoreCase);
     private readonly IDialogService _dialogs;
     private readonly Func<IReadOnlyList<TemplateStep>, Task<SaveOutcome>> _save;
     private readonly Func<Task> _create;
@@ -28,10 +36,14 @@ public sealed partial class PreviewPageViewModel : ViewModelBase
     /// <param name="commandName">The base command ("dotnet"), to say which files it made.</param>
     /// <param name="saveIsCopy">The template is read-only: saving makes a copy in the personal library.</param>
     /// <param name="save">Saves the given (new) edits to the template; returns what happened.</param>
-    public PreviewPageViewModel(StagedProject staged, string? commandName, bool raw, bool saveIsCopy, IDialogService dialogs,
-        Func<IReadOnlyList<TemplateStep>, Task<SaveOutcome>> save, Func<Task> create, Action back)
+    /// <param name="commands">Item templates: the post-create commands that will run after Apply (listed here, since there's no Commands step).</param>
+    public PreviewPageViewModel(IStagedResult staged, string? commandName, bool raw, bool saveIsCopy, IDialogService dialogs,
+        Func<IReadOnlyList<TemplateStep>, Task<SaveOutcome>> save, Func<Task> create, Action back,
+        IReadOnlyList<RenderedCommand>? commands = null)
     {
         _staged = staged;
+        _item = staged as StagedItem;
+        Commands = (commands ?? []).Select(c => new CommandRowViewModel(c)).ToList();
         _dialogs = dialogs;
         _save = save;
         _create = create;
@@ -65,6 +77,35 @@ public sealed partial class PreviewPageViewModel : ViewModelBase
 
     public bool IsRaw { get; }
     public string SaveText { get; }
+
+    /// <summary>Add Files (an item template on an existing folder), not New Project.</summary>
+    public bool IsItem => _item is not null;
+
+    public string Heading => IsItem ? $"Changes to {Path.GetFileName(TargetPath)}" : "Preview";
+    public string TargetText => IsItem ? $"In {TargetPath}" : $"Will be created as {TargetPath}";
+    public string CreateText => IsItem ? "Apply" : "Create";
+
+    /// <summary>Item templates: the files the template would overwrite, each with its Overwrite choice.</summary>
+    public ObservableCollection<ConflictRowViewModel> Conflicts { get; } = [];
+    public bool HasConflicts => Conflicts.Count > 0;
+
+    /// <summary>Item templates: your files that Apply deletes (a step or your edit deleted them).</summary>
+    [ObservableProperty] private IReadOnlyList<string> _deleted = [];
+    public bool HasDeleted => Deleted.Count > 0;
+
+    /// <summary>Item templates: the post-create commands that run after Apply.</summary>
+    public IReadOnlyList<CommandRowViewModel> Commands { get; }
+    public bool HasCommands => Commands.Count > 0;
+
+    /// <summary>Item templates: show the folder's untouched files too (off: only what changes).</summary>
+    [ObservableProperty] private bool _showUnchanged;
+
+    /// <summary>The conflicts to overwrite (Apply passes these on).</summary>
+    public IReadOnlySet<string> Overwrite => _overwrite.Where(o => o.Value).Select(o => o.Key).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+    partial void OnDeletedChanged(IReadOnlyList<string> value) => OnPropertyChanged(nameof(HasDeleted));
+
+    partial void OnShowUnchangedChanged(bool value) => Rebuild(SelectedNode?.Path);
 
     public string SaveToolTip => IsRaw
         ? "A raw project skips the template's files and steps, so its edits can't become steps of the template."
@@ -178,11 +219,17 @@ public sealed partial class PreviewPageViewModel : ViewModelBase
     /// <summary>Builds the tree from the staged result; folders keep their open / closed state.</summary>
     private void Rebuild(string? select)
     {
+        var conflicts = _item?.Conflicts.ToHashSet(StringComparer.OrdinalIgnoreCase) ?? [];
+        var entries = _staged.Tree.Entries;
+        if (IsItem && !ShowUnchanged)
+            entries = OnlyChanges(entries);
+
         var byPath = new Dictionary<string, PreviewNodeViewModel>(StringComparer.OrdinalIgnoreCase);
         var roots = new List<PreviewNodeViewModel>();
-        foreach (var entry in _staged.Tree.Entries) // sorted by path: a folder comes before what's in it
+        foreach (var entry in entries) // sorted by path: a folder comes before what's in it
         {
-            var node = new PreviewNodeViewModel(entry, _commandName, !_collapsed.Contains(entry.Path), OnExpandedChanged);
+            var node = new PreviewNodeViewModel(entry, _commandName, !_collapsed.Contains(entry.Path), OnExpandedChanged,
+                conflicts.Contains(entry.Path));
             byPath[entry.Path] = node;
             if (entry.Parent.Length > 0 && byPath.TryGetValue(entry.Parent, out var parent))
                 parent.Children.Add(node);
@@ -197,12 +244,60 @@ public sealed partial class PreviewPageViewModel : ViewModelBase
             Nodes.Add(root);
         SelectedNode = select is null ? null : byPath.GetValueOrDefault(select);
 
+        if (_item is not null)
+        {
+            // The conflict list follows the tree (an edit can remove a conflicting file); choices are kept.
+            foreach (var row in Conflicts)
+                row.Dispose();
+            Conflicts.Clear();
+            foreach (var path in conflicts.Order(StringComparer.OrdinalIgnoreCase))
+                Conflicts.Add(new ConflictRowViewModel(path, _overwrite.GetValueOrDefault(path), OnOverwriteChanged));
+            OnPropertyChanged(nameof(HasConflicts));
+            UpdateItemSummary();
+            return;
+        }
+
         var files = _staged.Tree.Entries.Where(e => !e.IsFolder).ToList();
         var fromTemplate = files.Count(f => f.Origin == EntryOrigin.Template);
         var moved = files.Count(f => f.IsMoved);
         Summary = $"{Count(files.Count, "file")}: {fromTemplate} from the template, {files.Count - fromTemplate} from {_commandName}"
                   + (moved > 0 ? $"; {moved} moved" : "")
                   + (_staged.Edits.Count > 0 ? $"; {Count(_staged.Edits.Count, "edit")} of yours" : "");
+    }
+
+    /// <summary>What changes (new, moved, a template's folder) and the folders they're in; the rest of the folder is left out.</summary>
+    private static IReadOnlyList<TreeEntry> OnlyChanges(IReadOnlyList<TreeEntry> entries)
+    {
+        var changed = entries.Where(e => e.Origin != EntryOrigin.Existing || e.IsMoved).ToHashSet();
+        var folders = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var entry in changed)
+        {
+            for (var parent = entry.Parent; parent.Length > 0; parent = parent.LastIndexOf('/') is var s and >= 0 ? parent[..s] : "")
+                folders.Add(parent);
+        }
+        return entries.Where(e => changed.Contains(e) || folders.Contains(e.Path)).ToList();
+    }
+
+    private void OnOverwriteChanged(ConflictRowViewModel row)
+    {
+        _overwrite[row.Path] = row.Overwrite;
+        UpdateItemSummary();
+    }
+
+    private void UpdateItemSummary()
+    {
+        var changes = _item!.Changes(Overwrite);
+        Deleted = changes.Deleted;
+        var parts = new List<string> { $"{Count(changes.Added.Count, "new file")}" };
+        if (changes.Overwritten.Count > 0)
+            parts.Add($"{changes.Overwritten.Count} overwritten");
+        if (changes.Kept.Count > 0)
+            parts.Add($"{Count(changes.Kept.Count, "file")} of yours kept instead of the template's");
+        if (changes.Moved.Count > 0)
+            parts.Add($"{Count(changes.Moved.Count, "file")} of yours moved");
+        if (changes.Deleted.Count > 0)
+            parts.Add($"{Count(changes.Deleted.Count, "file")} of yours deleted");
+        Summary = string.Join("; ", parts) + (changes.IsEmpty ? ". Nothing would change." : ".");
     }
 
     private void OnExpandedChanged(PreviewNodeViewModel node)
@@ -218,6 +313,30 @@ public sealed partial class PreviewPageViewModel : ViewModelBase
     private static string Count(int n, string what) => n == 1 ? $"1 {what}" : $"{n} {what}s";
 }
 
+/// <summary>A file the template would overwrite: off (the default) keeps yours.</summary>
+public sealed partial class ConflictRowViewModel : ViewModelBase, IDisposable
+{
+    private Action<ConflictRowViewModel>? _changed;
+
+    public ConflictRowViewModel(string path, bool overwrite, Action<ConflictRowViewModel> changed)
+    {
+        Path = path;
+        _overwrite = overwrite;
+        _changed = changed;
+    }
+
+    public string Path { get; }
+
+    [ObservableProperty] private bool _overwrite;
+
+    partial void OnOverwriteChanged(bool value) => _changed?.Invoke(this);
+
+    /// <summary>The row is replaced (the list was rebuilt): stop reporting.</summary>
+    public void Dispose() => _changed = null;
+
+    public override string ToString() => Overwrite ? $"{Path}: overwrite" : $"{Path}: keep yours";
+}
+
 /// <summary>What Save to Template did: saved (the edits are now steps) or not, and a sentence about it.</summary>
 public sealed record SaveOutcome(bool Saved, string Message);
 
@@ -226,9 +345,12 @@ public sealed partial class PreviewNodeViewModel : ViewModelBase
 {
     private readonly Action<PreviewNodeViewModel> _expandedChanged;
 
-    public PreviewNodeViewModel(TreeEntry entry, string commandName, bool isExpanded, Action<PreviewNodeViewModel> expandedChanged)
+    /// <param name="isConflict">A template file that would replace a file already there (item templates).</param>
+    public PreviewNodeViewModel(TreeEntry entry, string commandName, bool isExpanded, Action<PreviewNodeViewModel> expandedChanged,
+        bool isConflict = false)
     {
         Entry = entry;
+        IsConflict = isConflict;
         _expandedChanged = expandedChanged;
         _isExpanded = isExpanded;
         Origin = entry.Origin switch
@@ -249,7 +371,8 @@ public sealed partial class PreviewNodeViewModel : ViewModelBase
     /// <summary>Where it came from: "template", or the base command's name.</summary>
     public string Origin { get; }
 
-    public bool IsFromTemplate => Entry.Origin == EntryOrigin.Template && !IsFolder;
+    public bool IsFromTemplate => Entry.Origin == EntryOrigin.Template && !IsFolder && !IsConflict;
+    public bool IsConflict { get; }
     public bool IsMoved => Entry.IsMoved;
     public string MovedText => IsMoved ? "moved from " + Entry.OriginalPath : "";
 

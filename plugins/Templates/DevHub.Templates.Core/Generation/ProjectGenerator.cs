@@ -135,7 +135,7 @@ public sealed class ProjectGenerator(CommandRunner runner)
 /// (<see cref="ApplyEdit"/>), <see cref="PlaceAsync"/> writes it into the target, and disposing
 /// deletes the staging folder (Cancel).
 /// </summary>
-public sealed class StagedProject : IDisposable
+public sealed class StagedProject : IStagedResult
 {
     private readonly List<TemplateStep> _edits = [];
 
@@ -318,4 +318,23 @@ internal static class Staging
 internal sealed class InlineProgress<T>(Action<T> report) : IProgress<T>
 {
     public void Report(T value) => report(value);
+}
+
+/// <summary>
+/// A generation waiting in staging (a project, or an item template's changes to a folder): the
+/// preview shows <see cref="Tree"/>, edits change it, and disposing throws it away.
+/// </summary>
+public interface IStagedResult : IDisposable
+{
+    /// <summary>The result, relative to <see cref="TargetPath"/>.</summary>
+    FileTree Tree { get; }
+
+    /// <summary>Where it goes: the project folder, or the folder an item template is applied to.</summary>
+    string TargetPath { get; }
+
+    /// <summary>The preview's edits so far, as concrete steps.</summary>
+    IReadOnlyList<TemplateStep> Edits { get; }
+
+    /// <summary>A preview edit (move / rename / delete / new folder, concrete paths). Returns why not, or null.</summary>
+    string? ApplyEdit(TemplateStep edit);
 }

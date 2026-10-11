@@ -24,6 +24,7 @@ public partial class RepositoriesViewModel : ToolWindowViewModelBase, IProjectFo
     private readonly IStatusService _status;
     private readonly ISettingsStore _store;
     private readonly IProjectOpener? _opener;
+    private readonly IAddFilesFromTemplate? _addFiles;
 
     /// <summary>Results of the last scan (flat). The tree is built from this + the folders.</summary>
     private IReadOnlyList<GitRepository> _repositories = [];
@@ -57,7 +58,7 @@ public partial class RepositoriesViewModel : ToolWindowViewModelBase, IProjectFo
     [ObservableProperty] private string _filter = "";
 
     public RepositoriesViewModel(IRepositoryScanner scanner, IDialogService dialogs, IProjectLauncher launcher,
-        IStatusService status, ISettingsStore store, IEnumerable<IProjectOpener> openers)
+        IStatusService status, ISettingsStore store, IEnumerable<IProjectOpener> openers, IEnumerable<IAddFilesFromTemplate> addFiles)
     {
         _scanner = scanner;
         _dialogs = dialogs;
@@ -66,6 +67,7 @@ public partial class RepositoriesViewModel : ToolWindowViewModelBase, IProjectFo
         _store = store;
         // Soft hook: another plugin (Git) may open projects inside DevHub. None → the external tool.
         _opener = openers.FirstOrDefault();
+        _addFiles = addFiles.FirstOrDefault();
 
         foreach (var folder in _store.LoadSection<ProjectsSettings>().RepositoryFolders)
             ScanFolders.Add(folder);
@@ -201,7 +203,7 @@ public partial class RepositoriesViewModel : ToolWindowViewModelBase, IProjectFo
                 .Where(x => !filtering || x.Match is not null)
                 .OrderByDescending(x => x.Match?.Score ?? 0)
                 .ThenBy(x => x.Repo.Name, StringComparer.OrdinalIgnoreCase)
-                .Select(x => new RepositoryNode(x.Repo, OpenInDevHub, Open, Reveal))
+                .Select(x => new RepositoryNode(x.Repo, OpenInDevHub, Open, Reveal, _addFiles is null ? null : r => _addFiles.Open(r.Path)))
                 .ToList();
 
             if (filtering && repos.Count == 0)
@@ -243,9 +245,12 @@ public sealed partial class ScanFolderNode : ObservableObject
 /// <summary>A repository leaf in the tree. Carries its own commands so the context menu can bind directly.</summary>
 public sealed class RepositoryNode
 {
+    /// <param name="addFiles">Templates' Add Files (null when that plugin is off: the menu item hides).</param>
     public RepositoryNode(GitRepository repository, Action<GitRepository> openInDevHub,
-        Action<GitRepository> open, Action<GitRepository> reveal)
+        Action<GitRepository> open, Action<GitRepository> reveal, Action<GitRepository>? addFiles = null)
     {
+        CanAddFiles = addFiles is not null;
+        AddFilesCommand = new RelayCommand(() => addFiles?.Invoke(repository));
         Repository = repository;
         OpenInDevHubCommand = new RelayCommand(() => openInDevHub(repository));
         OpenCommand = new RelayCommand(() => open(repository));
@@ -263,6 +268,10 @@ public sealed class RepositoryNode
     /// <summary>Open in the external tool chosen for its language (Settings → Open With).</summary>
     public RelayCommand OpenCommand { get; }
     public RelayCommand RevealCommand { get; }
+
+    /// <summary>Add Files from Template… (the Templates plugin), into this project.</summary>
+    public RelayCommand AddFilesCommand { get; }
+    public bool CanAddFiles { get; }
 
     public override string ToString() => Name;
 }

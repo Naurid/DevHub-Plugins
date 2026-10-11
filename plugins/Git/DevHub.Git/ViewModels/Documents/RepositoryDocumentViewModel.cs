@@ -29,6 +29,7 @@ public sealed partial class RepositoryDocumentViewModel : DocumentViewModelBase,
     private readonly BranchOperations _branchOperations;
     private readonly CommitOperations _commitOperations;
     private readonly TerminalLauncher _terminal;
+    private readonly DevHub.Integration.IAddFilesFromTemplate? _addFiles;
     private CancellationTokenSource? _refreshCts;
     private Task _refreshTask = Task.CompletedTask;
     private bool _disposed;
@@ -43,6 +44,7 @@ public sealed partial class RepositoryDocumentViewModel : DocumentViewModelBase,
         Path = path;
         _client = client;
         _terminal = services.Terminal;
+        _addFiles = services.AddFiles;
         Layout = layout;
         Action<FileChangeViewModel, int?> openInEditor = (file, line) => services.Editor.Open(path, file.Change.Path, line);
         LocalChanges = new LocalChangesViewModel(layout, client, services.Dialogs, services.Status, RefreshAsync,
@@ -269,6 +271,12 @@ public sealed partial class RepositoryDocumentViewModel : DocumentViewModelBase,
     /// </summary>
     [RelayCommand]
     public void OpenTerminal() => _terminal.Open(Path);
+
+    /// <summary>Add Files from Template… into this repository (the Templates plugin; hidden without it).</summary>
+    [RelayCommand]
+    private void AddFiles() => _addFiles?.Open(Path);
+
+    public bool CanAddFiles => _addFiles is not null;
 
     /// <summary>Git → New Branch…: from the current commit.</summary>
     public Task NewBranchAsync() => _branchOperations.NewBranchAsync();

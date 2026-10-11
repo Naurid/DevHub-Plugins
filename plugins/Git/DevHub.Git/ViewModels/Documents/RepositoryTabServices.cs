@@ -1,3 +1,4 @@
+using DevHub.Integration;
 using DevHub.Services;
 using DevHub.ViewModels.Git;
 
@@ -12,5 +13,6 @@ namespace DevHub.ViewModels.Documents;
 /// <param name="Status">Status bar messages.</param>
 /// <param name="Terminal">Opens a terminal in the repository (Open Terminal).</param>
 /// <param name="Host">The hosting service (GitHub: Publish, your avatar), or null when no hosting plugin is on.</param>
+/// <param name="AddFiles">Templates' Add Files from Template, or null when that plugin is off.</param>
 public sealed record RepositoryTabServices(RepositoryFileOpener Editor, IDialogService Dialogs, IStatusService Status,
-    TerminalLauncher Terminal, IRemoteHost? Host = null);
+    TerminalLauncher Terminal, IRemoteHost? Host = null, IAddFilesFromTemplate? AddFiles = null);

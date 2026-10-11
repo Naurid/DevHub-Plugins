@@ -44,6 +44,9 @@
                                 <c:ActionButton IconKind="push" AutomationProperties.Name="Push"
                                                 ToolTip.Tip="Push… (Ctrl+Shift+K): send your commits to the remote"
                                                 Command="{Binding Remote.PushCommand}" />
+                                <c:ActionButton IconKind="template" AutomationProperties.Name="Add Files from Template"
+                                                ToolTip.Tip="Add Files from Template: new files (a class, a script…) in this repository"
+                                                Command="{Binding AddFilesCommand}" IsVisible="{Binding CanAddFiles}" />
                                 <c:ActionButton IconKind="terminal" AutomationProperties.Name="Open Terminal"
                                                 ToolTip.Tip="Open Terminal (Alt+F12): Git Bash in this repository, for any git command"
                                                 Command="{Binding OpenTerminalCommand}" />

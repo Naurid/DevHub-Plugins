@@ -50,7 +50,7 @@ public static class ItemApplier
 /// An item template waiting to be applied: <see cref="Tree"/> is the folder as it will be,
 /// <see cref="Conflicts"/> the existing files the template would overwrite.
 /// </summary>
-public sealed class StagedItem : IDisposable
+public sealed class StagedItem : IStagedResult
 {
     private readonly List<TemplateStep> _edits = [];
     private readonly Dictionary<string, TreeEntry> _conflicts = new(StringComparer.OrdinalIgnoreCase);
@@ -64,6 +64,9 @@ public sealed class StagedItem : IDisposable
 
     public string StagingFolder { get; }
     public string TargetFolder { get; }
+
+    /// <summary>The folder the files go into (same as <see cref="TargetFolder"/>).</summary>
+    public string TargetPath => TargetFolder;
 
     /// <summary>The target folder as it will be (existing entries, the template's, moves applied).</summary>
     public FileTree Tree { get; }
@@ -151,5 +154,30 @@ public sealed class StagedItem : IDisposable
         return Task.FromResult(new PlaceResult(target, null));
     }
 
+    /// <summary>
+    /// What applying will do to the folder, for the preview: the template's new files, the files it
+    /// would overwrite (only those in <paramref name="overwrite"/>; the others stay as they are), your
+    /// files that move, and your files that get deleted (a step or an edit deleted them).
+    /// </summary>
+    public ItemChanges Changes(IReadOnlySet<string> overwrite)
+    {
+        var files = Tree.Entries.Where(e => !e.IsFolder).ToList();
+        return new ItemChanges(
+            files.Where(e => e.Origin == EntryOrigin.Template && !_conflicts.ContainsKey(e.Path)).Select(e => e.Path).ToList(),
+            _conflicts.Keys.Where(overwrite.Contains).Order(StringComparer.OrdinalIgnoreCase).ToList(),
+            _conflicts.Keys.Where(c => !overwrite.Contains(c)).Order(StringComparer.OrdinalIgnoreCase).ToList(),
+            files.Where(e => e is { Origin: EntryOrigin.Existing, IsMoved: true }).Select(e => (e.OriginalPath, e.Path)).ToList(),
+            Tree.Removed.Where(r => r is { Origin: EntryOrigin.Existing, IsFolder: false } && !_conflicts.ContainsKey(r.Path))
+                .Select(r => r.OriginalPath).Order(StringComparer.OrdinalIgnoreCase).ToList());
+    }
+
     public void Dispose() => Staging.Delete(StagingFolder);
+}
+
+/// <summary>What applying an item template does to the folder (see <see cref="StagedItem.Changes"/>).</summary>
+/// <param name="Kept">Conflicts not overwritten: your file stays, the template's isn't written.</param>
+public sealed record ItemChanges(IReadOnlyList<string> Added, IReadOnlyList<string> Overwritten, IReadOnlyList<string> Kept,
+    IReadOnlyList<(string From, string To)> Moved, IReadOnlyList<string> Deleted)
+{
+    public bool IsEmpty => Added.Count == 0 && Overwritten.Count == 0 && Moved.Count == 0 && Deleted.Count == 0;
 }

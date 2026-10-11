@@ -7,21 +7,28 @@ using DevHub.Templates.Core.Rendering;
 namespace DevHub.ViewModels.Templates;
 
 /// <summary>The steps shown above the pages: Details → Commands → Preview → Done.</summary>
-public sealed class StepIndicatorViewModel(string number, string text, bool isCurrent, bool isDone) : ViewModelBase
+public sealed class StepIndicatorViewModel(string number, string text, bool isCurrent, bool isDone, bool isLast) : ViewModelBase
 {
     public string Number { get; } = number;
     public string Text { get; } = text;
     public bool IsCurrent { get; } = isCurrent;
     public bool IsDone { get; } = isDone;
-    public bool IsLast => Number == "4";
+    public bool IsLast { get; } = isLast;
 
     public override string ToString() => $"Step {Number}: {Text}{(IsCurrent ? " (current)" : IsDone ? " (done)" : "")}";
 
-    /// <summary>The four steps with <paramref name="current"/> (0-based) highlighted.</summary>
-    public static IReadOnlyList<StepIndicatorViewModel> For(int current) =>
-        new[] { "Details", "Commands", "Preview", "Done" }
-            .Select((text, i) => new StepIndicatorViewModel((i + 1).ToString(), text, i == current, i < current))
-            .ToList();
+    /// <summary>New Project's steps.</summary>
+    public static readonly string[] ProjectSteps = ["Details", "Commands", "Preview", "Done"];
+
+    /// <summary>Add Files' steps (its commands are listed in the preview).</summary>
+    public static readonly string[] ItemSteps = ["Details", "Preview", "Done"];
+
+    /// <summary>The steps with <paramref name="current"/> (0-based) highlighted.</summary>
+    public static IReadOnlyList<StepIndicatorViewModel> For(int current, string[]? steps = null)
+    {
+        steps ??= ProjectSteps;
+        return steps.Select((text, i) => new StepIndicatorViewModel((i + 1).ToString(), text, i == current, i < current, i == steps.Length - 1)).ToList();
+    }
 }
 
 /// <summary>
@@ -114,8 +121,9 @@ public sealed partial class RunPageViewModel(string title, OutputLogViewModel lo
 }
 
 /// <summary>Step 4: the project is in place; how the post-create commands went; what to do next.</summary>
+/// <param name="isItem">Add Files: files were added to an existing folder (not a new project).</param>
 public sealed partial class DonePageViewModel(string projectPath, IReadOnlyList<CommandResult> results, bool cancelled,
-    OutputLogViewModel log, Action? openInDevHub, Action showInExplorer, Action newProject) : ViewModelBase
+    OutputLogViewModel log, Action? openInDevHub, Action showInExplorer, Action newProject, bool isItem = false) : ViewModelBase
 {
     public string ProjectPath { get; } = projectPath;
     public string ProjectName { get; } = Path.GetFileName(projectPath);
@@ -124,11 +132,18 @@ public sealed partial class DonePageViewModel(string projectPath, IReadOnlyList<
     public bool HasResults => Results.Count > 0;
     public bool AllSucceeded => !cancelled && results.All(r => r.Succeeded);
 
-    public string Title => AllSucceeded ? $"{ProjectName} is ready" : $"{ProjectName} was created, but not every command finished";
+    public string Title => isItem
+        ? AllSucceeded ? $"Added to {ProjectName}" : $"Added to {ProjectName}, but not every command finished"
+        : AllSucceeded ? $"{ProjectName} is ready" : $"{ProjectName} was created, but not every command finished";
 
-    public string Summary => cancelled ? "You cancelled the post-create commands; the project's files are in place."
-        : AllSucceeded ? "The project's files are in place" + (HasResults ? " and every command ran." : ".")
-        : "The project's files are in place. A command failed (see below); you can run it yourself in the project folder.";
+    public string NewText => isItem ? "Add More" : "New Project";
+    public string NewToolTip => isItem ? "More files from the same template" : "Another project from the same template";
+
+    private string Files => isItem ? "The files" : "The project's files";
+
+    public string Summary => cancelled ? $"You cancelled the post-create commands; {Files.ToLowerInvariant()} are in place."
+        : AllSucceeded ? $"{Files} are in place" + (HasResults ? " and every command ran." : ".")
+        : $"{Files} are in place. A command failed (see below); you can run it yourself in the folder.";
 
     public OutputLogViewModel Log { get; } = log;
     public bool HasLog => Log.Lines.Count > 0;
