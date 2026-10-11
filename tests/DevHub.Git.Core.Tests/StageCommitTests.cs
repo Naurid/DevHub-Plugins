@@ -87,12 +87,38 @@ public class StageCommitTests
         repo.Run("mv", "old.txt", "new.txt");
         var rename = await Single(repo);
 
-        await repo.Client.UnstageAsync([rename.Path, rename.OriginalPath!]);
+        Assert.Equal(["new.txt", "old.txt"], rename.UnstagePaths);
+        await repo.Client.UnstageAsync(rename.UnstagePaths);
 
         var changes = (await repo.Client.GetStatusAsync()).Changes;
         Assert.DoesNotContain(changes, c => c.IsStaged);
         Assert.Contains(changes, c => c.Path == "old.txt" && c.WorkTreeStatus == 'D');
         Assert.Contains(changes, c => c.Path == "new.txt" && c.Kind == FileChangeKind.Untracked);
+    }
+
+    [GitFact]
+    public async Task Staging_a_file_renamed_in_the_index_and_edited_again_names_only_its_new_path()
+    {
+        // "git mv" then an edit: status line "2 RM … new.txt old.txt". The old path exists neither
+        // on disk nor in the index any more; passing it to "git add" failed the whole command
+        // ("fatal: pathspec 'old.txt' did not match any files").
+        using var repo = new TempGitRepo();
+        // Enough lines that one edited line keeps it a rename for git (similar enough).
+        var lines = string.Concat(Enumerable.Range(1, 20).Select(i => $"line {i}\n"));
+        repo.WriteFile("old.txt", lines);
+        repo.CommitAll("first");
+        repo.Run("mv", "old.txt", "new.txt");
+        repo.WriteFile("new.txt", lines + "one more\n");
+        var change = await Single(repo);
+        Assert.Equal(('R', 'M'), (change.IndexStatus, change.WorkTreeStatus));
+
+        Assert.Equal(["new.txt"], change.StagePaths);
+        await repo.Client.StageAsync(change.StagePaths);
+
+        var staged = await Single(repo);
+        Assert.True(staged.IsStaged);
+        Assert.False(staged.IsUnstaged);
+        Assert.Equal("old.txt", staged.OriginalPath);
     }
 
     [GitFact]

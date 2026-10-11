@@ -40,6 +40,22 @@ public sealed record FileChange(
 
     public bool IsConflicted => Kind == FileChangeKind.Unmerged;
 
+    /// <summary>
+    /// The paths to hand <c>git add</c> to stage this file's unstaged side: its path, plus the old
+    /// path only when the rename itself is unstaged (then git must also record the old path's removal).
+    /// A rename that's already staged and then edited again ("RM") has no old path left anywhere,
+    /// and naming it would make git refuse the whole command ("pathspec did not match").
+    /// </summary>
+    public IReadOnlyList<string> StagePaths =>
+        OriginalPath is { } from && WorkTreeStatus is 'R' or 'C' ? [Path, from] : [Path];
+
+    /// <summary>
+    /// The paths to hand <c>git reset</c> to unstage this file: its path, plus the old path when the
+    /// rename is staged (so the old file comes back into the index and the rename is fully undone).
+    /// </summary>
+    public IReadOnlyList<string> UnstagePaths =>
+        OriginalPath is { } from && IndexStatus is 'R' or 'C' ? [Path, from] : [Path];
+
     /// <summary>File name without folders ("App.axaml"); for an untracked folder its name.</summary>
     public string FileName => System.IO.Path.GetFileName(Path.TrimEnd('/')) is { Length: > 0 } name ? name : Path;
 

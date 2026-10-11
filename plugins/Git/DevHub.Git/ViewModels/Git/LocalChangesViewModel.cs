@@ -380,13 +380,13 @@ public partial class LocalChangesViewModel : ViewModelBase
         if (rest.Count == 0)
             return;
         var index = IndexOfSelection(UnstagedRows, SelectedUnstagedRow);
-        await RunAsync("Stage", client => client.StageAsync(Paths(rest)), UnstagedRows, index);
+        await RunAsync("Stage", client => client.StageAsync(rest.SelectMany(f => f.Change.StagePaths)), UnstagedRows, index);
     }
 
     private Task UnstageAsync(IReadOnlyList<FileChangeViewModel> files)
     {
         var index = IndexOfSelection(StagedRows, SelectedStagedRow);
-        return RunAsync("Unstage", client => client.UnstageAsync(Paths(files)), StagedRows, index);
+        return RunAsync("Unstage", client => client.UnstageAsync(files.SelectMany(f => f.Change.UnstagePaths)), StagedRows, index);
     }
 
     private async Task DiscardAsync(IReadOnlyList<FileChangeViewModel> files)
@@ -501,10 +501,6 @@ public partial class LocalChangesViewModel : ViewModelBase
 
     private static int IndexOfSelection(ObservableCollection<ChangeRowViewModel> rows, ChangeRowViewModel? selected) =>
         selected is null ? -1 : rows.IndexOf(selected);
-
-    /// <summary>A rename needs both paths, or git would only half-stage it.</summary>
-    private static IEnumerable<string> Paths(IEnumerable<FileChangeViewModel> files) =>
-        files.SelectMany(f => f.Change.OriginalPath is { } from ? [f.Change.Path, from] : new[] { f.Change.Path });
 
     // The clicked row (file or folder) drives the file selection the diff shows; a folder shows no diff.
     partial void OnSelectedUnstagedRowChanged(ChangeRowViewModel? value)
