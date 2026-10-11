@@ -10,6 +10,11 @@
     <x:Double x:Key="Size.TemplatePageMax">820</x:Double>
     <!-- Space above a row of buttons at the bottom of a page (the mirror of Margin.BlockBelow). -->
     <Thickness x:Key="Margin.BlockAbove">0,12,0,0</Thickness>
+    <!-- Template editor: the section list, the item lists (variables, steps, commands), multi-line fields. -->
+    <x:Double x:Key="Size.EditorSections">180</x:Double>
+    <x:Double x:Key="Size.EditorList">240</x:Double>
+    <x:Double x:Key="Size.TemplateDescription">64</x:Double>
+    <x:Double x:Key="Size.TemplateArgs">96</x:Double>
     <!-- The live output of commands. -->
     <x:Double x:Key="Size.OutputLogHeight">260</x:Double>
 </ResourceDictionary>

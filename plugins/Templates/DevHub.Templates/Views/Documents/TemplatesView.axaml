@@ -1,9 +1,95 @@
-<!-- Placeholder until this feature is built (see docs/ROADMAP.md). -->
+<!--
+  The Templates tab (fills the editor area). Left: every template (TemplateBrowserView; double-click edits).
+  Right: the selected template's summary and what to do with it; New Template… at the top.
+-->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:docs="using:DevHub.ViewModels.Documents"
              xmlns:c="using:DevHub.Controls"
              x:Class="DevHub.Views.Documents.TemplatesView"
              x:DataType="docs:TemplatesViewModel">
-    <c:EmptyState IconKind="{Binding Icon}" Title="{Binding Title}" Description="{Binding Description}" />
+    <DockPanel>
+        <Border DockPanel.Dock="Left" Width="{DynamicResource Size.TemplateList}"
+                Background="{DynamicResource Brush.Bg.Panel}"
+                BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,1,0">
+            <ContentControl Content="{Binding Browser}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+        </Border>
+
+        <Panel Background="{DynamicResource Brush.Bg.Editor}">
+            <c:EmptyState IconKind="template" Title="Templates"
+                          Description="Pick a template on the left to see it, edit it (double-click) or use it. Built-in templates are read-only: duplicate one to make it yours."
+                          IsVisible="{Binding !HasSelection}">
+                <Button Classes="accent" Content="New Template…" Command="{Binding NewTemplateCommand}" />
+            </c:EmptyState>
+
+            <ScrollViewer IsVisible="{Binding HasSelection}" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Margin="{DynamicResource Padding.Document}" Spacing="{DynamicResource Spacing.Large}"
+                            MaxWidth="{DynamicResource Size.TemplatePageMax}" HorizontalAlignment="Left">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                        <c:Icon Kind="template" Width="{DynamicResource Size.StripeIcon}" Height="{DynamicResource Size.StripeIcon}"
+                                VerticalAlignment="Center" />
+                        <SelectableTextBlock Grid.Column="1" Classes="header" Text="{Binding Selected.Name}" TextWrapping="Wrap"
+                                             VerticalAlignment="Center" />
+                        <Button Grid.Column="2" Content="New Template…" Command="{Binding NewTemplateCommand}" VerticalAlignment="Center" />
+                    </Grid>
+
+                    <StackPanel Spacing="{DynamicResource Spacing}">
+                        <TextBlock Classes="secondary" Text="{Binding Selected.Description}" TextWrapping="Wrap"
+                                   IsVisible="{Binding Selected.HasDescription, FallbackValue=False}" />
+                        <WrapPanel Orientation="Horizontal">
+                            <c:Badge Classes="accent" Content="{Binding Selected.Language}" Margin="{DynamicResource Margin.RowEnd}"
+                                     ToolTip.Tip="Language" IsVisible="{Binding !Selected.IsBroken, FallbackValue=False}" />
+                            <ItemsControl ItemsSource="{Binding Selected.Categories}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="x:String">
+                                        <c:Badge Content="{Binding}" Margin="{DynamicResource Margin.RowEnd}" ToolTip.Tip="Category" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </WrapPanel>
+                    </StackPanel>
+
+                    <Border IsVisible="{Binding Selected.IsBroken, FallbackValue=False}" Background="{DynamicResource Brush.Status.Error.Subtle}"
+                            CornerRadius="{DynamicResource Radius.Control}" Padding="{DynamicResource Padding.Banner}">
+                        <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                            <TextBlock Text="This template can't be used until its template.json is fixed (Edit opens it):" FontWeight="SemiBold" TextWrapping="Wrap" />
+                            <ItemsControl ItemsSource="{Binding Selected.Problems}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="x:String">
+                                        <SelectableTextBlock Classes="code" Text="{Binding}" TextWrapping="Wrap" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+
+                    <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                        <c:SettingsRow Label="Kind"><TextBlock Text="{Binding Selected.KindText}" TextWrapping="Wrap" /></c:SettingsRow>
+                        <c:SettingsRow Label="Base command" IsVisible="{Binding Selected.IsProject, FallbackValue=False}">
+                            <SelectableTextBlock Classes="code" Text="{Binding Selected.CommandText}" TextWrapping="Wrap" />
+                        </c:SettingsRow>
+                        <c:SettingsRow Label="Contains"><TextBlock Text="{Binding Selected.CountsText}" TextWrapping="Wrap" /></c:SettingsRow>
+                        <c:SettingsRow Label="Library"><TextBlock Text="{Binding Selected.LibraryText}" /></c:SettingsRow>
+                        <c:SettingsRow Label="Folder">
+                            <SelectableTextBlock Classes="secondary" Text="{Binding Selected.Folder}" TextWrapping="Wrap" />
+                        </c:SettingsRow>
+                    </StackPanel>
+
+                    <WrapPanel Orientation="Horizontal">
+                        <Button Classes="accent" Content="Edit" Command="{Binding EditSelectedCommand}" Margin="{DynamicResource Margin.RowEnd}"
+                                ToolTip.Tip="Open it in its own editor tab (read-only for built-ins)" />
+                        <Button Content="Use in New Project" Command="{Binding UseInNewProjectCommand}" Margin="{DynamicResource Margin.RowEnd}" />
+                        <Button Content="Duplicate" Command="{Binding DuplicateCommand}" Margin="{DynamicResource Margin.RowEnd}"
+                                ToolTip.Tip="A copy in your personal library, which you can change" />
+                        <Button Content="Show in Explorer" Command="{Binding ShowInExplorerCommand}" Margin="{DynamicResource Margin.RowEnd}" />
+                        <Button Content="Delete…" Command="{Binding DeleteCommand}"
+                                IsVisible="{Binding !Selected.IsReadOnly, FallbackValue=False}" />
+                    </WrapPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </Panel>
+    </DockPanel>
 </UserControl>

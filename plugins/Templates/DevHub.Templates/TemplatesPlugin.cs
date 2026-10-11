@@ -31,10 +31,13 @@ public sealed class TemplatesPlugin : IPlugin
         // injecting either directly is a cycle (startup hangs without a window).
         services.AddSingleton<Func<IProjectOpener?>>(sp => () => sp.GetServices<IProjectOpener>().FirstOrDefault());
         services.AddSingleton<Func<IProjectFolders?>>(sp => () => sp.GetServices<IProjectFolders>().FirstOrDefault());
+        services.AddSingleton<Func<IProjectFileEditor?>>(sp => () => sp.GetServices<IProjectFileEditor>().FirstOrDefault());
 
         services.AddSingleton<GenerateViewModel>();
         services.AddSingleton<DocumentViewModelBase>(sp => sp.GetRequiredService<GenerateViewModel>());
-        services.AddSingleton<DocumentViewModelBase, TemplatesViewModel>();
+        services.AddSingleton<TemplatesViewModel>();
+        services.AddSingleton<DocumentViewModelBase>(sp => sp.GetRequiredService<TemplatesViewModel>());
+        services.AddSingleton<IDocumentFactory, TemplateEditorFactory>();
         services.AddSingleton<DocumentViewModelBase, ImportViewModel>();
 
         services.AddSingleton<IActionProvider, TemplatesActionProvider>();

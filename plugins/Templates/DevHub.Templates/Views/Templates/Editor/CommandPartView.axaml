@@ -1,0 +1,31 @@
+<!-- Template editor → Base Command: the tool's own scaffold command (project templates), or none. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:e="using:DevHub.ViewModels.Templates.Editor"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Templates.Editor.CommandPartView"
+             x:DataType="e:CommandPartViewModel">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Spacing="{DynamicResource Spacing}" MaxWidth="{DynamicResource Size.TemplatePageMax}" HorizontalAlignment="Left">
+            <TextBlock Classes="secondary" TextWrapping="Wrap"
+                       Text="Project templates can start from a tool's own scaffold (dotnet new, cargo new, npm create…). The template's files go on top, then the steps arrange everything. Item templates don't use it." />
+            <CheckBox IsChecked="{Binding HasCommand}" Content="Start from a command" />
+            <StackPanel Spacing="{DynamicResource Spacing}" IsVisible="{Binding HasCommand}">
+                <c:SettingsRow Label="Command" Description="A program on PATH (dotnet, cargo, npm…) or a DevHub tool alias like @unity. Never a shell line.">
+                    <TextBox Classes="code" Text="{Binding Command}" AutomationProperties.Name="Command" />
+                </c:SettingsRow>
+                <c:SettingsRow Label="Arguments" Description="One per line. A line with spaces stays one argument. Placeholders allowed.">
+                    <TextBox Classes="code" Text="{Binding Args}" AcceptsReturn="True" MinHeight="{DynamicResource Size.TemplateArgs}"
+                             AutomationProperties.Name="Arguments" />
+                </c:SettingsRow>
+                <c:SettingsRow Label="Runs in" Description="{Binding RunInText}">
+                    <ComboBox ItemsSource="{x:Static e:CommandPartViewModel.RunIns}" SelectedItem="{Binding RunIn}"
+                              HorizontalAlignment="Stretch" AutomationProperties.Name="Runs in" />
+                </c:SettingsRow>
+                <c:SettingsRow Label="Reads as">
+                    <SelectableTextBlock Classes="code" Text="{Binding Preview}" TextWrapping="Wrap" />
+                </c:SettingsRow>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

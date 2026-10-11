@@ -97,7 +97,10 @@ grouped on disk by kind or language: organising is done by the manifest's `langu
 }
 ```
 
-Unknown fields are preserved on load and save. A missing or higher `schemaVersion` is refused
+Unknown fields are preserved on load and save. DevHub writes the file for people to read: indented,
+without escapes (`<Name>`, not `<Name>`), and without values that are the default anyway
+(false, empty lists, `runIn: "root"`); `kind` and a step's `op` are always written. Comments in a
+hand-written file don't survive a save from the editor. A missing or higher `schemaVersion` is refused
 with a clear message. Commands never go through a shell: `command` is an executable and `args`
 are separate arguments (`ArgumentList`), both rendered (§5). `command` may be a DevHub tool
 alias such as `@unity` (the Unity editor version you pick).

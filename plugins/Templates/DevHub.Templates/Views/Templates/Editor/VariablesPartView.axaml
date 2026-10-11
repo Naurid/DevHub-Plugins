@@ -1,0 +1,85 @@
+<!-- Template editor → Variables: the list (add, remove, reorder) and the selected variable's settings. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:e="using:DevHub.ViewModels.Templates.Editor"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Templates.Editor.VariablesPartView"
+             x:DataType="e:VariablesPartViewModel">
+    <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Classes="secondary" TextWrapping="Wrap" Margin="{DynamicResource Margin.BlockBelow}"
+                   Text="The fields of New Project's form. Use a variable as {{Name}} in file contents, file names, the project folder, steps and commands." />
+
+        <!-- The list -->
+        <Border DockPanel.Dock="Left" Width="{DynamicResource Size.EditorList}" BorderBrush="{DynamicResource Brush.Border.Control}"
+                BorderThickness="1" CornerRadius="{DynamicResource Radius.Control}" Margin="{DynamicResource Margin.RowEnd}">
+            <DockPanel>
+                <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,0,1"
+                        Padding="{DynamicResource Padding.Toolbar}">
+                    <c:Toolbar>
+                        <c:ActionButton IconKind="add" ToolTip.Tip="Add Variable" AutomationProperties.Name="Add Variable" Command="{Binding AddCommand}" />
+                        <c:ActionButton IconKind="delete" ToolTip.Tip="Remove" AutomationProperties.Name="Remove" Command="{Binding RemoveCommand}" />
+                        <c:ToolbarSeparator />
+                        <Button Classes="flat" Content="Up" ToolTip.Tip="Move Up" Command="{Binding MoveUpCommand}" />
+                        <Button Classes="flat" Content="Down" ToolTip.Tip="Move Down" Command="{Binding MoveDownCommand}" />
+                    </c:Toolbar>
+                </Border>
+                <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding Selected}" Background="Transparent"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled" AutomationProperties.Name="Variables">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="e:VariableItemViewModel">
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                                <TextBlock Classes="code" Text="{Binding Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="1" Classes="small secondary" Text="{Binding TypeText}" VerticalAlignment="Center" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <!-- The selected one -->
+        <Panel>
+            <c:EmptyState IconKind="edit" Title="No variable selected"
+                          Description="A project template usually has at least Name (the project folder is named after it)."
+                          IsVisible="{Binding !HasSelection}" />
+            <!-- Visibility on the wrapper: bindings on the element that sets DataContext="{Binding Selected}" are typed as the selected item. -->
+            <Border IsVisible="{Binding HasSelection}">
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled" DataContext="{Binding Selected}">
+                <StackPanel Spacing="{DynamicResource Spacing}" x:DataType="e:VariableItemViewModel"
+                            MaxWidth="{DynamicResource Size.TemplatePageMax}" HorizontalAlignment="Left">
+                    <c:SettingsRow Label="Name" Description="Letters and digits, starting with a letter. Case matters.">
+                        <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                            <TextBox Classes="code" Text="{Binding Name}" AutomationProperties.Name="Variable name" />
+                            <SelectableTextBlock Classes="small secondary code" Text="{Binding Placeholder}" />
+                        </StackPanel>
+                    </c:SettingsRow>
+                    <c:SettingsRow Label="Label" Description="The form's label; the name when empty.">
+                        <TextBox Text="{Binding Label}" AutomationProperties.Name="Label" />
+                    </c:SettingsRow>
+                    <c:SettingsRow Label="Type">
+                        <ComboBox ItemsSource="{x:Static e:VariableItemViewModel.Types}" SelectedItem="{Binding Type}"
+                                  HorizontalAlignment="Stretch" AutomationProperties.Name="Type" />
+                    </c:SettingsRow>
+                    <c:SettingsRow Label="Default">
+                        <Panel>
+                            <TextBox Text="{Binding DefaultText}" IsVisible="{Binding !IsBool}" AutomationProperties.Name="Default" />
+                            <CheckBox IsChecked="{Binding DefaultBool}" IsVisible="{Binding IsBool}" Content="Checked at first"
+                                      AutomationProperties.Name="Default" />
+                        </Panel>
+                    </c:SettingsRow>
+                    <c:SettingsRow Label="Choices" Description="Comma-separated; the user picks one." IsVisible="{Binding IsChoice}">
+                        <TextBox Text="{Binding Choices}" AutomationProperties.Name="Choices" />
+                    </c:SettingsRow>
+                    <c:SettingsRow Label="Required" IsVisible="{Binding !IsBool}">
+                        <CheckBox IsChecked="{Binding Required}" Content="Must be filled in" AutomationProperties.Name="Required" />
+                    </c:SettingsRow>
+                    <c:SettingsRow Label="Pattern" Description="Optional regular expression the value must match, e.g. ^[A-Za-z][A-Za-z0-9]*$"
+                                   IsVisible="{Binding IsText}">
+                        <TextBox Classes="code" Text="{Binding Pattern}" AutomationProperties.Name="Pattern" />
+                    </c:SettingsRow>
+                </StackPanel>
+            </ScrollViewer>
+            </Border>
+        </Panel>
+    </DockPanel>
+</UserControl>

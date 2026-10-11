@@ -28,7 +28,6 @@ public sealed partial class GenerateViewModel : DocumentViewModelBase
     private readonly IStatusService _status;
     private readonly Func<IProjectFolders?> _projectFolders;
     private readonly Func<IProjectOpener?> _opener;
-    private bool _loaded;
 
     // The generation in progress.
     private TemplateEntry? _template;
@@ -72,11 +71,17 @@ public sealed partial class GenerateViewModel : DocumentViewModelBase
 
     protected override void OnActivationChanged(bool isActive)
     {
-        if (isActive && !_loaded)
-        {
-            _loaded = true;
-            _ = Browser.ReloadAsync();
-        }
+        // The first time, and again after templates changed elsewhere (the Templates tab, an editor).
+        if (isActive)
+            _ = Browser.ReloadIfChangedAsync();
+    }
+
+    /// <summary>"Use in New Project" from the Templates tab: selects that template (call before opening this tab).</summary>
+    public async Task SelectTemplateAsync(string reference)
+    {
+        await Browser.ReloadIfChangedAsync();
+        if (Browser.IsEnabled) // not in the middle of a generation
+            Browser.Select(reference);
     }
 
     /// <summary>A template was picked (or the same one read again): its form, keeping what was typed.</summary>
@@ -219,6 +224,7 @@ public sealed partial class GenerateViewModel : DocumentViewModelBase
 
             // From now on this generation belongs to the saved template (a second save adds to it, not to another copy).
             _template = entry;
+            _templates.NotifyChanged(); // the Templates tab and open editors see it too
             await Browser.ReloadAsync(select: entry.Reference);
             var count = steps.Count == 1 ? "1 step" : $"{steps.Count} steps";
             return new SaveOutcome(true, $"Saved {count} to {entry.Reference}. The next project from it is arranged this way.");

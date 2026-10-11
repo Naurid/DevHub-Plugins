@@ -1,5 +1,8 @@
+using System.Collections;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 
 namespace DevHub.Templates.Core;
 
@@ -11,8 +14,9 @@ public sealed record ManifestReadResult(TemplateManifest? Manifest, string? Erro
 
 /// <summary>
 /// Reads and writes template.json. camelCase, enums as camelCase strings ("project",
-/// "createFolder"), comments and trailing commas allowed (people edit these by hand), indented
-/// output without nulls. Problems come back as a result, not an exception.
+/// "createFolder"), comments and trailing commas allowed (people edit these by hand). Written for people
+/// too: indented, characters like &lt; and é as they are (not 003C), and without what is the default
+/// anyway (nulls, false, empty lists, kind "project", runIn "root"). Problems come back as a result, not an exception.
 /// </summary>
 public static class ManifestSerializer
 {
@@ -23,9 +27,22 @@ public static class ManifestSerializer
         ReadCommentHandling = JsonCommentHandling.Skip,
         AllowTrailingCommas = true,
         WriteIndented = true,
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, // a file, never HTML: no need to escape <, >, &, '
+        TypeInfoResolver = new DefaultJsonTypeInfoResolver { Modifiers = { SkipEmptyLists } },
         Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: false) },
     };
+
+    /// <summary>An empty list (no steps, no categories…) isn't written: missing means empty when reading.</summary>
+    private static void SkipEmptyLists(JsonTypeInfo info)
+    {
+        foreach (var property in info.Properties)
+        {
+            if (!property.IsExtensionData && property.PropertyType != typeof(string)
+                && typeof(IEnumerable).IsAssignableFrom(property.PropertyType))
+                property.ShouldSerialize = (_, value) => value is not ICollection { Count: 0 };
+        }
+    }
 
     public static ManifestReadResult Read(string json)
     {

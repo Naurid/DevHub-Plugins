@@ -55,6 +55,44 @@ public sealed class TemplatesService(ISettingsStore store)
         set => store.UpdateSection<TemplatesSettings>(s => s.GroupByLanguage = value);
     }
 
+    /// <summary>
+    /// Goes up whenever a template is created, saved, duplicated or deleted in DevHub. Lists compare it
+    /// when they come back into view and reload if it moved (no events to unsubscribe from).
+    /// </summary>
+    public int ChangeCount { get; private set; }
+
+    public void NotifyChanged() => ChangeCount++;
+
+    /// <summary>The library a template folder is in (its parent folder), or null when it isn't in one in use.</summary>
+    public TemplateLibrary? LibraryOf(string templateFolder)
+    {
+        var parent = Path.TrimEndingDirectorySeparator(Path.GetDirectoryName(Path.GetFullPath(templateFolder)) ?? "");
+        return Libraries.FirstOrDefault(l => string.Equals(l.Root, parent, StringComparison.OrdinalIgnoreCase));
+    }
+
+    /// <summary>VS Code's launcher (code.cmd) when it's on PATH, else null.</summary>
+    public string? VsCodePath => Runner.Resolve("code");
+
+    /// <summary>Opens a folder in VS Code (through cmd.exe: code is a .cmd shim; separate arguments, no shell string).</summary>
+    public void OpenInVsCode(string folder)
+    {
+        if (VsCodePath is not { } code)
+            return;
+        var info = new ProcessStartInfo(Environment.GetEnvironmentVariable("ComSpec") ?? "cmd.exe")
+        {
+            UseShellExecute = false,
+            CreateNoWindow = true,
+        };
+        info.ArgumentList.Add("/c");
+        info.ArgumentList.Add(code);
+        info.ArgumentList.Add(folder);
+        Process.Start(info)?.Dispose();
+    }
+
+    /// <summary>Opens a file with the program Windows associates with it.</summary>
+    public static void OpenWithDefaultProgram(string file) =>
+        Process.Start(new ProcessStartInfo(file) { UseShellExecute = true })?.Dispose();
+
     /// <summary>Opens a folder in Explorer (created first, e.g. the personal library before its first template).</summary>
     public static void Reveal(string folder)
     {

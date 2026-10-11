@@ -5,4 +5,6 @@ public static class TemplatesActionIds
 {
     public const string Reload = "Templates.Reload";
     public const string OpenLibraryFolder = "Templates.OpenLibraryFolder";
+    public const string NewTemplate = "Templates.NewTemplate";
+    public const string Save = "Templates.Save";
 }

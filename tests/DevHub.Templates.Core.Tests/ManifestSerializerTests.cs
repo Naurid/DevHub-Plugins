@@ -106,6 +106,30 @@ public class ManifestSerializerTests
     }
 
     [Fact]
+    public void Write_ReadableByPeople_NoEscapesNoDefaults()
+    {
+        var json = ManifestSerializer.Write(new TemplateManifest
+        {
+            Id = "x", Name = "X", Description = "A <Name> & \"it's\" café",
+            Variables = [new TemplateVariable { Name = "Name" }],
+            PostCreate = [new PostCreateCommand { Name = "Init", Command = "git", Args = ["init"] }],
+            BaseCommand = new BaseCommand { Command = "dotnet" },
+        });
+
+        Assert.Contains("A <Name> & \\\"it's\\\" café", json);
+        var node = JsonNode.Parse(json)!;
+        Assert.Equal("project", (string)node["kind"]!);
+        Assert.Null(node["steps"]);
+        Assert.Null(node["categories"]);
+        Assert.Null(node["variables"]![0]!["required"]);
+        Assert.Null(node["variables"]![0]!["choices"]);
+        Assert.Null(node["postCreate"]![0]!["continueOnError"]);
+        Assert.Null(node["baseCommand"]!["runIn"]);
+        Assert.Null(node["baseCommand"]!["args"]);
+        Assert.Equal(ManifestSerializer.Read(json).Manifest!.Variables[0].Choices, []);
+    }
+
+    [Fact]
     public void ReadWrite_UnknownFields_SurviveAtEveryLevel()
     {
         const string json = """

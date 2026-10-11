@@ -8,26 +8,33 @@ using DevHub.Templates.Core.Browsing;
 namespace DevHub.ViewModels.Templates;
 
 /// <summary>
-/// The template list of New Project (left): search, library and kind filters, grouped by
-/// category or language (<see cref="TemplateCatalog"/> does the work). Selecting a template
-/// tells the owner (New Project).
+/// The template list of New Project and of the Templates tab (left): search, library and kind filters,
+/// grouped by category or language (<see cref="TemplateCatalog"/> does the work). Selecting a template
+/// tells the owner; double-clicking one (or Enter) activates it, when the owner wants that.
 /// </summary>
 public sealed partial class TemplateBrowserViewModel : ViewModelBase
 {
     public const string AllLibraries = "All libraries";
-    private const string ProjectKind = "Project templates";
-    private const string ItemKind = "Item templates";
-    private const string AllKinds = "All templates";
+    public const string ProjectKind = "Project templates";
+    public const string ItemKind = "Item templates";
+    public const string AllKinds = "All templates";
 
     private readonly TemplatesService _templates;
     private readonly Action<TemplateEntry?> _selectionChanged;
+    private readonly Action<TemplateEntry>? _activated;
     private IReadOnlyList<TemplateEntry> _all = [];
+    private int _loadedChangeCount = -1;
 
     /// <param name="selectionChanged">Told about the selected template (null: none), also when the same one was read again.</param>
-    public TemplateBrowserViewModel(TemplatesService templates, Action<TemplateEntry?> selectionChanged)
+    /// <param name="activated">Double-click / Enter on a template (null: nothing happens).</param>
+    /// <param name="kind">The kind filter to start with (<see cref="ProjectKind"/>, <see cref="ItemKind"/>, <see cref="AllKinds"/>).</param>
+    public TemplateBrowserViewModel(TemplatesService templates, Action<TemplateEntry?> selectionChanged,
+        Action<TemplateEntry>? activated = null, string kind = ProjectKind)
     {
         _templates = templates;
         _selectionChanged = selectionChanged;
+        _activated = activated;
+        _kind = kind;
         _groupByLanguage = templates.GroupByLanguage;
     }
 
@@ -83,6 +90,7 @@ public sealed partial class TemplateBrowserViewModel : ViewModelBase
     {
         var keep = select ?? Selected?.Reference;
         IsLoading = true;
+        _loadedChangeCount = _templates.ChangeCount;
         try
         {
             _all = await Task.Run(() => _templates.LoadAllAsync());
@@ -110,6 +118,31 @@ public sealed partial class TemplateBrowserViewModel : ViewModelBase
         Rebuild(keep);
     }
 
+    /// <summary>Reloads when templates changed in DevHub since the last load (or nothing was loaded yet).</summary>
+    public Task ReloadIfChangedAsync() => _loadedChangeCount == _templates.ChangeCount ? Task.CompletedTask : ReloadAsync();
+
+    /// <summary>Selects a template by reference, clearing filters that hide it. False when it isn't loaded.</summary>
+    public bool Select(string reference)
+    {
+        if (_all.FirstOrDefault(t => t.Reference == reference) is not { } template)
+            return false;
+        if (!TemplateCatalog.Filter([template], CurrentFilter()).Any())
+        {
+            Search = "";
+            Library = AllLibraries;
+            Kind = AllKinds;
+        }
+        SelectedNode = Groups.SelectMany(g => g.Templates).FirstOrDefault(r => r.Template.Reference == reference);
+        return true;
+    }
+
+    [RelayCommand]
+    private void ActivateSelected()
+    {
+        if (Selected is { } template)
+            _activated?.Invoke(template);
+    }
+
     [RelayCommand]
     private Task Reload() => ReloadAsync();
 
@@ -133,6 +166,10 @@ public sealed partial class TemplateBrowserViewModel : ViewModelBase
             _selectionChanged(Selected);
     }
 
+    private TemplateFilter CurrentFilter() => new(Search,
+        Library == AllLibraries ? null : Library,
+        Kind switch { ProjectKind => TemplateKind.Project, ItemKind => TemplateKind.Item, _ => null });
+
     // While the list is rebuilt the tree drops its selection (the rows are replaced); that isn't
     // the user choosing nothing, so the change is reported once, at the end, if the template changed.
     private bool _rebuilding;
@@ -140,9 +177,7 @@ public sealed partial class TemplateBrowserViewModel : ViewModelBase
     private void Rebuild(string? select)
     {
         var before = Selected;
-        var filter = new TemplateFilter(Search,
-            Library == AllLibraries ? null : Library,
-            Kind switch { ProjectKind => TemplateKind.Project, ItemKind => TemplateKind.Item, _ => null });
+        var filter = CurrentFilter();
         var groups = TemplateCatalog.Group(TemplateCatalog.Filter(_all, filter),
             GroupByLanguage ? TemplateGrouping.Language : TemplateGrouping.Category);
 

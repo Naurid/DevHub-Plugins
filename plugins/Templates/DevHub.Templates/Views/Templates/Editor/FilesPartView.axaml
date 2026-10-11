@@ -1,0 +1,86 @@
+<!--
+  Template editor → Files: the content/ folder as a tree. New File / New Folder / Rename / Delete happen on disk
+  right away; files are edited in your external editor (double-click or Open).
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:e="using:DevHub.ViewModels.Templates.Editor"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Templates.Editor.FilesPartView"
+             x:DataType="e:FilesPartViewModel">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Spacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.BlockBelow}">
+            <TextBlock Classes="secondary" TextWrapping="Wrap"
+                       Text="The files copied into every project (content/). Changes here are saved right away. Double-click a file to edit it in your editor." />
+            <SelectableTextBlock Classes="small secondary" Text="{Binding PlaceholderHint}" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding Error}" TextWrapping="Wrap" Foreground="{DynamicResource Brush.Status.Error}"
+                       IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        </StackPanel>
+
+        <Border BorderBrush="{DynamicResource Brush.Border.Control}" BorderThickness="1" CornerRadius="{DynamicResource Radius.Control}">
+            <DockPanel>
+                <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,0,1"
+                        Padding="{DynamicResource Padding.Toolbar}">
+                    <c:Toolbar>
+                        <c:ActionButton IconKind="add" ToolTip.Tip="New File" AutomationProperties.Name="New File"
+                                        Command="{Binding NewFileCommand}" IsEnabled="{Binding CanEdit}" />
+                        <c:ActionButton IconKind="folder" ToolTip.Tip="New Folder" AutomationProperties.Name="New Folder"
+                                        Command="{Binding NewFolderCommand}" IsEnabled="{Binding CanEdit}" />
+                        <c:ActionButton IconKind="edit" ToolTip.Tip="Rename (F2)" AutomationProperties.Name="Rename"
+                                        Command="{Binding RenameCommand}" IsEnabled="{Binding CanEdit}" />
+                        <c:ActionButton IconKind="delete" ToolTip.Tip="Delete (Delete)" AutomationProperties.Name="Delete"
+                                        Command="{Binding DeleteCommand}" IsEnabled="{Binding CanEdit}" />
+                        <c:ToolbarSeparator />
+                        <c:ActionButton IconKind="externalTools" ToolTip.Tip="Open in your editor (Enter)" AutomationProperties.Name="Open"
+                                        Command="{Binding OpenCommand}" />
+                        <c:ActionButton IconKind="import" ToolTip.Tip="Show content/ in Explorer" AutomationProperties.Name="Show in Explorer"
+                                        Command="{Binding ShowInExplorerCommand}" />
+                        <c:ActionButton IconKind="refresh" ToolTip.Tip="Refresh" AutomationProperties.Name="Refresh"
+                                        Command="{Binding RefreshCommand}" />
+                    </c:Toolbar>
+                </Border>
+                <Panel>
+                    <c:EmptyState IconKind="folder" Title="No files"
+                                  Description="This template adds no files of its own (fine for a raw command, or a template made of steps)."
+                                  IsVisible="{Binding IsEmpty}" />
+                    <TreeView ItemsSource="{Binding Nodes}" SelectedItem="{Binding SelectedNode}" Background="Transparent"
+                              AutomationProperties.Name="Template files" IsVisible="{Binding !IsEmpty}">
+                        <TreeView.KeyBindings>
+                            <KeyBinding Gesture="Enter" Command="{Binding OpenCommand}" />
+                            <KeyBinding Gesture="F2" Command="{Binding RenameCommand}" />
+                            <KeyBinding Gesture="Delete" Command="{Binding DeleteCommand}" />
+                        </TreeView.KeyBindings>
+                        <TreeView.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Open" InputGesture="Enter" Command="{Binding OpenCommand}" />
+                                <MenuItem Header="New File…" Command="{Binding NewFileCommand}" IsEnabled="{Binding CanEdit}" />
+                                <MenuItem Header="New Folder…" Command="{Binding NewFolderCommand}" IsEnabled="{Binding CanEdit}" />
+                                <MenuItem Header="Rename…" InputGesture="F2" Command="{Binding RenameCommand}" IsEnabled="{Binding CanEdit}" />
+                                <MenuItem Header="Delete…" InputGesture="Delete" Command="{Binding DeleteCommand}" IsEnabled="{Binding CanEdit}" />
+                            </ContextMenu>
+                        </TreeView.ContextMenu>
+                        <TreeView.Styles>
+                            <Style Selector="TreeViewItem" x:DataType="e:ContentNodeViewModel">
+                                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                                <Setter Property="AutomationProperties.Name" Value="{Binding Name}" />
+                            </Style>
+                        </TreeView.Styles>
+                        <TreeView.DataTemplates>
+                            <TreeDataTemplate DataType="e:ContentNodeViewModel" ItemsSource="{Binding Children}">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Spacing.Small}" Background="Transparent"
+                                      Margin="{DynamicResource Margin.RowEnd}"
+                                      c:DoubleTap.Command="{Binding $parent[TreeView].((e:FilesPartViewModel)DataContext).OpenCommand}">
+                                    <Panel Width="{DynamicResource Size.Icon}" VerticalAlignment="Center">
+                                        <c:Icon Kind="folder" IsVisible="{Binding IsFolder}" />
+                                    </Panel>
+                                    <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center"
+                                               Classes.code="{Binding HasPlaceholder}" />
+                                </Grid>
+                            </TreeDataTemplate>
+                        </TreeView.DataTemplates>
+                    </TreeView>
+                </Panel>
+            </DockPanel>
+        </Border>
+    </DockPanel>
+</UserControl>

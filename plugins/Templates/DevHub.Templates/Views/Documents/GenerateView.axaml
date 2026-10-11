@@ -8,7 +8,6 @@
              xmlns:docs="using:DevHub.ViewModels.Documents"
              xmlns:t="using:DevHub.ViewModels.Templates"
              xmlns:c="using:DevHub.Controls"
-             xmlns:a="using:DevHub.Actions"
              x:Class="DevHub.Views.Documents.GenerateView"
              x:DataType="docs:GenerateViewModel">
 
@@ -19,90 +18,11 @@
     </UserControl.Styles>
 
     <DockPanel>
-        <!-- Template list -->
-        <!-- DataContext is set here (bindings typed as GenerateViewModel), x:DataType one level down:
-             on the same element, x:DataType would also type the DataContext binding itself. -->
+        <!-- Template list (TemplateBrowserView, through the ViewLocator) -->
         <Border DockPanel.Dock="Left" Width="{DynamicResource Size.TemplateList}"
                 Background="{DynamicResource Brush.Bg.Panel}"
-                BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,1,0"
-                DataContext="{Binding Browser}">
-            <DockPanel x:DataType="t:TemplateBrowserViewModel" IsEnabled="{Binding IsEnabled}">
-                <StackPanel DockPanel.Dock="Top" Margin="{DynamicResource Padding.SidebarHeader}"
-                            Spacing="{DynamicResource Spacing}">
-                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing}">
-                        <TextBlock Classes="header" Text="Templates" VerticalAlignment="Center" />
-                        <c:Toolbar Grid.Column="1">
-                            <c:ActionButton Action="{a:Action Templates.OpenLibraryFolder}" />
-                            <c:ActionButton Action="{a:Action Templates.Reload}" />
-                        </c:Toolbar>
-                    </Grid>
-                    <c:SearchField Text="{Binding Search}" PlaceholderText="Search templates" />
-                    <Grid ColumnDefinitions="*,*" ColumnSpacing="{DynamicResource Spacing.Small}">
-                        <ComboBox ItemsSource="{Binding Libraries}" SelectedItem="{Binding Library}"
-                                  HorizontalAlignment="Stretch" AutomationProperties.Name="Library" />
-                        <ComboBox Grid.Column="1" ItemsSource="{Binding Kinds}" SelectedItem="{Binding Kind}"
-                                  HorizontalAlignment="Stretch" AutomationProperties.Name="Kind" />
-                    </Grid>
-                    <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing.Large}">
-                        <TextBlock Classes="small secondary" Text="Group by" VerticalAlignment="Center" />
-                        <RadioButton GroupName="templateGrouping" Content="Category" IsChecked="{Binding GroupByCategory}" />
-                        <RadioButton GroupName="templateGrouping" Content="Language" IsChecked="{Binding GroupByLanguage}" />
-                    </StackPanel>
-                    <TextBlock Text="{Binding LoadError}" TextWrapping="Wrap" Foreground="{DynamicResource Brush.Status.Error}"
-                               IsVisible="{Binding LoadError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                </StackPanel>
-                <ProgressBar DockPanel.Dock="Top" IsIndeterminate="True" Height="2" MinHeight="2"
-                             IsVisible="{Binding IsLoading}" />
-
-                <Panel>
-                    <c:EmptyState IconKind="template" Title="No templates yet"
-                                  Description="Templates are folders with a template.json. Your own go in the templates folder."
-                                  IsVisible="{Binding ShowEmpty}">
-                        <Button Content="Open Templates Folder" Command="{Binding OpenLibraryFolderCommand}" />
-                    </c:EmptyState>
-                    <c:EmptyState IconKind="search" Title="Nothing matches"
-                                  Description="Try other words, or another library or kind."
-                                  IsVisible="{Binding NothingMatches}" />
-
-                    <TreeView ItemsSource="{Binding Groups}" SelectedItem="{Binding SelectedNode}"
-                              Background="Transparent" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                              AutomationProperties.Name="Templates">
-                        <TreeView.Styles>
-                            <Style Selector="TreeViewItem" x:DataType="t:TemplateGroupViewModel">
-                                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-                                <!-- Rows are groups or templates; both have a ToString for screen readers. -->
-                                <Setter Property="AutomationProperties.Name" Value="{ReflectionBinding Name}" />
-                            </Style>
-                        </TreeView.Styles>
-                        <TreeView.DataTemplates>
-                            <TreeDataTemplate DataType="t:TemplateGroupViewModel" ItemsSource="{Binding Templates}">
-                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}"
-                                      Margin="{DynamicResource Margin.RowEnd}">
-                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold"
-                                               TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
-                                    <c:Badge Grid.Column="1" Content="{Binding CountText}" />
-                                </Grid>
-                            </TreeDataTemplate>
-                            <DataTemplate DataType="t:TemplateRowViewModel">
-                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}"
-                                      Margin="{DynamicResource Margin.RowEnd}" Background="Transparent"
-                                      ToolTip.Tip="{Binding ToolTip}">
-                                    <Panel VerticalAlignment="Center">
-                                        <c:Icon Kind="template" IsVisible="{Binding !IsBroken}" />
-                                        <c:Icon Kind="warning" IsVisible="{Binding IsBroken}" />
-                                    </Panel>
-                                    <TextBlock Grid.Column="1" Text="{Binding Name}"
-                                               TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
-                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}">
-                                        <c:Badge Content="item" IsVisible="{Binding IsItem}" VerticalAlignment="Center" />
-                                        <TextBlock Classes="small secondary" Text="{Binding Detail}" VerticalAlignment="Center" />
-                                    </StackPanel>
-                                </Grid>
-                            </DataTemplate>
-                        </TreeView.DataTemplates>
-                    </TreeView>
-                </Panel>
-            </DockPanel>
+                BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,1,0">
+            <ContentControl Content="{Binding Browser}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
         </Border>
 
         <!-- The generation -->

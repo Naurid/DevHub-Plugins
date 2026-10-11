@@ -59,6 +59,8 @@ public sealed record TemplateManifest
     /// <summary>Lowercase kebab-case, unique within its library, equal to the template's folder name.</summary>
     public string Id { get; init; } = "";
 
+    /// <summary>Always written (also "project", the default): it says what the template is.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.Never)]
     public TemplateKind Kind { get; init; } = TemplateKind.Project;
     public string Name { get; init; } = "";
     public string? Description { get; init; }
@@ -153,6 +155,8 @@ public sealed record BaseCommand
 /// </summary>
 public sealed record TemplateStep
 {
+    /// <summary>Always written: createFolder is the enum's default, and a step without its op would be unreadable.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.Never)]
     public StepOp Op { get; init; }
     public string? Path { get; init; }
     public string? From { get; init; }
