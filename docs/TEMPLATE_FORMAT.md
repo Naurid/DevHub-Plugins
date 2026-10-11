@@ -1,76 +1,132 @@
 # DevHub Template Format — v1
 
-The single source of truth for what a template is. Code in the Templates plugin (`DevHub.Templates.Core`, planned) implements
-this document; if they disagree, fix one of them in the same change.
+The single source of truth for what a template is and how it's applied. The Templates plugin
+(`plugins/DevHub.Templates.Core` + `plugins/DevHub.Templates`) implements this document; if
+they disagree, fix one of them in the same change.
 
-## Library layout
+Decisions confirmed 2026-10-11:
+- A project template is assembled from optional parts: a **base command**, content on top,
+  **steps** that rearrange, and **post-create commands**.
+- Two kinds: **project** (creates a new folder) and **item** (goes into an existing folder).
+- Templates are organised by **one language and any number of categories**, in **several
+  libraries**, plus read-only **built-ins** that can be duplicated.
+- Generation runs in a **staging folder**, then a **preview you can edit** (with "Save to
+  template"), then moves into place.
+
+## 1. Kinds
+
+| Kind | What it does | Examples |
+|---|---|---|
+| `project` | Creates a new project folder under a parent folder you choose. | raw `dotnet new console`; a Unity game with your layout; a Vite app with your configs on top |
+| `item` | Adds files and/or folders into an existing folder you choose, and can move files already there. | a C# class; a MonoBehaviour; a `.h` + `.cpp` pair; a folder structure applied to an existing project |
+
+Every part is optional. Which parts a template has decides what it is:
+
+| Parts | Result |
+|---|---|
+| base command only | a **raw project**: exactly what the tool's own scaffold command makes |
+| content only | a **folder template**: your folders and starter files |
+| base command + content + steps | the tool's project, with your files on top, rearranged your way |
+| item: content (+ move steps) | a script / file set / folder structure for an existing project |
+
+## 2. Libraries
 
 ```
-%APPDATA%/DevHub/
-  settings.json
-  templates/
-    project/
-      <template-id>/
-        template.json
-        content/            ← copied into the target folder (names + contents rendered)
-    file/
-      <template-id>/
-        template.json
-        content/            ← usually one file, may be several (e.g. .h + .cpp)
+<library>/
+  <template-id>/
+    template.json         the manifest (§3)
+    content/              copied into the result, names and contents rendered (§5)
 ```
 
-`<template-id>` is lowercase kebab-case, unique within its kind, and equals the
-`id` field in the manifest.
+| Library | Where | Editable |
+|---|---|---|
+| **Personal** | `%APPDATA%/DevHub/templates/` (a setting may move it) | yes |
+| **Extra libraries** | folders you add in Settings → Templates (a git repo of team templates, a project's `templates/` folder) | yes, if writable |
+| **Built-in** | shipped with the Templates plugin, updated with DevHub | no: **Duplicate** copies one into a writable library |
 
-## template.json
+`<template-id>` is lowercase kebab-case, unique within its library, and equals the `id` field.
+The same id in two libraries is allowed; the reference is `<library>/<id>`. Templates aren't
+grouped on disk by kind or language: organising is done by the manifest's `language` and
+`categories`.
+
+## 3. template.json
 
 ```jsonc
 {
   "schemaVersion": 1,
   "id": "unity-game",
-  "kind": "project",                 // "project" | "file"
+  "kind": "project",                    // "project" | "item"
   "name": "Unity Game",
   "description": "URP project with asmdef-per-domain layout",
-  "language": "C#",                  // free text, used for grouping/filtering
-  "tags": ["unity", "game"],
+  "language": "C#",                     // one language; "Any" for language-neutral templates
+  "categories": ["Unity", "Game"],      // any number; the browser groups / filters by them
 
   "variables": [
     {
-      "name": "ProjectName",         // PascalCase identifier, [A-Za-z][A-Za-z0-9]*
+      "name": "Name",                   // PascalCase identifier, [A-Za-z][A-Za-z0-9]*
       "label": "Project name",
-      "type": "string",              // "string" | "bool" | "choice"
+      "type": "string",                 // "string" | "bool" | "choice"
       "default": "MyGame",
       "required": true,
       "pattern": "^[A-Za-z][A-Za-z0-9_]*$",   // optional regex, string only
-      "choices": []                  // required for "choice"
+      "choices": []                     // required for "choice"
     }
   ],
 
-  "postCreate": [
-    {
-      "name": "Initialize git",
-      "command": "git",
-      "args": ["init"],
-      "workingDirectory": ".",       // relative to generated root
-      "when": "InitGit",             // optional: name of a bool variable
-      "continueOnError": false
-    }
+  "rootFolder": "{{Name}}",             // project only: folder created under the chosen parent
+
+  "baseCommand": {                      // project only, optional (§4 step 1)
+    "command": "dotnet",
+    "args": ["new", "console", "-n", "{{Name}}", "-o", "."],
+    "runIn": "root"                     // "root": inside the empty root folder; "parent": the command creates the root
+  },
+
+  "steps": [                            // optional, run in order (§6)
+    { "op": "createFolder", "path": "src" },
+    { "op": "move", "from": "*.cs", "to": "src/{{Name}}/" },
+    { "op": "rename", "from": "src/{{Name}}/Program.cs", "to": "Main.cs" },
+    { "op": "delete", "path": "README.md" }
+  ],
+
+  "postCreate": [                       // optional, run in the final folder (§4 step 6)
+    { "name": "Initialize git", "command": "git", "args": ["init"],
+      "workingDirectory": ".", "when": "InitGit", "continueOnError": false }
   ],
 
   "binaryExtensions": [".png", ".fbx"]  // optional, added to the built-in list
 }
 ```
 
-Unknown fields are preserved on load/save (don't drop data written by a newer
-version). A missing or higher `schemaVersion` → refuse to load with a clear message.
+Unknown fields are preserved on load and save. A missing or higher `schemaVersion` is refused
+with a clear message. Commands never go through a shell: `command` is an executable and `args`
+are separate arguments (`ArgumentList`), both rendered (§5). `command` may be a DevHub tool
+alias such as `@unity` (the Unity editor version you pick).
 
-## Placeholders
+## 4. Generating a project
 
-Syntax: `{{Name}}` or `{{Name:transform}}` — no spaces inside the braces.
+1. **Stage:** an empty staging folder; the `baseCommand` runs there (in the root, or its parent).
+   Afterwards the root folder must exist.
+2. **Overlay:** `content/` is copied into the root, rendered. The template's file replaces a file
+   the command made.
+3. **Steps** run in order (§6).
+4. **Preview:** the final tree (new / from the command / moved). You can move, rename, delete and
+   add folders for this generation; **Save to template** appends those edits as `steps`
+   (writable libraries only).
+5. **Place:** conflict check, then the root moves into the chosen parent. An existing non-empty
+   folder means nothing is written and you decide.
+6. **Post-create** commands run in the placed folder, output shown live.
+
+Before step 1, DevHub lists every command the generation will run (rendered); nothing runs
+until you agree. A failure or cancel in steps 1–4 deletes the staging folder; the target is
+never touched.
+
+## 5. Placeholders
+
+Syntax: `{{Name}}` or `{{Name:transform}}`, no spaces inside the braces.
 
 | Transform | `My cool_game` → |
 |---|---|
-| *(none)* | `My cool_game` (as entered) |
+| *(none)* | `My cool_game` |
 | `pascal` | `MyCoolGame` |
 | `camel`  | `myCoolGame` |
 | `kebab`  | `my-cool-game` |
@@ -78,38 +134,63 @@ Syntax: `{{Name}}` or `{{Name:transform}}` — no spaces inside the braces.
 | `upper`  | `MY COOL_GAME` |
 | `lower`  | `my cool_game` |
 
-Built-in variables (always available, can't be redeclared):
-`Year`, `Date` (yyyy-MM-dd), `Author` (from settings), `Guid1`…`Guid9`
-(each stable within one generation, so a GUID can be referenced in several files).
+Built-ins (can't be redeclared): `Year`, `Date` (yyyy-MM-dd), `Author` (from settings),
+`Guid1`…`Guid9` (stable within one generation).
 
-Rules:
-1. Applied to **file contents** and to **every path segment** (folder and file names).
-2. A token is substituted **only** if `Name` is a declared or built-in variable and
-   the transform is known. Everything else (`{{ item }}`, `${{ secrets.X }}`,
-   `{{#each}}`, `{{Unknown}}`) is left **exactly** as written.
-3. Escape: `\{{` renders as a literal `{{` even if the name is valid.
-4. `bool` variables render as `true`/`false`.
-5. A rendered path segment that is empty, contains a path separator, `..`, or
-   characters invalid for file names → generation fails with a validation error
-   naming the variable.
+1. Applied to file contents, every path segment, `rootFolder`, step paths, and commands.
+2. Only declared or built-in names with a known transform are substituted; everything else
+   (`{{ item }}`, `${{ secrets.X }}`, `{{#each}}`, `{{Unknown}}`) stays **exactly** as written.
+3. `\{{` renders a literal `{{`.
+4. `bool` renders as `true` / `false`.
+5. A rendered path segment that's empty, contains a separator, is `..`, or has invalid file-name
+   characters fails with an error naming the variable.
 
-## Files
+## 6. Steps
 
-- Binary detection: built-in extension list + manifest `binaryExtensions` + a
-  NUL-byte sniff of the first 8 KB. Binary files are copied, never rendered
-  (their names are still rendered).
-- Text encoding and line endings are preserved as found (UTF-8 BOM kept if present).
-- `template.json` itself is never copied into the output.
+| Op | Fields | Does |
+|---|---|---|
+| `createFolder` | `path` | creates the folder (and parents) |
+| `move` | `from` (path or glob), `to` | `to` ending in `/` = a folder (created) keeping names; else the new path of one match |
+| `rename` | `from` (path), `to` (a name) | renames in place |
+| `delete` | `path` (path or glob) | deletes files / folders |
 
-## Import (folder → template)
+Paths are relative to the root (item: the target folder), use `/`, and are rendered. Globs:
+`*`, `**`, `?`. A glob matching nothing is fine; a missing plain path is an error. Every resolved
+path must stay inside the root. Item templates may move files already in the target (e.g.
+`*.cs` into `src/`), shown in the preview first.
 
-- Default ignore globs: `.git/`, `.vs/`, `.idea/`, `bin/`, `obj/`, `node_modules/`,
-  `Library/`, `Temp/`, `Logs/`, `dist/`, `build/`, `__pycache__/`, `*.user`.
-  The user can edit the list before importing.
-- Optional literal → variable replacement: e.g. replace every occurrence of
-  `LumberjackHollow` in names and contents with `{{ProjectName}}`. Applied only to
-  text files; the preview lists how many hits per file.
+## 7. Applying an item template
 
-## Future (not in v1)
-Conditional blocks/files, zip export/import, remote template sources, template
-inheritance.
+You pick the target folder. The result is computed in staging (content rendered, then steps),
+then previewed: what's added and moved, with conflicts marked (overwritten only if you choose).
+Edits work as in §4 step 4. Then it's written into the target and `postCreate` runs there.
+Example: a C# class with a `Namespace` variable pre-filled from the folder and nearest `.csproj`.
+
+## 8. Files
+
+Binary detection uses the built-in extension list, `binaryExtensions`, and a NUL byte in the first
+8 KB. Binary files are copied byte for byte (names still rendered). Encoding and line endings are
+kept (a UTF-8 BOM stays). `template.json` is never copied into the output.
+
+## 9. Built-in templates (read-only; Duplicate to change)
+
+| Language | Templates |
+|---|---|
+| C# / .NET | console, class library, solution (+ add a project), Avalonia app, xUnit test project |
+| C# / Unity | new Unity project (`@unity`, editor version from the installed ones) |
+| TypeScript / Web | Vite (React / Vue / Svelte, TS), Tauri app |
+| Rust | `cargo new` (binary / library) |
+| Python | venv + `src/<name>` + `pyproject.toml` |
+| Go | `go mod init` + `main.go` |
+
+## 10. Import (folder → template)
+
+Default ignore globs: `.git/`, `.vs/`, `.idea/`, `bin/`, `obj/`, `node_modules/`, `Library/`,
+`Temp/`, `Logs/`, `dist/`, `build/`, `__pycache__/`, `*.user` (editable before importing).
+Optional literal → variable replacement (e.g. `LumberjackHollow` → `{{Name}}`) in names and text
+contents, with hits per file in the preview.
+
+## 11. Not in v1
+
+Conditional blocks and files; template inheritance; remote sources (other than a library folder
+that's a git checkout); scripts as steps (use `postCreate`); zip export / import (polish).

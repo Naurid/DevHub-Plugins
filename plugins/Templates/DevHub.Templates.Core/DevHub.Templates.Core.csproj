@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!--
+      The Templates plugin's engine (docs/TEMPLATE_FORMAT.md): the manifest model, libraries,
+      validation; later the renderer, generation pipeline, steps, command runner and importer.
+      No Avalonia, ever; everything tested in tests/DevHub.Templates.Core.Tests.
+    -->
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\DevHub.Sdk.Core\DevHub.Sdk.Core.csproj" />
+    </ItemGroup>
+
+</Project>
