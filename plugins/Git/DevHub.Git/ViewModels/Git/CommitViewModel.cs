@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHub.Git.Core;
+using DevHub.Integration;
 using DevHub.Services;
 
 namespace DevHub.ViewModels.Git;
@@ -16,6 +17,9 @@ public partial class CommitViewModel : ViewModelBase
     private readonly Func<bool> _hasStagedChanges;
     private readonly Func<Task> _afterCommit;
     private readonly Func<Task>? _push;
+    private readonly IReadOnlyList<ICommitMessageSuggester> _suggesters;
+    private readonly Func<CommitContext?>? _context;
+    private string? _askedFor; // the context the current suggestion is for (branch + staged files)
 
     /// <summary>The message Amend filled in, to clear it again when Amend is turned off untouched.</summary>
     private string? _amendMessage;
@@ -23,14 +27,66 @@ public partial class CommitViewModel : ViewModelBase
     /// <param name="hasStagedChanges">Whether anything is staged (a commit needs something, unless amending).</param>
     /// <param name="afterCommit">Refreshes the repository after a commit.</param>
     /// <param name="push">Pushes the current branch (for Commit and Push); null hides that button.</param>
+    /// <param name="suggesters">Other plugins' message suggestions (DevHub.Integration), asked while the message is empty.</param>
+    /// <param name="context">What would be committed (repository, branch, staged files), for the suggesters.</param>
     public CommitViewModel(GitRepositoryClient? client, IStatusService status, Func<bool> hasStagedChanges,
-        Func<Task> afterCommit, Func<Task>? push = null)
+        Func<Task> afterCommit, Func<Task>? push = null,
+        IReadOnlyList<ICommitMessageSuggester>? suggesters = null, Func<CommitContext?>? context = null)
     {
         _client = client;
         _status = status;
         _hasStagedChanges = hasStagedChanges;
         _afterCommit = afterCommit;
         _push = push;
+        _suggesters = suggesters ?? [];
+        _context = context;
+    }
+
+    /// <summary>A message another plugin suggests (e.g. "DEV-12: " from the branch name), shown while the box is empty; never put in without a click.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowsSuggestion))]
+    private string? _suggestion;
+
+    public bool ShowsSuggestion => Suggestion is not null && string.IsNullOrWhiteSpace(Message) && !IsAmend;
+
+    partial void OnMessageChanged(string value) => OnPropertyChanged(nameof(ShowsSuggestion));
+
+    /// <summary>Puts the suggestion in the box (the user edits it from there).</summary>
+    [RelayCommand]
+    private void UseSuggestion()
+    {
+        if (Suggestion is null)
+            return;
+        Message = Suggestion;
+        RequestFocus();
+    }
+
+    /// <summary>Asks the suggesters again when what would be committed changed (first answer wins; slow or failing ones are skipped).</summary>
+    private async Task RefreshSuggestionAsync()
+    {
+        if (_suggesters.Count == 0 || _context?.Invoke() is not { } context)
+            return;
+        var key = context.Branch + "\n" + string.Join("\n", context.StagedFiles);
+        if (key == _askedFor)
+            return;
+        _askedFor = key;
+        string? found = null;
+        foreach (var suggester in _suggesters)
+        {
+            try
+            {
+                using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+                found = await suggester.SuggestAsync(context, timeout.Token);
+            }
+            catch (Exception)
+            {
+                found = null; // another plugin's problem: no suggestion from it
+            }
+            if (!string.IsNullOrWhiteSpace(found))
+                break;
+        }
+        if (key == _askedFor)
+            Suggestion = string.IsNullOrWhiteSpace(found) ? null : found;
     }
 
     public bool CanPush => _push is not null;
@@ -64,6 +120,7 @@ public partial class CommitViewModel : ViewModelBase
     {
         CommitCommand.NotifyCanExecuteChanged();
         CommitAndPushCommand.NotifyCanExecuteChanged();
+        _ = RefreshSuggestionAsync();
     }
 
     private bool CanCommit() =>
@@ -116,6 +173,7 @@ public partial class CommitViewModel : ViewModelBase
     partial void OnIsAmendChanged(bool value)
     {
         OnPropertyChanged(nameof(CommitButtonText));
+        OnPropertyChanged(nameof(ShowsSuggestion));
         if (value)
             _ = LoadLastMessageAsync();
         else if (_amendMessage is not null && Message == _amendMessage)

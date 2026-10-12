@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHub.Sdk.Core.Formatting;
 using DevHub.Git.Core;
+using DevHub.Integration;
 using DevHub.Services;
 using DevHub.ViewModels.Dialogs;
 
@@ -35,7 +36,8 @@ public partial class LocalChangesViewModel : ViewModelBase
     public LocalChangesViewModel(RepositoryTabLayout layout, GitRepositoryClient? client,
         IDialogService dialogs, IStatusService status, Func<Task> refresh,
         Action<FileChangeViewModel, int?>? openInEditor, Action<FileChangeViewModel>? openInTab,
-        Func<Task>? push = null, Action<string, string?>? annotate = null)
+        Func<Task>? push = null, Action<string, string?>? annotate = null,
+        IReadOnlyList<ICommitMessageSuggester>? suggesters = null, Func<string?>? branch = null)
     {
         Layout = layout;
         _client = client;
@@ -43,7 +45,8 @@ public partial class LocalChangesViewModel : ViewModelBase
         _status = status;
         _refresh = refresh;
         Diff = new DiffViewModel(layout, client, openInEditor, openInTab, ApplyPartialAsync, annotate);
-        Commit = new CommitViewModel(client, status, () => Staged.Count > 0, refresh, push);
+        Commit = new CommitViewModel(client, status, () => Staged.Count > 0, refresh, push, suggesters,
+            () => client is null ? null : new CommitContext(client.RepositoryPath, branch?.Invoke(), Staged.Select(f => f.Change.Path).ToList()));
 
         // The selection lists belong to this ViewModel (the ListBoxes fill them), so these
         // subscriptions live exactly as long as their source and need no unsubscribe.

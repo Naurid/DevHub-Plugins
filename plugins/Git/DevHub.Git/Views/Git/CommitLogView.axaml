@@ -19,6 +19,7 @@
 
     <UserControl.Styles>
         <StyleInclude Source="avares://DevHub.Git/Views/Git/FileChangeStyles.axaml" />
+        <StyleInclude Source="avares://DevHub.Git/Views/Git/DecorationStyles.axaml" />
 
         <!-- Commit rows: content stretches to the full row height so the graph lines of
              neighbouring rows meet; the text is centered by itself. -->
@@ -120,7 +121,15 @@
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
-                                <TextBlock Text="{Binding Subject}" Classes.head="{Binding IsHead}"
+                                <!-- Other plugins' marks (CI…) at the end of the subject column. -->
+                                <ItemsControl DockPanel.Dock="Right" ItemsSource="{Binding Decorations}" ItemTemplate="{StaticResource Decoration}"
+                                              IsVisible="{Binding Decorations.Count}" Margin="{DynamicResource Margin.ToolbarSeparator}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                </ItemsControl>                                <TextBlock Text="{Binding Subject}" Classes.head="{Binding IsHead}"
                                            TextTrimming="CharacterEllipsis" VerticalAlignment="Center"
                                            ToolTip.Tip="{Binding Subject}" />
                             </DockPanel>

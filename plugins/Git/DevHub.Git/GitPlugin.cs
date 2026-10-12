@@ -48,6 +48,9 @@ public sealed class GitPlugin : IPlugin
         // One tab per repository, plus diff and blame tabs, created on demand / restored by id.
         // The layout (panel widths, tree / flat, unified / side-by-side) is shared by all of them.
         services.AddSingleton(sp => new RepositoryTabLayout(sp.GetRequiredService<ISettingsStore>()));
+        // Branch / commit / push / fetch events for other plugins (DevHub.Integration), fed by the repository tabs.
+        services.AddSingleton<GitRepositoryEvents>();
+        services.AddSingleton<IRepositoryEvents>(sp => sp.GetRequiredService<GitRepositoryEvents>());
         services.AddSingleton<RepositoryTabServices>();
         services.AddSingleton<IDocumentFactory, RepositoryDocumentFactory>();
         services.AddSingleton<IDocumentFactory, DiffDocumentFactory>();

@@ -27,6 +27,7 @@ public partial class CommitLogViewModel : ViewModelBase
     private readonly GitRepositoryClient? _client;
     private readonly CommitOperations? _operations;
     private readonly IRemoteHost? _host;
+    private readonly GitDecorations? _decorations;
 
     /// <summary>Your picture on the hosting service (GitHub), shared by every row you authored (they all update when it arrives).</summary>
     private readonly AvatarViewModel _myAvatar = new();
@@ -47,12 +48,15 @@ public partial class CommitLogViewModel : ViewModelBase
     /// <param name="operations">Cherry-pick, revert, new branch / tag; null = no commit menu.</param>
     public CommitLogViewModel(RepositoryTabLayout layout, GitRepositoryClient? client,
         Action<FileChangeViewModel, int?>? openInEditor, Action<string, string?>? annotate = null,
-        CommitOperations? operations = null, IRemoteHost? host = null)
+        CommitOperations? operations = null, IRemoteHost? host = null, GitDecorations? decorations = null)
     {
         Layout = layout;
         _client = client;
         _operations = operations;
         _host = host;
+        _decorations = decorations;
+        if (decorations is { IsEmpty: false })
+            decorations.Changed += (_, _) => ApplyDecorations(); // both live as long as the tab
         Details = new CommitDetailsViewModel(layout, client, openInEditor, annotate);
         if (client is not null)
             _ = LoadIdentityAsync(client);
@@ -254,6 +258,7 @@ public partial class CommitLogViewModel : ViewModelBase
             Error = null;
             ApplyFilter();
             ApplyReveal();
+            ApplyDecorations();
         }
         catch (OperationCanceledException)
         {
@@ -275,6 +280,21 @@ public partial class CommitLogViewModel : ViewModelBase
     }
 
     partial void OnFilterChanged(string value) => ApplyFilter();
+
+    /// <summary>Puts other plugins' marks on the loaded commits (again, when they say theirs changed).</summary>
+    private void ApplyDecorations()
+    {
+        if (_decorations is not { IsEmpty: false } || _allRows.Count == 0)
+            return;
+        var found = _decorations.ForCommits(_allRows.Select(r => r.Commit.Id).ToList());
+        foreach (var row in _allRows)
+        {
+            row.Decorations.Clear();
+            if (found.TryGetValue(row.Commit.Id, out var marks))
+                foreach (var mark in marks)
+                    row.Decorations.Add(mark);
+        }
+    }
 
     partial void OnSelectedChanged(CommitRowViewModel? value)
     {
@@ -333,6 +353,9 @@ public sealed class CommitRowViewModel
 
     /// <summary>Branch / tag badges before the subject.</summary>
     public IReadOnlyList<RefBadgeViewModel> Refs { get; }
+
+    /// <summary>Other plugins' marks for this commit (CI ✓ / ✗ …), after the subject.</summary>
+    public System.Collections.ObjectModel.ObservableCollection<DecorationViewModel> Decorations { get; } = [];
 
     public bool HasRefs => Refs.Count > 0;
 

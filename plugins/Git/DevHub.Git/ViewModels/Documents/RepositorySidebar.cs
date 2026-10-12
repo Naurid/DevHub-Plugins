@@ -121,6 +121,9 @@ public sealed class SidebarBranchNode : SidebarNode
     public bool IsCurrent => Branch.IsCurrent;
     public bool IsLocal => !Branch.IsRemote;
 
+    /// <summary>Other plugins' marks for this branch (CI: its latest run).</summary>
+    public ObservableCollection<DecorationViewModel> Decorations { get; } = [];
+
     /// <summary>"↑1 ↓2" against the upstream, "gone" when it was deleted on the remote, or null.</summary>
     public string? SyncText => Branch.UpstreamGone ? "gone"
         : (Branch.Ahead, Branch.Behind) switch
