@@ -1,0 +1,10 @@
+{
+  // The package's description of the plugin (docs/PLUGINS.md in DevHub). The version is filled in by
+  // build/Pack-Plugin.ps1 (computed from git: build/Get-PluginVersion.ps1); don't write one here.
+  "id": "naurid.hello-world",
+  "name": "Hello World",
+  "description": "A sample plugin: a tool window that says hello, and a Hello action in Find Action.",
+  "category": "Samples",
+  "apiVersion": 1,
+  "requires": []
+}

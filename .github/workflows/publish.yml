@@ -1,0 +1,44 @@
+# Publishes the plugins whose version changed (README.md): on every push to main, and on a plugin's
+# major tag "<plugin-id>/vN". Runs CI first; nothing is published if it fails.
+name: Publish
+
+on:
+  push:
+    branches: [main]
+    tags: ["*/v*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  publish:
+    needs: ci
+    runs-on: windows-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write # releases and the index
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # versions are counted from the history
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: DevHub Sdk
+        shell: pwsh
+        run: pwsh build/Get-Sdk.ps1
+
+      - name: Publish changed plugins
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: pwsh build/Publish-Plugins.ps1

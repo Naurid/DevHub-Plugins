@@ -1,0 +1,19 @@
+<!-- The sample tool window: DevHub's ToolWindowFrame, tokens and controls, like a built-in plugin. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.ToolWindows"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.ToolWindows.HelloToolWindowView"
+             x:DataType="vm:HelloToolWindowViewModel">
+    <c:ToolWindowFrame Header="{Binding Title}">
+        <c:ToolWindowFrame.HeaderActions>
+            <c:Toolbar>
+                <c:ActionButton IconKind="close" ToolTip.Tip="Hide" Command="{Binding ToggleCommand}" />
+            </c:Toolbar>
+        </c:ToolWindowFrame.HeaderActions>
+        <StackPanel Margin="{DynamicResource Padding.Dialog}" Spacing="{DynamicResource Spacing}">
+            <TextBlock Classes="header" Text="{Binding Greeting}" TextWrapping="Wrap" />
+            <Button Classes="accent" Content="Wave" Command="{Binding WaveCommand}" HorizontalAlignment="Left" />
+        </StackPanel>
+    </c:ToolWindowFrame>
+</UserControl>

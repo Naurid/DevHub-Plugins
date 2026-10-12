@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- A sample plugin: one tool window (right stripe) and one action. Copy this folder to start a new plugin. -->
+
+</Project>
