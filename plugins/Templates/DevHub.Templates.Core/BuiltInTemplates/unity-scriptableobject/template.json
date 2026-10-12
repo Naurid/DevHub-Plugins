@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "unity-scriptableobject",
+  "kind": "item",
+  "name": "ScriptableObject",
+  "description": "A Unity data asset class, with a Create menu entry.",
+  "language": "C#",
+  "categories": ["Unity"],
+  "variables": [
+    { "name": "Name", "label": "Class name", "required": true, "pattern": "^[A-Za-z_][A-Za-z0-9_]*$" },
+    { "name": "Namespace", "required": true, "pattern": "^[A-Za-z_][A-Za-z0-9_]*([.][A-Za-z_][A-Za-z0-9_]*)*$" },
+    { "name": "Menu", "label": "Create menu", "default": "Data" }
+  ]
+}

@@ -1,0 +1,28 @@
+<!-- New Template: name, id (follows the name until changed), project or item, library (when there are several), language. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:docs="using:DevHub.ViewModels.Documents"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Documents.NewTemplateDialogView"
+             x:DataType="docs:NewTemplateDialogViewModel">
+    <StackPanel Margin="{DynamicResource Padding.Dialog}" Spacing="{DynamicResource Spacing}">
+        <TextBlock Classes="secondary" Text="Name" />
+        <TextBox Text="{Binding Name}" PlaceholderText="Unity Game" AutomationProperties.Name="Name" c:FocusOnLoad.IsEnabled="True" />
+        <TextBlock Classes="secondary" Text="Id (the folder name: lowercase, digits and dashes)" />
+        <TextBox Classes="code" Text="{Binding Id}" AutomationProperties.Name="Id" />
+        <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing.Large}">
+            <RadioButton Content="Project template" IsChecked="{Binding IsProject}" />
+            <RadioButton Content="Item template" IsChecked="{Binding IsItem}" />
+        </StackPanel>
+        <TextBlock Classes="secondary" Text="Language" />
+        <AutoCompleteBox Text="{Binding Language, Mode=TwoWay}" ItemsSource="{Binding Languages}"
+                         FilterMode="StartsWith" MinimumPrefixLength="0" AutomationProperties.Name="Language" />
+        <StackPanel Spacing="{DynamicResource Spacing}" IsVisible="{Binding HasSeveralLibraries}">
+            <TextBlock Classes="secondary" Text="Library" />
+            <ComboBox ItemsSource="{Binding Libraries}" SelectedItem="{Binding Library}" HorizontalAlignment="Stretch"
+                      AutomationProperties.Name="Library" />
+        </StackPanel>
+        <TextBlock Text="{Binding Error}" TextWrapping="Wrap" Foreground="{DynamicResource Brush.Status.Error}"
+                   IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+    </StackPanel>
+</UserControl>

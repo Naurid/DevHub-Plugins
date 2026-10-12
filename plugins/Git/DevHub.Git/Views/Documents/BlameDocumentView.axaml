@@ -1,0 +1,101 @@
+<!--
+  Blame tab (G8, JetBrains' "Annotate with Git Blame"): a header (file, which version, counts,
+  Refresh), then every line of the file with a gutter on the left: commit id, author and date
+  on the first line of each block from one commit; every other block's gutter is shaded so
+  neighbouring blocks stand apart. Hover any line for its commit's message. Rows are
+  virtualized, so long files only create controls for what's on screen.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:docs="using:DevHub.ViewModels.Documents"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Documents.BlameDocumentView"
+             x:DataType="docs:BlameDocumentViewModel">
+
+    <UserControl.KeyBindings>
+        <KeyBinding Gesture="F4" Command="{Binding OpenInEditorCommand}" />
+    </UserControl.KeyBindings>
+
+    <UserControl.Styles>
+        <!-- Lines stay as tight as plain text lines (like the diff). -->
+        <Style Selector="ListBox.blame > ListBoxItem">
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="Padding" Value="0" />
+        </Style>
+        <Style Selector="Border.gutter">
+            <Setter Property="Background" Value="{DynamicResource Brush.Bg.Panel}" />
+            <Setter Property="Padding" Value="{DynamicResource Padding.BlameGutter}" />
+        </Style>
+        <Style Selector="Border.gutter.odd">
+            <Setter Property="Background" Value="{DynamicResource Brush.Bg.Hover}" />
+        </Style>
+        <Style Selector="TextBlock.lineNumber">
+            <Setter Property="Width" Value="{DynamicResource Size.DiffLineNumber}" />
+            <Setter Property="TextAlignment" Value="Right" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+        </Style>
+        <Style Selector="TextBlock.uncommitted">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Warning}" />
+        </Style>
+    </UserControl.Styles>
+
+    <DockPanel>
+        <Border DockPanel.Dock="Top" Padding="{DynamicResource Padding.PaneHeader}"
+                BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,0,1">
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                <TextBlock Text="{Binding Title}" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1" Classes="small secondary" Text="{Binding Subtitle}"
+                           TextTrimming="CharacterEllipsis" VerticalAlignment="Center" ToolTip.Tip="{Binding Subtitle}" />
+                <TextBlock Grid.Column="2" Classes="small secondary" Text="{Binding Summary}" VerticalAlignment="Center" />
+                <c:Toolbar Grid.Column="3">
+                    <c:ActionButton IconKind="refresh" AutomationProperties.Name="Refresh"
+                                    ToolTip.Tip="Read the blame again" Command="{Binding LoadCommand}" />
+                    <c:ActionButton IconKind="edit" AutomationProperties.Name="Open in Editor"
+                                    ToolTip.Tip="Open in Editor (F4) at the selected line (double-click a line does the same). Opens the file as it is now."
+                                    Command="{Binding OpenInEditorCommand}" />
+                </c:Toolbar>
+            </Grid>
+        </Border>
+
+        <Panel>
+            <c:EmptyState IconKind="commit" Title="Blame" Description="{Binding PlaceholderText}"
+                          IsVisible="{Binding PlaceholderText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+            <ListBox Classes="blame" IsVisible="{Binding HasRows}" Background="Transparent"
+                     AutomationProperties.Name="Blamed lines"
+                     ItemsSource="{Binding Rows}" SelectedItem="{Binding Selected}"
+                     ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Open in Editor at This Line" InputGesture="F4" Command="{Binding OpenInEditorCommand}" />
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="docs:BlameRowViewModel">
+                        <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}" Background="Transparent"
+                                    ToolTip.Tip="{Binding ToolTip}"
+                                    c:DoubleTap.Command="{Binding $parent[ListBox].((docs:BlameDocumentViewModel)DataContext).OpenInEditorCommand}">
+                            <!-- Gutter: who / when, once per block. -->
+                            <Border Classes="gutter" Classes.odd="{Binding IsOddBlock}">
+                                <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}"
+                                            Margin="{DynamicResource Margin.RowEnd}">
+                                    <TextBlock Classes="code small secondary" Text="{Binding ShortId}"
+                                               Width="{DynamicResource Size.BlameId}" VerticalAlignment="Center" />
+                                    <TextBlock Classes="small" Classes.uncommitted="{Binding IsUncommitted}" Text="{Binding Author}"
+                                               Width="{DynamicResource Size.BlameAuthor}" TextTrimming="CharacterEllipsis"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Classes="small secondary" Text="{Binding Date}"
+                                               Width="{DynamicResource Size.BlameDate}" TextTrimming="CharacterEllipsis"
+                                               VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Border>
+                            <TextBlock Classes="code lineNumber" Text="{Binding LineNumber}" />
+                            <TextBlock Classes="code" Text="{Binding Text}" VerticalAlignment="Center"
+                                       Margin="{DynamicResource Margin.RowEnd}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Panel>
+    </DockPanel>
+</UserControl>

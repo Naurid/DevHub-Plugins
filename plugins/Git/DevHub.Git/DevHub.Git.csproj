@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!--
+      The Git plugin's UI: repository / diff / blame tabs, Git Console, branch widget, actions, its
+      own design tokens (Themes/GitTokens.axaml). Builds on DevHub.Sdk + DevHub.Git.Core. Never
+      references Projects (DevHub.Integration links them) or GitHub (GitHub plugs in through IRemoteHost).
+    -->
+
+    <PropertyGroup>
+        <RootNamespace>DevHub</RootNamespace>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="12.1.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\DevHub.Sdk\DevHub.Sdk.csproj" />
+        <ProjectReference Include="..\DevHub.Git.Core\DevHub.Git.Core.csproj" />
+    </ItemGroup>
+
+</Project>

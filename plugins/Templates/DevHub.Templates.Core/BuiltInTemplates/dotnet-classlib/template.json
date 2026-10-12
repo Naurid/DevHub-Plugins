@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "dotnet-classlib",
+  "kind": "project",
+  "name": "Class Library",
+  "description": "A .NET class library in src/<Name>, with a solution, a README and a .gitignore.",
+  "language": "C#",
+  "categories": ["Library", ".NET"],
+  "variables": [
+    { "name": "Name", "label": "Project name", "required": true, "pattern": "^[A-Za-z_][A-Za-z0-9_.]*$" },
+    { "name": "Git", "label": "Create a git repository", "type": "bool", "default": true }
+  ],
+  "baseCommand": { "command": "dotnet", "args": ["new", "classlib", "--name", "{{Name}}", "--output", ".", "--no-restore"] },
+  "steps": [
+    { "op": "move", "from": "*.cs", "to": "src/{{Name}}/" },
+    { "op": "move", "from": "{{Name}}.csproj", "to": "src/{{Name}}/" }
+  ],
+  "postCreate": [
+    { "name": "Create the solution", "command": "dotnet", "args": ["new", "sln", "--name", "{{Name}}"] },
+    { "name": "Add the project to the solution", "command": "dotnet", "args": ["sln", "add", "src/{{Name}}/{{Name}}.csproj"] },
+    { "name": "Initialize git", "command": "git", "args": ["init"], "when": "Git", "continueOnError": true }
+  ]
+}

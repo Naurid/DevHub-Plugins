@@ -1,0 +1,26 @@
+{
+  // create-vite makes the folder itself (runIn "parent"), named in kebab-case like npm packages.
+  "schemaVersion": 1,
+  "id": "vite-app",
+  "kind": "project",
+  "name": "Vite App",
+  "description": "A web app with Vite and TypeScript: React, Vue or Svelte.",
+  "language": "TypeScript",
+  "categories": ["Web"],
+  "rootFolder": "{{Name:kebab}}",
+  "variables": [
+    { "name": "Name", "label": "Project name", "required": true },
+    { "name": "Framework", "type": "choice", "choices": ["react-ts", "vue-ts", "svelte-ts"], "default": "react-ts" },
+    { "name": "Install", "label": "Install the packages (npm install)", "type": "bool", "default": true },
+    { "name": "Git", "label": "Create a git repository", "type": "bool", "default": true }
+  ],
+  "baseCommand": {
+    "command": "npm",
+    "args": ["create", "vite@latest", "{{Name:kebab}}", "--", "--template", "{{Framework}}"],
+    "runIn": "parent"
+  },
+  "postCreate": [
+    { "name": "Install the packages", "command": "npm", "args": ["install"], "when": "Install" },
+    { "name": "Initialize git", "command": "git", "args": ["init"], "when": "Git", "continueOnError": true }
+  ]
+}

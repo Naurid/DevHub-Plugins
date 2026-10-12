@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "go-module",
+  "kind": "project",
+  "name": "Go Module",
+  "description": "go mod init and a main.go.",
+  "language": "Go",
+  "categories": ["Console"],
+  "variables": [
+    { "name": "Name", "label": "Project name", "required": true },
+    { "name": "Module", "label": "Module path (e.g. github.com/you/name)", "required": true },
+    { "name": "Git", "label": "Create a git repository", "type": "bool", "default": true }
+  ],
+  "baseCommand": { "command": "go", "args": ["mod", "init", "{{Module}}"] },
+  "postCreate": [
+    { "name": "Initialize git", "command": "git", "args": ["init"], "when": "Git", "continueOnError": true }
+  ]
+}

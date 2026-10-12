@@ -1,0 +1,68 @@
+<!--
+  Tags section (G8): filter + actions on top, then one row per tag: name, "annotated" badge,
+  the commit's short id, the message (or the commit's subject), and when. Right-click for the menu.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Git"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Git.TagListView"
+             x:DataType="vm:TagListViewModel">
+
+    <UserControl.Styles>
+        <Style Selector="Border.paneHeader">
+            <Setter Property="Padding" Value="{DynamicResource Padding.PaneHeader}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+            <Setter Property="BorderThickness" Value="0,0,0,1" />
+        </Style>
+    </UserControl.Styles>
+
+    <DockPanel>
+        <Border DockPanel.Dock="Top" Classes="paneHeader">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                <c:SearchField Text="{Binding Filter}" PlaceholderText="Filter tags"
+                               MaxWidth="{DynamicResource Size.BranchFilter}" HorizontalAlignment="Stretch" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button Classes="flat" Content="New Tag…" Command="{Binding NewTagCommand}"
+                            ToolTip.Tip="Tag the current commit (another commit: right-click it in All Commits)" />
+                    <Button Classes="flat" Content="Push Tag" Command="{Binding PushCommand}"
+                            ToolTip.Tip="Send the selected tag to the remote (Push doesn't send tags)" />
+                    <Button Classes="flat" Content="Delete…" Command="{Binding DeleteCommand}"
+                            ToolTip.Tip="Delete the selected tag here (asks first; the remote keeps its copy)" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Panel>
+            <c:EmptyState IconKind="template" Title="Tags" Description="{Binding EmptyText}" IsVisible="{Binding !HasItems}" />
+
+            <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding Selected}" Background="Transparent"
+                     AutomationProperties.Name="Tags" IsVisible="{Binding HasItems}">
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Push Tag" Command="{Binding PushCommand}" />
+                        <MenuItem Header="New Branch from Here…" Command="{Binding NewBranchFromCommand}" />
+                        <Separator />
+                        <MenuItem Header="Delete…" Command="{Binding DeleteCommand}" />
+                        <MenuItem Header="Delete from Remote…" Command="{Binding DeleteFromRemoteCommand}" />
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="vm:TagItemViewModel">
+                        <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing}"
+                              Margin="{DynamicResource Margin.RowEnd}" Background="Transparent" ToolTip.Tip="{Binding ToolTip}">
+                            <c:Icon Kind="template" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center"
+                                       MaxWidth="{DynamicResource Size.RefName}" TextTrimming="CharacterEllipsis" />
+                            <c:Badge Grid.Column="2" Classes="warning" Content="annotated" IsVisible="{Binding IsAnnotated}" />
+                            <TextBlock Grid.Column="3" Classes="code small secondary" Text="{Binding ShortId}" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="4" Classes="secondary" Text="{Binding Subject}"
+                                       TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="5" Classes="small secondary" Text="{Binding When}" VerticalAlignment="Center" />
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Panel>
+    </DockPanel>
+</UserControl>

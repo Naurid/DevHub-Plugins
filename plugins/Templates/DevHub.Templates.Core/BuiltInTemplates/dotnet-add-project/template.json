@@ -1,0 +1,19 @@
+{
+  // An item template made only of commands: add a new project to the solution in the folder you pick.
+  "schemaVersion": 1,
+  "id": "dotnet-add-project",
+  "kind": "item",
+  "name": "Add Project to Solution",
+  "description": "A new console app, class library or xUnit project in src/<Name> (tests in tests/), added to the folder's solution.",
+  "language": "C#",
+  "categories": [".NET"],
+  "variables": [
+    { "name": "Name", "label": "Project name", "required": true, "pattern": "^[A-Za-z_][A-Za-z0-9_.]*$" },
+    { "name": "Kind", "label": "Project kind", "type": "choice", "choices": ["classlib", "console", "xunit"], "default": "classlib" },
+    { "name": "Folder", "label": "Into folder", "type": "choice", "choices": ["src", "tests"], "default": "src" }
+  ],
+  "postCreate": [
+    { "name": "Create the project", "command": "dotnet", "args": ["new", "{{Kind}}", "--name", "{{Name}}", "--output", "{{Folder}}/{{Name}}"] },
+    { "name": "Add it to the solution", "command": "dotnet", "args": ["sln", "add", "{{Folder}}/{{Name}}/{{Name}}.csproj"] }
+  ]
+}

@@ -1,0 +1,19 @@
+<!-- Add / Edit Remote: name, URL, and why git refused (if it did). -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Git"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Git.RemoteEditDialogView"
+             x:DataType="vm:RemoteEditDialogViewModel">
+    <StackPanel Margin="{DynamicResource Padding.Dialog}" Spacing="{DynamicResource Spacing}">
+        <TextBlock Classes="secondary" Text="Name" />
+        <TextBox Text="{Binding Name}" PlaceholderText="origin" AutomationProperties.Name="Remote name" />
+        <TextBlock Classes="secondary" Text="URL" />
+        <TextBox Text="{Binding Url}" PlaceholderText="https://github.com/you/repository.git"
+                 AutomationProperties.Name="Remote URL" c:FocusOnLoad.IsEnabled="True" />
+        <TextBlock Classes="small secondary" TextWrapping="Wrap"
+                   Text="On GitHub: the green Code button → HTTPS. SSH URLs (git@github.com:you/repository.git) and folders work too." />
+        <TextBlock Text="{Binding Error}" TextWrapping="Wrap" Foreground="{DynamicResource Brush.Status.Error}"
+                   IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+    </StackPanel>
+</UserControl>

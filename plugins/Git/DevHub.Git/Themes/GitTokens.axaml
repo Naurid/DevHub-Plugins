@@ -1,0 +1,94 @@
+<!--
+  The Git plugin's own design tokens, merged into the app's resources when the plugin loads
+  (GitPlugin.Resources). Same rules as the Sdk's tokens (docs/UI_GUIDE.md §3): views use these
+  keys via DynamicResource, colors exist for Dark and Light. Shared tokens (backgrounds, text,
+  spacing, the sidebar rows) stay in DevHub.Sdk; only what Git alone uses lives here.
+-->
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ResourceDictionary.ThemeDictionaries>
+        <!-- Commit graph lines (G5): one color per branch line, cycled. -->
+        <ResourceDictionary x:Key="Dark">
+            <Color x:Key="Color.Graph.0">#548AF7</Color>
+            <Color x:Key="Color.Graph.1">#5FAD65</Color>
+            <Color x:Key="Color.Graph.2">#E08855</Color>
+            <Color x:Key="Color.Graph.3">#A571E6</Color>
+            <Color x:Key="Color.Graph.4">#3FB2BD</Color>
+            <Color x:Key="Color.Graph.5">#E06BAF</Color>
+            <Color x:Key="Color.Graph.6">#D6AE58</Color>
+            <Color x:Key="Color.Graph.7">#DB5C5C</Color>
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Light">
+            <Color x:Key="Color.Graph.0">#3574F0</Color>
+            <Color x:Key="Color.Graph.1">#208A3C</Color>
+            <Color x:Key="Color.Graph.2">#D46A1D</Color>
+            <Color x:Key="Color.Graph.3">#834DF0</Color>
+            <Color x:Key="Color.Graph.4">#078A96</Color>
+            <Color x:Key="Color.Graph.5">#C94F9A</Color>
+            <Color x:Key="Color.Graph.6">#B38A0F</Color>
+            <Color x:Key="Color.Graph.7">#E55765</Color>
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+
+    <!-- Commit graph (G5). CommitGraphCell looks these up by index: Brush.Graph.{color % 8}. -->
+    <SolidColorBrush x:Key="Brush.Graph.0" Color="{DynamicResource Color.Graph.0}" />
+    <SolidColorBrush x:Key="Brush.Graph.1" Color="{DynamicResource Color.Graph.1}" />
+    <SolidColorBrush x:Key="Brush.Graph.2" Color="{DynamicResource Color.Graph.2}" />
+    <SolidColorBrush x:Key="Brush.Graph.3" Color="{DynamicResource Color.Graph.3}" />
+    <SolidColorBrush x:Key="Brush.Graph.4" Color="{DynamicResource Color.Graph.4}" />
+    <SolidColorBrush x:Key="Brush.Graph.5" Color="{DynamicResource Color.Graph.5}" />
+    <SolidColorBrush x:Key="Brush.Graph.6" Color="{DynamicResource Color.Graph.6}" />
+    <SolidColorBrush x:Key="Brush.Graph.7" Color="{DynamicResource Color.Graph.7}" />
+
+    <!-- Diff lines (G2): added green, removed red, hunk headers a faint accent, like JetBrains'
+         unified diff. Fainter than the badge tints: whole screens of them must stay readable. -->
+    <SolidColorBrush x:Key="Brush.Diff.Added" Color="{DynamicResource Color.Status.Success}" Opacity="0.16" />
+    <SolidColorBrush x:Key="Brush.Diff.Removed" Color="{DynamicResource Color.Status.Error}" Opacity="0.16" />
+    <SolidColorBrush x:Key="Brush.Diff.Hunk" Color="{DynamicResource Color.Accent}" Opacity="0.1" />
+    <!-- Side-by-side: the empty half next to an added / removed line (a faint grey, like JetBrains'). -->
+    <SolidColorBrush x:Key="Brush.Diff.Filler" Color="{DynamicResource Color.Text.Secondary}" Opacity="0.08" />
+
+    <!-- The status-letter column in Local Changes (G1). -->
+    <x:Double x:Key="Size.StatusLetter">14</x:Double>
+    <!-- Longest branch name shown in the title bar before it ends in "…"; gap before the widget. -->
+    <x:Double x:Key="Size.BranchWidgetText">280</x:Double>
+    <Thickness x:Key="Margin.BranchWidget">12,0,0,0</Thickness>
+    <!-- Diff view (G2): the old / new line-number columns (5 digits) and the +/- column. -->
+    <x:Double x:Key="Size.DiffLineNumber">44</x:Double>
+    <x:Double x:Key="Size.DiffSign">16</x:Double>
+    <!-- The small Stage / Discard / Unstage Hunk buttons on a diff hunk header (G3.1). -->
+    <Thickness x:Key="Padding.HunkAction">6,0</Thickness>
+    <!-- Commit box (G3): message height (grows up to the max as you type), the error area, padding. -->
+    <x:Double x:Key="Size.CommitMessage">72</x:Double>
+    <x:Double x:Key="Size.CommitMessageMax">200</x:Double>
+    <x:Double x:Key="Size.CommitErrorMax">120</x:Double>
+    <Thickness x:Key="Padding.CommitBox">12,8</Thickness>
+    <!-- Branches (G4): the filter box above the branch list, and the title-bar branch popup. -->
+    <x:Double x:Key="Size.BranchFilter">220</x:Double>
+    <x:Double x:Key="Size.BranchPopupWidth">380</x:Double>
+    <x:Double x:Key="Size.BranchPopupMaxHeight">460</x:Double>
+    <!-- All Commits (G5): a graph lane's width, the commit dot, the line thickness; the
+         author / date / id columns; how tall the commit message may grow before it scrolls. -->
+    <x:Double x:Key="Size.GraphLane">14</x:Double>
+    <x:Double x:Key="Size.GraphDot">8</x:Double>
+    <x:Double x:Key="Size.GraphLine">1.5</x:Double>
+    <x:Double x:Key="Size.CommitAuthor">120</x:Double>
+    <x:Double x:Key="Size.CommitDate">100</x:Double>
+    <x:Double x:Key="Size.CommitId">70</x:Double>
+    <x:Double x:Key="Size.CommitSubjectMin">180</x:Double>
+    <x:Double x:Key="Size.CommitFilter">280</x:Double>
+    <x:Double x:Key="Size.CommitDetailsMessageMax">160</x:Double>
+    <!-- G8: blame gutter (commit id, author, date before each block of lines) and its padding;
+         stash / tag message dialogs; the tag and submodule name columns. -->
+    <x:Double x:Key="Size.BlameId">70</x:Double>
+    <x:Double x:Key="Size.BlameAuthor">120</x:Double>
+    <x:Double x:Key="Size.BlameDate">90</x:Double>
+    <Thickness x:Key="Padding.BlameGutter">8,0,0,0</Thickness>
+    <x:Double x:Key="Size.TagMessage">72</x:Double>
+    <x:Double x:Key="Size.RefName">200</x:Double>
+    <!-- G9: the remote name column in Manage Remotes; the repository list in Clone. -->
+    <x:Double x:Key="Size.RemoteName">90</x:Double>
+    <x:Double x:Key="Size.CloneListHeight">260</x:Double>
+
+</ResourceDictionary>

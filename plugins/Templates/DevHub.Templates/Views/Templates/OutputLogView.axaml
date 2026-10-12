@@ -1,0 +1,29 @@
+<!-- The live output of commands: monospace lines, stderr in the error color, a header line per command. Follows the end. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:t="using:DevHub.ViewModels.Templates"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Templates.OutputLogView"
+             x:DataType="t:OutputLogViewModel">
+    <UserControl.Styles>
+        <Style Selector="SelectableTextBlock.error">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Error}" />
+        </Style>
+        <Style Selector="SelectableTextBlock.header">
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+    </UserControl.Styles>
+    <Border Background="{DynamicResource Brush.Bg.Panel}" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1"
+            CornerRadius="{DynamicResource Radius.Control}">
+        <ScrollViewer c:FollowOutput.IsEnabled="True" Padding="{DynamicResource Padding.Banner}">
+            <ItemsControl ItemsSource="{Binding Lines}" AutomationProperties.Name="Output">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="t:OutputLineViewModel">
+                        <SelectableTextBlock Classes="code" Text="{Binding Text}" TextWrapping="Wrap"
+                                             Classes.error="{Binding IsError}" Classes.header="{Binding IsHeader}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Border>
+</UserControl>

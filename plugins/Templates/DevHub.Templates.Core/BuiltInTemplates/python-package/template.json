@@ -1,0 +1,22 @@
+{
+  // No tool needed for the files: the src layout with a pyproject.toml. The virtual environment (.venv)
+  // is made with the py launcher when asked.
+  "schemaVersion": 1,
+  "id": "python-package",
+  "kind": "project",
+  "name": "Python Package",
+  "description": "A package in the src layout (pyproject.toml, src/<name>, tests), with an optional .venv.",
+  "language": "Python",
+  "categories": ["Library"],
+  "rootFolder": "{{Name:kebab}}",
+  "variables": [
+    { "name": "Name", "label": "Package name", "required": true },
+    { "name": "Description", "default": "" },
+    { "name": "Venv", "label": "Create a virtual environment (.venv)", "type": "bool", "default": true },
+    { "name": "Git", "label": "Create a git repository", "type": "bool", "default": true }
+  ],
+  "postCreate": [
+    { "name": "Create the virtual environment", "command": "py", "args": ["-m", "venv", ".venv"], "when": "Venv", "continueOnError": true },
+    { "name": "Initialize git", "command": "git", "args": ["init"], "when": "Git", "continueOnError": true }
+  ]
+}

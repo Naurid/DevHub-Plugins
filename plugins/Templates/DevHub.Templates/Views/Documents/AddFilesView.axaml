@@ -1,0 +1,58 @@
+<!--
+  Add Files from Template (fills the editor area). Left: the item templates (TemplateBrowserView). Right: the
+  steps (Details → Preview → Done) and the current page, shown through the ViewLocator, like New Project.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:docs="using:DevHub.ViewModels.Documents"
+             xmlns:t="using:DevHub.ViewModels.Templates"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Documents.AddFilesView"
+             x:DataType="docs:AddFilesViewModel">
+
+    <UserControl.Styles>
+        <Style Selector="TextBlock.current">
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+    </UserControl.Styles>
+
+    <DockPanel>
+        <!-- Template list (TemplateBrowserView, through the ViewLocator) -->
+        <Border DockPanel.Dock="Left" Width="{DynamicResource Size.TemplateList}"
+                Background="{DynamicResource Brush.Bg.Panel}"
+                BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,1,0">
+            <ContentControl Content="{Binding Browser}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+        </Border>
+
+        <!-- The generation -->
+        <Panel Background="{DynamicResource Brush.Bg.Editor}">
+            <c:EmptyState IconKind="template" Title="Add Files from Template"
+                          Description="Pick an item template on the left (a class, a script, a set of files), choose the folder, check the preview, then apply. Your files are only changed when you click Apply."
+                          IsVisible="{Binding !HasPage}" />
+
+            <DockPanel Margin="{DynamicResource Padding.Document}" IsVisible="{Binding HasPage}">
+                <ItemsControl DockPanel.Dock="Top" ItemsSource="{Binding Steps}" Margin="{DynamicResource Margin.BlockBelow}"
+                              AutomationProperties.Name="Steps">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="t:StepIndicatorViewModel">
+                            <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}">
+                                <c:Badge Content="{Binding Number}" Classes.accent="{Binding IsCurrent}"
+                                         Classes.success="{Binding IsDone}" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding Text}" VerticalAlignment="Center"
+                                           Classes.secondary="{Binding !IsCurrent}" Classes.current="{Binding IsCurrent}" />
+                                <TextBlock Classes="secondary" Text="›" VerticalAlignment="Center" IsVisible="{Binding !IsLast}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <ContentControl Content="{Binding Page}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+            </DockPanel>
+        </Panel>
+    </DockPanel>
+</UserControl>

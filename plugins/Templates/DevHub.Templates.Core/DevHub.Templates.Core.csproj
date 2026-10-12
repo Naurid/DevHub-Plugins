@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!--
+      The Templates plugin's engine (docs/TEMPLATE_FORMAT.md): the manifest model, libraries,
+      validation, the renderer, the generation pipeline (command runner, staging, steps, placing,
+      item templates, post-create) and the browser's grouping. No Avalonia, ever; everything
+      tested in tests/DevHub.Templates.Core.Tests.
+    -->
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\DevHub.Sdk.Core\DevHub.Sdk.Core.csproj" />
+    </ItemGroup>
+
+    <!-- The built-in library (read-only in the app): copied next to every project that uses this
+         one, so the app and the tests both find it at <output>/BuiltInTemplates. -->
+    <ItemGroup>
+        <!-- Template sources are text to copy (a {{Name}}.cs isn't C#): never compiled or embedded here. -->
+        <Compile Remove="BuiltInTemplates\**" />
+        <EmbeddedResource Remove="BuiltInTemplates\**" />
+        <None Include="BuiltInTemplates\**" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
+</Project>

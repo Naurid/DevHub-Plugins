@@ -1,0 +1,42 @@
+<!-- Manage Remotes: the remotes (name + URL), Add… / Edit… / Remove…, and git's objection if one failed. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Git"
+             xmlns:git="clr-namespace:DevHub.Git.Core;assembly=DevHub.Git.Core"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Git.RemotesDialogView"
+             x:DataType="vm:RemotesDialogViewModel">
+    <DockPanel Margin="{DynamicResource Padding.Dialog}">
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="{DynamicResource Spacing}"
+                    Margin="{DynamicResource Margin.BlockBelow}">
+            <Button Content="Add…" Command="{Binding AddCommand}" ToolTip.Tip="Add a remote: a name (usually origin) and its URL" />
+            <Button Content="Edit…" Command="{Binding EditCommand}" ToolTip.Tip="Rename the selected remote or change its URL" />
+            <Button Content="Remove…" Command="{Binding RemoveCommand}"
+                    ToolTip.Tip="Remove the selected remote from this repository (asks first; the server is untouched)" />
+        </StackPanel>
+
+        <TextBlock DockPanel.Dock="Bottom" Text="{Binding Error}" TextWrapping="Wrap"
+                   Foreground="{DynamicResource Brush.Status.Error}"
+                   IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+        <Panel>
+            <c:EmptyState IconKind="fetch" Title="No remotes"
+                          Description="A remote is where you push to and pull from, e.g. a repository on GitHub. Add one with its URL, or use Git → Publish to GitHub… to create one."
+                          IsVisible="{Binding !HasRemotes}" />
+            <ListBox ItemsSource="{Binding Remotes}" SelectedItem="{Binding Selected}" IsVisible="{Binding HasRemotes}"
+                     AutomationProperties.Name="Remotes">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="git:GitRemote">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Spacing}" Background="Transparent"
+                              ToolTip.Tip="{Binding PushUrl, StringFormat='Push URL: {0}'}">
+                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" VerticalAlignment="Center"
+                                       MinWidth="{DynamicResource Size.RemoteName}" />
+                            <TextBlock Grid.Column="1" Classes="secondary" Text="{Binding FetchUrl}"
+                                       TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Panel>
+    </DockPanel>
+</UserControl>

@@ -1,0 +1,19 @@
+<!-- Template editor → template.json: the manifest as text. Edits go into the forms when you switch section or save. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:e="using:DevHub.ViewModels.Templates.Editor"
+             x:Class="DevHub.Views.Templates.Editor.JsonPartView"
+             x:DataType="e:JsonPartViewModel">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Spacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.BlockBelow}">
+            <TextBlock Classes="secondary" TextWrapping="Wrap"
+                       Text="The template as it's saved (docs/TEMPLATE_FORMAT.md). Your edits here go into the other sections when you switch to one, or when you save." />
+            <TextBlock Text="{Binding Error}" TextWrapping="Wrap" Foreground="{DynamicResource Brush.Status.Error}"
+                       IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        </StackPanel>
+        <TextBox Classes="code" Text="{Binding Text}" AcceptsReturn="True" AcceptsTab="True" IsReadOnly="{Binding IsReadOnly}"
+                 TextWrapping="NoWrap" VerticalContentAlignment="Top"
+                 ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto"
+                 AutomationProperties.Name="template.json" />
+    </DockPanel>
+</UserControl>

@@ -1,0 +1,43 @@
+<!-- Template editor → General: what the template is called, its id, how it's found (language, categories), what it makes. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:e="using:DevHub.ViewModels.Templates.Editor"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Templates.Editor.GeneralPartView"
+             x:DataType="e:GeneralPartViewModel">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Spacing="{DynamicResource Spacing}" MaxWidth="{DynamicResource Size.TemplatePageMax}" HorizontalAlignment="Left">
+            <c:SettingsRow Label="Name" Description="Shown in the template list.">
+                <TextBox Text="{Binding Name}" AutomationProperties.Name="Name" />
+            </c:SettingsRow>
+            <c:SettingsRow Label="Id" Description="The template's folder name: lowercase letters, digits and dashes. Changing it renames the folder.">
+                <TextBox Classes="code" Text="{Binding Id}" AutomationProperties.Name="Id" />
+            </c:SettingsRow>
+            <c:SettingsRow Label="Description">
+                <TextBox Text="{Binding Description}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="{DynamicResource Size.TemplateDescription}"
+                         AutomationProperties.Name="Description" />
+            </c:SettingsRow>
+            <c:SettingsRow Label="Language" Description="One language, or Any. Pick one or type your own.">
+                <AutoCompleteBox Text="{Binding Language, Mode=TwoWay}" ItemsSource="{Binding Languages}"
+                                 FilterMode="StartsWith" MinimumPrefixLength="0" AutomationProperties.Name="Language" />
+            </c:SettingsRow>
+            <c:SettingsRow Label="Categories" Description="Any number, separated by commas (Unity, Game, Web…).">
+                <TextBox Text="{Binding Categories}" AutomationProperties.Name="Categories" />
+            </c:SettingsRow>
+            <c:SettingsRow Label="Kind">
+                <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                    <RadioButton Content="Project: creates a new project folder" IsChecked="{Binding IsProject}" />
+                    <RadioButton Content="Item: adds files to a folder that already exists" IsChecked="{Binding IsItem}" />
+                </StackPanel>
+            </c:SettingsRow>
+            <c:SettingsRow Label="Project folder" IsVisible="{Binding IsProject}"
+                           Description="The folder's name under the location you pick; placeholders allowed. Empty = the Name variable.">
+                <TextBox Classes="code" Text="{Binding RootFolder}" PlaceholderText="{Binding RootFolderPlaceholder}"
+                         AutomationProperties.Name="Project folder" />
+            </c:SettingsRow>
+            <c:SettingsRow Label="Binary extensions" Description="Copied byte for byte, never filled in (on top of the built-in list: images, fonts, archives…). Comma-separated: .bytes, .asset">
+                <TextBox Classes="code" Text="{Binding BinaryExtensions}" AutomationProperties.Name="Binary extensions" />
+            </c:SettingsRow>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
