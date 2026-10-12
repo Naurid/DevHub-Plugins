@@ -24,7 +24,7 @@ Directory.Build.targets  after a build: plugin.json next to the DLLs, Properties
 ```
 
 Build and test everything: `dotnet build DevHub-Plugins.sln` and `dotnet test DevHub-Plugins.sln`. A plugin
-whose plugin.json says `"publish": false` isn't released (DevHub's own plugins, until DevHub bundles them).
+whose plugin.json says `"publish": false` isn't released.
 
 ## Writing a plugin
 

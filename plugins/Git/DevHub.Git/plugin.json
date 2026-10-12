@@ -1,12 +1,10 @@
 // The package's description of the plugin (docs/PLUGINS.md in DevHub); keep it equal to the plugin class's PluginInfo.
 // The version is computed from git (build/Get-PluginVersion.ps1); don't write one here.
-// "publish": false keeps it out of the marketplace until DevHub bundles it (roadmap PM5).
 {
   "id": "devhub.git",
   "name": "Git",
   "description": "A Fork-style Git client: changes, staging per line, commits, history graph, branches, remotes, merge and rebase, stashes, blame.",
   "category": "Version control",
   "apiVersion": 1,
-  "publish": false,
   "requires": []
 }

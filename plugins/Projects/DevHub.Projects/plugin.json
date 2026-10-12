@@ -1,12 +1,10 @@
 // The package's description of the plugin (docs/PLUGINS.md in DevHub); keep it equal to the plugin class's PluginInfo.
 // The version is computed from git (build/Get-PluginVersion.ps1); don't write one here.
-// "publish": false keeps it out of the marketplace until DevHub bundles it (roadmap PM5).
 {
   "id": "devhub.projects",
   "name": "Projects",
   "description": "The Projects tool window: choose folders, find the git repositories in them, see their language and open them in the right tool.",
   "category": "Projects",
   "apiVersion": 1,
-  "publish": false,
   "requires": []
 }
