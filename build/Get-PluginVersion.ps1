@@ -2,7 +2,8 @@
   One plugin's version, from git (each plugin has its own):
     N.M.0, where N = the highest major tag "<plugin-id>/vN" (e.g. naurid.hello-world/v2, only you create
     those), and M = the commits on main's first-parent line (pushes / PR merges) since that tag that
-    touched the plugin's folder. Changing another plugin doesn't change this one's version.
+    touched the plugin's folder: the folder right under plugins/ (plugins/Git for plugins/Git/DevHub.Git,
+    so a change to its DevHub.Git.Core counts too). Changing another plugin doesn't change this one's version.
   The tagged commit is N.0.0; before any major tag, 0.M.0 (tag "<id>/v1" for 1.0.0).
   Release tags made by CI ("<plugin-id>/1.3.0") don't look like "/vN", so they don't count.
 
@@ -16,6 +17,11 @@ $ErrorActionPreference = "Stop"
 
 $id = (Get-Content (Join-Path $Folder "plugin.json") -Raw | ConvertFrom-Json).id
 $prefix = "$id/v"
+
+# The plugin's own folder under plugins/ (plugins/Git for plugins/Git/DevHub.Git), as an absolute path for git.
+$plugins = Join-Path (Split-Path $PSScriptRoot) "plugins"
+$first = [IO.Path]::GetRelativePath($plugins, (Resolve-Path $Folder).Path).Split([IO.Path]::DirectorySeparatorChar, [IO.Path]::AltDirectorySeparatorChar)[0]
+$Folder = Join-Path $plugins $first
 $majors = @(git tag --merged $Ref --list "$prefix*" | Where-Object { $_.Substring($prefix.Length) -match '^\d+$' } | ForEach-Object { [int]$_.Substring($prefix.Length) })
 
 if ($majors.Count -eq 0) {

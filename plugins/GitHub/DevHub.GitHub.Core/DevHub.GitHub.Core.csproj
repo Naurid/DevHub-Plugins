@@ -3,8 +3,7 @@
     <!-- GitHub plugin logic: Git Credential Manager access, GitHub API. Requires the Git plugin. No Avalonia. -->
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\DevHub.Sdk.Core\DevHub.Sdk.Core.csproj" />
-        <ProjectReference Include="..\DevHub.Git.Core\DevHub.Git.Core.csproj" />
+        <ProjectReference Include="..\..\Git\DevHub.Git.Core\DevHub.Git.Core.csproj" />
     </ItemGroup>
 
 </Project>

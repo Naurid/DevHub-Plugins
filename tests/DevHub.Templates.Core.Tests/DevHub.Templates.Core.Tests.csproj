@@ -12,7 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\plugins\DevHub.Templates.Core\DevHub.Templates.Core.csproj" />
+        <ProjectReference Include="..\..\plugins\Templates\DevHub.Templates.Core\DevHub.Templates.Core.csproj" />
     </ItemGroup>
 
 </Project>

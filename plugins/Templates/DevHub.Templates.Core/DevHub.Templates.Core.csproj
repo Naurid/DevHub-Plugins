@@ -7,10 +7,6 @@
       tested in tests/DevHub.Templates.Core.Tests.
     -->
 
-    <ItemGroup>
-        <ProjectReference Include="..\..\src\DevHub.Sdk.Core\DevHub.Sdk.Core.csproj" />
-    </ItemGroup>
-
     <!-- The built-in library (read-only in the app): copied next to every project that uses this
          one, so the app and the tests both find it at <output>/BuiltInTemplates. -->
     <ItemGroup>

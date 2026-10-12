@@ -1,4 +1,4 @@
-# Builds every plugin against DevHub's latest Sdk, and checks the packages for known vulnerabilities.
+# Builds every plugin against DevHub's latest Sdk (NuGet), runs the tests, and checks the packages for known vulnerabilities.
 # Runs on pull requests, inside publish.yml (so a push to main runs it once), and on demand.
 name: CI
 
@@ -17,7 +17,7 @@ concurrency:
 jobs:
   build:
     runs-on: windows-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -25,26 +25,33 @@ jobs:
         with:
           dotnet-version: "10.0.x"
 
-      - name: DevHub Sdk
-        shell: pwsh
-        run: pwsh build/Get-Sdk.ps1
+      - name: NuGet cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', '**/Directory.Build.props') }}
+          restore-keys: nuget-${{ runner.os }}-
 
-      - name: Build every plugin (warnings are errors)
-        shell: pwsh
-        run: |
-          foreach ($project in Get-ChildItem plugins -Filter *.csproj -Recurse -Depth 1) {
-            dotnet build $project.FullName -c Release -warnaserror
-            if ($LASTEXITCODE -ne 0) { throw "Build failed: $($project.Name)" }
-          }
+      - name: Build (warnings are errors)
+        run: dotnet build DevHub-Plugins.sln -c Release -warnaserror
+
+      # Windows on purpose: the tests run real git / dotnet / cargo / go (each skipped when it isn't installed).
+      - name: Test
+        run: dotnet test DevHub-Plugins.sln --no-build -c Release --logger trx --results-directory test-results
+
+      - name: Test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results
 
       - name: Vulnerable packages
         shell: pwsh
         run: |
-          foreach ($project in Get-ChildItem plugins -Filter *.csproj -Recurse -Depth 1) {
-            $report = dotnet list $project.FullName package --vulnerable --include-transitive 2>&1 | Out-String
-            Write-Output $report
-            if ($report -match "has the following vulnerable packages") { throw "Vulnerable packages in $($project.Name)" }
-          }
+          $report = dotnet list DevHub-Plugins.sln package --vulnerable --include-transitive 2>&1 | Out-String
+          Write-Output $report
+          if ($report -match "has the following vulnerable packages") { throw "Vulnerable packages" }
 
   dependency-review:
     # Needs a public repository (or GitHub Advanced Security): skipped while the repo is private.

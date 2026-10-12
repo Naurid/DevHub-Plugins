@@ -11,12 +11,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="12.1.3" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\..\src\DevHub.Sdk\DevHub.Sdk.csproj" />
-        <ProjectReference Include="..\DevHub.Git\DevHub.Git.csproj" />
+        <ProjectReference Include="..\..\Git\DevHub.Git\DevHub.Git.csproj" />
         <ProjectReference Include="..\DevHub.GitHub.Core\DevHub.GitHub.Core.csproj" />
     </ItemGroup>
 

@@ -110,8 +110,12 @@ public static class TemplateLibraries
     /// <summary>The personal library's default folder under a base folder (the roaming AppData folder in the app).</summary>
     public static string DefaultPersonalRoot(string appDataRoot) => Path.Combine(appDataRoot, "DevHub", "templates");
 
-    /// <summary>The built-in templates, shipped next to the app (copied from this project's BuiltInTemplates folder).</summary>
-    public static string BuiltInRoot => Path.Combine(AppContext.BaseDirectory, "BuiltInTemplates");
+    /// <summary>
+    /// The built-in templates, shipped next to this assembly (copied from this project's BuiltInTemplates folder):
+    /// in the plugin's folder when DevHub loads it from there, in the test output for the tests.
+    /// </summary>
+    public static string BuiltInRoot =>
+        Path.Combine(Path.GetDirectoryName(typeof(TemplateLibrary).Assembly.Location) is { Length: > 0 } folder ? folder : AppContext.BaseDirectory, "BuiltInTemplates");
 
     /// <summary>Personal first, then the extra folders (named after the folder; duplicates and the personal one skipped), then the built-ins.</summary>
     /// <param name="appDataRoot">Base for the default personal library (the app passes %APPDATA% or DEVHUB_DATA_DIR).</param>

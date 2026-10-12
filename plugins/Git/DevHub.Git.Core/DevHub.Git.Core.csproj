@@ -2,8 +2,4 @@
 
     <!-- Git plugin logic: GitRunner, GitRepositoryClient, parsers, graph layout. No Avalonia. -->
 
-    <ItemGroup>
-        <ProjectReference Include="..\..\src\DevHub.Sdk.Core\DevHub.Sdk.Core.csproj" />
-    </ItemGroup>
-
 </Project>

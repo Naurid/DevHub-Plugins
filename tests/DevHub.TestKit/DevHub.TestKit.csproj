@@ -17,7 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\plugins\DevHub.Git.Core\DevHub.Git.Core.csproj" />
+        <ProjectReference Include="..\..\plugins\Git\DevHub.Git.Core\DevHub.Git.Core.csproj" />
     </ItemGroup>
 
 </Project>
