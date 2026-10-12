@@ -13,6 +13,11 @@
              x:Class="DevHub.Views.Documents.RepositoryDocumentView"
              x:DataType="docs:RepositoryDocumentViewModel">
 
+    <UserControl.Styles>
+        <!-- The branch tree shows other plugins' marks (CI) with this template. -->
+        <StyleInclude Source="avares://DevHub.Git/Views/Git/DecorationStyles.axaml" />
+    </UserControl.Styles>
+
     <Panel>
         <!-- Git not installed: nothing else can work. -->
         <c:EmptyState IconKind="warning" Title="Git is not installed"
@@ -199,8 +204,20 @@
                                             <MenuItem Header="Delete…" Command="{Binding DeleteCommand}" IsVisible="{Binding IsLocal}" />
                                         </ContextMenu>
                                     </Grid.ContextMenu>
-                                    <TextBlock Text="{Binding Title}" Classes.current="{Binding IsCurrent}"
-                                               TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                    <!-- The name, then other plugins' marks right after it (CI: the branch's latest run): next
+                                         to the name, not at the far edge of a tree that may be wider than the sidebar. -->
+                                    <DockPanel HorizontalAlignment="Left">
+                                        <ItemsControl DockPanel.Dock="Right" ItemsSource="{Binding Decorations}" ItemTemplate="{StaticResource Decoration}"
+                                                      IsVisible="{Binding Decorations.Count}" VerticalAlignment="Center" Margin="4,0,0,0">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}" />
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                        </ItemsControl>
+                                        <TextBlock Text="{Binding Title}" Classes.current="{Binding IsCurrent}"
+                                                   TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                    </DockPanel>
                                     <TextBlock Grid.Column="1" Classes="small secondary" Text="{Binding SyncText}" VerticalAlignment="Center"
                                                IsVisible="{Binding SyncText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                                 </Grid>

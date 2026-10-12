@@ -25,6 +25,18 @@ public sealed class GitHubService(GitCredentialManager credentials, GitHubApi ap
         CancellationToken ct = default) =>
         await api.CreateRepositoryAsync(await TokenAsync(account, ct), name, description, isPrivate, ct);
 
+    /// <summary>
+    /// Any API call as <paramref name="account"/> (null: the only or first signed-in account), for other plugins
+    /// (<see cref="GitHubApi.SendRawAsync"/>). The token is borrowed for this call only.
+    /// </summary>
+    public async Task<GitHubRawResponse> SendRawAsync(string? account, string method, string pathOrUrl, string? json = null,
+        string? ifNoneMatch = null, string? accept = null, CancellationToken ct = default)
+    {
+        account ??= (await ListAccountsAsync(ct)).FirstOrDefault()
+                    ?? throw new GitHubException("Nobody is signed in to GitHub. Sign in in Settings → GitHub.");
+        return await api.SendRawAsync(await TokenAsync(account, ct), method, pathOrUrl, json, ifNoneMatch, accept, ct);
+    }
+
     private async Task<string> TokenAsync(string account, CancellationToken ct) =>
         await Credentials.GetTokenAsync(account, ct)
         ?? throw new GitHubException($"Git Credential Manager has no stored sign-in for {account}. Sign in again in Settings → GitHub.");

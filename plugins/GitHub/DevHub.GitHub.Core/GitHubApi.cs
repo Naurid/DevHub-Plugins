@@ -20,6 +20,11 @@ public sealed record GitHubRepository(
     DateTimeOffset? PushedAt);
 
 /// <summary>A GitHub API call failed; <see cref="Exception.Message"/> says why in plain words (never the token).</summary>
+/// <summary>An API answer as it came (<see cref="GitHubApi.SendRawAsync"/>).</summary>
+/// <param name="NextPageUrl">The full URL of the next page (Link header), or null on the last one.</param>
+public sealed record GitHubRawResponse(HttpStatusCode Status, string Body, string? ETag, string? NextPageUrl,
+    int? RateLimitRemaining, DateTimeOffset? RateLimitReset);
+
 public sealed class GitHubException(string message, HttpStatusCode? status = null, Exception? inner = null)
     : Exception(message, inner)
 {
@@ -111,6 +116,72 @@ public sealed class GitHubApi(HttpClient http)
         using var doc = await ReadJsonAsync(response, ct);
         return ParseRepository(doc.RootElement);
     }
+
+    // ---- Any API call, for other plugins (IGitHubApi in the Sdk) -------------------------------------------
+
+    private static readonly string[] AllowedMethods = ["GET", "POST", "PATCH", "PUT", "DELETE"];
+
+    /// <summary>
+    /// Where a request may go: <paramref name="pathOrUrl"/> relative to <see cref="BaseAddress"/>, or a full URL on it;
+    /// null for anything that would end up elsewhere (another host, http, "//host/…"): the token only ever goes to the API.
+    /// </summary>
+    public static Uri? ApiUri(string pathOrUrl)
+    {
+        if (string.IsNullOrWhiteSpace(pathOrUrl))
+            return null;
+        Uri uri;
+        if (Uri.TryCreate(pathOrUrl, UriKind.Absolute, out var absolute) && absolute.Scheme is "https" or "http")
+            uri = absolute;
+        else if (pathOrUrl.StartsWith("//", StringComparison.Ordinal) || pathOrUrl.StartsWith(@"\\", StringComparison.Ordinal))
+            return null; // protocol-relative: another host
+        else
+            uri = new Uri(BaseAddress, pathOrUrl.TrimStart('/'));
+        return uri.Scheme == Uri.UriSchemeHttps && uri.IsDefaultPort
+               && uri.Host.Equals(BaseAddress.Host, StringComparison.OrdinalIgnoreCase) ? uri : null;
+    }
+
+    /// <summary>
+    /// Sends any REST call as <paramref name="token"/>'s user and returns GitHub's answer as it is (an HTTP error is a
+    /// response, not an exception), with the ETag, the next page's full URL and the rate limit. Throws
+    /// <see cref="GitHubException"/> only when the call can't be made: a target outside the API, a method other than
+    /// GET / POST / PATCH / PUT / DELETE, or no connection.
+    /// </summary>
+    public async Task<GitHubRawResponse> SendRawAsync(string token, string method, string pathOrUrl, string? json = null,
+        string? ifNoneMatch = null, string? accept = null, CancellationToken ct = default)
+    {
+        var verb = method.ToUpperInvariant();
+        if (!AllowedMethods.Contains(verb))
+            throw new GitHubException($"\"{method}\" isn't a method DevHub sends to GitHub.");
+        var uri = ApiUri(pathOrUrl) ?? throw new GitHubException($"\"{pathOrUrl}\" isn't on api.github.com; DevHub sends your GitHub sign-in nowhere else.");
+
+        using var request = new HttpRequestMessage(new HttpMethod(verb), uri);
+        request.Headers.UserAgent.Add(new ProductInfoHeaderValue("DevHub", "1.0"));
+        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(accept ?? "application/vnd.github+json"));
+        request.Headers.Add("X-GitHub-Api-Version", "2022-11-28");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        if (ifNoneMatch is not null)
+            request.Headers.TryAddWithoutValidation("If-None-Match", ifNoneMatch);
+        if (json is not null)
+            request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        try
+        {
+            using var response = await http.SendAsync(request, ct);
+            var body = response.Content is null ? "" : await response.Content.ReadAsStringAsync(ct);
+            return new GitHubRawResponse(response.StatusCode, body,
+                response.Headers.ETag?.ToString(),
+                NextPage(response) is { } next ? new Uri(BaseAddress, next).AbsoluteUri : null,
+                Header(response, "x-ratelimit-remaining") is { } remaining && int.TryParse(remaining, out var r) ? r : null,
+                Header(response, "x-ratelimit-reset") is { } reset && long.TryParse(reset, out var seconds) ? DateTimeOffset.FromUnixTimeSeconds(seconds) : null);
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new GitHubException("Couldn't reach GitHub. Check your internet connection.", null, ex);
+        }
+    }
+
+    private static string? Header(HttpResponseMessage response, string name) =>
+        response.Headers.TryGetValues(name, out var values) ? values.FirstOrDefault() : null;
 
     private async Task<HttpResponseMessage> SendAsync(HttpMethod method, string path, string token, string? json,
         CancellationToken ct, string? unprocessable = null)

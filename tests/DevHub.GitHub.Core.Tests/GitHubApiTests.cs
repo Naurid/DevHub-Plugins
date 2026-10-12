@@ -30,6 +30,77 @@ public class GitHubApiTests
     private static string Repo(string name, bool isPrivate = false) =>
         $$"""{"full_name":"me/{{name}}","name":"{{name}}","description":null,"private":{{(isPrivate ? "true" : "false")}},"clone_url":"https://github.com/me/{{name}}.git","html_url":"https://github.com/me/{{name}}","pushed_at":"2026-10-01T12:00:00Z"}""";
 
+    // ---- SendRawAsync (other plugins' calls through IGitHubApi) -------------------------------------
+
+    [Theory]
+    [InlineData("repos/naurid/devhub/actions/runs?per_page=5", "https://api.github.com/repos/naurid/devhub/actions/runs?per_page=5")]
+    [InlineData("/user", "https://api.github.com/user")]
+    [InlineData("https://api.github.com/repositories/1/runs?page=2", "https://api.github.com/repositories/1/runs?page=2")]
+    public void Api_targets_stay_on_the_api(string pathOrUrl, string expected) =>
+        Assert.Equal(expected, GitHubApi.ApiUri(pathOrUrl)!.AbsoluteUri);
+
+    [Theory]
+    [InlineData("https://evil.example/steal")]
+    [InlineData("//evil.example/steal")]
+    [InlineData("http://api.github.com/user")]          // not https
+    [InlineData("https://api.github.com.evil.example/")]
+    [InlineData("https://api.github.com:8443/user")]
+    [InlineData("")]
+    public void Anything_else_is_refused(string pathOrUrl) => Assert.Null(GitHubApi.ApiUri(pathOrUrl));
+
+    [Fact]
+    public async Task A_target_outside_the_api_sends_nothing()
+    {
+        var handler = new FakeHandler();
+        var api = new GitHubApi(new HttpClient(handler));
+
+        await Assert.ThrowsAsync<GitHubException>(() => api.SendRawAsync("gho_secret", "GET", "//evil.example/x"));
+        await Assert.ThrowsAsync<GitHubException>(() => api.SendRawAsync("gho_secret", "TRACE", "user"));
+
+        Assert.Empty(handler.Requests);
+    }
+
+    [Fact]
+    public async Task Raw_calls_pass_the_answer_through_with_paging_etag_and_rate_limit()
+    {
+        var handler = new FakeHandler();
+        var page = Json("""{"total_count":1}""");
+        page.Headers.ETag = new System.Net.Http.Headers.EntityTagHeaderValue("\"abc\"", isWeak: true);
+        page.Headers.Add("Link", "<https://api.github.com/repositories/1/actions/runs?page=2>; rel=\"next\"");
+        page.Headers.Add("x-ratelimit-remaining", "4999");
+        page.Headers.Add("x-ratelimit-reset", "1760000000");
+        handler.Responses.Enqueue(page);
+        var api = new GitHubApi(new HttpClient(handler));
+
+        var response = await api.SendRawAsync("gho_secret", "get", "repos/me/x/actions/runs", ifNoneMatch: "W/\"old\"", accept: "application/vnd.github.raw");
+
+        Assert.Equal(HttpStatusCode.OK, response.Status);
+        Assert.Equal("""{"total_count":1}""", response.Body);
+        Assert.Equal("W/\"abc\"", response.ETag);
+        Assert.Equal("https://api.github.com/repositories/1/actions/runs?page=2", response.NextPageUrl);
+        Assert.Equal(4999, response.RateLimitRemaining);
+        Assert.Equal(DateTimeOffset.FromUnixTimeSeconds(1760000000), response.RateLimitReset);
+        var request = handler.Requests.Single().Request;
+        Assert.Equal("Bearer gho_secret", request.Headers.Authorization!.ToString());
+        Assert.Equal("W/\"old\"", request.Headers.GetValues("If-None-Match").Single());
+        Assert.Contains("application/vnd.github.raw", request.Headers.Accept.ToString());
+    }
+
+    [Fact]
+    public async Task Http_errors_and_not_modified_are_answers_not_exceptions()
+    {
+        var handler = new FakeHandler();
+        handler.Responses.Enqueue(new HttpResponseMessage(HttpStatusCode.NotModified));
+        handler.Responses.Enqueue(Json("""{"message":"Not Found"}""", HttpStatusCode.NotFound));
+        var api = new GitHubApi(new HttpClient(handler));
+
+        Assert.Equal(HttpStatusCode.NotModified, (await api.SendRawAsync("t", "GET", "user")).Status);
+        var missing = await api.SendRawAsync("t", "POST", "repos/me/x/dispatches", json: "{}");
+        Assert.Equal(HttpStatusCode.NotFound, missing.Status);
+        Assert.Contains("Not Found", missing.Body);
+        Assert.Equal("{}", handler.Requests[1].Body);
+    }
+
     [Fact]
     public async Task Requests_carry_the_token_and_GitHubs_headers()
     {

@@ -210,4 +210,43 @@ public class RemoteTests
     {
         public void Report(T value) => report(value);
     }
+
+    // ---- OperationCompleted (the repository events plugins get) ---------------------------------
+
+    [GitFact]
+    public async Task Successful_commit_push_fetch_and_pull_are_reported_once_each()
+    {
+        using var t = new TwoClones();
+        var bob = new List<GitOperationCompleted>();
+        var alice = new List<GitOperationCompleted>();
+        t.Bob.Client.OperationCompleted += (_, e) => bob.Add(e);
+        t.Alice.Client.OperationCompleted += (_, e) => alice.Add(e);
+
+        t.Bob.WriteFile("b.txt", "bob\n");
+        t.Bob.Run("add", "b.txt");
+        var id = await t.Bob.Client.CommitAsync("from bob");
+        await t.Bob.Client.PushAsync();
+        await t.Alice.Client.FetchAsync();
+        await t.Alice.Client.PullAsync();
+
+        Assert.Equal([new GitOperationCompleted(GitOperation.Committed, id), new GitOperationCompleted(GitOperation.Pushed, null)], bob);
+        Assert.Equal([GitOperation.Fetched, GitOperation.Pulled], alice.Select(e => e.Operation));
+    }
+
+    [GitFact]
+    public async Task A_failed_operation_reports_nothing()
+    {
+        using var t = new TwoClones();
+        t.Bob.WriteFile("b.txt", "bob\n");
+        t.Bob.CommitAll("from bob");
+        await t.Bob.Client.PushAsync();
+        t.Alice.WriteFile("c.txt", "alice\n");
+        t.Alice.CommitAll("from alice");
+        var reported = new List<GitOperationCompleted>();
+        t.Alice.Client.OperationCompleted += (_, e) => reported.Add(e);
+
+        await Assert.ThrowsAsync<RemoteOperationException>(() => t.Alice.Client.PullAsync()); // diverged: no fast-forward
+
+        Assert.Empty(reported);
+    }
 }

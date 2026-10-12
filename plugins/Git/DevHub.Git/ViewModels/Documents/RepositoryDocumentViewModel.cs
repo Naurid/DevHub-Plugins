@@ -25,6 +25,10 @@ public sealed partial class RepositoryDocumentViewModel : DocumentViewModelBase,
     public const string IdPrefix = "Repository:";
 
     private readonly GitRepositoryClient? _client;
+    private readonly GitRepositoryEvents _events;
+    private readonly GitDecorations _decorations;
+    private string? _headBranch; // the current branch (null: detached), for commit message suggestions
+    private readonly IDisposable? _eventsSubscription;
     private readonly RepositoryWatcher? _watcher;
     private readonly BranchOperations _branchOperations;
     private readonly CommitOperations _commitOperations;
@@ -44,13 +48,15 @@ public sealed partial class RepositoryDocumentViewModel : DocumentViewModelBase,
         Path = path;
         _client = client;
         _terminal = services.Terminal;
+        _events = services.Events;
+        _eventsSubscription = client is null ? null : services.Events.Watch(client);
         _addFiles = services.AddFiles;
         Layout = layout;
         Action<FileChangeViewModel, int?> openInEditor = (file, line) => services.Editor.Open(path, file.Change.Path, line);
         LocalChanges = new LocalChangesViewModel(layout, client, services.Dialogs, services.Status, RefreshAsync,
             openInEditor, OpenDiffInTab,
             push: () => Remote!.PushWithoutAskingAsync(), // Remote is created below; this runs later
-            annotate: OpenBlame);
+            annotate: OpenBlame, suggesters: services.Suggesters.ToList(), branch: () => _headBranch);
         Name = System.IO.Path.GetFileName(path.TrimEnd('\\', '/')) is { Length: > 0 } name ? name : path;
         _selectedSection = LocalChangesSection;
         _selectedNode = LocalChangesSection;
@@ -77,7 +83,10 @@ public sealed partial class RepositoryDocumentViewModel : DocumentViewModelBase,
         Sidebar = [LocalChangesSection, AllCommitsSection, BranchesGroup, RemotesGroup, TagsSection, StashesSection, SubmodulesSection];
 
         _commitOperations = new CommitOperations(client, services.Dialogs, services.Status, RefreshAsync, branchOperations, Remote);
-        CommitLog = new CommitLogViewModel(layout, client, openInEditor, OpenBlame, _commitOperations, services.Host);
+        // Other plugins' marks on commits and branches (CI's ✓ / ✗): asked for what's shown, again when they change.
+        _decorations = new GitDecorations(services.Decorators, path);
+        _decorations.Changed += OnDecorationsChanged;
+        CommitLog = new CommitLogViewModel(layout, client, openInEditor, OpenBlame, _commitOperations, services.Host, _decorations);
         Tags = new TagListViewModel(_commitOperations, branchOperations);
         Stashes = new StashListViewModel(layout, client, services.Dialogs, services.Status, RefreshAsync,
             () => SelectedSection = LocalChangesSection, openInEditor, OpenBlame);
@@ -303,6 +312,8 @@ public sealed partial class RepositoryDocumentViewModel : DocumentViewModelBase,
 
             Branch = status.DisplayBranch;
             Upstream = status.Upstream;
+            _headBranch = status.Branch;
+            _events.ReportHead(Path, status.Branch, status.CommitId);
             SyncText = (status.Ahead, status.Behind) switch
             {
                 (0, 0) => null,
@@ -317,8 +328,9 @@ public sealed partial class RepositoryDocumentViewModel : DocumentViewModelBase,
             BranchPopup.Update(branches);
             var remotes = await client.GetRemoteDetailsAsync(ct);
             var selectedKey = SelectedNode?.Key;
-            if (_branchTree.Update(BranchesGroup, RemotesGroup, branches, remotes, Remote.ManageRemotesCommand, Remote.FetchCommand)
-                && SelectedNode is not RepositorySection && selectedKey is not null)
+            var rebuilt = _branchTree.Update(BranchesGroup, RemotesGroup, branches, remotes, Remote.ManageRemotesCommand, Remote.FetchCommand);
+            ApplyBranchDecorations();
+            if (rebuilt && SelectedNode is not RepositorySection && selectedKey is not null)
             {
                 // The rows are new objects: select the same branch / folder again.
                 var again = SidebarBranchTree.Descendants(BranchesGroup).Concat(SidebarBranchTree.Descendants(RemotesGroup))
@@ -425,5 +437,27 @@ public sealed partial class RepositoryDocumentViewModel : DocumentViewModelBase,
         _refreshCts?.Cancel();
         _refreshCts?.Dispose();
         _refreshCts = null;
+        _eventsSubscription?.Dispose();
+        _decorations.Changed -= OnDecorationsChanged;
+        _decorations.Dispose();
+    }
+
+    private void OnDecorationsChanged(object? sender, EventArgs e) => ApplyBranchDecorations();
+
+    /// <summary>Puts other plugins' marks on the branches in the sidebar ("main", "origin/main").</summary>
+    private void ApplyBranchDecorations()
+    {
+        if (_decorations.IsEmpty)
+            return;
+        var nodes = SidebarBranchTree.Descendants(BranchesGroup).Concat(SidebarBranchTree.Descendants(RemotesGroup))
+            .OfType<SidebarBranchNode>().ToList();
+        var found = _decorations.ForBranches(nodes.Select(n => n.Branch.ShortName).Distinct().ToList());
+        foreach (var node in nodes)
+        {
+            node.Decorations.Clear();
+            if (found.TryGetValue(node.Branch.ShortName, out var marks))
+                foreach (var mark in marks)
+                    node.Decorations.Add(mark);
+        }
     }
 }

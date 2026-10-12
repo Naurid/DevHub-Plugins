@@ -12,6 +12,15 @@ public sealed partial class GitRepositoryClient(GitRunner runner, string reposit
     /// <summary>The runner, for the other parts of this class (a primary-constructor parameter is only in scope in this file).</summary>
     private GitRunner Runner => runner;
 
+    /// <summary>
+    /// Raised after a commit, fetch, pull or push made through this client succeeded (not when it failed or was
+    /// cancelled), on the thread that awaited it. The Git plugin turns these into the Sdk's repository events.
+    /// </summary>
+    public event EventHandler<GitOperationCompleted>? OperationCompleted;
+
+    private void Completed(GitOperation operation, string? commitId = null) =>
+        OperationCompleted?.Invoke(this, new GitOperationCompleted(operation, commitId));
+
     /// <summary>True when the folder is inside a git work tree.</summary>
     public async Task<bool> IsRepositoryAsync(CancellationToken ct = default)
     {
@@ -193,7 +202,9 @@ public sealed partial class GitRepositoryClient(GitRunner runner, string reposit
         await runner.RunAsync(RepositoryPath, args, new GitRunOptions { StandardInput = normalized }, ct);
 
         var head = await runner.RunAsync(RepositoryPath, ["rev-parse", "HEAD"], new GitRunOptions { ReadOnly = true }, ct);
-        return head.StandardOutput.Trim();
+        var id = head.StandardOutput.Trim();
+        Completed(GitOperation.Committed, id);
+        return id;
     }
 
     /// <summary>The last commit's full message (to edit when amending), or null before the first commit.</summary>
@@ -354,8 +365,11 @@ public sealed partial class GitRepositoryClient(GitRunner runner, string reposit
     /// Downloads new commits and branches from every remote (<c>fetch --all --prune</c>: remote
     /// branches deleted on the server disappear here too). Changes no local branch or file.
     /// </summary>
-    public Task FetchAsync(IProgress<GitProgress>? progress = null, CancellationToken ct = default) =>
-        RunRemoteAsync(["fetch", "--all", "--prune", "--progress"], progress, ct);
+    public async Task FetchAsync(IProgress<GitProgress>? progress = null, CancellationToken ct = default)
+    {
+        await RunRemoteAsync(["fetch", "--all", "--prune", "--progress"], progress, ct);
+        Completed(GitOperation.Fetched);
+    }
 
     /// <summary>
     /// Brings the current branch up to date with its upstream. <see cref="PullMode.FastForwardOnly"/>
@@ -363,12 +377,15 @@ public sealed partial class GitRepositoryClient(GitRunner runner, string reposit
     /// when both sides have new commits; <see cref="PullMode.Rebase"/> then replays the local
     /// commits on top, stashing uncommitted changes around it (<c>--autostash</c>).
     /// </summary>
-    public Task PullAsync(PullMode mode = PullMode.FastForwardOnly, IProgress<GitProgress>? progress = null,
-        CancellationToken ct = default) =>
-        RunRemoteAsync(mode == PullMode.Rebase
+    public async Task PullAsync(PullMode mode = PullMode.FastForwardOnly, IProgress<GitProgress>? progress = null,
+        CancellationToken ct = default)
+    {
+        await RunRemoteAsync(mode == PullMode.Rebase
                 ? ["pull", "--rebase", "--autostash", "--progress"]
                 : ["pull", "--ff-only", "--progress"],
             progress, ct);
+        Completed(GitOperation.Pulled);
+    }
 
     /// <summary>
     /// Pushes the current branch. With an upstream it goes there, even if the remote branch has
@@ -377,7 +394,7 @@ public sealed partial class GitRepositoryClient(GitRunner runner, string reposit
     /// tracking it (<c>-u</c>). <paramref name="forceWithLease"/> overwrites the remote branch,
     /// but only if it's still where we last saw it (never a blind <c>--force</c>).
     /// </summary>
-    public Task PushAsync(string? newUpstreamRemote = null, bool forceWithLease = false,
+    public async Task PushAsync(string? newUpstreamRemote = null, bool forceWithLease = false,
         IProgress<GitProgress>? progress = null, CancellationToken ct = default)
     {
         List<string> args = ["-c", "push.default=upstream", "push", "--progress"];
@@ -385,7 +402,8 @@ public sealed partial class GitRepositoryClient(GitRunner runner, string reposit
             args.Add("--force-with-lease");
         if (newUpstreamRemote is not null)
             args.AddRange(["-u", newUpstreamRemote, "HEAD"]);
-        return RunRemoteAsync(args, progress, ct);
+        await RunRemoteAsync(args, progress, ct);
+        Completed(GitOperation.Pushed);
     }
 
     /// <summary>

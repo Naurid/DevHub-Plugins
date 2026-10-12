@@ -1,0 +1,114 @@
+# DevHub-Plugins — Project Guide
+
+Plugins for **DevHub** (a developer workbench: a bare shell that plugins fill), offered in its marketplace.
+DevHub's own plugins live here too: **Projects, Git, GitHub, Templates** (moved from DevHub with their
+history in PM4). DevHub bundles those four in its installer (from this repository's marketplace index), and
+they update through the marketplace like any other plugin. New plugins (Board, Diagrams, CI) are built here.
+
+The shell, the Sdk and the plugin system live in **Naurid/DevHub** (on this machine: `C:\P\DevHub\DevHub`).
+Its docs are the reference for anything a plugin touches: `docs/PLUGINS.md` (contract, extension points,
+linking, marketplace, building blocks), `docs/UI_GUIDE.md` (tokens, components, recipes, Avalonia 12 gotchas),
+`docs/ACTIONS_AND_FUZZY_MATCHING.md`, and the roadmap `docs/ROADMAP.md` (milestones for both repositories).
+
+## Stack
+- .NET 10 (`net10.0`), Avalonia **12.x**, CommunityToolkit.Mvvm 8.4, Microsoft.Extensions.DependencyInjection,
+  System.Text.Json, xUnit. Most Avalonia examples online are 11.x: check docs.avaloniaui.net before guessing.
+- The Sdk comes from **nuget.org** (`DevHub.Sdk`, `DevHub.Sdk.Core`; `Directory.Build.props`, newest release by
+  default). Unreleased Sdk changes: `pwsh build/Pack-Sdk.ps1` in DevHub → `%LocalAppData%\DevHub-local-feed`, then
+  build here with `-p:DevHubSdkVersion=<the printed version>`.
+- Avalonia, CommunityToolkit.Mvvm and DI are build-only (DevHub provides them at run time); keep their versions
+  equal to DevHub's.
+
+## Layout
+```
+plugins/<Name>/                  one plugin; grouped ones have a UI project and a .Core:
+  Git/DevHub.Git/ + DevHub.Git.Core/            the Git client (repository tabs, diff, blame, Git Console)
+  GitHub/DevHub.GitHub/ + DevHub.GitHub.Core/   GitHub account, Publish, IGitHubApi for other plugins (requires Git)
+  Projects/DevHub.Projects/ + .Core/            Projects tool window, Open With
+  Templates/DevHub.Templates/ + .Core/          New Project, Add Files, template editor and import; the engine
+  HelloWorld/                                   the sample plugin (one project)
+  (plugin.json sits next to the UI project: id, name, description, category, apiVersion, requires)
+tests/                           DevHub.<X>.Core.Tests (xUnit), DevHub.TestKit (TempGitRepo, [GitFact])
+docs/                            GIT_CLIENT_PLAN.md (Git plugin), TEMPLATE_FORMAT.md (the template spec)
+build/                           Get-PluginVersion, Pack-Plugin, Publish-Plugins, Test-Plugins (README.md)
+Directory.Build.props            project kinds (plugin / .Core / test) and their Sdk references
+Directory.Build.targets          after a build: plugin.json next to the DLLs, Properties/launchSettings.json (F5)
+DevHub-Plugins.sln
+```
+
+## Plugin rules (details in DevHub's docs/PLUGINS.md)
+- A plugin's UI project → the Sdk + its own `.Core`; a `.Core` → `DevHub.Sdk.Core` only (**no Avalonia**). All
+  logic that can be tested without a window lives in a `.Core` with tests; ViewModels stay thin.
+- A plugin registers everything in its plugin class's `ConfigureServices`; a switched-off plugin registers nothing.
+  Its settings are its own section (`ISettingsSection`, `SectionId` = plugin id) in its `.Core`.
+- **Hard requirement** (`requires` in plugin.json and `PluginInfo`): it may use the required plugin's types and
+  reference its projects (GitHub → Git, Templates → Projects); the package leaves the required plugin's DLLs out.
+- **Optional links** go through the hooks in the Sdk's `Integration/` (plain data only), injected as
+  `IEnumerable<T>` or `T? x = null`, always with a fallback: `IProjectOpener`, `IProjectFileEditor`,
+  `IProjectFolders`, `IAddFilesFromTemplate`, `IRepositoryEvents`, `ICommitMessageSuggester`, `IGitDecorator`,
+  `IGitHubApi`. **Projects and Git never depend on each other** (either direction).
+- A plugin's design tokens go in its `Themes/*.axaml` (returned from `IPlugin.Resources`); its `avares://` URIs name
+  its own assembly. Use the Sdk's building blocks before writing new ones (Markdown, charts, ItemsDragDrop,
+  PeoplePicker, …: PLUGINS.md "Building blocks").
+
+## App rules (MVVM + UI; details in DevHub's docs/UI_GUIDE.md and the `avalonia-mvvm` skill)
+- ViewModels never reference views, `Window`, `TopLevel` or controls; dialogs / pickers / status go through the
+  Sdk's service interfaces. Code-behind = `InitializeComponent()` only. Compiled bindings (`x:DataType`) everywhere;
+  XAML namespaces with `using:`.
+- No hex colors, pixel sizes or font names in views: tokens via `DynamicResource`, matching the property's type
+  (a number in `Padding` compiles but crashes).
+- User operations are actions (`AppAction` + `IActionProvider`); screens are documents, tool windows or dialogs.
+- Async disk / process work; never `.Result` / `.Wait()` on the UI thread. Every `+=` has its `-=`.
+- Accessible names: list items override `ToString()`; icon-only buttons get `AutomationProperties.Name`.
+
+## Git client rules (Git plugin; details in docs/GIT_CLIENT_PLAN.md)
+- Run git **only through `GitRunner`** (`DevHub.Git.Core`): `ArgumentList`, no shell string, `GIT_TERMINAL_PROMPT=0`;
+  read-only commands pass `ReadOnly = true` (no optional locks).
+- Parse **only machine-readable output** (`--porcelain=v2`, `-z`, explicit `--format`).
+- **One repository per tab, one `GitRepositoryClient` per repository**; commands always name their repository.
+- Anything that **changes** a repository happens only on a user action; destructive ones (discard, reset, delete
+  an unmerged branch, force push) need a confirmation saying what is lost.
+- Every command shows up in the Git Console (the runner logs it).
+- Credentials come only from Git Credential Manager: never ask for, store or log a password or token (borrow it per
+  API call with `credential fill`, run as `Sensitive`); the GitHub token only ever goes to api.github.com.
+- Core git tests use real git in temp repos (`TempGitRepo`, `[GitFact]`); UI checks use scratch repositories,
+  never the user's own.
+
+## Template engine rules (Templates plugin; details in the `template-engine` skill and docs/TEMPLATE_FORMAT.md)
+- **Unknown `{{...}}` tokens pass through untouched** (Vue, Handlebars, Jinja, Go templates, GitHub Actions `${{ }}`).
+- **Never write outside the target root**: resolve every rendered path and reject anything that escapes it.
+- **Generate into a staging folder, then move**: a failure must not leave a half-written project.
+- **Binary files are copied byte for byte**; **never overwrite existing files silently** (conflicts are asked).
+- **Post-create commands never run without the user seeing them first**; `ProcessStartInfo` with `ArgumentList`,
+  `UseShellExecute = false`, never a shell string.
+- Built-in templates are checked out byte for byte (`.gitattributes`); they're found next to the Templates DLL.
+
+**Scope decisions (don't change without asking):** templates are a folder + `template.json` on disk; the
+library lives in `%APPDATA%/DevHub/templates` (a setting may override it); no conditionals or loops in templates
+(plain substitution); Windows first, but Core stays path-agnostic.
+
+## Build / run / verify
+```
+dotnet build DevHub-Plugins.sln
+dotnet test DevHub-Plugins.sln
+```
+- **Run a plugin in DevHub:** F5 with the generated "DevHub" profile (installed DevHub, your build folder through
+  `DEVHUB_PLUGIN_PATHS`, its own data folder `.devhub-data/`). README.md, "Run and debug in DevHub".
+- **Before publishing:** `pwsh build/Test-Plugins.ps1` (all plugins together, each alone with its requirements,
+  next to DevHub's; fails on a crash, a hang, a problem or a skipped plugin).
+- Core changes: add or extend tests (the template engine and the Git client are where regressions hurt files).
+- UI changes: Claude can build but not see the window: drive it (UI Automation) or end with a **manual check list**.
+
+## Versions and publishing (README.md)
+- Each plugin has its own version, **N.M.0**: N = its highest `<id>/vN` tag (only the user creates those), M = pushes
+  on main touching `plugins/<Name>/` since. Every push to main publishes the plugins whose version changed (a
+  release per plugin version + `index.json` on the `index` release); `"publish": false` in plugin.json skips one.
+- A change that needs a newer Sdk is released in DevHub first (the Sdk on nuget.org), then here; DevHub's next
+  release bundles the new plugin versions.
+
+## Working with the user
+The user is learning as they build DevHub: experienced in C# (Unity background), newer to Avalonia/XAML/MVVM and
+desktop architecture. Explain **why** the first time a concept appears (Unity analogies help); keep steps small and
+runnable. **Claude writes all the code** and **commits its own work on a feature branch**; the user merges (and
+pushes) when needed: say in which order when DevHub and this repository both change. Keep DevHub's
+`docs/ROADMAP.md` checkboxes current.

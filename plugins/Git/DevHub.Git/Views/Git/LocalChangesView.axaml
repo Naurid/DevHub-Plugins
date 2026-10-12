@@ -129,6 +129,13 @@
                              message is for, and ticking it fills the box with the last commit's message. -->
                         <CheckBox Content="Amend" IsChecked="{Binding Commit.IsAmend}"
                                   ToolTip.Tip="Replace the last commit instead of adding a new one (its message is filled in)" />
+                        <!-- Another plugin's suggestion (DevHub.Integration), only while the box is empty; Use puts it in. -->
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing}" IsVisible="{Binding Commit.ShowsSuggestion}">
+                            <TextBlock Classes="secondary" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                       Text="{Binding Commit.Suggestion, StringFormat='Suggested: {0}'}" />
+                            <Button Grid.Column="1" Content="Use" Command="{Binding Commit.UseSuggestionCommand}"
+                                    ToolTip.Tip="Put the suggested message in the box" />
+                        </Grid>
                         <TextBox Text="{Binding Commit.Message}" PlaceholderText="Commit message"
                                  AcceptsReturn="True" TextWrapping="Wrap" VerticalContentAlignment="Top"
                                  MinHeight="{DynamicResource Size.CommitMessage}"

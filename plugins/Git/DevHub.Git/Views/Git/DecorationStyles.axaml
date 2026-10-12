@@ -1,0 +1,22 @@
+<!--
+  Other plugins' marks on commits and branches (IGitDecorator: CI's ✓ / ✗ / ●): small badges with an icon, colored by
+  tone, the decorator's tooltip, and a link when it gave one (http(s) only). Include with
+  <StyleInclude Source="avares://DevHub.Git/Views/Git/DecorationStyles.axaml" />, then
+  ItemTemplate="{StaticResource Decoration}" on an ItemsControl of DecorationViewModels.
+-->
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:DevHub.ViewModels.Git"
+        xmlns:c="using:DevHub.Controls">
+    <Styles.Resources>
+        <DataTemplate x:Key="Decoration" x:DataType="vm:DecorationViewModel">
+            <HyperlinkButton NavigateUri="{Binding Url}" IsHitTestVisible="{Binding IsLink}" Focusable="{Binding IsLink}"
+                             Padding="0" Margin="0" ToolTip.Tip="{Binding ToolTip}" AutomationProperties.Name="{Binding ToolTip}">
+                <c:Badge Classes.success="{Binding IsSuccess}" Classes.warning="{Binding IsWarning}"
+                         Classes.error="{Binding IsError}" Classes.accent="{Binding IsRunning}">
+                    <c:Icon Kind="{Binding IconKind}" Width="{DynamicResource Size.Icon}" Height="{DynamicResource Size.Icon}" />
+                </c:Badge>
+            </HyperlinkButton>
+        </DataTemplate>
+    </Styles.Resources>
+</Styles>

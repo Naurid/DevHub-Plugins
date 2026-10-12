@@ -1,3 +1,4 @@
+using DevHub.Integration;
 using DevHub.GitHub.Core;
 using DevHub.Sdk.Core.Plugins;
 using DevHub.Services;
@@ -30,6 +31,8 @@ public sealed class GitHubPlugin : IPlugin
         services.AddSingleton<GitHubSession>();
         // Offered to Git (Git doesn't know GitHub): Publish, your avatar, your repositories in Clone.
         services.AddSingleton<IRemoteHost, GitHubRemoteHost>();
+        // Offered to every plugin (DevHub.Integration): REST calls as the signed-in user, the token stays here.
+        services.AddSingleton<IGitHubApi, GitHubApiForPlugins>();
         services.AddTransient<SettingsPageViewModelBase, GitHubSettingsPageViewModel>();
     }
 }
