@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "rust-cargo",
+  "kind": "project",
+  "name": "Rust Crate",
+  "description": "cargo new: a binary or a library crate, with a README.",
+  "language": "Rust",
+  "categories": ["Console", "Library"],
+  "rootFolder": "{{Name:kebab}}",
+  "variables": [
+    { "name": "Name", "label": "Crate name", "required": true },
+    { "name": "Kind", "label": "Crate kind", "type": "choice", "choices": ["bin", "lib"], "default": "bin" },
+    { "name": "Git", "label": "Create a git repository", "type": "bool", "default": true }
+  ],
+  "baseCommand": {
+    "command": "cargo",
+    "args": ["new", "{{Name:kebab}}", "--{{Kind}}", "--vcs", "none"],
+    "runIn": "parent"
+  },
+  "postCreate": [
+    { "name": "Initialize git", "command": "git", "args": ["init"], "when": "Git", "continueOnError": true }
+  ]
+}

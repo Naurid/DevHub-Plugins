@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "csharp-interface",
+  "kind": "item",
+  "name": "C# Interface",
+  "description": "An interface in its own file, in the folder's namespace (name it IThing).",
+  "language": "C#",
+  "categories": ["Code"],
+  "variables": [
+    { "name": "Name", "label": "Interface name", "required": true, "pattern": "^[A-Za-z_][A-Za-z0-9_]*$", "default": "I" },
+    { "name": "Namespace", "required": true, "pattern": "^[A-Za-z_][A-Za-z0-9_]*([.][A-Za-z_][A-Za-z0-9_]*)*$" }
+  ]
+}

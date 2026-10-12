@@ -1,0 +1,19 @@
+<!-- Push without a remote: what's wrong, and the two ways forward (Publish = the dialog's main button). -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Git"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Git.NoRemoteDialogView"
+             x:DataType="vm:NoRemoteDialogViewModel">
+    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Spacing.Large}"
+          Margin="{DynamicResource Padding.Dialog}">
+        <c:Icon Kind="info" Width="{DynamicResource Size.StripeIcon}" Height="{DynamicResource Size.StripeIcon}"
+                VerticalAlignment="Top" />
+        <StackPanel Grid.Column="1" Spacing="{DynamicResource Spacing}">
+            <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
+            <Button Classes="flat" Content="Add a remote by URL…" Command="{Binding AddRemoteCommand}" HorizontalAlignment="Left"
+                    IsVisible="{Binding CanAlsoAddRemote}"
+                    ToolTip.Tip="Add a remote that already exists (e.g. an empty repository you made on GitHub) and push there" />
+        </StackPanel>
+    </Grid>
+</UserControl>

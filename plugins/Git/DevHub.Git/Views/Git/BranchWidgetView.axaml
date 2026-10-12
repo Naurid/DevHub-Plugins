@@ -1,0 +1,56 @@
+<!--
+  Branch of the active repository (JetBrains' VCS widget) in the title bar. Click → branch popup
+  (G4). Hidden when no repository is active. ElementRole="User": clickable, not part of the
+  draggable title bar.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Git"
+             xmlns:c="using:DevHub.Controls"
+             xmlns:gitv="using:DevHub.Views.Git"
+             x:Class="DevHub.Views.Git.BranchWidgetView"
+             x:DataType="vm:BranchWidgetViewModel">
+
+    <UserControl.Styles>
+        <!-- Looks like text until hovered (JetBrains' VCS widget). -->
+        <Style Selector="Button.branchWidget">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="MinHeight" Value="{DynamicResource Size.ActionButton}" />
+            <Setter Property="Padding" Value="{DynamicResource Padding.StatusWidget}" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.Control}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Button.branchWidget:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource Brush.Bg.Hover}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Panel VerticalAlignment="Center">
+        <Button x:Name="BranchWidget" Classes="branchWidget"
+                Margin="{DynamicResource Margin.BranchWidget}"
+                WindowDecorationProperties.ElementRole="User"
+                Command="{Binding Active.Repository.BranchPopup.OpenCommand, FallbackValue={x:Null}}"
+                IsVisible="{Binding Active.Repository.Branch, Converter={x:Static StringConverters.IsNotNullOrEmpty}, FallbackValue=False}"
+                ToolTip.Tip="{Binding Active.Repository.Branch, StringFormat='Branch {0}: click for branches (Ctrl+Shift+`)', FallbackValue=''}"
+                AutomationProperties.Name="Branches">
+            <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}">
+                <c:Icon Kind="vcs" VerticalAlignment="Center" />
+                <!-- Capped so a long branch name ends in "…" instead of running into the toolbar. -->
+                <TextBlock Text="{Binding Active.Repository.Branch, FallbackValue=''}" VerticalAlignment="Center"
+                           MaxWidth="{DynamicResource Size.BranchWidgetText}" TextTrimming="CharacterEllipsis" />
+                <!-- ↑ahead ↓behind the upstream (G1). -->
+                <TextBlock Classes="small secondary" Text="{Binding Active.Repository.SyncText, FallbackValue=''}"
+                           VerticalAlignment="Center" />
+                <c:Icon Kind="chevronDown" VerticalAlignment="Center" />
+            </StackPanel>
+        </Button>
+
+        <!-- The branch popup, under the widget. Light-dismiss: a click outside closes it. -->
+        <Popup PlacementTarget="{Binding #BranchWidget}" Placement="BottomEdgeAlignedLeft"
+               IsLightDismissEnabled="True"
+               IsOpen="{Binding Active.Repository.BranchPopup.IsOpen, Mode=TwoWay, FallbackValue=False}">
+            <gitv:BranchPopupView DataContext="{Binding Active.Repository.BranchPopup}" />
+        </Popup>
+    </Panel>
+</UserControl>

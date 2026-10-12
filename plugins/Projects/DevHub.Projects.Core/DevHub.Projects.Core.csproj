@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- Projects plugin logic: repository scanning, language detection, Open With. No Avalonia. -->
+
+</Project>

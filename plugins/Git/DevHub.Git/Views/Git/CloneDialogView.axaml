@@ -1,0 +1,81 @@
+<!--
+  Clone Repository: source (your repositories on the hosting service, e.g. GitHub, searchable, or a URL), then where it goes
+  (parent folder + folder name, with the resulting path), and why OK was refused.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Git"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Git.CloneDialogView"
+             x:DataType="vm:CloneDialogViewModel">
+    <DockPanel Margin="{DynamicResource Padding.Dialog}">
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="{DynamicResource Spacing.Large}"
+                    Margin="{DynamicResource Margin.BlockBelow}">
+            <RadioButton GroupName="source" Content="{Binding HostSourceText}" IsChecked="{Binding IsFromHost}" IsVisible="{Binding HasHost}" />
+            <RadioButton GroupName="source" Content="URL" IsChecked="{Binding IsFromUrl}" IsVisible="{Binding HasHost}" />
+        </StackPanel>
+
+        <!-- Target (bottom), so the list above takes the remaining height. -->
+        <StackPanel DockPanel.Dock="Bottom" Spacing="{DynamicResource Spacing}">
+            <TextBlock Classes="secondary" Text="Folder" />
+            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing.Small}">
+                <TextBox Text="{Binding Folder}" AutomationProperties.Name="Parent folder" />
+                <Button Grid.Column="1" Content="Browse…" Command="{Binding BrowseCommand}" />
+            </Grid>
+            <TextBlock Classes="secondary" Text="Folder name" />
+            <TextBox Text="{Binding FolderName}" AutomationProperties.Name="Folder name" />
+            <TextBlock Classes="small secondary" Text="{Binding TargetText}" TextTrimming="CharacterEllipsis"
+                       ToolTip.Tip="{Binding TargetText}" />
+            <TextBlock Text="{Binding Error}" TextWrapping="Wrap" Foreground="{DynamicResource Brush.Status.Error}"
+                       IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        </StackPanel>
+
+        <Panel Margin="{DynamicResource Margin.BlockBelow}">
+            <!-- From the hosting service (GitHub) -->
+            <DockPanel IsVisible="{Binding IsFromHost}">
+                <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing}"
+                      Margin="{DynamicResource Margin.BlockBelow}">
+                    <c:SearchField Text="{Binding Filter}" PlaceholderText="Search your repositories" />
+                    <ComboBox Grid.Column="1" ItemsSource="{Binding Accounts}" SelectedItem="{Binding Account}"
+                              IsVisible="{Binding HasSeveralAccounts}" AutomationProperties.Name="Account" />
+                </Grid>
+                <Panel>
+                    <c:EmptyState IconKind="vcs" Title="{Binding HostName}" Description="{Binding ListMessage}"
+                                  IsVisible="{Binding ListMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <Button Content="Sign In…" Command="{Binding SignInCommand}" IsVisible="{Binding !HasAccounts}" />
+                    </c:EmptyState>
+                    <ListBox ItemsSource="{Binding Repositories}" SelectedItem="{Binding SelectedRepository}"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                             AutomationProperties.Name="Your repositories"
+                             IsVisible="{Binding ListMessage, Converter={x:Static StringConverters.IsNullOrEmpty}}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:HostRepositoryRowViewModel">
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}">
+                                            <TextBlock Text="{Binding FullName}" FontWeight="SemiBold" />
+                                            <c:Badge Classes="warning" Content="private" IsVisible="{Binding IsPrivate}" />
+                                        </StackPanel>
+                                        <TextBlock Classes="small secondary" Text="{Binding Description}"
+                                                   TextTrimming="CharacterEllipsis" IsVisible="{Binding HasDescription}" />
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="1" Classes="small secondary" Text="{Binding Updated}"
+                                               VerticalAlignment="Center" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Panel>
+            </DockPanel>
+
+            <!-- From a URL -->
+            <StackPanel IsVisible="{Binding IsFromUrl}" Spacing="{DynamicResource Spacing}">
+                <TextBlock Classes="secondary" Text="Repository URL" />
+                <TextBox Text="{Binding Url}" PlaceholderText="https://github.com/someone/repository.git"
+                         AutomationProperties.Name="Repository URL" />
+                <TextBlock Classes="small secondary" TextWrapping="Wrap"
+                           Text="HTTPS, SSH (git@host:owner/repository.git) or a folder. Private repositories use the sign-in git has for their host." />
+            </StackPanel>
+        </Panel>
+    </DockPanel>
+</UserControl>

@@ -1,0 +1,92 @@
+<!--
+  Shared by the file lists in Local Changes and in All Commits' commit details:
+  the change colors (JetBrains: modified = accent, added = success, deleted = secondary with
+  strikethrough, untracked = warning, conflict = error) and the "FileRow" item template
+  (status letter, file name, folder). Include with
+  <StyleInclude Source="avares://DevHub.Git/Views/Git/FileChangeStyles.axaml" />.
+-->
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:DevHub.ViewModels.Git"
+        xmlns:c="using:DevHub.Controls"
+        xmlns:conv="using:DevHub.Converters">
+
+    <Styles.Resources>
+        <!-- Tree rows: depth → left margin (Size.TreeIndent per level). -->
+        <conv:IndentConverter x:Key="Indent" Step="{StaticResource Size.TreeIndent}" />
+
+        <!-- One file row. Double-click stages / unstages in Local Changes (the command does
+             nothing in a commit's file list); the transparent background makes the whole row
+             clickable, not just the text. In tree view it's indented and the folder column hides
+             (the folder rows above say it). -->
+        <DataTemplate x:Key="FileRow" x:DataType="vm:FileChangeViewModel">
+            <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="{DynamicResource Spacing}"
+                  Margin="{Binding Depth, Converter={StaticResource Indent}}" ToolTip.Tip="{Binding ToolTip}"
+                  Background="Transparent" c:DoubleTap.Command="{Binding ToggleStageCommand}">
+                <TextBlock Classes="code change" Width="{DynamicResource Size.StatusLetter}"
+                           Classes.modified="{Binding IsModified}" Classes.renamed="{Binding IsRenamed}"
+                           Classes.added="{Binding IsAdded}" Classes.deleted="{Binding IsDeleted}"
+                           Classes.untracked="{Binding IsUntracked}" Classes.conflicted="{Binding IsConflicted}"
+                           Text="{Binding StatusLetter}" TextAlignment="Center" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1" Classes="change name"
+                           Classes.modified="{Binding IsModified}" Classes.renamed="{Binding IsRenamed}"
+                           Classes.added="{Binding IsAdded}" Classes.deleted="{Binding IsDeleted}"
+                           Classes.untracked="{Binding IsUntracked}" Classes.conflicted="{Binding IsConflicted}"
+                           Text="{Binding FileName}" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="2" Classes="small secondary" Text="{Binding Directory}"
+                           TextTrimming="CharacterEllipsis" VerticalAlignment="Center" IsVisible="{Binding ShowDirectory}" />
+            </Grid>
+        </DataTemplate>
+
+        <!-- A folder row (tree view): fold arrow, folder icon, name, how many changed files.
+             Click the arrow or double-click the row to fold / unfold (Left / Right on the keyboard). -->
+        <DataTemplate x:Key="FolderRow" x:DataType="vm:ChangeFolderRowViewModel">
+            <Grid ColumnDefinitions="Auto,Auto,Auto,*" ColumnSpacing="{DynamicResource Spacing.Small}"
+                  Margin="{Binding Depth, Converter={StaticResource Indent}}" ToolTip.Tip="{Binding ToolTip}"
+                  Background="Transparent" c:DoubleTap.Command="{Binding ToggleCommand}">
+                <Button Classes="flat" Padding="0" Command="{Binding ToggleCommand}" VerticalAlignment="Center"
+                        Width="{DynamicResource Size.TreeArrow}" Height="{DynamicResource Size.TreeArrow}"
+                        AutomationProperties.Name="Fold or unfold">
+                    <Panel>
+                        <c:Icon Kind="chevronDown" IsVisible="{Binding IsExpanded}" />
+                        <c:Icon Kind="chevronRight" IsVisible="{Binding !IsExpanded}" />
+                    </Panel>
+                </Button>
+                <c:Icon Grid.Column="1" Kind="folder" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="2" Text="{Binding Name}" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="3" Classes="small secondary" Text="{Binding Count}" VerticalAlignment="Center" />
+            </Grid>
+        </DataTemplate>
+    </Styles.Resources>
+
+    <Style Selector="TextBlock.change.modified">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+    </Style>
+    <Style Selector="TextBlock.change.renamed">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+    </Style>
+    <Style Selector="TextBlock.change.added">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Success}" />
+    </Style>
+    <Style Selector="TextBlock.change.deleted">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+    </Style>
+    <Style Selector="TextBlock.change.untracked">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Warning}" />
+    </Style>
+    <Style Selector="TextBlock.change.conflicted">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Error}" />
+    </Style>
+    <Style Selector="TextBlock.deleted.name">
+        <Setter Property="TextDecorations" Value="Strikethrough" />
+    </Style>
+
+    <!-- Header strip above a list ("Unstaged 3"): a line below separates it from the rows. -->
+    <Style Selector="Border.listGroupHeader">
+        <!-- In a narrow column the buttons are cut off at the edge instead of running into the next pane. -->
+        <Setter Property="ClipToBounds" Value="True" />
+        <Setter Property="Padding" Value="{DynamicResource Padding.ListGroupHeader}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
+    </Style>
+</Styles>

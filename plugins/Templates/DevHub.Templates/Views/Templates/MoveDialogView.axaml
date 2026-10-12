@@ -1,0 +1,24 @@
+<!-- Move in the preview: the folder the file or folder goes into (the project folder itself first). -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:t="using:DevHub.ViewModels.Templates"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Templates.MoveDialogView"
+             x:DataType="t:MoveDialogViewModel">
+    <DockPanel Margin="{DynamicResource Padding.Dialog}">
+        <TextBlock DockPanel.Dock="Top" Classes="secondary" Text="{Binding What, StringFormat='Move {0} into:'}"
+                   TextWrapping="Wrap" Margin="{DynamicResource Margin.BlockBelow}" />
+        <ListBox ItemsSource="{Binding Folders}" SelectedItem="{Binding SelectedFolder}"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" AutomationProperties.Name="Folders"
+                 c:FocusOnLoad.IsEnabled="True">
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="t:FolderChoice">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Spacing.Small}">
+                        <c:Icon Kind="folder" VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="1" Text="{Binding Text}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </DockPanel>
+</UserControl>

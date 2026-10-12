@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- Git plugin logic: GitRunner, GitRepositoryClient, parsers, graph layout. No Avalonia. -->
+
+</Project>

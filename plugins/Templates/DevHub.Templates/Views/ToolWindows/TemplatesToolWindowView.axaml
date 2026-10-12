@@ -1,0 +1,37 @@
+<!--
+  Templates tool window (left stripe): the template list (TemplateBrowserView). Double-click or Use starts a
+  template (New Project / Add Files); Edit opens its editor. Header: New Project, Add Files, New Template, Reload.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.ToolWindows"
+             xmlns:c="using:DevHub.Controls"
+             xmlns:a="using:DevHub.Actions"
+             x:Class="DevHub.Views.ToolWindows.TemplatesToolWindowView"
+             x:DataType="vm:TemplatesToolWindowViewModel">
+    <c:ToolWindowFrame Header="{Binding Title}">
+        <c:ToolWindowFrame.HeaderActions>
+            <c:Toolbar>
+                <c:ActionButton IconKind="add" ToolTip.Tip="New Project (Ctrl+N)" AutomationProperties.Name="New Project"
+                                Command="{Binding NewProjectCommand}" />
+                <c:ActionButton IconKind="import" ToolTip.Tip="Add Files from Template" AutomationProperties.Name="Add Files"
+                                Command="{Binding AddFilesCommand}" />
+                <c:ActionButton IconKind="edit" ToolTip.Tip="New Template…" AutomationProperties.Name="New Template"
+                                Command="{Binding NewTemplateCommand}" />
+                <c:ActionButton Action="{a:Action Templates.Reload}" />
+                <c:ToolbarSeparator />
+                <c:ActionButton IconKind="close" ToolTip.Tip="Hide" Command="{Binding ToggleCommand}" />
+            </c:Toolbar>
+        </c:ToolWindowFrame.HeaderActions>
+
+        <DockPanel>
+            <Grid DockPanel.Dock="Bottom" ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}"
+                  Margin="{DynamicResource Padding.SidebarHeader}">
+                <Button Classes="accent" Content="{Binding UseText}" Command="{Binding UseSelectedCommand}"
+                        HorizontalAlignment="Stretch" ToolTip.Tip="Double-click a template does the same" />
+                <Button Grid.Column="1" Content="Edit" Command="{Binding EditSelectedCommand}" />
+            </Grid>
+            <ContentControl Content="{Binding Browser}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+        </DockPanel>
+    </c:ToolWindowFrame>
+</UserControl>

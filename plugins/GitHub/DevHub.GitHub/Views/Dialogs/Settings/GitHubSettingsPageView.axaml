@@ -1,0 +1,51 @@
+<!--
+  Settings → GitHub: what the account is for, the accounts Git Credential Manager has (each
+  checked with GitHub: name, or what's wrong) with Sign Out…, and Sign In….
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Dialogs.Settings"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Dialogs.Settings.GitHubSettingsPageView"
+             x:DataType="vm:GitHubSettingsPageViewModel">
+
+    <StackPanel Spacing="{DynamicResource Spacing}">
+        <TextBlock Classes="secondary" TextWrapping="Wrap"
+                   Text="DevHub uses the GitHub sign-in of Git Credential Manager, the same one git uses when you push to github.com. DevHub never stores your password or token: it borrows the token from Credential Manager for each request (Publish to GitHub, Clone from GitHub)." />
+
+        <ItemsControl ItemsSource="{Binding Accounts}" IsVisible="{Binding HasAccounts}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:GitHubAccountRowViewModel">
+                    <Border Padding="{DynamicResource Padding.PaneHeader}" BorderBrush="{DynamicResource Brush.Border}"
+                            BorderThickness="0,0,0,1">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                            <c:Avatar ImageData="{Binding Avatar}" Text="{Binding Account}" VerticalAlignment="Center"
+                                      Width="{DynamicResource Size.Avatar}" Height="{DynamicResource Size.Avatar}" />
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Classes="header" Text="{Binding Account}" />
+                                <TextBlock Classes="small secondary" Text="{Binding Detail}" TextWrapping="Wrap"
+                                           Classes.problem="{Binding IsProblem}" />
+                            </StackPanel>
+                            <Button Grid.Column="2" Content="Sign Out…" Command="{Binding SignOutCommand}" VerticalAlignment="Center"
+                                    ToolTip.Tip="Remove this sign-in from Git Credential Manager (asks first)" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <TextBlock Text="{Binding EmptyText}" TextWrapping="Wrap"
+                   IsVisible="{Binding EmptyText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+        <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}">
+            <Button Classes="accent" Content="Sign In…" Command="{Binding SignInCommand}"
+                    ToolTip.Tip="Opens Git Credential Manager's GitHub sign-in (browser, device code or token)" />
+        </StackPanel>
+    </StackPanel>
+
+    <UserControl.Styles>
+        <Style Selector="TextBlock.problem">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Error}" />
+        </Style>
+    </UserControl.Styles>
+</UserControl>

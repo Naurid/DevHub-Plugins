@@ -1,0 +1,53 @@
+<!--
+  Git Console: one row per git command DevHub ran (time, repository, command, duration,
+  result). Hover a row for git's output. Failed commands are shown in the error color.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.ToolWindows"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.ToolWindows.GitConsoleView"
+             x:DataType="vm:GitConsoleViewModel">
+
+    <UserControl.Styles>
+        <Style Selector="TextBlock.failed">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Error}" />
+        </Style>
+    </UserControl.Styles>
+
+    <c:ToolWindowFrame Header="{Binding Title}">
+        <c:ToolWindowFrame.HeaderActions>
+            <c:Toolbar>
+                <c:ActionButton IconKind="delete" ToolTip.Tip="Clear" Command="{Binding ClearCommand}" />
+                <c:ToolbarSeparator />
+                <c:ActionButton IconKind="close" ToolTip.Tip="Hide" Command="{Binding ToggleCommand}" />
+            </c:Toolbar>
+        </c:ToolWindowFrame.HeaderActions>
+
+        <Panel>
+            <c:EmptyState IconKind="vcs" Title="No git commands yet"
+                          Description="Every git command DevHub runs shows up here."
+                          IsVisible="{Binding !HasRows}" />
+
+            <ListBox ItemsSource="{Binding Rows}" Background="Transparent" IsVisible="{Binding HasRows}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="vm:GitConsoleRow">
+                        <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing.Large}"
+                              ToolTip.Tip="{Binding Output}">
+                            <TextBlock Classes="code secondary" Text="{Binding Time}" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Classes="secondary" Text="{Binding Repository}"
+                                       ToolTip.Tip="{Binding RepositoryPath}" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="2" Classes="code" Classes.failed="{Binding Failed}"
+                                       Text="{Binding CommandLine}" TextTrimming="CharacterEllipsis"
+                                       VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="3" Classes="small secondary" Classes.failed="{Binding Failed}" Text="{Binding Result}"
+                                       VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="4" Classes="small secondary" Text="{Binding Duration}"
+                                       VerticalAlignment="Center" />
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Panel>
+    </c:ToolWindowFrame>
+</UserControl>

@@ -1,0 +1,77 @@
+<!--
+  The branch popup under the title-bar widget (JetBrains-style): search on top, then
+  "New Branch…", local and remote branches. ↑/↓ move, Enter checks out, Esc closes; the key
+  bindings work while typing (same as Find Action).
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Git"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Git.BranchPopupView"
+             x:DataType="vm:BranchPopupViewModel">
+
+    <UserControl.KeyBindings>
+        <KeyBinding Gesture="Down" Command="{Binding MoveDownCommand}" />
+        <KeyBinding Gesture="Up" Command="{Binding MoveUpCommand}" />
+        <KeyBinding Gesture="Enter" Command="{Binding ExecuteCommand}" />
+        <KeyBinding Gesture="Escape" Command="{Binding CloseCommand}" />
+    </UserControl.KeyBindings>
+
+    <UserControl.Styles>
+        <Style Selector="ListBox.branches > ListBoxItem" x:DataType="vm:BranchPopupRow">
+            <Setter Property="Padding" Value="{DynamicResource Padding.ListItem}" />
+            <!-- Group headers ("Local", "Remote") can't be selected. -->
+            <Setter Property="IsEnabled" Value="{Binding IsSelectable}" />
+        </Style>
+        <!-- Rows are flat buttons: one click runs them. -->
+        <Style Selector="Button.row">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        </Style>
+        <Style Selector="TextBlock.current">
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border Width="{DynamicResource Size.BranchPopupWidth}" MaxHeight="{DynamicResource Size.BranchPopupMaxHeight}"
+            Background="{DynamicResource Brush.Bg.Popup}"
+            BorderBrush="{DynamicResource Brush.Border.Control}" BorderThickness="1"
+            CornerRadius="{DynamicResource Radius.Popup}"
+            Padding="{DynamicResource Padding.Popup}">
+        <DockPanel>
+            <c:SearchField DockPanel.Dock="Top" Text="{Binding Query}" PlaceholderText="Search branches"
+                           c:FocusOnLoad.IsEnabled="True" />
+            <TextBlock DockPanel.Dock="Bottom" Classes="small secondary" Margin="{DynamicResource Padding.ListItem}"
+                       Text="↑↓ select · Enter check out · Esc close" />
+
+            <ListBox Classes="branches" ItemsSource="{Binding Rows}" SelectedItem="{Binding Selected}"
+                     Background="Transparent" AutomationProperties.Name="Branches">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="vm:BranchPopupRow">
+                        <Panel>
+                            <!-- Group header -->
+                            <TextBlock Classes="small secondary" Text="{Binding Text}" IsVisible="{Binding IsHeader}"
+                                       VerticalAlignment="Center" />
+                            <!-- New Branch… / a branch -->
+                            <Button Classes="row" Command="{Binding RunCommand}" IsVisible="{Binding IsSelectable}">
+                                <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                                    <c:Icon Kind="{Binding IconKind}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Text}" Classes.current="{Binding IsCurrent}"
+                                               TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="2" Classes="small secondary" Text="{Binding SyncText}"
+                                               VerticalAlignment="Center" />
+                                    <c:Badge Grid.Column="3" Classes="accent" Content="current" IsVisible="{Binding IsCurrent}" />
+                                </Grid>
+                            </Button>
+                        </Panel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+    </Border>
+</UserControl>

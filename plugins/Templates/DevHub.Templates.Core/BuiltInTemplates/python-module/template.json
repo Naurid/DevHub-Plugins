@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "python-module",
+  "kind": "item",
+  "name": "Python Module",
+  "description": "A module file (my_module.py from \"My Module\") with a docstring and a main guard.",
+  "language": "Python",
+  "categories": ["Code"],
+  "variables": [
+    { "name": "Name", "label": "Module name", "required": true },
+    { "name": "Description", "default": "" }
+  ]
+}

@@ -1,0 +1,63 @@
+<!-- Template editor → Steps: how the files are arranged after the command and the template's files, in order. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:e="using:DevHub.ViewModels.Templates.Editor"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Templates.Editor.StepsPartView"
+             x:DataType="e:StepsPartViewModel">
+    <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Classes="secondary" TextWrapping="Wrap" Margin="{DynamicResource Margin.BlockBelow}"
+                   Text="Run in order on the result, before the preview. Paths are relative to the project folder, use /, and may hold placeholders. Tip: arrange a project in New Project's preview and use Save to Template to add steps from there." />
+
+        <Border DockPanel.Dock="Left" Width="{DynamicResource Size.EditorList}" BorderBrush="{DynamicResource Brush.Border.Control}"
+                BorderThickness="1" CornerRadius="{DynamicResource Radius.Control}" Margin="{DynamicResource Margin.RowEnd}">
+            <DockPanel>
+                <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,0,1"
+                        Padding="{DynamicResource Padding.Toolbar}">
+                    <c:Toolbar>
+                        <c:ActionButton IconKind="add" ToolTip.Tip="Add Step" AutomationProperties.Name="Add Step" Command="{Binding AddCommand}" />
+                        <c:ActionButton IconKind="delete" ToolTip.Tip="Remove" AutomationProperties.Name="Remove" Command="{Binding RemoveCommand}" />
+                        <c:ToolbarSeparator />
+                        <Button Classes="flat" Content="Up" ToolTip.Tip="Move Up" Command="{Binding MoveUpCommand}" />
+                        <Button Classes="flat" Content="Down" ToolTip.Tip="Move Down" Command="{Binding MoveDownCommand}" />
+                    </c:Toolbar>
+                </Border>
+                <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding Selected}" Background="Transparent"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled" AutomationProperties.Name="Steps">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="e:StepItemViewModel">
+                            <TextBlock Classes="code" Text="{Binding Summary}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Summary}" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <Panel>
+            <c:EmptyState IconKind="folder" Title="No step selected"
+                          Description="Without steps the files stay where the command and the template put them."
+                          IsVisible="{Binding !HasSelection}" />
+            <!-- Visibility on the wrapper: bindings on the element that sets DataContext="{Binding Selected}" are typed as the selected item. -->
+            <Border IsVisible="{Binding HasSelection}">
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled" DataContext="{Binding Selected}">
+                <StackPanel Spacing="{DynamicResource Spacing}" x:DataType="e:StepItemViewModel"
+                            MaxWidth="{DynamicResource Size.TemplatePageMax}" HorizontalAlignment="Left">
+                    <c:SettingsRow Label="Operation" Description="{Binding Help}">
+                        <ComboBox ItemsSource="{x:Static e:StepItemViewModel.Ops}" SelectedItem="{Binding Op}"
+                                  HorizontalAlignment="Stretch" AutomationProperties.Name="Operation" />
+                    </c:SettingsRow>
+                    <c:SettingsRow Label="Path" IsVisible="{Binding UsesPath}">
+                        <TextBox Classes="code" Text="{Binding Path}" PlaceholderText="obj" AutomationProperties.Name="Path" />
+                    </c:SettingsRow>
+                    <c:SettingsRow Label="From" IsVisible="{Binding UsesFromTo}">
+                        <TextBox Classes="code" Text="{Binding From}" PlaceholderText="*.cs" AutomationProperties.Name="From" />
+                    </c:SettingsRow>
+                    <c:SettingsRow Label="{Binding ToLabel}" IsVisible="{Binding UsesFromTo}">
+                        <TextBox Classes="code" Text="{Binding To}" PlaceholderText="src/{{Name}}/" AutomationProperties.Name="To" />
+                    </c:SettingsRow>
+                </StackPanel>
+            </ScrollViewer>
+            </Border>
+        </Panel>
+    </DockPanel>
+</UserControl>

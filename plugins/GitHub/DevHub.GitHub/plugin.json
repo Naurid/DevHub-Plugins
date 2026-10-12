@@ -1,0 +1,14 @@
+// The package's description of the plugin (docs/PLUGINS.md in DevHub); keep it equal to the plugin class's PluginInfo.
+// The version is computed from git (build/Get-PluginVersion.ps1); don't write one here.
+// "publish": false keeps it out of the marketplace until DevHub bundles it (roadmap PM5).
+{
+  "id": "devhub.github",
+  "name": "GitHub",
+  "description": "Sign in to GitHub through Git Credential Manager, publish a repository to your account, clone your repositories, show avatars.",
+  "category": "Version control",
+  "apiVersion": 1,
+  "publish": false,
+  "requires": [
+    "devhub.git"
+  ]
+}

@@ -1,0 +1,45 @@
+<!--
+  Developing a plugin against your installed DevHub (README.md, "Run and debug in DevHub"). After each build of a
+  plugin (a project with a plugin.json):
+    1. plugin.json is copied next to the DLLs, so the build output is a plugin folder DevHub can load
+       (DEVHUB_PLUGIN_PATHS). A plain copy, not a None item: those flow into projects that reference this one,
+       and a plugin that requires another must keep its own plugin.json.
+    2. Properties/launchSettings.json (not committed: it has your paths) gets a "DevHub" profile: Run or Debug
+       (F5) in Rider or Visual Studio starts DevHub with this plugin's build output, and with its own data folder
+       (.devhub-data/ here) so your everyday DevHub settings aren't touched.
+  Properties: DevHubExe (default: the installed DevHub, %LocalAppData%\DevHub\current\DevHub.App.exe),
+  DevHubDevDataDir (default: .devhub-data\ next to this file), DevHubLaunchSettings=false to skip step 2.
+-->
+<Project>
+    <PropertyGroup>
+        <DevHubExe Condition="'$(DevHubExe)' == ''">$(LOCALAPPDATA)\DevHub\current\DevHub.App.exe</DevHubExe>
+        <DevHubDevDataDir Condition="'$(DevHubDevDataDir)' == ''">$(MSBuildThisFileDirectory).devhub-data</DevHubDevDataDir>
+        <!-- Not on build servers: nobody debugs there. -->
+        <DevHubLaunchSettings Condition="'$(DevHubLaunchSettings)' == '' And ('$(CI)' == 'true' Or '$(GITHUB_ACTIONS)' == 'true')">false</DevHubLaunchSettings>
+    </PropertyGroup>
+
+    <Target Name="DevHubPluginFolder" AfterTargets="Build" Condition="Exists('$(MSBuildProjectDirectory)\plugin.json')">
+        <Copy SourceFiles="$(MSBuildProjectDirectory)\plugin.json" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+
+        <PropertyGroup Condition="'$(DevHubLaunchSettings)' != 'false'">
+            <_DevHubJsonExe>$(DevHubExe.Replace('\', '\\'))</_DevHubJsonExe>
+            <_DevHubJsonTarget>$(TargetDir.TrimEnd('\').Replace('\', '\\'))</_DevHubJsonTarget>
+            <_DevHubJsonData>$(DevHubDevDataDir.TrimEnd('\').Replace('\', '\\'))</_DevHubJsonData>
+        </PropertyGroup>
+        <MakeDir Directories="$(MSBuildProjectDirectory)\Properties" Condition="'$(DevHubLaunchSettings)' != 'false'" />
+        <WriteLinesToFile Condition="'$(DevHubLaunchSettings)' != 'false'"
+                          File="$(MSBuildProjectDirectory)\Properties\launchSettings.json" Overwrite="true" WriteOnlyWhenDifferent="true"
+                          Lines="{;
+  &quot;profiles&quot;: {;
+    &quot;DevHub&quot;: {;
+      &quot;commandName&quot;: &quot;Executable&quot;,;
+      &quot;executablePath&quot;: &quot;$(_DevHubJsonExe)&quot;,;
+      &quot;environmentVariables&quot;: {;
+        &quot;DEVHUB_PLUGIN_PATHS&quot;: &quot;$(_DevHubJsonTarget)&quot;,;
+        &quot;DEVHUB_DATA_DIR&quot;: &quot;$(_DevHubJsonData)&quot;;
+      };
+    };
+  };
+}" />
+    </Target>
+</Project>

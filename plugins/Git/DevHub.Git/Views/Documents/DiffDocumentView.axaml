@@ -1,0 +1,11 @@
+<!-- A diff opened as its own tab: the same DiffView as in Local Changes, filling the editor area. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:docs="using:DevHub.ViewModels.Documents"
+             x:Class="DevHub.Views.Documents.DiffDocumentView"
+             x:DataType="docs:DiffDocumentViewModel">
+    <UserControl.KeyBindings>
+        <KeyBinding Gesture="F4" Command="{Binding Diff.OpenInEditorCommand}" />
+    </UserControl.KeyBindings>
+    <ContentControl Content="{Binding Diff}" />
+</UserControl>

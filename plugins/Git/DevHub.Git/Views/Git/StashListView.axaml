@@ -1,0 +1,73 @@
+<!--
+  Stashes section (G8): actions on a toolbar strip, the stashes (newest first: message, branch,
+  when), and below them (resizable, shared height with All Commits) the selected stash's
+  message, files and diffs. Right-click a stash for the same actions.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Git"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Git.StashListView"
+             x:DataType="vm:StashListViewModel">
+
+    <UserControl.Styles>
+        <StyleInclude Source="avares://DevHub.Git/Views/Git/FileChangeStyles.axaml" />
+    </UserControl.Styles>
+
+    <DockPanel>
+        <!-- Toolbar strip on the panel color (like All Commits' search strip). -->
+        <Border DockPanel.Dock="Top" Classes="listGroupHeader"
+                Background="{DynamicResource Brush.Bg.Panel}" BorderBrush="{DynamicResource Brush.Separator}">
+            <StackPanel Orientation="Horizontal">
+                <Button Classes="flat" Content="Stash Changes…" Command="{Binding StashChangesCommand}"
+                        ToolTip.Tip="Put your uncommitted changes aside (Git → Stash Changes…)" />
+                <Button Classes="flat" Content="Apply" Command="{Binding ApplyCommand}"
+                        ToolTip.Tip="Put the selected stash's changes back into your files; keep the stash" />
+                <Button Classes="flat" Content="Pop" Command="{Binding PopCommand}"
+                        ToolTip.Tip="Put the changes back and delete the stash (kept if they conflict)" />
+                <Button Classes="flat" Content="Drop…" Command="{Binding DropCommand}"
+                        ToolTip.Tip="Delete the selected stash and its changes (asks first)" />
+            </StackPanel>
+        </Border>
+
+        <!-- The selected stash, resizable from its top edge (CommitDetailsView, as in All Commits). -->
+        <Border DockPanel.Dock="Bottom" Height="{Binding Layout.CommitDetailsHeight}" IsVisible="{Binding HasItems}"
+                BorderBrush="{DynamicResource Brush.Separator}" BorderThickness="0,1,0,0">
+            <ContentControl Content="{Binding Details}" />
+        </Border>
+        <c:SplitterThumb DockPanel.Dock="Bottom" Orientation="Horizontal" Invert="True" IsVisible="{Binding HasItems}"
+                         Minimum="120" MaximumFraction="0.8" Value="{Binding Layout.CommitDetailsHeight}" />
+
+        <Panel>
+            <c:EmptyState IconKind="copy" Title="No stashes"
+                          Description="Stash Changes puts uncommitted work aside (e.g. to switch branches or pull) and returns your files to the last commit. Stashes show up here."
+                          IsVisible="{Binding !HasItems}" />
+
+            <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding Selected}" Background="Transparent"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     AutomationProperties.Name="Stashes" IsVisible="{Binding HasItems}">
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Apply" Command="{Binding ApplyCommand}" />
+                        <MenuItem Header="Pop" Command="{Binding PopCommand}" />
+                        <Separator />
+                        <MenuItem Header="Drop…" Command="{Binding DropCommand}" />
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="vm:StashItemViewModel">
+                        <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}"
+                              Margin="{DynamicResource Margin.RowEnd}" Background="Transparent" ToolTip.Tip="{Binding ToolTip}">
+                            <c:Icon Kind="copy" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Text="{Binding Message}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                            <c:Badge Grid.Column="2" Content="untracked" IsVisible="{Binding HasUntracked}" />
+                            <c:Badge Grid.Column="3" Classes="success" Content="{Binding Branch}"
+                                     IsVisible="{Binding Branch, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                            <TextBlock Grid.Column="4" Classes="small secondary" Text="{Binding When}" VerticalAlignment="Center" />
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Panel>
+    </DockPanel>
+</UserControl>

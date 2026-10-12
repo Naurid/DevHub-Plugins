@@ -1,0 +1,72 @@
+<!-- Template editor → Post-create: commands run in the finished project (git init, dotnet restore, npm install…), in order. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:e="using:DevHub.ViewModels.Templates.Editor"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Templates.Editor.PostCreatePartView"
+             x:DataType="e:PostCreatePartViewModel">
+    <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Classes="secondary" TextWrapping="Wrap" Margin="{DynamicResource Margin.BlockBelow}"
+                   Text="Run in the project folder once its files are in place, in this order. New Project lists them before anything runs." />
+
+        <Border DockPanel.Dock="Left" Width="{DynamicResource Size.EditorList}" BorderBrush="{DynamicResource Brush.Border.Control}"
+                BorderThickness="1" CornerRadius="{DynamicResource Radius.Control}" Margin="{DynamicResource Margin.RowEnd}">
+            <DockPanel>
+                <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,0,1"
+                        Padding="{DynamicResource Padding.Toolbar}">
+                    <c:Toolbar>
+                        <c:ActionButton IconKind="add" ToolTip.Tip="Add Command" AutomationProperties.Name="Add Command" Command="{Binding AddCommand}" />
+                        <c:ActionButton IconKind="delete" ToolTip.Tip="Remove" AutomationProperties.Name="Remove" Command="{Binding RemoveCommand}" />
+                        <c:ToolbarSeparator />
+                        <Button Classes="flat" Content="Up" ToolTip.Tip="Move Up" Command="{Binding MoveUpCommand}" />
+                        <Button Classes="flat" Content="Down" ToolTip.Tip="Move Down" Command="{Binding MoveDownCommand}" />
+                    </c:Toolbar>
+                </Border>
+                <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding Selected}" Background="Transparent"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled" AutomationProperties.Name="Post-create commands">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="e:PostCreateItemViewModel">
+                            <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Preview}" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <Panel>
+            <c:EmptyState IconKind="run" Title="No command selected" Description="Add git init, a restore, an install…"
+                          IsVisible="{Binding !HasSelection}" />
+            <!-- Visibility on the wrapper: bindings on the element that sets DataContext="{Binding Selected}" are typed as the selected item. -->
+            <Border IsVisible="{Binding HasSelection}">
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled" DataContext="{Binding Selected}">
+                <StackPanel Spacing="{DynamicResource Spacing}" x:DataType="e:PostCreateItemViewModel"
+                            MaxWidth="{DynamicResource Size.TemplatePageMax}" HorizontalAlignment="Left">
+                    <c:SettingsRow Label="Name" Description="What New Project calls it (Initialize git).">
+                        <TextBox Text="{Binding Name}" AutomationProperties.Name="Name" />
+                    </c:SettingsRow>
+                    <c:SettingsRow Label="Command" Description="A program on PATH or a tool alias. Never a shell line.">
+                        <TextBox Classes="code" Text="{Binding Command}" AutomationProperties.Name="Command" />
+                    </c:SettingsRow>
+                    <c:SettingsRow Label="Arguments" Description="One per line. Placeholders allowed.">
+                        <TextBox Classes="code" Text="{Binding Args}" AcceptsReturn="True" MinHeight="{DynamicResource Size.TemplateArgs}"
+                                 AutomationProperties.Name="Arguments" />
+                    </c:SettingsRow>
+                    <c:SettingsRow Label="Folder" Description="Where it runs, relative to the project folder (. = the project folder).">
+                        <TextBox Classes="code" Text="{Binding WorkingDirectory}" AutomationProperties.Name="Folder" />
+                    </c:SettingsRow>
+                    <c:SettingsRow Label="Runs" Description="Always, or only when a checkbox variable (bool) is checked.">
+                        <ComboBox ItemsSource="{Binding WhenChoices}" SelectedItem="{Binding When}" HorizontalAlignment="Stretch"
+                                  AutomationProperties.Name="Runs when" />
+                    </c:SettingsRow>
+                    <c:SettingsRow Label="If it fails">
+                        <CheckBox IsChecked="{Binding ContinueOnError}" Content="Keep going with the next command" />
+                    </c:SettingsRow>
+                    <c:SettingsRow Label="Reads as">
+                        <SelectableTextBlock Classes="code" Text="{Binding Preview}" TextWrapping="Wrap" />
+                    </c:SettingsRow>
+                </StackPanel>
+            </ScrollViewer>
+            </Border>
+        </Panel>
+    </DockPanel>
+</UserControl>

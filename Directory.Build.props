@@ -1,31 +1,61 @@
 <!--
-  Shared by every plugin in this repository. A plugin builds against DevHub's Sdk (DevHub.Sdk.dll +
-  DevHub.Sdk.Core.dll), which DevHub ships, so they're referenced but never copied into the plugin's
-  package; the same for Avalonia, CommunityToolkit.Mvvm and DI, which DevHub already has (keep their
-  versions equal to DevHub's: see README.md).
+  Shared by every project in this repository. Three kinds, by name:
+    - a plugin (UI) project, e.g. plugins/Git/DevHub.Git, HelloWorld: builds against DevHub's Sdk (the NuGet packages
+      DevHub.Sdk + DevHub.Sdk.Core) and Avalonia / CommunityToolkit.Mvvm / DI;
+    - a ".Core" project (no UI): DevHub.Sdk.Core only, never Avalonia;
+    - a test project (".Tests", and DevHub.TestKit): runs, so it gets real copies of everything it uses (through
+      the projects it tests).
+  DevHub ships the Sdk, Avalonia, CommunityToolkit.Mvvm and DI itself, so for plugins and .Core projects they're
+  build-only (ExcludeAssets="runtime") and never copied into a plugin's package. Avalonia, CommunityToolkit.Mvvm
+  and DI are referenced directly because their build parts (the XAML compiler, the [ObservableProperty]
+  generators) don't come along through the Sdk package; keep their versions equal to DevHub's (a lower one fails
+  the restore: NU1605).
 
-  The Sdk comes from DevHubSdkDir: by default .sdk/ (filled by build/Get-Sdk.ps1 from DevHub's latest
-  release); point it at a local DevHub build to work against unreleased changes:
-    dotnet build -p:DevHubSdkDir=C:\P\DevHub\DevHub\src\DevHub.Sdk\bin\Debug\net10.0\
+  Which Sdk: DevHubSdkVersion, by default the newest release ("*"). To work against unreleased Sdk changes, pack
+  them in DevHub (pwsh build/Pack-Sdk.ps1 → %LocalAppData%\DevHub-local-feed) and build with the version it prints:
+    dotnet build -p:DevHubSdkVersion=1.7.0-local.20261012143005
+  (or -p:DevHubSdkVersion=*-* for the newest one, local packs included).
 -->
 <Project>
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+
+        <DevHubProjectKind Condition="$(MSBuildProjectName.EndsWith('.Tests')) Or '$(MSBuildProjectName)' == 'DevHub.TestKit'">test</DevHubProjectKind>
+        <DevHubProjectKind Condition="'$(DevHubProjectKind)' == '' And $(MSBuildProjectName.EndsWith('.Core'))">core</DevHubProjectKind>
+        <DevHubProjectKind Condition="'$(DevHubProjectKind)' == ''">plugin</DevHubProjectKind>
+
+        <DevHubSdkVersion Condition="'$(DevHubSdkVersion)' == ''">*</DevHubSdkVersion>
+        <DevHubLocalFeed Condition="'$(DevHubLocalFeed)' == ''">$(LOCALAPPDATA)\DevHub-local-feed\</DevHubLocalFeed>
+        <RestoreAdditionalProjectSources Condition="Exists('$(DevHubLocalFeed)')">$(DevHubLocalFeed)</RestoreAdditionalProjectSources>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(DevHubProjectKind)' == 'plugin'">
         <RootNamespace>DevHub</RootNamespace>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-        <DevHubSdkDir Condition="'$(DevHubSdkDir)' == ''">$(MSBuildThisFileDirectory).sdk\</DevHubSdkDir>
-        <!-- Every DLL of the plugin goes into its package; nothing else is copied. -->
+    </PropertyGroup>
+
+    <!-- A plugin's DLLs (its own and its .Core's) go into its package; nothing else is copied. -->
+    <PropertyGroup Condition="'$(DevHubProjectKind)' != 'test'">
         <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
     </PropertyGroup>
 
-    <ItemGroup>
-        <Reference Include="DevHub.Sdk" HintPath="$(DevHubSdkDir)DevHub.Sdk.dll" Private="false" />
-        <Reference Include="DevHub.Sdk.Core" HintPath="$(DevHubSdkDir)DevHub.Sdk.Core.dll" Private="false" />
-        <!-- Build-time only: DevHub provides these at run time (ExcludeAssets="runtime"). -->
+    <ItemGroup Condition="'$(DevHubProjectKind)' == 'plugin'">
+        <PackageReference Include="DevHub.Sdk" Version="$(DevHubSdkVersion)" ExcludeAssets="runtime" />
+        <PackageReference Include="DevHub.Sdk.Core" Version="$(DevHubSdkVersion)" ExcludeAssets="runtime" />
         <PackageReference Include="Avalonia" Version="12.1.3" ExcludeAssets="runtime" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" ExcludeAssets="runtime" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" ExcludeAssets="runtime" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(DevHubProjectKind)' == 'core'">
+        <PackageReference Include="DevHub.Sdk.Core" Version="$(DevHubSdkVersion)" ExcludeAssets="runtime" />
+    </ItemGroup>
+
+    <!-- Tests run the .Core code, Sdk.Core included: a direct, full reference (the .Core projects' build-only one
+         would otherwise carry over and leave DevHub.Sdk.Core.dll out of the test output). -->
+    <ItemGroup Condition="'$(DevHubProjectKind)' == 'test'">
+        <PackageReference Include="DevHub.Sdk.Core" Version="$(DevHubSdkVersion)" />
     </ItemGroup>
 </Project>

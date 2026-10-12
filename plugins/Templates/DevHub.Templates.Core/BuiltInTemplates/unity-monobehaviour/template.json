@@ -1,0 +1,15 @@
+{
+  // Unity scripts use a block namespace (Unity's C# version predates file-scoped ones). Namespace comes
+  // from the nearest .asmdef rootNamespace, or the Unity project's name plus the folders under Assets.
+  "schemaVersion": 1,
+  "id": "unity-monobehaviour",
+  "kind": "item",
+  "name": "MonoBehaviour",
+  "description": "A Unity component script with Start and Update.",
+  "language": "C#",
+  "categories": ["Unity"],
+  "variables": [
+    { "name": "Name", "label": "Class name", "required": true, "pattern": "^[A-Za-z_][A-Za-z0-9_]*$" },
+    { "name": "Namespace", "required": true, "pattern": "^[A-Za-z_][A-Za-z0-9_]*([.][A-Za-z_][A-Za-z0-9_]*)*$" }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  // Needs Avalonia's templates: dotnet new install Avalonia.Templates (the error says so when they're missing).
+  "schemaVersion": 1,
+  "id": "dotnet-avalonia",
+  "kind": "project",
+  "name": "Avalonia App",
+  "description": "A cross-platform desktop app with Avalonia and MVVM (needs: dotnet new install Avalonia.Templates).",
+  "language": "C#",
+  "categories": ["Desktop", ".NET"],
+  "variables": [
+    { "name": "Name", "label": "Project name", "required": true, "pattern": "^[A-Za-z_][A-Za-z0-9_.]*$" },
+    { "name": "Git", "label": "Create a git repository", "type": "bool", "default": true }
+  ],
+  "baseCommand": { "command": "dotnet", "args": ["new", "avalonia.mvvm", "--name", "{{Name}}", "--output", "."] },
+  "postCreate": [
+    { "name": "Initialize git", "command": "git", "args": ["init"], "when": "Git", "continueOnError": true }
+  ]
+}

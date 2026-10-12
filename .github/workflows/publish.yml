@@ -33,10 +33,6 @@ jobs:
         with:
           dotnet-version: "10.0.x"
 
-      - name: DevHub Sdk
-        shell: pwsh
-        run: pwsh build/Get-Sdk.ps1
-
       - name: Publish changed plugins
         shell: pwsh
         env:

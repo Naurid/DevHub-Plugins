@@ -1,0 +1,91 @@
+<!--
+  A template's editor tab (fills the editor area). Top: name, library, folder, and Save / Revert (or
+  Duplicate for a read-only template), Explorer / VS Code; banners for read-only, problems, a deleted
+  template. Left: the sections. Right: the selected section (its own view, through the ViewLocator).
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:docs="using:DevHub.ViewModels.Documents"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Documents.TemplateEditorView"
+             x:DataType="docs:TemplateEditorViewModel">
+    <Panel>
+        <c:EmptyState IconKind="warning" Title="This template is gone"
+                      Description="Its folder was deleted or moved. Closing this tab is all that's left to do."
+                      IsVisible="{Binding IsGone}">
+            <Button Content="Close Tab" Command="{Binding CloseGoneCommand}" />
+        </c:EmptyState>
+
+        <ProgressBar IsIndeterminate="True" VerticalAlignment="Top" Height="2" MinHeight="2"
+                     IsVisible="{Binding !IsLoaded}" />
+
+        <DockPanel IsVisible="{Binding IsLoaded}">
+            <!-- Header -->
+            <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,0,1"
+                    Background="{DynamicResource Brush.Bg.Panel}" Padding="{DynamicResource Padding.SidebarHeader}">
+                <StackPanel Spacing="{DynamicResource Spacing}">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                        <c:Icon Kind="template" Width="{DynamicResource Size.StripeIcon}" Height="{DynamicResource Size.StripeIcon}"
+                                VerticalAlignment="Center" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Classes="header" Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
+                            <TextBlock Classes="small secondary" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding FolderText}">
+                                <Run Text="{Binding LibraryText}" /><Run Text="  ·  " /><Run Text="{Binding FolderText}" />
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="{DynamicResource Spacing}" VerticalAlignment="Center">
+                            <c:Toolbar>
+                                <c:ActionButton IconKind="folder" ToolTip.Tip="Show in Explorer" AutomationProperties.Name="Show in Explorer"
+                                                Command="{Binding ShowInExplorerCommand}" />
+                                <c:ActionButton IconKind="externalTools" ToolTip.Tip="Open the template folder in VS Code"
+                                                AutomationProperties.Name="Open in VS Code"
+                                                Command="{Binding OpenInVsCodeCommand}" IsVisible="{Binding CanOpenInVsCode}" />
+                            </c:Toolbar>
+                            <Button Classes="accent" Content="Duplicate to Personal" Command="{Binding DuplicateCommand}"
+                                    IsVisible="{Binding IsReadOnly}" />
+                            <Button Content="Revert" Command="{Binding RevertCommand}" IsVisible="{Binding !IsReadOnly}" />
+                            <Button Classes="accent" Content="Save" Command="{Binding SaveCommand}" IsVisible="{Binding !IsReadOnly}"
+                                    ToolTip.Tip="Save (Ctrl+S)" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Border IsVisible="{Binding IsReadOnly}" Background="{DynamicResource Brush.Status.Warning.Subtle}"
+                            CornerRadius="{DynamicResource Radius.Control}" Padding="{DynamicResource Padding.Banner}">
+                        <TextBlock TextWrapping="Wrap"
+                                   Text="Built-in templates are read-only (DevHub updates them). Duplicate to Personal makes a copy you can change." />
+                    </Border>
+                    <Border IsVisible="{Binding HasProblems}" Background="{DynamicResource Brush.Status.Error.Subtle}"
+                            CornerRadius="{DynamicResource Radius.Control}" Padding="{DynamicResource Padding.Banner}">
+                        <ItemsControl ItemsSource="{Binding Problems}" AutomationProperties.Name="Problems">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="x:String">
+                                    <SelectableTextBlock Text="{Binding}" TextWrapping="Wrap" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- Sections -->
+            <Border DockPanel.Dock="Left" Width="{DynamicResource Size.EditorSections}"
+                    Background="{DynamicResource Brush.Bg.Panel}" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,1,0">
+                <ListBox ItemsSource="{Binding Sections}" SelectedItem="{Binding SelectedSection}" Background="Transparent"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled" AutomationProperties.Name="Sections">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="docs:EditorSectionViewModel">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Spacing}">
+                                <c:Icon Kind="{Binding IconKind}" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="1" Text="{Binding Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Border>
+
+            <ContentControl Content="{Binding SelectedSection.Part}" IsEnabled="{Binding SectionEnabled}"
+                            Margin="{DynamicResource Padding.Document}"
+                            HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+        </DockPanel>
+    </Panel>
+</UserControl>
