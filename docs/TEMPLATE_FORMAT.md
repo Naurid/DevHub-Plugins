@@ -199,14 +199,19 @@ kept (a UTF-8 BOM stays). `template.json` is never copied into the output.
 
 ## 9. Built-in templates (read-only; Duplicate to change)
 
-| Language | Templates |
-|---|---|
-| C# / .NET | console, class library, solution (+ add a project), Avalonia app, xUnit test project |
-| C# / Unity | new Unity project (`@unity`, editor version from the installed ones) |
-| TypeScript / Web | Vite (React / Vue / Svelte, TS), Tauri app |
-| Rust | `cargo new` (binary / library) |
-| Python | venv + `src/<name>` + `pyproject.toml` |
-| Go | `go mod init` + `main.go` |
+| Language | Projects | Items |
+|---|---|---|
+| C# / .NET | Console App, Class Library, Solution with Tests (app or library + xUnit), Avalonia App, xUnit Test Project, Empty Project (any language) | C# Class, C# Interface, Add Project to Solution |
+| C# / Unity | Unity Project (`@unity`) | MonoBehaviour, ScriptableObject |
+| TypeScript / Web | Vite App (React / Vue / Svelte), Tauri App | |
+| Rust | Rust Crate (`cargo new`, bin / lib) | |
+| Python | Python Package (src layout, optional `.venv` via `py`) | Python Module |
+| Go | Go Module (`go mod init` + `main.go`) | |
+
+`@unity` is the newest editor installed with Unity Hub (its default folder, or the "Installs
+location" from Hub's preferences). The npm templates call `npm create vite@latest` /
+`npm create tauri-app@latest`, so they need the network. Each built-in is tested against its real
+tool when it's installed (npm ones with `DEVHUB_NETWORK_TESTS=1`; Unity only by its command).
 
 ## 10. Import (folder → template)
 

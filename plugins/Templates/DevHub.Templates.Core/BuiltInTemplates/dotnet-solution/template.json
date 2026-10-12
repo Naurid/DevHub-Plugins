@@ -1,0 +1,25 @@
+{
+  // No base command: the post-create commands build the solution with dotnet itself (an app or a
+  // library in src/, its xUnit tests in tests/ referencing it), on top of the README and .gitignore.
+  "schemaVersion": 1,
+  "id": "dotnet-solution",
+  "kind": "project",
+  "name": "Solution with Tests",
+  "description": "A solution: an app or library in src/<Name> and xUnit tests in tests/<Name>.Tests.",
+  "language": "C#",
+  "categories": [".NET", "Testing"],
+  "variables": [
+    { "name": "Name", "label": "Project name", "required": true, "pattern": "^[A-Za-z_][A-Za-z0-9_.]*$" },
+    { "name": "Kind", "label": "Main project", "type": "choice", "choices": ["console", "classlib"], "default": "console" },
+    { "name": "Git", "label": "Create a git repository", "type": "bool", "default": true }
+  ],
+  "postCreate": [
+    { "name": "Create the solution", "command": "dotnet", "args": ["new", "sln", "--name", "{{Name}}"] },
+    { "name": "Create the project", "command": "dotnet", "args": ["new", "{{Kind}}", "--name", "{{Name}}", "--output", "src/{{Name}}"] },
+    { "name": "Create the tests", "command": "dotnet", "args": ["new", "xunit", "--name", "{{Name}}.Tests", "--output", "tests/{{Name}}.Tests"] },
+    { "name": "Tests reference the project", "command": "dotnet", "args": ["add", "tests/{{Name}}.Tests/{{Name}}.Tests.csproj", "reference", "src/{{Name}}/{{Name}}.csproj"] },
+    { "name": "Add the project to the solution", "command": "dotnet", "args": ["sln", "add", "src/{{Name}}/{{Name}}.csproj"] },
+    { "name": "Add the tests to the solution", "command": "dotnet", "args": ["sln", "add", "tests/{{Name}}.Tests/{{Name}}.Tests.csproj"] },
+    { "name": "Initialize git", "command": "git", "args": ["init"], "when": "Git", "continueOnError": true }
+  ]
+}

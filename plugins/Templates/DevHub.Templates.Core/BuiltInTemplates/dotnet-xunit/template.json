@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "dotnet-xunit",
+  "kind": "project",
+  "name": "xUnit Test Project",
+  "description": "A .NET test project with xUnit.",
+  "language": "C#",
+  "categories": ["Testing", ".NET"],
+  "variables": [
+    { "name": "Name", "label": "Project name", "required": true, "pattern": "^[A-Za-z_][A-Za-z0-9_.]*$" }
+  ],
+  "baseCommand": { "command": "dotnet", "args": ["new", "xunit", "--name", "{{Name}}", "--output", ".", "--no-restore"] }
+}

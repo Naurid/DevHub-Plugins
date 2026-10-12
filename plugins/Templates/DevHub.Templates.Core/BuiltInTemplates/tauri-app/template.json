@@ -1,0 +1,27 @@
+{
+  // create-tauri-app, non-interactive (-y): a desktop app with a web frontend and a Rust core.
+  "schemaVersion": 1,
+  "id": "tauri-app",
+  "kind": "project",
+  "name": "Tauri App",
+  "description": "A desktop app with a web frontend (React, Vue, Svelte or plain TypeScript) and a Rust core. Needs Rust.",
+  "language": "TypeScript",
+  "categories": ["Desktop", "Web"],
+  "rootFolder": "{{Name:kebab}}",
+  "variables": [
+    { "name": "Name", "label": "Project name", "required": true },
+    { "name": "Frontend", "type": "choice", "choices": ["react-ts", "vue-ts", "svelte-ts", "vanilla-ts"], "default": "react-ts" },
+    { "name": "Identifier", "label": "App identifier", "required": true, "default": "com.example.app", "pattern": "^[A-Za-z][A-Za-z0-9-]*([.][A-Za-z][A-Za-z0-9-]*)+$" },
+    { "name": "Install", "label": "Install the packages (npm install)", "type": "bool", "default": true },
+    { "name": "Git", "label": "Create a git repository", "type": "bool", "default": true }
+  ],
+  "baseCommand": {
+    "command": "npm",
+    "args": ["create", "tauri-app@latest", "{{Name:kebab}}", "--", "--template", "{{Frontend}}", "--manager", "npm", "--identifier", "{{Identifier}}", "-y"],
+    "runIn": "parent"
+  },
+  "postCreate": [
+    { "name": "Install the packages", "command": "npm", "args": ["install"], "when": "Install" },
+    { "name": "Initialize git", "command": "git", "args": ["init"], "when": "Git", "continueOnError": true }
+  ]
+}

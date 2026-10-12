@@ -1,0 +1,23 @@
+{
+  // @unity is the newest Unity editor installed with Unity Hub. Unity makes the project folder itself
+  // (runIn "parent"); creating it takes a minute or two. A Unity .gitignore and a README go on top.
+  "schemaVersion": 1,
+  "id": "unity-project",
+  "kind": "project",
+  "name": "Unity Project",
+  "description": "A new Unity project made by the newest editor you installed with Unity Hub, with a Unity .gitignore.",
+  "language": "C#",
+  "categories": ["Unity", "Game"],
+  "variables": [
+    { "name": "Name", "label": "Project name", "required": true },
+    { "name": "Git", "label": "Create a git repository", "type": "bool", "default": true }
+  ],
+  "baseCommand": {
+    "command": "@unity",
+    "args": ["-batchmode", "-quit", "-createProject", "{{Name}}", "-logFile", "-"],
+    "runIn": "parent"
+  },
+  "postCreate": [
+    { "name": "Initialize git", "command": "git", "args": ["init"], "when": "Git", "continueOnError": true }
+  ]
+}

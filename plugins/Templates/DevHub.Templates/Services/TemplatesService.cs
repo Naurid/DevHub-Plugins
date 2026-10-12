@@ -14,7 +14,8 @@ namespace DevHub.Services;
 /// </summary>
 public sealed class TemplatesService(ISettingsStore store)
 {
-    public CommandRunner Runner { get; } = new();
+    /// <summary>Runs template commands; <c>@unity</c> is the newest Unity editor Unity Hub installed.</summary>
+    public CommandRunner Runner { get; } = new(ToolAliases.Resolve);
 
     public ProjectGenerator Generator => new(Runner);
 
