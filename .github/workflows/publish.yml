@@ -25,7 +25,7 @@ jobs:
     permissions:
       contents: write # releases and the index
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0 # versions are counted from the history
 
