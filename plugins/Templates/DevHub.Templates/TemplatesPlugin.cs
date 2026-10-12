@@ -3,6 +3,7 @@ using DevHub.Actions.Providers;
 using DevHub.Integration;
 using DevHub.Sdk.Core.Plugins;
 using DevHub.Services;
+using DevHub.ViewModels.Dialogs.Settings;
 using DevHub.ViewModels.Documents;
 using DevHub.ViewModels.ToolWindows;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,5 +48,6 @@ public sealed class TemplatesPlugin : IPlugin
         services.AddSingleton<DocumentViewModelBase, ImportViewModel>();
 
         services.AddSingleton<IActionProvider, TemplatesActionProvider>();
+        services.AddTransient<SettingsPageViewModelBase, TemplatesSettingsPageViewModel>();
     }
 }

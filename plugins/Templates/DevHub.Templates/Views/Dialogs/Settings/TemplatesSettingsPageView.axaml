@@ -1,0 +1,71 @@
+<!--
+  Settings → Templates: the author name, where new projects go (a default folder and rules per language and/or
+  category), and the template libraries (personal folder, extra folders).
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Dialogs.Settings"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Dialogs.Settings.TemplatesSettingsPageView"
+             x:DataType="vm:TemplatesSettingsPageViewModel">
+    <StackPanel Spacing="{DynamicResource Spacing}">
+        <c:SettingsRow Label="Author" Description="The {{Author}} placeholder. Empty: your Windows user name.">
+            <TextBox Text="{Binding Author}" PlaceholderText="{Binding AuthorPlaceholder}" AutomationProperties.Name="Author" />
+        </c:SettingsRow>
+
+        <TextBlock Classes="header" Text="Where new projects go" Margin="{DynamicResource Margin.BlockAbove}" />
+        <c:SettingsRow Label="Default folder" Description="New Project starts here, unless a rule below fits the template. Empty: the folder you used last.">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}">
+                <TextBox Text="{Binding DefaultProjectFolder}" AutomationProperties.Name="Default folder" />
+                <Button Grid.Column="1" Content="Browse…" Command="{Binding BrowseDefaultFolderCommand}" />
+            </Grid>
+        </c:SettingsRow>
+        <TextBlock Classes="small secondary" TextWrapping="Wrap"
+                   Text="Rules: a template's language, category, or both, and the folder its projects go to. The most specific rule wins (both, then category, then language)." />
+        <ItemsControl ItemsSource="{Binding Rules}" AutomationProperties.Name="Folder rules">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:FolderRuleRowViewModel">
+                    <Grid ColumnDefinitions="*,*,2*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing.Small}"
+                          Margin="{DynamicResource Margin.ListGap}">
+                        <AutoCompleteBox Text="{Binding Language, Mode=TwoWay}"
+                                         ItemsSource="{Binding $parent[UserControl].((vm:TemplatesSettingsPageViewModel)DataContext).Languages}"
+                                         FilterMode="StartsWith" MinimumPrefixLength="0" PlaceholderText="Language"
+                                         AutomationProperties.Name="Language" />
+                        <TextBox Grid.Column="1" Text="{Binding Category}" PlaceholderText="Category" AutomationProperties.Name="Category" />
+                        <TextBox Grid.Column="2" Text="{Binding Folder}" PlaceholderText="Folder" AutomationProperties.Name="Folder" />
+                        <Button Grid.Column="3" Content="Browse…" Command="{Binding BrowseCommand}" />
+                        <c:ActionButton Grid.Column="4" IconKind="close" ToolTip.Tip="Remove" AutomationProperties.Name="Remove rule"
+                                        Command="{Binding RemoveCommand}" />
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <Button Classes="flat" Content="Add Rule" Command="{Binding AddRuleCommand}" HorizontalAlignment="Left" />
+
+        <TextBlock Classes="header" Text="Libraries" Margin="{DynamicResource Margin.BlockAbove}" />
+        <c:SettingsRow Label="Your library" Description="Where your own templates are kept. Empty: the default folder shown.">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}">
+                <TextBox Text="{Binding PersonalLibrary}" PlaceholderText="{Binding PersonalLibraryPlaceholder}"
+                         AutomationProperties.Name="Your library" />
+                <Button Grid.Column="1" Content="Browse…" Command="{Binding BrowsePersonalLibraryCommand}" />
+            </Grid>
+        </c:SettingsRow>
+        <c:SettingsRow Label="More libraries" Description="Folders of templates you share (a team repository, a project's templates folder).">
+            <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                <ItemsControl ItemsSource="{Binding ExtraLibraries}" AutomationProperties.Name="More libraries">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:LibraryRowViewModel">
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}">
+                                <TextBlock Text="{Binding Folder}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"
+                                           ToolTip.Tip="{Binding Folder}" />
+                                <c:ActionButton Grid.Column="1" IconKind="close" ToolTip.Tip="Remove" AutomationProperties.Name="Remove library"
+                                                Command="{Binding RemoveCommand}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Button Content="Add Folder…" Command="{Binding AddLibraryCommand}" HorizontalAlignment="Left" />
+            </StackPanel>
+        </c:SettingsRow>
+    </StackPanel>
+</UserControl>

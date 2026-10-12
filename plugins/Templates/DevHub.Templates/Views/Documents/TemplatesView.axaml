@@ -22,6 +22,7 @@
 <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}">
                                     <Button Classes="accent" Content="New Template…" Command="{Binding NewTemplateCommand}" />
                     <Button Content="Import Folder…" Command="{Binding ImportFolderCommand}" />
+                    <Button Content="Import Zip…" Command="{Binding ImportZipCommand}" />
                 </StackPanel>
             </c:EmptyState>
 
@@ -88,6 +89,8 @@
                         <Button Content="Duplicate" Command="{Binding DuplicateCommand}" Margin="{DynamicResource Margin.RowEnd}"
                                 ToolTip.Tip="A copy in your personal library, which you can change" />
                         <Button Content="Show in Explorer" Command="{Binding ShowInExplorerCommand}" Margin="{DynamicResource Margin.RowEnd}" />
+                        <Button Content="Export…" Command="{Binding ExportCommand}" Margin="{DynamicResource Margin.RowEnd}"
+                                ToolTip.Tip="Save it as one .zip to share" />
                         <Button Content="Delete…" Command="{Binding DeleteCommand}"
                                 IsVisible="{Binding !Selected.IsReadOnly, FallbackValue=False}" />
                     </WrapPanel>

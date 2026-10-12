@@ -29,7 +29,27 @@
         <Panel Background="{DynamicResource Brush.Bg.Editor}">
             <c:EmptyState IconKind="add" Title="New Project"
                           Description="Pick a template on the left: fill in its fields, check the commands it runs, arrange the files in the preview, then create."
-                          IsVisible="{Binding !HasPage}" />
+                          IsVisible="{Binding !HasPage}">
+                <!-- Recent projects (Settings → Templates sets where new ones go). -->
+                <StackPanel Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding HasRecentProjects}"
+                            MinWidth="{DynamicResource Size.WelcomeWidth}" Margin="{DynamicResource Margin.BlockAbove}">
+                    <TextBlock Classes="secondary" Text="Recent" />
+                    <ItemsControl ItemsSource="{Binding RecentProjects}" AutomationProperties.Name="Recent projects">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="t:RecentProjectViewModel">
+                                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing.Small}" ToolTip.Tip="{Binding Path}">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Classes="small secondary" Text="{Binding Detail}" TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                    <Button Grid.Column="1" Classes="flat" Content="Open" Command="{Binding OpenCommand}" IsVisible="{Binding CanOpen}" />
+                                    <Button Grid.Column="2" Classes="flat" Content="Show" ToolTip.Tip="Show in Explorer" Command="{Binding RevealCommand}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </c:EmptyState>
 
             <DockPanel Margin="{DynamicResource Padding.Document}" IsVisible="{Binding HasPage}">
                 <ItemsControl DockPanel.Dock="Top" ItemsSource="{Binding Steps}" Margin="{DynamicResource Margin.BlockBelow}"

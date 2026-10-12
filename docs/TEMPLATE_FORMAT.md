@@ -232,4 +232,16 @@ name stop the import before anything is written.
 ## 11. Not in v1
 
 Conditional blocks and files; template inheritance; remote sources (other than a library folder
-that's a git checkout); scripts as steps (use `postCreate`); zip export / import (polish).
+that's a git checkout); scripts as steps (use `postCreate`).
+
+## 12. Sharing (zip) and where projects go
+
+**Export** (Templates tab) writes the template's folder into one .zip, under a top folder named
+after its id. **Import Zip** takes a zip with one `template.json` at its top or in its one top
+folder, checks it, refuses entries that would land outside the template ("zip slip"), and takes a
+free id (`-2`…) in your library when the id is taken.
+
+**Where New Project starts** (Settings → Templates): the most specific rule for the template's
+language and/or category (both > category > language; the first one listed on a tie), else the
+default project folder, else the folder used last. A folder you change in the form stays when you
+pick another template.

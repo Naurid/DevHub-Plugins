@@ -44,6 +44,64 @@ public sealed class TemplatesSettings : ISettingsSection
 
     /// <summary>The browser groups by language (true) or by category (false, the default).</summary>
     public bool GroupByLanguage { get; set; }
+
+    /// <summary>Where new projects go unless a rule below says otherwise; null = the last folder used.</summary>
+    public string? DefaultProjectFolder { get; set; }
+
+    /// <summary>Where new projects of a language and/or category go (Settings → Templates).</summary>
+    public List<ProjectFolderRule> ProjectFolderRules { get; set; } = new();
+
+    /// <summary>The last projects made (newest first, a few only), for New Project's start page.</summary>
+    public List<RecentProject> RecentProjects { get; set; } = new();
+}
+
+/// <summary>"C# projects go to C:\Dev\dotnet", "Unity projects to D:\Unity": a language, a category, or both.</summary>
+public sealed class ProjectFolderRule
+{
+    public string? Language { get; set; }
+    public string? Category { get; set; }
+    public string Folder { get; set; } = "";
+}
+
+/// <summary>A project New Project made.</summary>
+public sealed record RecentProject(string Path, string Template, DateTimeOffset Created);
+
+/// <summary>Where New Project starts: the folder rules, then the default folder, then the last one used.</summary>
+public static class ProjectFolders
+{
+    public const int MaxRecent = 10;
+
+    /// <summary>
+    /// The folder for a new project from <paramref name="manifest"/>: the most specific matching rule
+    /// (language and category > category > language; the first one listed on a tie), else the default
+    /// project folder, else <see cref="TemplatesSettings.LastLocation"/>; null when none is set.
+    /// Language and category compare ignoring case; "Any" or an empty field matches everything.
+    /// </summary>
+    public static string? For(TemplatesSettings settings, TemplateManifest manifest)
+    {
+        static bool Set(string? value) => !string.IsNullOrWhiteSpace(value) && value.Trim() != "Any";
+
+        var best = settings.ProjectFolderRules
+            .Where(r => !string.IsNullOrWhiteSpace(r.Folder) && (Set(r.Language) || Set(r.Category)))
+            .Where(r => !Set(r.Language) || string.Equals(r.Language!.Trim(), manifest.Language, StringComparison.OrdinalIgnoreCase))
+            .Where(r => !Set(r.Category) || manifest.Categories.Contains(r.Category!.Trim(), StringComparer.OrdinalIgnoreCase))
+            .Select((r, index) => (Rule: r, Score: (Set(r.Category) ? 2 : 0) + (Set(r.Language) ? 1 : 0), Index: index))
+            .OrderByDescending(x => x.Score).ThenBy(x => x.Index)
+            .FirstOrDefault().Rule;
+
+        return best?.Folder.Trim()
+               ?? (string.IsNullOrWhiteSpace(settings.DefaultProjectFolder) ? null : settings.DefaultProjectFolder.Trim())
+               ?? settings.LastLocation;
+    }
+
+    /// <summary>Puts a new project first in the recent list (the same folder only once, at most <see cref="MaxRecent"/>).</summary>
+    public static void Remember(TemplatesSettings settings, RecentProject project)
+    {
+        settings.RecentProjects.RemoveAll(r => string.Equals(r.Path, project.Path, StringComparison.OrdinalIgnoreCase));
+        settings.RecentProjects.Insert(0, project);
+        if (settings.RecentProjects.Count > MaxRecent)
+            settings.RecentProjects.RemoveRange(MaxRecent, settings.RecentProjects.Count - MaxRecent);
+    }
 }
 
 /// <summary>Works out the libraries in use from the settings.</summary>

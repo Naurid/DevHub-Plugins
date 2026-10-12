@@ -50,6 +50,20 @@ public sealed class TemplatesService(ISettingsStore store)
         set => store.UpdateSection<TemplatesSettings>(s => s.LastLocation = value);
     }
 
+    /// <summary>Where a new project from this template starts (Settings → Templates: rules, default folder), or the last folder.</summary>
+    public string? LocationFor(TemplateManifest manifest) => ProjectFolders.For(Settings, manifest);
+
+    /// <summary>The recent projects, newest first.</summary>
+    public IReadOnlyList<RecentProject> RecentProjects => Settings.RecentProjects;
+
+    /// <summary>Remembers a project New Project made (and its folder as the last one used).</summary>
+    public void Remember(string projectPath, TemplateEntry template) =>
+        store.UpdateSection<TemplatesSettings>(s =>
+        {
+            s.LastLocation = Path.GetDirectoryName(projectPath);
+            ProjectFolders.Remember(s, new RecentProject(projectPath, template.Reference, DateTimeOffset.Now));
+        });
+
     public bool GroupByLanguage
     {
         get => Settings.GroupByLanguage;

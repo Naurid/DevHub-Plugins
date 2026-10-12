@@ -45,7 +45,7 @@ public sealed partial class TemplatesViewModel : DocumentViewModelBase
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasSelection))]
     [NotifyCanExecuteChangedFor(nameof(EditSelectedCommand), nameof(UseInNewProjectCommand), nameof(DuplicateCommand),
-        nameof(DeleteCommand), nameof(ShowInExplorerCommand))]
+        nameof(DeleteCommand), nameof(ShowInExplorerCommand), nameof(ExportCommand))]
     private TemplateSummaryViewModel? _selected;
 
     public bool HasSelection => Selected is not null;
@@ -156,6 +156,51 @@ public sealed partial class TemplatesViewModel : DocumentViewModelBase
         _templates.NotifyChanged();
         await Browser.ReloadAsync();
         _status.Show($"Deleted {summary.Name}.");
+    }
+
+    /// <summary>The selected template as one .zip, to share it.</summary>
+    [RelayCommand(CanExecute = nameof(HasSelection))]
+    private async Task ExportAsync()
+    {
+        if (Selected is not { } summary)
+            return;
+        if (await _dialogs.PickSaveFileAsync("Export Template", summary.Template.Id + ".zip", "Template", "zip") is not { } zip)
+            return;
+        try
+        {
+            await TemplatePackage.ExportAsync(summary.Template, zip);
+            _status.Show($"Exported {summary.Name} to {zip}.");
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            _status.Show("Couldn't export: " + ex.Message);
+        }
+    }
+
+    /// <summary>A template .zip (from Export) into your personal library.</summary>
+    [RelayCommand]
+    private async Task ImportZipAsync()
+    {
+        if (await _dialogs.PickFileAsync("Import Template", "Template", ["*.zip"]) is not { } zip)
+            return;
+        TemplateStoreResult result;
+        try
+        {
+            result = await TemplatePackage.ImportAsync(zip, _templates.PersonalLibrary);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException)
+        {
+            result = TemplateStoreResult.Failed(ex.Message);
+        }
+        if (result.Entry is not { } entry)
+        {
+            await _dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Can't Import the Template",
+                "Nothing was added to your library.", "OK", result.Errors, destructive: false, showCancel: false));
+            return;
+        }
+        _templates.NotifyChanged();
+        await Browser.ReloadAsync(select: entry.Reference);
+        _status.Show($"Imported {entry.Reference}.");
     }
 
     [RelayCommand(CanExecute = nameof(HasSelection))]

@@ -112,8 +112,12 @@ public sealed partial class TemplateFormViewModel : ViewModelBase, IDisposable
             field.Changed -= OnFieldChanged;
     }
 
+    /// <summary>The location was changed here (typed or Browse), not just the template's default.</summary>
+    public bool LocationEdited { get; private set; }
+
     partial void OnLocationChanged(string value)
     {
+        LocationEdited = true;
         if (ForItems && !_namespaceTyped)
             GuessNamespace();
         Update();

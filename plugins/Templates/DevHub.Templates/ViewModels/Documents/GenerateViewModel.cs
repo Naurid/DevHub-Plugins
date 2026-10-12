@@ -67,13 +67,24 @@ public sealed partial class GenerateViewModel : DocumentViewModelBase
 
     public bool HasPage => Page is not null;
 
+    /// <summary>The last projects made (those still there), on the start page.</summary>
+    public IReadOnlyList<RecentProjectViewModel> RecentProjects =>
+        _templates.RecentProjects.Where(r => Directory.Exists(r.Path))
+            .Select(r => new RecentProjectViewModel(r, _opener() is { } opener ? path => opener.Open(path) : null, TemplatesService.Reveal))
+            .ToList();
+
+    public bool HasRecentProjects => RecentProjects.Count > 0;
+
     [ObservableProperty] private IReadOnlyList<StepIndicatorViewModel> _steps = StepIndicatorViewModel.For(0);
 
     protected override void OnActivationChanged(bool isActive)
     {
         // The first time, and again after templates changed elsewhere (the Templates tab, an editor).
-        if (isActive)
-            _ = Browser.ReloadIfChangedAsync();
+        if (!isActive)
+            return;
+        _ = Browser.ReloadIfChangedAsync();
+        OnPropertyChanged(nameof(RecentProjects));
+        OnPropertyChanged(nameof(HasRecentProjects));
     }
 
     /// <summary>"Use in New Project" from the Templates tab: selects that template (call before opening this tab).</summary>
@@ -97,14 +108,16 @@ public sealed partial class GenerateViewModel : DocumentViewModelBase
     {
         _template = template;
         var entered = _form?.Entered ?? new Dictionary<string, string>();
-        var location = _form?.Location ?? DefaultLocation();
+        // A folder you picked yourself stays; otherwise each template starts in its own folder (Settings → Templates).
+        var location = _form is { LocationEdited: true } ? _form.Location : DefaultLocation(template);
         _form?.Dispose();
         _form = template is null ? null : new TemplateFormViewModel(template, location, entered, _templates, _dialogs, OnFormNext);
         SetPage(_form, 0);
     }
 
-    private string DefaultLocation() =>
-        _templates.LastLocation is { } last && Directory.Exists(last) ? last
+    /// <summary>The folder rules / default folder / last folder (Settings → Templates), then a Projects folder, then Documents.</summary>
+    private string DefaultLocation(TemplateEntry? template) =>
+        template?.Manifest is { } manifest && _templates.LocationFor(manifest) is { Length: > 0 } configured ? configured
         : _projectFolders()?.Folders.FirstOrDefault(Directory.Exists)
           ?? Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
@@ -236,7 +249,9 @@ public sealed partial class GenerateViewModel : DocumentViewModelBase
             return;
         }
         _staged = null;
-        _templates.LastLocation = staged.ParentFolder;
+        _templates.Remember(path, _template!);
+        OnPropertyChanged(nameof(RecentProjects));
+        OnPropertyChanged(nameof(HasRecentProjects));
 
         var commands = _raw ? [] : TemplateRendering.PostCreate(_template!.Manifest!, _context!);
         var log = new OutputLogViewModel();

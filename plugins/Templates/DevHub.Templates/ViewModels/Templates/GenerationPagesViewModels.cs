@@ -171,3 +171,17 @@ public sealed class CommandResultRowViewModel(CommandResult result) : ViewModelB
 
     public override string ToString() => Succeeded ? $"{Name}: done" : $"{Name}: {Error}";
 }
+
+/// <summary>A project New Project made, on its start page: open it (Git's repository tab) or show it in Explorer.</summary>
+public sealed class RecentProjectViewModel(DevHub.Templates.Core.RecentProject project, Action<string>? open, Action<string> reveal) : ViewModelBase
+{
+    public string Name { get; } = System.IO.Path.GetFileName(project.Path);
+    public string Path { get; } = project.Path;
+    public string Detail { get; } = $"{project.Template} · {project.Created.LocalDateTime:g}";
+    public bool CanOpen => open is not null;
+
+    public CommunityToolkit.Mvvm.Input.RelayCommand OpenCommand { get; } = new(() => open?.Invoke(project.Path));
+    public CommunityToolkit.Mvvm.Input.RelayCommand RevealCommand { get; } = new(() => reveal(project.Path));
+
+    public override string ToString() => Name;
+}
