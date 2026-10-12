@@ -52,7 +52,7 @@ public static class ItemApplier
 /// </summary>
 public sealed class StagedItem : IStagedResult
 {
-    private readonly List<TemplateStep> _edits = [];
+    private readonly EditHistory _history = new();
     private readonly Dictionary<string, TreeEntry> _conflicts = new(StringComparer.OrdinalIgnoreCase);
 
     internal StagedItem(string stagingFolder, string targetFolder, FileTree tree)
@@ -74,7 +74,7 @@ public sealed class StagedItem : IStagedResult
     /// <summary>Paths where the template would replace a file that's already there (the user decides per file).</summary>
     public IReadOnlyCollection<string> Conflicts => _conflicts.Keys;
 
-    public IReadOnlyList<TemplateStep> Edits => _edits;
+    public IReadOnlyList<TemplateStep> Edits => _history.Edits;
 
     internal void AddConflict(string path, TreeEntry replaced)
     {
@@ -83,7 +83,11 @@ public sealed class StagedItem : IStagedResult
     }
 
     /// <summary>A preview edit, like <see cref="StagedProject.ApplyEdit"/>.</summary>
-    public string? ApplyEdit(TemplateStep edit) => Staging.ApplyEdit(Tree, edit, _edits);
+    public string? ApplyEdit(TemplateStep edit) => _history.Apply(Tree, edit);
+
+    public bool CanUndo => _history.CanUndo;
+
+    public TemplateStep? UndoEdit() => _history.Undo(Tree);
 
     /// <summary>
     /// Changes the folder: existing files deleted / moved by the steps, the template's files written

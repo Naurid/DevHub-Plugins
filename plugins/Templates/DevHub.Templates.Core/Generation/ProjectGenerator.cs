@@ -137,7 +137,7 @@ public sealed class ProjectGenerator(CommandRunner runner)
 /// </summary>
 public sealed class StagedProject : IStagedResult
 {
-    private readonly List<TemplateStep> _edits = [];
+    private readonly EditHistory _history = new();
 
     internal StagedProject(string stagingFolder, string parentFolder, string rootName)
     {
@@ -159,10 +159,14 @@ public sealed class StagedProject : IStagedResult
     public FileTree Tree { get; internal set; } = new();
 
     /// <summary>The edits made in the preview, as concrete steps (see <see cref="PreviewEdits.ToTemplateSteps"/> to save them).</summary>
-    public IReadOnlyList<TemplateStep> Edits => _edits;
+    public IReadOnlyList<TemplateStep> Edits => _history.Edits;
 
     /// <summary>A preview edit (move / rename / delete / new folder, concrete paths). Returns why not, or null.</summary>
-    public string? ApplyEdit(TemplateStep edit) => Staging.ApplyEdit(Tree, edit, _edits);
+    public string? ApplyEdit(TemplateStep edit) => _history.Apply(Tree, edit);
+
+    public bool CanUndo => _history.CanUndo;
+
+    public TemplateStep? UndoEdit() => _history.Undo(Tree);
 
     /// <summary>
     /// Writes the project into the target (§4 step 5): refused (nothing written) when the folder
@@ -337,4 +341,10 @@ public interface IStagedResult : IDisposable
 
     /// <summary>A preview edit (move / rename / delete / new folder, concrete paths). Returns why not, or null.</summary>
     string? ApplyEdit(TemplateStep edit);
+
+    /// <summary>There's an edit to take back.</summary>
+    bool CanUndo { get; }
+
+    /// <summary>Takes back the last edit (the tree as it was before it); returns it, or null.</summary>
+    TemplateStep? UndoEdit();
 }

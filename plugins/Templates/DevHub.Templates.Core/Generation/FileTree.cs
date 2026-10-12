@@ -44,6 +44,22 @@ public sealed class FileTree
     private readonly Dictionary<string, TreeEntry> _entries = new(StringComparer.OrdinalIgnoreCase);
     private readonly List<TreeEntry> _removed = [];
 
+    /// <summary>The tree as it is now, to go back to (<see cref="Restore"/>): undo of a preview edit.</summary>
+    public Snapshot TakeSnapshot() => new(new Dictionary<string, TreeEntry>(_entries, StringComparer.OrdinalIgnoreCase), [.. _removed]);
+
+    /// <summary>Puts the tree back the way it was at <paramref name="snapshot"/>.</summary>
+    public void Restore(Snapshot snapshot)
+    {
+        _entries.Clear();
+        foreach (var (path, entry) in snapshot.Entries)
+            _entries[path] = entry;
+        _removed.Clear();
+        _removed.AddRange(snapshot.Removed);
+    }
+
+    /// <summary>A copy of a tree's state (entries are immutable records, so copying the collections is enough).</summary>
+    public sealed record Snapshot(IReadOnlyDictionary<string, TreeEntry> Entries, IReadOnlyList<TreeEntry> Removed);
+
     /// <summary>Every entry, sorted by path.</summary>
     public IReadOnlyList<TreeEntry> Entries =>
         _entries.Values.OrderBy(e => e.Path, StringComparer.OrdinalIgnoreCase).ToList();
@@ -283,5 +299,40 @@ public sealed class FileTree
             _entries.Remove(e.Path);
             _removed.Add(e);
         }
+    }
+}
+
+/// <summary>
+/// The preview's edits, in order, with the tree as it was before each one, so the last edit can be
+/// undone exactly (a delete brings its files back, a move puts them where they were).
+/// </summary>
+public sealed class EditHistory
+{
+    private readonly List<TemplateStep> _edits = [];
+    private readonly List<FileTree.Snapshot> _before = [];
+
+    public IReadOnlyList<TemplateStep> Edits => _edits;
+    public bool CanUndo => _edits.Count > 0;
+
+    /// <summary>Applies an edit (checked like a step); kept, with a way back, when it worked. Returns why not, or null.</summary>
+    public string? Apply(FileTree tree, TemplateStep edit)
+    {
+        var before = tree.TakeSnapshot();
+        if (Staging.ApplyEdit(tree, edit, _edits) is { } error)
+            return error;
+        _before.Add(before);
+        return null;
+    }
+
+    /// <summary>Takes back the last edit; returns it, or null when there's none.</summary>
+    public TemplateStep? Undo(FileTree tree)
+    {
+        if (_edits.Count == 0)
+            return null;
+        var edit = _edits[^1];
+        tree.Restore(_before[^1]);
+        _edits.RemoveAt(_edits.Count - 1);
+        _before.RemoveAt(_before.Count - 1);
+        return edit;
     }
 }

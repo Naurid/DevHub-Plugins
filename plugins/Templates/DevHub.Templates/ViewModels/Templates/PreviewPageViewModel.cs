@@ -20,7 +20,7 @@ namespace DevHub.ViewModels.Templates;
 /// Overwrite choice each; your files that move or get deleted are spelled out; the post-create
 /// commands are listed before Apply (they run only after it).
 /// </remarks>
-public sealed partial class PreviewPageViewModel : ViewModelBase
+public sealed partial class PreviewPageViewModel : ViewModelBase, Controls.ITreeDropHandler
 {
     private readonly IStagedResult _staged;
     private readonly StagedItem? _item;
@@ -72,7 +72,7 @@ public sealed partial class PreviewPageViewModel : ViewModelBase
     [ObservableProperty] private string? _message;
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(CreateCommand), nameof(BackCommand), nameof(SaveToTemplateCommand))]
+    [NotifyCanExecuteChangedFor(nameof(CreateCommand), nameof(BackCommand), nameof(SaveToTemplateCommand), nameof(UndoCommand))]
     private bool _isBusy;
 
     public bool IsRaw { get; }
@@ -214,6 +214,60 @@ public sealed partial class PreviewPageViewModel : ViewModelBase
         if (Error is null)
             Rebuild(select);
         SaveToTemplateCommand.NotifyCanExecuteChanged();
+        UndoCommand.NotifyCanExecuteChanged();
+    }
+
+    private bool CanUndo() => _staged.CanUndo && !IsBusy;
+
+    /// <summary>Takes back the last edit (Ctrl+Z): the tree as it was before it.</summary>
+    [RelayCommand(CanExecute = nameof(CanUndo))]
+    private void Undo()
+    {
+        if (_staged.UndoEdit() is not { } undone)
+            return;
+        Error = null;
+        var wasSaved = _savedEdits > _staged.Edits.Count;
+        _savedEdits = Math.Min(_savedEdits, _staged.Edits.Count);
+        Message = wasSaved
+            ? "Undone here. It was already saved to the template, so it's still one of its steps (remove it in the template's editor)."
+            : $"Undone: {Describe(undone)}.";
+        Rebuild(SelectedNode?.Path);
+        SaveToTemplateCommand.NotifyCanExecuteChanged();
+        UndoCommand.NotifyCanExecuteChanged();
+    }
+
+    private static string Describe(TemplateStep edit) => edit.Op switch
+    {
+        StepOp.CreateFolder => $"new folder {edit.Path}",
+        StepOp.Delete => $"delete {edit.Path}",
+        StepOp.Rename => $"rename {edit.From} to {edit.To}",
+        _ => $"move {edit.From} to {edit.To}",
+    };
+
+    // ── Drag and drop (TreeDragDrop): a row onto a folder (or a file: its folder), or onto the empty space (the top). ──
+
+    /// <summary>The folder a drop on <paramref name="target"/> means: the folder itself, a file's folder, or the top ("").</summary>
+    private static string DropFolder(PreviewNodeViewModel? target) => target is null ? "" : target.IsFolder ? target.Path : target.Parent;
+
+    public bool CanDrop(object source, object? target)
+    {
+        if (IsBusy || source is not PreviewNodeViewModel node || target is not (null or PreviewNodeViewModel))
+            return false;
+        var folder = DropFolder(target as PreviewNodeViewModel);
+        if (folder.Equals(node.Parent, StringComparison.OrdinalIgnoreCase))
+            return false; // already there
+        // A folder can't go into itself or a folder inside it.
+        return !node.IsFolder || !(folder + "/").StartsWith(node.Path + "/", StringComparison.OrdinalIgnoreCase);
+    }
+
+    public void Drop(object source, object? target)
+    {
+        if (!CanDrop(source, target))
+            return;
+        var node = (PreviewNodeViewModel)source;
+        var to = Join(DropFolder(target as PreviewNodeViewModel), node.Name);
+        // The same edit as Move to…: one entry to exactly that path (so Save to Template keeps it).
+        Edit(new TemplateStep { Op = StepOp.Move, From = node.Path, To = to }, to);
     }
 
     /// <summary>Builds the tree from the staged result; folders keep their open / closed state.</summary>

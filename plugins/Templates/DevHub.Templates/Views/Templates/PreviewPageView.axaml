@@ -1,6 +1,6 @@
 <!--
   New Project, step 3: the project as it will be (still in staging), as a tree marking where each file
-  came from (template / the base command, moved from …). New Folder, Rename, Move, Delete change it for
+  came from (template / the base command, moved from …). New Folder, Rename, Move (or drag a row onto a folder), Delete, Undo change it for
   this project (also on the right-click menu, F2 and Delete); Save to Template keeps the edits as steps.
   Create writes it into the target folder.
 -->
@@ -91,14 +91,18 @@
                                             Command="{Binding MoveCommand}" />
                             <c:ActionButton IconKind="delete" ToolTip.Tip="Delete (Delete)" AutomationProperties.Name="Delete"
                                             Command="{Binding DeleteCommand}" />
+                            <c:ToolbarSeparator />
+                            <Button Classes="flat" Content="Undo" ToolTip.Tip="Take back the last edit (Ctrl+Z)" Command="{Binding UndoCommand}" />
                         </c:Toolbar>
                     </DockPanel>
                 </Border>
                 <TreeView ItemsSource="{Binding Nodes}" SelectedItem="{Binding SelectedNode}" Background="Transparent"
-                          AutomationProperties.Name="Project files">
+                          AutomationProperties.Name="Project files"
+                          c:TreeDragDrop.Handler="{Binding}">
                     <TreeView.KeyBindings>
                         <KeyBinding Gesture="F2" Command="{Binding RenameCommand}" />
                         <KeyBinding Gesture="Delete" Command="{Binding DeleteCommand}" />
+                        <KeyBinding Gesture="Ctrl+Z" Command="{Binding UndoCommand}" />
                     </TreeView.KeyBindings>
                     <TreeView.ContextMenu>
                         <ContextMenu>
@@ -109,6 +113,10 @@
                         </ContextMenu>
                     </TreeView.ContextMenu>
                     <TreeView.Styles>
+                        <!-- Drag and drop: the row a dragged file would go into (TreeDragDrop). -->
+                        <Style Selector="TreeViewItem.dropTarget /template/ Border#PART_LayoutRoot">
+                            <Setter Property="Background" Value="{DynamicResource Brush.Accent.Subtle}" />
+                        </Style>
                         <Style Selector="TreeViewItem" x:DataType="t:PreviewNodeViewModel">
                             <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
                             <Setter Property="AutomationProperties.Name" Value="{Binding Name}" />

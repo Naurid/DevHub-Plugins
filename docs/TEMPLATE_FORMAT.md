@@ -113,7 +113,7 @@ alias such as `@unity` (the Unity editor version you pick).
    the command made.
 3. **Steps** run in order (§6).
 4. **Preview:** the final tree (new / from the command / moved). You can move, rename, delete and
-   add folders for this generation; **Save to template** appends those edits as `steps`
+   add folders for this generation (Move to… or drag and drop; Undo takes the last edit back); **Save to template** appends those edits as `steps`
    (writable libraries only).
 5. **Place:** conflict check, then the root moves into the chosen parent. An existing non-empty
    folder means nothing is written and you decide.
