@@ -96,7 +96,8 @@ public class BuiltInTemplatesTests : GenerationTestBase
         var root = Path.Combine(parent, "Notes");
         Assert.Equal(["README.md"], Files(root));
         Assert.True(Directory.Exists(Path.Combine(root, "src")) && Directory.Exists(Path.Combine(root, "docs")));
-        Assert.StartsWith("# Notes\n\nCreated by Tester on 2026-10-11.", Read(Path.Combine(root, "README.md")));
+        // Line endings normalised: they're whatever the template file has (git checks out with CRLF on some machines).
+        Assert.StartsWith("# Notes\n\nCreated by Tester on 2026-10-11.", Read(Path.Combine(root, "README.md")).ReplaceLineEndings("\n"));
     }
 
     [Fact]
