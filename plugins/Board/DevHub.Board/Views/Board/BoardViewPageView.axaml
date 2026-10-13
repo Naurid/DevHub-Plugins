@@ -1,0 +1,177 @@
+<!--
+  The Board page: sprint line (Scrum), quick filters and assignees, then the columns. Column headers can be dragged
+  along the board and have a menu (rename, limits, statuses, merge, move, delete); cards can be dragged between
+  columns (only where the workflow allows: the drop line shows where) and up and down to rank them. With swimlanes,
+  each lane repeats the columns' cells under its title.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Board"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Board.BoardViewPageView"
+             x:DataType="vm:BoardViewPageViewModel">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://DevHub.Board/Views/Board/BoardTemplates.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+        <StyleInclude Source="avares://DevHub.Board/Views/Board/BoardStyles.axaml" />
+    </UserControl.Styles>
+
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Margin="{DynamicResource Padding.BoardHeader}" Spacing="{DynamicResource Spacing}">
+            <!-- Scrum: the active sprint. -->
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Spacing}" IsVisible="{Binding SprintTitle, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                <TextBlock Classes="header" Text="{Binding SprintTitle}" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1" Classes="secondary" Text="{Binding SprintDetails}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+            </Grid>
+            <Border Classes="banner info" IsVisible="{Binding NoActiveSprint}">
+                <TextBlock TextWrapping="Wrap"
+                           Text="No sprint is running. A Scrum board shows the active sprint's issues: plan and start a sprint in the Backlog (with the Board.Scrum plugin), or make this a Kanban board in Board Settings." />
+            </Border>
+
+            <!-- Quick filters and assignees. -->
+            <WrapPanel Orientation="Horizontal">
+                <TextBlock Classes="secondary" Text="Quick filters:" VerticalAlignment="Center" Margin="{DynamicResource Margin.RowEnd}"
+                           IsVisible="{Binding HasQuickFilters}" />
+                <ItemsControl ItemsSource="{Binding QuickFilters}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:QuickFilterToggle">
+                            <ToggleButton Classes="chip" Content="{Binding Name}" IsChecked="{Binding IsOn}" Margin="{DynamicResource Margin.RowEnd}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <ItemsControl ItemsSource="{Binding Assignees}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:AssigneeToggle">
+                            <ToggleButton Theme="{StaticResource IconToggle}" IsChecked="{Binding IsOn}" ToolTip.Tip="{Binding Name, StringFormat='Only issues assigned to {0}'}"
+                                          AutomationProperties.Name="{Binding Name}">
+                                <c:Avatar Text="{Binding Name}" Width="{DynamicResource Size.Avatar}" Height="{DynamicResource Size.Avatar}" />
+                            </ToggleButton>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Button Classes="flat" Content="Clear filters" Command="{Binding ClearFiltersCommand}" />
+            </WrapPanel>
+
+            <Border Classes="banner error" IsVisible="{Binding Problem, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                <TextBlock Text="{Binding Problem}" TextWrapping="Wrap" />
+            </Border>
+            <TextBlock Classes="small secondary" Text="{Binding NotOnBoard}" TextWrapping="Wrap"
+                       ToolTip.Tip="These statuses aren't in any column of this board. Add them to a column with its Statuses… menu."
+                       IsVisible="{Binding NotOnBoard, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        </StackPanel>
+
+        <Panel>
+            <c:EmptyState IconKind="add" Title="No columns yet" IsVisible="{Binding HasNoColumns}"
+                          Description="Add the columns your work goes through. Each new column gets a status of the same name.">
+                <Button Classes="accent" Content="Add Column…" Command="{Binding AddColumnAtEndCommand}" HorizontalAlignment="Center" />
+            </c:EmptyState>
+
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" IsVisible="{Binding !HasNoColumns}"
+                          Classes.compactCards="{Binding CompactCards}">
+                <StackPanel Margin="{DynamicResource Padding.Board}" Spacing="{DynamicResource Spacing}">
+                    <!-- Column headers: drag to reorder, menu for the rest. -->
+                    <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Size.BoardColumnSpacing}">
+                        <ItemsControl ItemsSource="{Binding Columns}"
+                                      c:ItemsDragDrop.Handler="{Binding}" c:ItemsDragDrop.Orientation="Horizontal">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Size.BoardColumnSpacing}" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:ColumnViewModel">
+                                    <Border Classes="columnHeader" Classes.over="{Binding IsOverLimit}" Classes.under="{Binding IsUnderMinimum}"
+                                            ToolTip.Tip="{Binding ToolTip}" AutomationProperties.Name="{Binding}">
+                                        <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing.Small}">
+                                            <c:Icon Kind="success" IsVisible="{Binding IsDoneColumn}" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="1" Classes="columnName" Text="{Binding Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="2" Classes="secondary" Text="{Binding CountText}" VerticalAlignment="Center" />
+                                            <Button Grid.Column="3" Classes="flat" ToolTip.Tip="Column menu" AutomationProperties.Name="Column menu">
+                                                <c:Icon Kind="moreVertical" />
+                                                <Button.Flyout>
+                                                    <MenuFlyout>
+                                                        <MenuItem Header="Create Issue Here…" Command="{Binding AddIssueCommand}" />
+                                                        <Separator />
+                                                        <MenuItem Header="Rename…" Command="{Binding RenameCommand}" />
+                                                        <MenuItem Header="Limits (WIP)…" Command="{Binding WipCommand}" />
+                                                        <MenuItem Header="Statuses…" Command="{Binding StatusesCommand}" />
+                                                        <MenuItem Header="Merge Into…" Command="{Binding MergeCommand}" />
+                                                        <Separator />
+                                                        <MenuItem Header="Move Left" Command="{Binding MoveLeftCommand}" IsEnabled="{Binding CanMoveLeft}" />
+                                                        <MenuItem Header="Move Right" Command="{Binding MoveRightCommand}" IsEnabled="{Binding CanMoveRight}" />
+                                                        <MenuItem Header="Add Column After…" Command="{Binding AddColumnAfterCommand}" />
+                                                        <Separator />
+                                                        <MenuItem Header="Delete Column…" Command="{Binding DeleteCommand}" />
+                                                    </MenuFlyout>
+                                                </Button.Flyout>
+                                            </Button>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Button Classes="flat" ToolTip.Tip="Add a column" AutomationProperties.Name="Add column"
+                                Command="{Binding AddColumnAtEndCommand}" VerticalAlignment="Center">
+                            <c:Icon Kind="add" />
+                        </Button>
+                    </StackPanel>
+
+                    <!-- Lanes (one without a title when the board has no swimlanes), each with a cell per column. -->
+                    <ItemsControl ItemsSource="{Binding Lanes}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:LaneViewModel">
+                                <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                                    <ToggleButton Classes="flat" IsChecked="{Binding IsExpanded}" IsVisible="{Binding HasHeader}"
+                                                  Padding="{DynamicResource Padding.Swimlane}" Background="Transparent" BorderThickness="0"
+                                                  AutomationProperties.Name="{Binding Title}">
+                                        <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}">
+                                            <c:Icon Kind="chevronDown" IsVisible="{Binding IsExpanded}" />
+                                            <c:Icon Kind="chevronRight" IsVisible="{Binding !IsExpanded}" />
+                                            <TextBlock Classes="columnName" Text="{Binding Title}" />
+                                            <TextBlock Classes="secondary" Text="{Binding CountText}" />
+                                        </StackPanel>
+                                    </ToggleButton>
+                                    <ItemsControl ItemsSource="{Binding Cells}" IsVisible="{Binding IsExpanded}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Size.BoardColumnSpacing}" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="vm:CellViewModel">
+                                                <Border Classes="boardColumn">
+                                                    <ItemsControl ItemsSource="{Binding Cards}" ItemTemplate="{StaticResource IssueCard}"
+                                                                  MinHeight="{DynamicResource Size.BoardColumnMinHeight}" Background="Transparent"
+                                                                  c:ItemsDragDrop.Handler="{Binding $parent[UserControl].((vm:BoardViewPageViewModel)DataContext)}"
+                                                                  c:ItemsDragDrop.List="{Binding}">
+                                                    </ItemsControl>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ScrollViewer>
+        </Panel>
+    </DockPanel>
+</UserControl>

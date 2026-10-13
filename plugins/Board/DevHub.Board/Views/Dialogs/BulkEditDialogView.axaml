@@ -1,0 +1,22 @@
+<!-- Bulk edit: which field, and its new value for every selected issue. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Dialogs"
+             x:Class="DevHub.Views.Dialogs.BulkEditDialogView"
+             x:DataType="vm:BulkEditDialogViewModel">
+    <StackPanel Margin="{DynamicResource Padding.Dialog}" Spacing="{DynamicResource Spacing}">
+        <StackPanel Spacing="{DynamicResource Spacing.Small}">
+            <TextBlock Classes="secondary" Text="Field" />
+            <ComboBox ItemsSource="{Binding Fields}" SelectedItem="{Binding Field}" HorizontalAlignment="Stretch" AutomationProperties.Name="Field" />
+        </StackPanel>
+        <StackPanel Spacing="{DynamicResource Spacing.Small}">
+            <TextBlock Classes="secondary" Text="New value" />
+            <ComboBox ItemsSource="{Binding Choices}" SelectedItem="{Binding Choice}" HorizontalAlignment="Stretch" IsVisible="{Binding ShowChoices}"
+                      AutomationProperties.Name="New value" />
+            <TextBox Text="{Binding Text}" IsVisible="{Binding !ShowChoices}" AutomationProperties.Name="New value" />
+            <TextBlock Classes="small secondary" Text="{Binding Hint}" TextWrapping="Wrap" />
+        </StackPanel>
+        <TextBlock Text="{Binding Error}" Foreground="{DynamicResource Brush.Status.Error}" TextWrapping="Wrap"
+                   IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+    </StackPanel>
+</UserControl>

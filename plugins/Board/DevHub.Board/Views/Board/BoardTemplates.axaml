@@ -1,0 +1,93 @@
+<!--
+  Templates shared by the board's pages (and Board.Scrum's): a card (the board, search as a board) and a row
+  (backlog, sprints, search results). Both call the page they're in through ICardHost: click selects (the issue
+  panel shows it), double-click opens the issue in its own tab. Include with
+  <ResourceInclude Source="avares://DevHub.Board/Views/Board/BoardTemplates.axaml" />.
+-->
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:vm="using:DevHub.ViewModels.Board"
+                    xmlns:c="using:DevHub.Controls">
+
+    <DataTemplate x:Key="IssueCard" x:DataType="vm:IssueItemViewModel">
+        <Border Classes="issueCard" Classes.done="{Binding IsDone}" ToolTip.Tip="{Binding ToolTip}"
+                AutomationProperties.Name="{Binding}" Focusable="True"
+                c:DoubleTap.Command="{Binding OpenCommand}">
+            <Border.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Open in Tab" Command="{Binding OpenCommand}" />
+                    <MenuItem Header="Assign to Me" Command="{Binding AssignToMeCommand}" IsVisible="{Binding CanAssign}" />
+                    <MenuItem Header="Move to Next Column" Command="{Binding NextColumnCommand}" IsVisible="{Binding CanMoveColumns}" />
+                    <MenuItem Header="Move to Previous Column" Command="{Binding PreviousColumnCommand}" IsVisible="{Binding CanMoveColumns}" />
+                    <MenuItem Header="Move to Top" Command="{Binding MoveToTopCommand}" IsVisible="{Binding CanRank}" />
+                    <MenuItem Header="Move to Bottom" Command="{Binding MoveToBottomCommand}" IsVisible="{Binding CanRank}" />
+                    <Separator IsVisible="{Binding CanDelete}" />
+                    <MenuItem Header="Delete…" Command="{Binding DeleteCommand}" IsVisible="{Binding CanDelete}" />
+                </ContextMenu>
+            </Border.ContextMenu>
+            <Button Classes="cardButton" Command="{Binding SelectCommand}"
+                    AutomationProperties.Name="{Binding}">
+                <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                    <TextBlock Classes="cardSummary" Text="{Binding Summary}" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" />
+                    <Border Classes="epicLabel" IsVisible="{Binding ShowEpic}" HorizontalAlignment="Left">
+                        <TextBlock Classes="small" Text="{Binding EpicName}" TextTrimming="CharacterEllipsis" />
+                    </Border>
+                    <TextBlock Classes="small secondary" Text="{Binding Labels}" IsVisible="{Binding ShowLabels}" TextTrimming="CharacterEllipsis" />
+                    <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing.Small}">
+                        <c:IssueTypeIcon Kind="{Binding TypeIcon}" ToolTip.Tip="{Binding TypeName}" VerticalAlignment="Center"
+                                         AutomationProperties.Name="{Binding TypeName}" />
+                        <TextBlock Grid.Column="1" Classes="small secondary key" Text="{Binding Key}" VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="3" Classes="small secondary" Text="{Binding Due}" IsVisible="{Binding ShowDue}"
+                                   Classes.overdue="{Binding IsOverdue}" VerticalAlignment="Center" ToolTip.Tip="Due" />
+                        <TextBlock Grid.Column="4" Classes="small secondary" Text="{Binding SubtaskText}" VerticalAlignment="Center"
+                                   IsVisible="{Binding SubtaskText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" ToolTip.Tip="Sub-tasks done" />
+                        <c:Badge Grid.Column="5" Content="{Binding Points}" IsVisible="{Binding ShowPoints}" ToolTip.Tip="Story points" />
+                        <c:PriorityIcon Grid.Column="6" Kind="{Binding PriorityIcon}" IsVisible="{Binding ShowPriority}"
+                                        ToolTip.Tip="{Binding PriorityName}" VerticalAlignment="Center" />
+                        <c:Avatar Grid.Column="7" Text="{Binding AssigneeName}" IsVisible="{Binding ShowAssignee}"
+                                  Width="{DynamicResource Size.AvatarSmall}" Height="{DynamicResource Size.AvatarSmall}"
+                                  ToolTip.Tip="{Binding AssigneeName}" />
+                    </Grid>
+                </StackPanel>
+            </Button>
+        </Border>
+    </DataTemplate>
+
+    <DataTemplate x:Key="IssueRow" x:DataType="vm:IssueItemViewModel">
+        <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}"
+              Background="Transparent" ToolTip.Tip="{Binding ToolTip}"
+              c:DoubleTap.Command="{Binding OpenCommand}">
+            <Grid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Open in Tab" Command="{Binding OpenCommand}" />
+                    <MenuItem Header="Assign to Me" Command="{Binding AssignToMeCommand}" IsVisible="{Binding CanAssign}" />
+                    <MenuItem Header="Move to Next Column" Command="{Binding NextColumnCommand}" IsVisible="{Binding CanMoveColumns}" />
+                    <MenuItem Header="Move to Previous Column" Command="{Binding PreviousColumnCommand}" IsVisible="{Binding CanMoveColumns}" />
+                    <MenuItem Header="Move to Top" Command="{Binding MoveToTopCommand}" IsVisible="{Binding CanRank}" />
+                    <MenuItem Header="Move to Bottom" Command="{Binding MoveToBottomCommand}" IsVisible="{Binding CanRank}" />
+                    <Separator IsVisible="{Binding CanDelete}" />
+                    <MenuItem Header="Delete…" Command="{Binding DeleteCommand}" IsVisible="{Binding CanDelete}" />
+                </ContextMenu>
+            </Grid.ContextMenu>
+            <c:IssueTypeIcon Kind="{Binding TypeIcon}" VerticalAlignment="Center" AutomationProperties.Name="{Binding TypeName}" />
+            <TextBlock Grid.Column="1" Classes="secondary key" Text="{Binding Key}" VerticalAlignment="Center"
+                       MinWidth="{DynamicResource Size.IssueKey}" Classes.done="{Binding IsDone}" />
+            <TextBlock Grid.Column="2" Text="{Binding Summary}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+            <Border Grid.Column="3" Classes="epicLabel" IsVisible="{Binding ShowEpic}" VerticalAlignment="Center">
+                <TextBlock Classes="small" Text="{Binding EpicName}" TextTrimming="CharacterEllipsis" MaxWidth="{DynamicResource Size.StatusPill}" />
+            </Border>
+            <Border Grid.Column="4" Classes="statusPill" Classes.inProgress="{Binding IsInProgress}" Classes.done="{Binding IsDone}"
+                    VerticalAlignment="Center">
+                <TextBlock Classes="small" Text="{Binding StatusName}" TextTrimming="CharacterEllipsis" MaxWidth="{DynamicResource Size.StatusPill}" />
+            </Border>
+            <c:Avatar Grid.Column="5" Text="{Binding AssigneeName}" IsVisible="{Binding ShowAssignee}"
+                      Width="{DynamicResource Size.AvatarSmall}" Height="{DynamicResource Size.AvatarSmall}" ToolTip.Tip="{Binding AssigneeName}" />
+            <c:PriorityIcon Grid.Column="6" Kind="{Binding PriorityIcon}" IsVisible="{Binding ShowPriority}" ToolTip.Tip="{Binding PriorityName}"
+                            VerticalAlignment="Center" />
+            <Border Grid.Column="7" MinWidth="{DynamicResource Size.PointsColumn}">
+                <c:Badge Content="{Binding Points}" IsVisible="{Binding Points, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                         HorizontalAlignment="Right" ToolTip.Tip="Story points" />
+            </Border>
+        </Grid>
+    </DataTemplate>
+</ResourceDictionary>

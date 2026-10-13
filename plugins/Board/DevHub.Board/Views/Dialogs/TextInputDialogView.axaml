@@ -1,0 +1,31 @@
+<!-- The small one-question dialog: an explanation, a text (and maybe a second one), up to two drop-downs. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Dialogs"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Dialogs.TextInputDialogView"
+             x:DataType="vm:TextInputDialogViewModel">
+    <StackPanel Margin="{DynamicResource Padding.Dialog}" Spacing="{DynamicResource Spacing}">
+        <TextBlock Text="{Binding Explanation}" TextWrapping="Wrap" IsVisible="{Binding HasExplanation}" />
+        <StackPanel Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding ShowText}">
+            <TextBlock Classes="secondary" Text="{Binding Label}" />
+            <TextBox Text="{Binding Text}" AutomationProperties.Name="{Binding Label}" c:FocusOnLoad.IsEnabled="True" />
+        </StackPanel>
+        <StackPanel Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding ShowSecondText}">
+            <TextBlock Classes="secondary" Text="{Binding SecondLabel}" />
+            <TextBox Text="{Binding SecondText}" AutomationProperties.Name="{Binding SecondLabel}" />
+        </StackPanel>
+        <StackPanel Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding HasChoice}">
+            <TextBlock Classes="secondary" Text="{Binding Choice.Label}" />
+            <ComboBox ItemsSource="{Binding Choice.Options}" SelectedItem="{Binding Choice.Selected}" HorizontalAlignment="Stretch"
+                      AutomationProperties.Name="{Binding Choice.Label}" />
+        </StackPanel>
+        <StackPanel Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding HasSecondChoice}">
+            <TextBlock Classes="secondary" Text="{Binding SecondChoice.Label}" />
+            <ComboBox ItemsSource="{Binding SecondChoice.Options}" SelectedItem="{Binding SecondChoice.Selected}" HorizontalAlignment="Stretch"
+                      AutomationProperties.Name="{Binding SecondChoice.Label}" />
+        </StackPanel>
+        <TextBlock Text="{Binding Error}" Foreground="{DynamicResource Brush.Status.Error}" TextWrapping="Wrap"
+                   IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+    </StackPanel>
+</UserControl>

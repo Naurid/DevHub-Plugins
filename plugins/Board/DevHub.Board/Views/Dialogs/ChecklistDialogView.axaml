@@ -1,0 +1,25 @@
+<!-- Pick several things: an explanation and a list of check boxes (with a note where it helps). -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Dialogs"
+             x:Class="DevHub.Views.Dialogs.ChecklistDialogView"
+             x:DataType="vm:ChecklistDialogViewModel">
+    <DockPanel Margin="{DynamicResource Padding.Dialog}">
+        <TextBlock DockPanel.Dock="Top" Text="{Binding Explanation}" TextWrapping="Wrap" Margin="{DynamicResource Margin.BlockBelow}" />
+        <ScrollViewer>
+            <ItemsControl ItemsSource="{Binding Items}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ChecklistItem">
+                        <CheckBox IsChecked="{Binding IsChecked}" AutomationProperties.Name="{Binding Name}">
+                            <TextBlock>
+                                <Run Text="{Binding Name}" />
+                                <Run Text="  " />
+                                <Run Text="{Binding Note}" Foreground="{DynamicResource Brush.Text.Secondary}" />
+                            </TextBlock>
+                        </CheckBox>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>

@@ -1,0 +1,13 @@
+<!-- An issue in its own tab: the issue view, or a message when it's gone. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Documents"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Documents.IssueDocumentView"
+             x:DataType="vm:IssueDocumentViewModel">
+    <Panel>
+        <c:EmptyState IconKind="edit" Title="Issue" Description="{Binding Message}"
+                      IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        <ContentControl Content="{Binding Detail}" MaxWidth="{DynamicResource Size.WelcomeWidth}" HorizontalAlignment="Stretch" />
+    </Panel>
+</UserControl>

@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!--
+      The Board plugin's UI (docs/BOARD_PLAN.md): board tabs (board, backlog, search pages), issue tabs and the
+      issue panel, board settings, dialogs, actions, its own design tokens (Themes/BoardTokens.axaml). Builds on
+      DevHub.Sdk + DevHub.Board.Core; needs no other plugin. Board.Scrum, Board.Git, Board.Reports and
+      Board.Timeline build on it (pages, issue sections and stores: Extensibility/).
+    -->
+
+    <PropertyGroup>
+        <RootNamespace>DevHub</RootNamespace>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\DevHub.Board.Core\DevHub.Board.Core.csproj" />
+    </ItemGroup>
+
+</Project>

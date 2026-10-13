@@ -488,3 +488,19 @@ public class IssueDetailTests
         Assert.Throws<BoardRuleException>(() => board.Apply(new AddAttachment(issue.Id, "big.bin", new byte[AddAttachment.MaxBytes + 1])));
     }
 }
+
+public class CreateBoardIdTests
+{
+    [Theory]
+    [InlineData("")]
+    [InlineData("Not An Id")]
+    public void A_blank_or_bad_creator_id_gets_a_real_one(string creatorId)
+    {
+        var change = new CreateBoard("DEV", "x", BoardPreset.Kanban, new BoardUser("Ada", " "), creatorId)
+            .Build(new OperationContext(null, TestBoard.Start));
+        var project = BoardJson.Deserialize<BoardProject>(change.Files[BoardPaths.Project]!);
+
+        Assert.True(BoardIds.IsValid(project.People.Single().Id));
+        Assert.Null(project.People.Single().Email);
+    }
+}

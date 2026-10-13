@@ -1,0 +1,140 @@
+<!--
+  The planning layout shared by Board's Backlog and Board.Scrum's sprint planning: the epics panel on the left
+  (click one to see only its issues), a version filter, "show done" and bulk edit on top, the ranked lists (drag to
+  reorder or move between lists; Ctrl/Shift+click to select several), and a quick-create row at the bottom.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Board"
+             xmlns:dlg="using:DevHub.ViewModels.Dialogs"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Board.PlanningPageView"
+             x:DataType="vm:PlanningPageViewModel">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://DevHub.Board/Views/Board/BoardTemplates.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+        <StyleInclude Source="avares://DevHub.Board/Views/Board/BoardStyles.axaml" />
+        <Style Selector="ListBox.issues > ListBoxItem">
+            <Setter Property="Padding" Value="{DynamicResource Padding.ListItem}" />
+        </Style>
+    </UserControl.Styles>
+
+    <DockPanel>
+        <!-- Epics panel. -->
+        <Border DockPanel.Dock="Left" Width="{DynamicResource Size.EpicsPanel}" IsVisible="{Binding ShowEpics}"
+                BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,1,0">
+            <DockPanel>
+                <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" Margin="{DynamicResource Padding.BoardHeader}">
+                    <TextBlock Classes="section" Text="Epics" VerticalAlignment="Center" />
+                    <Button Grid.Column="1" Classes="flat" ToolTip.Tip="Create an epic" AutomationProperties.Name="Create epic"
+                            Command="{Binding CreateEpicCommand}">
+                        <c:Icon Kind="add" />
+                    </Button>
+                </Grid>
+                <ListBox ItemsSource="{Binding Epics}" SelectedItem="{Binding SelectedEpic}" Background="Transparent"
+                         AutomationProperties.Name="Epics" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="vm:EpicRow">
+                            <StackPanel Spacing="{DynamicResource Spacing.Small}" Background="Transparent"
+                                        ToolTip.Tip="{Binding Summary}">
+                                <TextBlock Text="{Binding Summary}" TextTrimming="CharacterEllipsis" FontWeight="SemiBold" IsVisible="{Binding IsSpecial}" />
+                                <StackPanel Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding !IsSpecial}">
+                                    <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}">
+                                        <c:IssueTypeIcon Kind="epic" />
+                                        <TextBlock Classes="small secondary" Text="{Binding Key}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding Summary}" TextWrapping="Wrap" MaxLines="2" TextTrimming="CharacterEllipsis" />
+                                    <ProgressBar Value="{Binding Done}" Maximum="1" />
+                                    <TextBlock Classes="small secondary" Text="{Binding Progress}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <!-- Filters and bulk edit. -->
+        <Border DockPanel.Dock="Top" Classes="pageHeader">
+            <Grid ColumnDefinitions="Auto,Auto,Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                <ToggleButton Classes="chip" Content="Epics" IsChecked="{Binding ShowEpics}" ToolTip.Tip="Show the epics panel" />
+                <ComboBox Grid.Column="1" ItemsSource="{Binding VersionFilters}" SelectedItem="{Binding VersionFilter}"
+                          AutomationProperties.Name="Version filter" ToolTip.Tip="Only issues planned for a version" />
+                <CheckBox Grid.Column="2" Content="Show done" IsChecked="{Binding ShowDone}" />
+                <Button Grid.Column="4" Content="Edit Selected…" Command="{Binding BulkEditCommand}"
+                        ToolTip.Tip="Change a field of every selected issue (Ctrl+click, Shift+click to select)" />
+            </Grid>
+        </Border>
+
+        <!-- Quick create. -->
+        <Border DockPanel.Dock="Bottom" Classes="pageHeader" BorderThickness="0,1,0,0">
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                <ComboBox ItemsSource="{Binding NewTypes}" SelectedItem="{Binding NewType}" AutomationProperties.Name="Type of the new issue">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="dlg:NamedItem">
+                            <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}">
+                                <c:IssueTypeIcon Kind="{Binding Icon}" />
+                                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <TextBox Grid.Column="1" Text="{Binding NewSummary}" PlaceholderText="What needs to be done? (Enter creates it at the bottom)"
+                         AutomationProperties.Name="New issue summary">
+                    <TextBox.KeyBindings>
+                        <KeyBinding Gesture="Enter" Command="{Binding QuickCreateCommand}" />
+                    </TextBox.KeyBindings>
+                </TextBox>
+                <Button Grid.Column="2" Content="Create" Command="{Binding QuickCreateCommand}" />
+            </Grid>
+        </Border>
+
+        <Border DockPanel.Dock="Top" Classes="banner error" Margin="{DynamicResource Padding.BoardHeader}"
+                IsVisible="{Binding Problem, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+            <TextBlock Text="{Binding Problem}" TextWrapping="Wrap" />
+        </Border>
+
+        <!-- The lists. -->
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+            <ItemsControl ItemsSource="{Binding Lists}" Margin="{DynamicResource Padding.Board}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:IssueListViewModel">
+                        <StackPanel Spacing="{DynamicResource Spacing.Small}" Margin="{DynamicResource Margin.BlockBelow}">
+                            <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                                <ToggleButton Classes="flat" IsChecked="{Binding IsExpanded}" Background="Transparent" BorderThickness="0"
+                                              AutomationProperties.Name="{Binding Title}">
+                                    <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}">
+                                        <c:Icon Kind="chevronDown" IsVisible="{Binding IsExpanded}" />
+                                        <c:Icon Kind="chevronRight" IsVisible="{Binding !IsExpanded}" />
+                                        <TextBlock Classes="columnName" Text="{Binding Title}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </ToggleButton>
+                                <TextBlock Grid.Column="1" Classes="secondary" Text="{Binding Subtitle}" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="3" Classes="small secondary" Text="{Binding Summary}" VerticalAlignment="Center" />
+                            </Grid>
+                            <Border Classes="listPanel" IsVisible="{Binding IsExpanded}">
+                                <Panel>
+                                    <TextBlock Classes="secondary" Text="{Binding EmptyText}" IsVisible="{Binding IsEmpty}"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    <ListBox Classes="issues" ItemsSource="{Binding Items}" SelectedItems="{Binding Selected}" SelectionMode="Multiple"
+                                             ItemTemplate="{StaticResource IssueRow}" Background="Transparent"
+                                             ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                             AutomationProperties.Name="{Binding Title}"
+                                             c:ItemsDragDrop.Handler="{Binding $parent[UserControl].((vm:PlanningPageViewModel)DataContext)}"
+                                             c:ItemsDragDrop.List="{Binding}" />
+                                </Panel>
+                            </Border>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>

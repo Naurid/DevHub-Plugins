@@ -1,0 +1,10 @@
+// The package's description of the plugin (docs/PLUGINS.md in DevHub); keep it equal to the plugin class's PluginInfo.
+// The version is computed from git (build/Get-PluginVersion.ps1); don't write one here.
+{
+  "id": "devhub.board",
+  "name": "Board",
+  "description": "Jira-style planning without a server: epics, stories, tasks, bugs and sub-tasks, story points and time tracking, boards with columns you shape yourself, a ranked backlog and search. Boards are plain files in a folder.",
+  "category": "Planning",
+  "apiVersion": 1,
+  "requires": []
+}

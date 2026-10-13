@@ -1,0 +1,91 @@
+<!--
+  A board tab: header (board selector, pages, search, Create, the board menu), the page, and the issue panel on the
+  right (resizable). Before the board loads: a message, with "Create Board…" when there's none here yet.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Documents"
+             xmlns:core="using:DevHub.Board.Core.Model"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Documents.BoardDocumentView"
+             x:DataType="vm:BoardDocumentViewModel">
+
+    <UserControl.Styles>
+        <StyleInclude Source="avares://DevHub.Board/Views/Board/BoardStyles.axaml" />
+        <Style Selector="ListBox.pages > ListBoxItem">
+            <Setter Property="Padding" Value="{DynamicResource Padding.Tab}" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.Control}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Panel>
+        <!-- Not loaded: loading, no board here, or an error. -->
+        <c:EmptyState IconKind="menu" Title="Board" Description="{Binding Message}" IsVisible="{Binding !IsLoaded}">
+            <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}" HorizontalAlignment="Center">
+                <Button Classes="accent" Content="Create Board…" Command="{Binding CreateBoardHereCommand}" IsVisible="{Binding CanCreateHere}" />
+                <Button Content="Try Again" Command="{Binding RetryCommand}"
+                        IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            </StackPanel>
+        </c:EmptyState>
+
+        <DockPanel IsVisible="{Binding IsLoaded}">
+            <Border DockPanel.Dock="Top" Classes="pageHeader">
+                <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                    <ComboBox ItemsSource="{Binding Boards}" SelectedItem="{Binding SelectedBoard}" VerticalAlignment="Center"
+                              AutomationProperties.Name="Board" ToolTip.Tip="Which board of this project to show">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="core:BoardDefinition">
+                                <TextBlock Text="{Binding Name}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <ListBox Grid.Column="1" Classes="pages" ItemsSource="{Binding Pages}" SelectedItem="{Binding SelectedPage}"
+                             Background="Transparent" AutomationProperties.Name="Pages" VerticalAlignment="Center"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}" />
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:BoardPageTab">
+                                <TextBlock Text="{Binding Title}" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <c:SearchField Grid.Column="2" Text="{Binding Search}" PlaceholderText="Search this board"
+                                   Width="{DynamicResource Size.BoardSearch}" VerticalAlignment="Center" />
+                    <Button Grid.Column="3" Classes="accent" Content="Create" Command="{Binding CreateIssueCommand}"
+                            ToolTip.Tip="Create an issue (Ctrl+Alt+I)" VerticalAlignment="Center" />
+                    <Button Grid.Column="4" Classes="flat" ToolTip.Tip="Board menu" AutomationProperties.Name="Board menu"
+                            VerticalAlignment="Center">
+                        <c:Icon Kind="moreVertical" />
+                        <Button.Flyout>
+                            <MenuFlyout Placement="BottomEdgeAlignedRight">
+                                <MenuItem Header="Board Settings…" Command="{Binding BoardSettingsCommand}" />
+                                <MenuItem Header="New Board View…" Command="{Binding NewBoardViewCommand}" />
+                                <MenuItem Header="Delete This Board View…" Command="{Binding DeleteBoardViewCommand}" />
+                                <Separator />
+                                <MenuItem Header="Project Settings (workflows, statuses, types, fields…)" Command="{Binding ProjectSettingsCommand}" />
+                                <Separator />
+                                <MenuItem Header="{Binding UndoText, StringFormat='Undo: {0}', TargetNullValue='Undo'}" Command="{Binding UndoCommand}"
+                                          IsEnabled="{Binding UndoText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                <MenuItem Header="Reload from Disk" Command="{Binding ReloadCommand}" />
+                            </MenuFlyout>
+                        </Button.Flyout>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <DockPanel>
+                <Border DockPanel.Dock="Right" Width="{Binding IssuePanelWidth}" Background="{DynamicResource Brush.Bg.Panel}"
+                        IsVisible="{Binding HasIssuePanel}">
+                    <ContentControl Content="{Binding IssuePanel}" />
+                </Border>
+                <c:SplitterThumb DockPanel.Dock="Right" Value="{Binding IssuePanelWidth}" Orientation="Vertical" Invert="True"
+                                 Minimum="{DynamicResource Size.IssuePanelMin}" IsVisible="{Binding HasIssuePanel}" />
+                <ContentControl Content="{Binding Page}" />
+            </DockPanel>
+        </DockPanel>
+    </Panel>
+</UserControl>

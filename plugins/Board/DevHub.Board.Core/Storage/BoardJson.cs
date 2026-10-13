@@ -86,6 +86,7 @@ public static class BoardPaths
     public const string BoardsFolder = "boards/";
     public const string VersionsFolder = "versions/";
     public const string SprintsFolder = "sprints/";
+    public const string FiltersFolder = "filters/";
     public const string HistoryFolder = "history/";
     public const string AttachmentsFolder = "attachments/";
 
@@ -94,6 +95,7 @@ public static class BoardPaths
     public static string Board(string id) => BoardsFolder + id + ".json";
     public static string Version(string id) => VersionsFolder + id + ".json";
     public static string Sprint(string id) => SprintsFolder + id + ".json";
+    public static string Filter(string id) => FiltersFolder + id + ".json";
     public static string History(string issueId) => HistoryFolder + issueId + ".jsonl";
     public static string AttachmentsOf(string issueId) => AttachmentsFolder + issueId + "/";
 

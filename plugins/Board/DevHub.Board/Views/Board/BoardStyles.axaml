@@ -1,0 +1,148 @@
+<!--
+  Styles for the board's views: cards, columns, swimlanes, status pills, epic labels, section headers.
+  Include with <StyleInclude Source="avares://DevHub.Board/Views/Board/BoardStyles.axaml" /> in a view's Styles.
+  Tokens only (Themes/BoardTokens.axaml + the Sdk's), no raw values.
+-->
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- A card on the board. -->
+    <Style Selector="Border.issueCard">
+        <Setter Property="Background" Value="{DynamicResource Brush.Board.Card}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Control}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.Control}" />
+        <Setter Property="Margin" Value="{DynamicResource Margin.Card}" />
+    </Style>
+    <Style Selector="Border.issueCard:pointerover">
+        <Setter Property="Background" Value="{DynamicResource Brush.Board.CardHover}" />
+    </Style>
+    <Style Selector="Border.issueCard:focus-within">
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+    </Style>
+    <Style Selector="Border.issueCard.done TextBlock.key">
+        <Setter Property="TextDecorations" Value="Strikethrough" />
+    </Style>
+
+    <!-- The whole card is a button (click = select), drawn flat. -->
+    <Style Selector="Button.cardButton">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="{DynamicResource Padding.Card}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Top" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+    </Style>
+    <Style Selector="Button.cardButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+    </Style>
+    <Style Selector="Button.cardButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+
+    <Style Selector="TextBlock.cardSummary">
+        <Setter Property="MaxLines" Value="3" />
+    </Style>
+    <!-- Compact cards (Settings → Board): one line of summary, less padding. -->
+    <Style Selector=".compactCards TextBlock.cardSummary">
+        <Setter Property="MaxLines" Value="1" />
+    </Style>
+    <Style Selector=".compactCards Button.cardButton">
+        <Setter Property="Padding" Value="{DynamicResource Padding.CardCompact}" />
+    </Style>
+
+    <Style Selector="TextBlock.key.done">
+        <Setter Property="TextDecorations" Value="Strikethrough" />
+    </Style>
+    <Style Selector="TextBlock.overdue">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Error}" />
+    </Style>
+
+    <!-- The epic's name on a card or row. -->
+    <Style Selector="Border.epicLabel">
+        <Setter Property="Background" Value="{DynamicResource Brush.Board.EpicLabel}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.Badge}" />
+        <Setter Property="Padding" Value="{DynamicResource Padding.EpicLabel}" />
+    </Style>
+
+    <!-- A status as a pill: grey for To Do, accent for In Progress, green for Done. -->
+    <Style Selector="Border.statusPill">
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg.Hover}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.Badge}" />
+        <Setter Property="Padding" Value="{DynamicResource Padding.Badge}" />
+    </Style>
+    <Style Selector="Border.statusPill.inProgress">
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent.Subtle}" />
+    </Style>
+    <Style Selector="Border.statusPill.done">
+        <Setter Property="Background" Value="{DynamicResource Brush.Status.Success.Subtle}" />
+    </Style>
+
+    <!-- Columns and swimlanes. -->
+    <Style Selector="Border.boardColumn">
+        <Setter Property="Background" Value="{DynamicResource Brush.Board.Column}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.Popup}" />
+        <Setter Property="Padding" Value="{DynamicResource Padding.BoardColumn}" />
+        <Setter Property="Width" Value="{DynamicResource Size.BoardColumn}" />
+        <Setter Property="MinHeight" Value="{DynamicResource Size.BoardColumnMinHeight}" />
+    </Style>
+    <!-- A ranked list (backlog, a sprint) as a panel. -->
+    <Style Selector="Border.listPanel">
+        <Setter Property="Background" Value="{DynamicResource Brush.Board.Column}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.Popup}" />
+        <Setter Property="Padding" Value="{DynamicResource Padding.BoardColumn}" />
+        <Setter Property="MinHeight" Value="{DynamicResource Size.RowHeight}" />
+    </Style>
+    <Style Selector="Border.columnHeader">
+        <Setter Property="Background" Value="{DynamicResource Brush.Board.Column}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.Popup}" />
+        <Setter Property="Padding" Value="{DynamicResource Padding.BoardColumnHeader}" />
+        <Setter Property="Width" Value="{DynamicResource Size.BoardColumn}" />
+    </Style>
+    <Style Selector="Border.columnHeader.over">
+        <Setter Property="Background" Value="{DynamicResource Brush.Status.Error.Subtle}" />
+    </Style>
+    <Style Selector="Border.columnHeader.under">
+        <Setter Property="Background" Value="{DynamicResource Brush.Status.Warning.Subtle}" />
+    </Style>
+    <Style Selector="TextBlock.columnName">
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <!-- A header line above a section of the issue view, the backlog, settings. -->
+    <Style Selector="TextBlock.section">
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Margin" Value="{DynamicResource Margin.BlockBelow}" />
+    </Style>
+    <Style Selector="Border.pageHeader">
+        <Setter Property="Padding" Value="{DynamicResource Padding.BoardHeader}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
+    </Style>
+    <Style Selector="Border.banner">
+        <Setter Property="Padding" Value="{DynamicResource Padding.Banner}" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Status.Warning.Subtle}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.Control}" />
+    </Style>
+    <Style Selector="Border.banner.error">
+        <Setter Property="Background" Value="{DynamicResource Brush.Status.Error.Subtle}" />
+    </Style>
+    <Style Selector="Border.banner.info">
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent.Subtle}" />
+    </Style>
+
+    <!-- Field labels in the issue view. -->
+    <Style Selector="TextBlock.fieldLabel">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Width" Value="{DynamicResource Size.IssueFieldLabel}" />
+    </Style>
+
+    <!-- Toggle buttons used as filter chips (quick filters, assignees, pages). -->
+    <Style Selector="ToggleButton.chip">
+        <Setter Property="Padding" Value="{DynamicResource Padding.Button}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.Badge}" />
+    </Style>
+</Styles>

@@ -1,0 +1,51 @@
+<!-- New Board: name and key, a preset, and where to keep it. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Dialogs"
+             xmlns:core="using:DevHub.Board.Core"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Dialogs.NewBoardDialogView"
+             x:DataType="vm:NewBoardDialogViewModel">
+    <StackPanel Margin="{DynamicResource Padding.Dialog}" Spacing="{DynamicResource Spacing}">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing}">
+            <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                <TextBlock Classes="secondary" Text="Name" />
+                <TextBox Text="{Binding Name}" PlaceholderText="My project" AutomationProperties.Name="Board name" c:FocusOnLoad.IsEnabled="True" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Spacing="{DynamicResource Spacing.Small}">
+                <TextBlock Classes="secondary" Text="Key" ToolTip.Tip="Issue keys start with it: DEV-1, DEV-2…" />
+                <TextBox Text="{Binding Key}" PlaceholderText="DEV" AutomationProperties.Name="Project key" MinWidth="{DynamicResource Size.IssueKey}" />
+            </StackPanel>
+        </Grid>
+        <StackPanel Spacing="{DynamicResource Spacing.Small}">
+            <TextBlock Classes="secondary" Text="Start with" />
+            <ComboBox ItemsSource="{Binding Presets}" SelectedItem="{Binding Preset}" HorizontalAlignment="Stretch" AutomationProperties.Name="Preset">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="core:BoardPreset">
+                        <TextBlock Text="{Binding}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <TextBlock Classes="small secondary" Text="{Binding PresetDescription}" TextWrapping="Wrap" />
+        </StackPanel>
+        <StackPanel Spacing="{DynamicResource Spacing.Small}">
+            <TextBlock Classes="secondary" Text="Keep it" />
+            <ComboBox ItemsSource="{Binding Stores}" SelectedItem="{Binding Store}" HorizontalAlignment="Stretch" AutomationProperties.Name="Where to keep it">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="vm:StoreChoice">
+                        <StackPanel>
+                            <TextBlock Text="{Binding Name}" />
+                            <TextBlock Classes="small secondary" Text="{Binding Description}" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing}" IsVisible="{Binding ShowFolder}">
+                <TextBox Text="{Binding Folder}" PlaceholderText="A folder (for a repository: its root folder)" AutomationProperties.Name="Folder" />
+                <Button Grid.Column="1" Content="Browse…" Command="{Binding BrowseCommand}" />
+            </Grid>
+        </StackPanel>
+        <TextBlock Text="{Binding Error}" Foreground="{DynamicResource Brush.Status.Error}" TextWrapping="Wrap"
+                   IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+    </StackPanel>
+</UserControl>

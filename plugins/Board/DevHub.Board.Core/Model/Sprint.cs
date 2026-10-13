@@ -60,3 +60,17 @@ public sealed record SprintIssuePoints
 
     [JsonExtensionData] public Dictionary<string, JsonElement>? Extra { get; init; }
 }
+
+/// <summary><c>filters/&lt;id&gt;.json</c>: a saved search, shared by everyone using the board.</summary>
+public sealed record SavedFilter
+{
+    public int Schema { get; init; } = BoardJson.SchemaVersion;
+    public string Id { get; init; } = "";
+    public string Name { get; init; } = "";
+    public string Query { get; init; } = "";
+    public string? Owner { get; init; }
+
+    [JsonExtensionData] public Dictionary<string, JsonElement>? Extra { get; init; }
+
+    public override string ToString() => Name;
+}

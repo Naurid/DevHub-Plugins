@@ -1,0 +1,375 @@
+<!--
+  Project settings tab: sections on the left (general, workflows, statuses, issue types, priorities, resolutions,
+  custom fields, components, versions, people, link types), the section on the right. Changes are saved at once;
+  names save when their box loses focus.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Documents"
+             xmlns:dlg="using:DevHub.ViewModels.Dialogs"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Documents.ProjectSettingsDocumentView"
+             x:DataType="vm:ProjectSettingsDocumentViewModel">
+
+    <UserControl.Styles>
+        <StyleInclude Source="avares://DevHub.Board/Views/Board/BoardStyles.axaml" />
+        <Style Selector="StackPanel.section">
+            <Setter Property="Spacing" Value="{DynamicResource Spacing}" />
+        </Style>
+        <Style Selector="TextBlock.help">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+    </UserControl.Styles>
+
+    <Panel>
+        <c:EmptyState IconKind="settings" Title="Board settings" Description="{Binding Message}"
+                      IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+        <DockPanel IsVisible="{Binding Model, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <ListBox DockPanel.Dock="Left" ItemsSource="{Binding Sections}" SelectedItem="{Binding Section}" Width="{DynamicResource Size.SettingsList}"
+                     Background="Transparent" AutomationProperties.Name="Sections" />
+
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled" DataContext="{Binding Model}">
+                <StackPanel x:DataType="vm:ProjectSettingsModel" Margin="{DynamicResource Padding.Document}" Spacing="{DynamicResource Spacing.Large}">
+
+                    <!-- General. -->
+                    <StackPanel Classes="section" IsVisible="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).IsGeneral}">
+                        <TextBlock Classes="header" Text="General" />
+                        <c:SettingsRow Label="Project name">
+                            <TextBox Text="{Binding ProjectName, UpdateSourceTrigger=LostFocus}" AutomationProperties.Name="Project name" />
+                        </c:SettingsRow>
+                        <c:SettingsRow Label="Key" Description="The start of every issue key.">
+                            <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}">
+                                <TextBlock Text="{Binding ProjectKey}" VerticalAlignment="Center" FontWeight="SemiBold" />
+                                <Button Content="Change…" Command="{Binding ChangeKeyCommand}" />
+                            </StackPanel>
+                        </c:SettingsRow>
+                        <c:SettingsRow Label="Working day" Description="How many hours one day (1d) is in time tracking.">
+                            <TextBox Text="{Binding HoursPerDay, UpdateSourceTrigger=LostFocus}" AutomationProperties.Name="Hours per day" />
+                        </c:SettingsRow>
+                        <c:SettingsRow Label="Working week" Description="How many days one week (1w) is.">
+                            <TextBox Text="{Binding DaysPerWeek, UpdateSourceTrigger=LostFocus}" AutomationProperties.Name="Days per week" />
+                        </c:SettingsRow>
+                        <c:SettingsRow Label="Stored in">
+                            <SelectableTextBlock Text="{Binding LocationText}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                        </c:SettingsRow>
+                    </StackPanel>
+
+                    <!-- Workflows. -->
+                    <StackPanel Classes="section" IsVisible="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).IsWorkflows}">
+                        <TextBlock Classes="header" Text="Workflows" />
+                        <TextBlock Classes="help" Text="A workflow lists the statuses issues move through and which moves are allowed. Each issue type follows one (Issue types section); the default one is for types without their own." />
+                        <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                            <ComboBox ItemsSource="{Binding Workflows}" SelectedItem="{Binding SelectedWorkflow}" HorizontalAlignment="Stretch"
+                                      AutomationProperties.Name="Workflow">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:NamedRow">
+                                        <TextBlock>
+                                            <Run Text="{Binding Name}" /><Run Text="  " />
+                                            <Run Text="{Binding Detail}" Foreground="{DynamicResource Brush.Text.Secondary}" />
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <Button Grid.Column="1" Content="New…" Command="{Binding NewWorkflowCommand}" />
+                            <Button Grid.Column="2" Content="Make Default" Command="{Binding MakeDefaultWorkflowCommand}" IsEnabled="{Binding !IsDefaultWorkflow}" />
+                            <Button Grid.Column="3" Content="Delete…" Command="{Binding DeleteWorkflowCommand}" />
+                        </Grid>
+                        <c:SettingsRow Label="Name" DataContext="{Binding SelectedWorkflow}" IsVisible="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).Model.SelectedWorkflow, Converter={x:Static ObjectConverters.IsNotNull}}">
+                            <TextBox x:DataType="vm:NamedRow" Text="{Binding Name, UpdateSourceTrigger=LostFocus}" AutomationProperties.Name="Workflow name" />
+                        </c:SettingsRow>
+                        <TextBlock Classes="help" Text="{Binding WorkflowUsers}" />
+
+                        <TextBlock Classes="section" Text="Statuses, in order" />
+                        <ItemsControl ItemsSource="{Binding WorkflowStatuses}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:NamedRow">
+                                    <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing.Small}" MinHeight="{DynamicResource Size.RowHeight}">
+                                        <TextBlock VerticalAlignment="Center" TextTrimming="CharacterEllipsis">
+                                            <Run Text="{Binding Name}" /><Run Text="  " />
+                                            <Run Text="{Binding Detail}" Foreground="{DynamicResource Brush.Text.Secondary}" />
+                                        </TextBlock>
+                                        <Button Grid.Column="1" Classes="flat" Content="Up" AutomationProperties.Name="Move up"
+                                                Command="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).Model.MoveWorkflowStatusUpCommand}" CommandParameter="{Binding}" />
+                                        <Button Grid.Column="2" Classes="flat" Content="Down" AutomationProperties.Name="Move down"
+                                                Command="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).Model.MoveWorkflowStatusDownCommand}" CommandParameter="{Binding}" />
+                                        <Button Grid.Column="3" Classes="flat" Content="Remove…"
+                                                Command="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).Model.RemoveStatusFromWorkflowCommand}" CommandParameter="{Binding}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                            <TextBlock Text="Add status:" VerticalAlignment="Center" />
+                            <ComboBox Grid.Column="1" ItemsSource="{Binding StatusesToAdd}" SelectedItem="{Binding StatusToAdd}" HorizontalAlignment="Stretch"
+                                      PlaceholderText="(every status is in it)" AutomationProperties.Name="Status to add" />
+                            <Button Grid.Column="2" Content="Add" Command="{Binding AddStatusToWorkflowCommand}" />
+                        </Grid>
+
+                        <TextBlock Classes="section" Text="Transitions" />
+                        <CheckBox Content="Any status can move to any other (ignore the grid below)" IsChecked="{Binding AnyToAny}" />
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto" IsVisible="{Binding !AnyToAny}">
+                            <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                                <TextBlock Classes="help" Text="A tick lets issues move from the row's status to the column's status." />
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Width="{DynamicResource Size.SettingsList}">
+                                        <TextBlock Classes="small secondary" Text="from \ to" />
+                                    </Border>
+                                    <ItemsControl ItemsSource="{Binding TransitionColumns}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Orientation="Horizontal" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="x:String">
+                                                <TextBlock Classes="small" Text="{Binding}" Width="{DynamicResource Size.TransitionCell}" TextTrimming="CharacterEllipsis"
+                                                           ToolTip.Tip="{Binding}" />
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                                <ItemsControl ItemsSource="{Binding TransitionRows}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:TransitionRow">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Border Width="{DynamicResource Size.SettingsList}">
+                                                    <TextBlock Text="{Binding FromName}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                </Border>
+                                                <ItemsControl ItemsSource="{Binding Cells}">
+                                                    <ItemsControl.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <StackPanel Orientation="Horizontal" />
+                                                        </ItemsPanelTemplate>
+                                                    </ItemsControl.ItemsPanel>
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate x:DataType="vm:TransitionCell">
+                                                            <Border Width="{DynamicResource Size.TransitionCell}">
+                                                                <CheckBox IsChecked="{Binding IsAllowed}" IsEnabled="{Binding IsEnabled}" IsVisible="{Binding !IsSelf}"
+                                                                          AutomationProperties.Name="Allowed" />
+                                                            </Border>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </StackPanel>
+
+                    <!-- Statuses. -->
+                    <StackPanel Classes="section" IsVisible="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).IsStatuses}">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Classes="header" Text="Statuses" />
+                            <Button Grid.Column="1" Content="Add Status…" Command="{Binding AddStatusCommand}" />
+                        </Grid>
+                        <TextBlock Classes="help" Text="The category decides what counts as not started, started and finished (points done, reports). Renaming changes no issue." />
+                        <ItemsControl ItemsSource="{Binding Statuses}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:NamedRow">
+                                    <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.BlockBelow}">
+                                        <TextBox Text="{Binding Name, UpdateSourceTrigger=LostFocus}" AutomationProperties.Name="Status name" />
+                                        <ComboBox Grid.Column="1" ItemsSource="{Binding Choices}" SelectedItem="{Binding Choice}" AutomationProperties.Name="Category" />
+                                        <TextBlock Grid.Column="2" Classes="small secondary" Text="{Binding Detail}" VerticalAlignment="Center" />
+                                        <Button Grid.Column="3" Classes="flat" Content="Delete…"
+                                                Command="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).Model.DeleteStatusCommand}" CommandParameter="{Binding}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+
+                    <!-- Issue types. -->
+                    <StackPanel Classes="section" IsVisible="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).IsIssueTypes}">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Classes="header" Text="Issue types" />
+                            <Button Grid.Column="1" Content="Add Issue Type…" Command="{Binding AddIssueTypeCommand}" />
+                        </Grid>
+                        <TextBlock Classes="help" Text="Epics hold standard issues, standard issues hold sub-tasks. Each type can follow its own workflow (issues in a status it lacks move to its first status)." />
+                        <ItemsControl ItemsSource="{Binding IssueTypes}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:NamedRow">
+                                    <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.BlockBelow}">
+                                        <c:IssueTypeIcon Kind="{Binding Choice.Id}" VerticalAlignment="Center" />
+                                        <TextBox Grid.Column="1" Text="{Binding Name, UpdateSourceTrigger=LostFocus}" AutomationProperties.Name="Issue type name" />
+                                        <ComboBox Grid.Column="2" ItemsSource="{Binding Choices}" SelectedItem="{Binding Choice}" AutomationProperties.Name="Icon" />
+                                        <ComboBox Grid.Column="3" ItemsSource="{Binding Choices2}" SelectedItem="{Binding Choice2}" AutomationProperties.Name="Workflow" />
+                                        <TextBlock Grid.Column="4" Classes="small secondary" Text="{Binding Detail}" VerticalAlignment="Center" />
+                                        <Button Grid.Column="5" Classes="flat" Content="Delete…"
+                                                Command="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).Model.DeleteIssueTypeCommand}" CommandParameter="{Binding}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+
+                    <!-- Priorities. -->
+                    <StackPanel Classes="section" IsVisible="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).IsPriorities}">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Classes="header" Text="Priorities" />
+                            <Button Grid.Column="1" Content="Add Priority…" Command="{Binding AddPriorityCommand}" />
+                        </Grid>
+                        <TextBlock Classes="help" Text="Highest first. The ticked one is what new issues get." />
+                        <ItemsControl ItemsSource="{Binding Priorities}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:NamedRow">
+                                    <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.BlockBelow}">
+                                        <c:PriorityIcon Kind="{Binding Choice.Id}" VerticalAlignment="Center" />
+                                        <TextBox Grid.Column="1" Text="{Binding Name, UpdateSourceTrigger=LostFocus}" AutomationProperties.Name="Priority name" />
+                                        <ComboBox Grid.Column="2" ItemsSource="{Binding Choices}" SelectedItem="{Binding Choice}" AutomationProperties.Name="Icon" />
+                                        <CheckBox Grid.Column="3" Content="Default" IsChecked="{Binding Flag}" />
+                                        <Button Grid.Column="4" Classes="flat" Content="Up"
+                                                Command="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).Model.MovePriorityUpCommand}" CommandParameter="{Binding}" />
+                                        <Button Grid.Column="5" Classes="flat" Content="Down"
+                                                Command="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).Model.MovePriorityDownCommand}" CommandParameter="{Binding}" />
+                                        <Button Grid.Column="6" Classes="flat" Content="Delete…"
+                                                Command="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).Model.DeletePriorityCommand}" CommandParameter="{Binding}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+
+                    <!-- Resolutions. -->
+                    <StackPanel Classes="section" IsVisible="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).IsResolutions}">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Classes="header" Text="Resolutions" />
+                            <Button Grid.Column="1" Content="Add Resolution…" Command="{Binding AddResolutionCommand}" />
+                        </Grid>
+                        <TextBlock Classes="help" Text="Why a finished issue is finished. An issue entering a Done status gets the first one unless you choose." />
+                        <ItemsControl ItemsSource="{Binding Resolutions}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:NamedRow">
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.BlockBelow}">
+                                        <TextBox Text="{Binding Name, UpdateSourceTrigger=LostFocus}" AutomationProperties.Name="Resolution name" />
+                                        <Button Grid.Column="1" Classes="flat" Content="Delete…"
+                                                Command="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).Model.DeleteResolutionCommand}" CommandParameter="{Binding}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+
+                    <!-- Custom fields. -->
+                    <StackPanel Classes="section" IsVisible="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).IsCustomFields}">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Classes="header" Text="Custom fields" />
+                            <Button Grid.Column="1" Content="Add Field…" Command="{Binding AddCustomFieldCommand}" />
+                        </Grid>
+                        <TextBlock Classes="help" Text="Extra fields on every issue; search them by name (Team = Apps)." />
+                        <ItemsControl ItemsSource="{Binding CustomFields}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:NamedRow">
+                                    <Grid ColumnDefinitions="*,Auto,2*,Auto" ColumnSpacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.BlockBelow}">
+                                        <TextBox Text="{Binding Name, UpdateSourceTrigger=LostFocus}" AutomationProperties.Name="Field name" />
+                                        <TextBlock Grid.Column="1" Classes="small secondary" Text="{Binding Detail}" VerticalAlignment="Center" />
+                                        <TextBox Grid.Column="2" Text="{Binding Second, UpdateSourceTrigger=LostFocus}" IsVisible="{Binding Flag}"
+                                                 PlaceholderText="Choices, separated by commas" AutomationProperties.Name="Choices" />
+                                        <Button Grid.Column="3" Classes="flat" Content="Delete…"
+                                                Command="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).Model.DeleteCustomFieldCommand}" CommandParameter="{Binding}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+
+                    <!-- Components. -->
+                    <StackPanel Classes="section" IsVisible="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).IsComponents}">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Classes="header" Text="Components" />
+                            <Button Grid.Column="1" Content="Add Component…" Command="{Binding AddComponentCommand}" />
+                        </Grid>
+                        <ItemsControl ItemsSource="{Binding Components}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:NamedRow">
+                                    <Grid ColumnDefinitions="*,2*,Auto" ColumnSpacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.BlockBelow}">
+                                        <TextBox Text="{Binding Name, UpdateSourceTrigger=LostFocus}" AutomationProperties.Name="Component name" />
+                                        <TextBox Grid.Column="1" Text="{Binding Second, UpdateSourceTrigger=LostFocus}" PlaceholderText="Description"
+                                                 AutomationProperties.Name="Description" />
+                                        <Button Grid.Column="2" Classes="flat" Content="Delete…"
+                                                Command="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).Model.DeleteComponentCommand}" CommandParameter="{Binding}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+
+                    <!-- Versions. -->
+                    <StackPanel Classes="section" IsVisible="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).IsVersions}">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Classes="header" Text="Versions" />
+                            <Button Grid.Column="1" Content="Add Version…" Command="{Binding AddVersionCommand}" />
+                        </Grid>
+                        <TextBlock Classes="help" Text="Releases issues can be planned for (Fix versions)." />
+                        <ItemsControl ItemsSource="{Binding Versions}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:NamedRow">
+                                    <StackPanel Spacing="{DynamicResource Spacing.Small}" Margin="{DynamicResource Margin.BlockBelow}">
+                                        <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                                            <TextBox Text="{Binding Name, UpdateSourceTrigger=LostFocus}" AutomationProperties.Name="Version name" />
+                                            <TextBox Grid.Column="1" Text="{Binding Second, UpdateSourceTrigger=LostFocus}" PlaceholderText="Release date"
+                                                     AutomationProperties.Name="Release date" MinWidth="{DynamicResource Size.StatusPill}" />
+                                            <CheckBox Grid.Column="2" Content="Released" IsChecked="{Binding Flag}" />
+                                            <CheckBox Grid.Column="3" Content="Archived" IsChecked="{Binding Flag2}" />
+                                            <TextBlock Grid.Column="4" Classes="small secondary" Text="{Binding Detail}" VerticalAlignment="Center" />
+                                            <Button Grid.Column="5" Classes="flat" Content="Delete…"
+                                                    Command="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).Model.DeleteVersionCommand}" CommandParameter="{Binding}" />
+                                        </Grid>
+                                        <TextBox Text="{Binding Third, UpdateSourceTrigger=LostFocus}" PlaceholderText="Description" AutomationProperties.Name="Description" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+
+                    <!-- People. -->
+                    <StackPanel Classes="section" IsVisible="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).IsPeople}">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Classes="header" Text="People" />
+                            <Button Grid.Column="1" Content="Add Person…" Command="{Binding AddPersonCommand}" />
+                        </Grid>
+                        <TextBlock Classes="help" Text="Who issues can be assigned to. You're added on your first change; the email matches you on boards others started." />
+                        <ItemsControl ItemsSource="{Binding People}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:NamedRow">
+                                    <Grid ColumnDefinitions="Auto,*,*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.BlockBelow}">
+                                        <c:Avatar Text="{Binding Name}" Width="{DynamicResource Size.Avatar}" Height="{DynamicResource Size.Avatar}" VerticalAlignment="Center" />
+                                        <TextBox Grid.Column="1" Text="{Binding Name, UpdateSourceTrigger=LostFocus}" AutomationProperties.Name="Name" />
+                                        <TextBox Grid.Column="2" Text="{Binding Second, UpdateSourceTrigger=LostFocus}" PlaceholderText="Email" AutomationProperties.Name="Email" />
+                                        <TextBlock Grid.Column="3" Classes="small secondary" Text="{Binding Detail}" VerticalAlignment="Center" />
+                                        <Button Grid.Column="4" Classes="flat" Content="Remove…"
+                                                Command="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).Model.RemovePersonCommand}" CommandParameter="{Binding}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+
+                    <!-- Link types. -->
+                    <StackPanel Classes="section" IsVisible="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).IsLinkTypes}">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Classes="header" Text="Link types" />
+                            <Button Grid.Column="1" Content="Add Link Type…" Command="{Binding AddLinkTypeCommand}" />
+                        </Grid>
+                        <TextBlock Classes="help" Text="Each link reads one way from the issue that holds it (blocks) and the other way from the linked issue (is blocked by)." />
+                        <ItemsControl ItemsSource="{Binding LinkTypes}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:NamedRow">
+                                    <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.BlockBelow}">
+                                        <TextBox Text="{Binding Name, UpdateSourceTrigger=LostFocus}" AutomationProperties.Name="Outward" />
+                                        <TextBox Grid.Column="1" Text="{Binding Second, UpdateSourceTrigger=LostFocus}" AutomationProperties.Name="Inward" />
+                                        <Button Grid.Column="2" Classes="flat" Content="Delete…"
+                                                Command="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).Model.DeleteLinkTypeCommand}" CommandParameter="{Binding}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+    </Panel>
+</UserControl>

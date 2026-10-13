@@ -1,0 +1,36 @@
+<!-- Log Work: time spent, the day, a note, and what happens to the remaining estimate. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Dialogs"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Dialogs.LogWorkDialogView"
+             x:DataType="vm:LogWorkDialogViewModel">
+    <StackPanel Margin="{DynamicResource Padding.Dialog}" Spacing="{DynamicResource Spacing}">
+        <Grid ColumnDefinitions="*,*" ColumnSpacing="{DynamicResource Spacing}">
+            <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                <TextBlock Classes="secondary" Text="Time spent" />
+                <TextBox Text="{Binding Spent}" PlaceholderText="e.g. 2h 30m, 1d" AutomationProperties.Name="Time spent" c:FocusOnLoad.IsEnabled="True" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Spacing="{DynamicResource Spacing.Small}">
+                <TextBlock Classes="secondary" Text="Day" />
+                <CalendarDatePicker SelectedDate="{Binding Day}" HorizontalAlignment="Stretch" AutomationProperties.Name="Day" />
+            </StackPanel>
+        </Grid>
+        <StackPanel Spacing="{DynamicResource Spacing.Small}">
+            <TextBlock Classes="secondary" Text="What you did (optional)" />
+            <TextBox Text="{Binding Note}" AcceptsReturn="True" TextWrapping="Wrap" AutomationProperties.Name="Note" />
+        </StackPanel>
+        <StackPanel Spacing="{DynamicResource Spacing.Small}">
+            <TextBlock Classes="secondary" Text="{Binding RemainingNow, StringFormat='Remaining estimate (now {0})'}" />
+            <RadioButton GroupName="remaining" Content="Lower it by the time spent" IsChecked="{Binding AdjustAutomatically}" />
+            <RadioButton GroupName="remaining" Content="Leave it" IsChecked="{Binding LeaveRemaining}" />
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Spacing}">
+                <RadioButton GroupName="remaining" Content="Set it to" IsChecked="{Binding SetRemaining}" />
+                <TextBox Grid.Column="1" Text="{Binding NewRemaining}" IsEnabled="{Binding SetRemaining}" PlaceholderText="e.g. 4h, 0"
+                         AutomationProperties.Name="New remaining estimate" />
+            </Grid>
+        </StackPanel>
+        <TextBlock Text="{Binding Error}" Foreground="{DynamicResource Brush.Status.Error}" TextWrapping="Wrap"
+                   IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+    </StackPanel>
+</UserControl>

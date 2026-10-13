@@ -1,0 +1,98 @@
+<!--
+  The Board plugin's own design tokens, merged into the app's resources when the plugin loads
+  (BoardPlugin.Resources). Same rules as the Sdk's tokens (docs/UI_GUIDE.md §3): views use these keys via
+  DynamicResource, colors exist for Dark and Light. Shared tokens stay in DevHub.Sdk; only what boards alone
+  use lives here (issue type and priority colors, card and column sizes, the issue panel).
+-->
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Dark">
+            <!-- Issue types (the small square in front of a key), Jira's familiar colors. -->
+            <Color x:Key="Color.IssueType.Epic">#9F7AEA</Color>
+            <Color x:Key="Color.IssueType.Story">#5FAD65</Color>
+            <Color x:Key="Color.IssueType.Task">#548AF7</Color>
+            <Color x:Key="Color.IssueType.Bug">#DB5C5C</Color>
+            <Color x:Key="Color.IssueType.Subtask">#3FB2BD</Color>
+            <Color x:Key="Color.IssueType.Other">#8C8F96</Color>
+            <Color x:Key="Color.IssueType.Glyph">#FFFFFF</Color>
+            <!-- Priorities (the arrows). -->
+            <Color x:Key="Color.Priority.Highest">#E5534B</Color>
+            <Color x:Key="Color.Priority.High">#E5734B</Color>
+            <Color x:Key="Color.Priority.Medium">#D6AE58</Color>
+            <Color x:Key="Color.Priority.Low">#5FAD65</Color>
+            <Color x:Key="Color.Priority.Lowest">#3FB2BD</Color>
+            <!-- Cards and columns. -->
+            <Color x:Key="Color.Board.Column">#26282C</Color>
+            <Color x:Key="Color.Board.Card">#2E3035</Color>
+            <Color x:Key="Color.Board.CardHover">#363940</Color>
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Light">
+            <Color x:Key="Color.IssueType.Epic">#7E57C2</Color>
+            <Color x:Key="Color.IssueType.Story">#208A3C</Color>
+            <Color x:Key="Color.IssueType.Task">#3574F0</Color>
+            <Color x:Key="Color.IssueType.Bug">#D93F3F</Color>
+            <Color x:Key="Color.IssueType.Subtask">#078A96</Color>
+            <Color x:Key="Color.IssueType.Other">#6C707E</Color>
+            <Color x:Key="Color.IssueType.Glyph">#FFFFFF</Color>
+            <Color x:Key="Color.Priority.Highest">#D93F3F</Color>
+            <Color x:Key="Color.Priority.High">#D45D1D</Color>
+            <Color x:Key="Color.Priority.Medium">#B38A0F</Color>
+            <Color x:Key="Color.Priority.Low">#208A3C</Color>
+            <Color x:Key="Color.Priority.Lowest">#078A96</Color>
+            <Color x:Key="Color.Board.Column">#F2F3F5</Color>
+            <Color x:Key="Color.Board.Card">#FFFFFF</Color>
+            <Color x:Key="Color.Board.CardHover">#F7F8FA</Color>
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+
+    <SolidColorBrush x:Key="Brush.IssueType.Epic" Color="{DynamicResource Color.IssueType.Epic}" />
+    <SolidColorBrush x:Key="Brush.IssueType.Story" Color="{DynamicResource Color.IssueType.Story}" />
+    <SolidColorBrush x:Key="Brush.IssueType.Task" Color="{DynamicResource Color.IssueType.Task}" />
+    <SolidColorBrush x:Key="Brush.IssueType.Bug" Color="{DynamicResource Color.IssueType.Bug}" />
+    <SolidColorBrush x:Key="Brush.IssueType.Subtask" Color="{DynamicResource Color.IssueType.Subtask}" />
+    <SolidColorBrush x:Key="Brush.IssueType.Other" Color="{DynamicResource Color.IssueType.Other}" />
+    <SolidColorBrush x:Key="Brush.IssueType.Glyph" Color="{DynamicResource Color.IssueType.Glyph}" />
+    <SolidColorBrush x:Key="Brush.Priority.Highest" Color="{DynamicResource Color.Priority.Highest}" />
+    <SolidColorBrush x:Key="Brush.Priority.High" Color="{DynamicResource Color.Priority.High}" />
+    <SolidColorBrush x:Key="Brush.Priority.Medium" Color="{DynamicResource Color.Priority.Medium}" />
+    <SolidColorBrush x:Key="Brush.Priority.Low" Color="{DynamicResource Color.Priority.Low}" />
+    <SolidColorBrush x:Key="Brush.Priority.Lowest" Color="{DynamicResource Color.Priority.Lowest}" />
+    <SolidColorBrush x:Key="Brush.Board.Column" Color="{DynamicResource Color.Board.Column}" />
+    <SolidColorBrush x:Key="Brush.Board.Card" Color="{DynamicResource Color.Board.Card}" />
+    <SolidColorBrush x:Key="Brush.Board.CardHover" Color="{DynamicResource Color.Board.CardHover}" />
+    <!-- Epic labels on cards: the epic color, faint. -->
+    <SolidColorBrush x:Key="Brush.Board.EpicLabel" Color="{DynamicResource Color.IssueType.Epic}" Opacity="0.22" />
+
+    <!-- Issue type square and priority arrow. -->
+    <x:Double x:Key="Size.IssueTypeIcon">16</x:Double>
+    <!-- A column's width, and its smallest height (an empty column is still a drop target). -->
+    <x:Double x:Key="Size.BoardColumn">272</x:Double>
+    <x:Double x:Key="Size.BoardColumnMinHeight">120</x:Double>
+    <x:Double x:Key="Size.BoardColumnSpacing">8</x:Double>
+    <Thickness x:Key="Padding.BoardColumn">6</Thickness>
+    <Thickness x:Key="Padding.BoardColumnHeader">8,6,4,6</Thickness>
+    <Thickness x:Key="Padding.Card">10,8</Thickness>
+    <Thickness x:Key="Padding.CardCompact">8,4</Thickness>
+    <Thickness x:Key="Margin.Card">0,0,0,6</Thickness>
+    <Thickness x:Key="Padding.Board">12,8,12,12</Thickness>
+    <Thickness x:Key="Padding.BoardHeader">12,8</Thickness>
+    <Thickness x:Key="Padding.Swimlane">4,10,4,4</Thickness>
+    <Thickness x:Key="Padding.EpicLabel">6,1</Thickness>
+    <!-- The issue panel next to the board, and the label column of its fields. -->
+    <x:Double x:Key="Size.IssuePanel">420</x:Double>
+    <x:Double x:Key="Size.IssuePanelMin">320</x:Double>
+    <x:Double x:Key="Size.IssueFieldLabel">130</x:Double>
+    <Thickness x:Key="Padding.IssuePanel">16,12</Thickness>
+    <!-- Lists: the key column, the epics panel, the search box. -->
+    <x:Double x:Key="Size.IssueKey">72</x:Double>
+    <x:Double x:Key="Size.EpicsPanel">220</x:Double>
+    <x:Double x:Key="Size.BoardSearch">220</x:Double>
+    <x:Double x:Key="Size.StatusPill">110</x:Double>
+    <x:Double x:Key="Size.PointsColumn">44</x:Double>
+    <x:Double x:Key="Size.SettingsList">200</x:Double>
+    <x:Double x:Key="Size.DescriptionEditor">160</x:Double>
+    <x:Double x:Key="Size.CommentEditor">72</x:Double>
+    <x:Double x:Key="Size.TransitionCell">90</x:Double>
+</ResourceDictionary>

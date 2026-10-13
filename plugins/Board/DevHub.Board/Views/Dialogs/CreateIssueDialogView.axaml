@@ -1,0 +1,88 @@
+<!-- Create Issue: type, summary, description and the fields most often set at once; "Create another" keeps it open. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Dialogs"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Dialogs.CreateIssueDialogView"
+             x:DataType="vm:CreateIssueDialogViewModel">
+    <UserControl.Styles>
+        <Style Selector="TextBlock.label">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+        </Style>
+    </UserControl.Styles>
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="{DynamicResource Padding.Dialog}" Spacing="{DynamicResource Spacing}">
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="{DynamicResource Spacing}">
+                <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                    <TextBlock Classes="label" Text="Type" />
+                    <ComboBox ItemsSource="{Binding Types}" SelectedItem="{Binding Type}" HorizontalAlignment="Stretch" AutomationProperties.Name="Type">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:NamedItem">
+                                <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}">
+                                    <c:IssueTypeIcon Kind="{Binding Icon}" />
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding ShowParent}">
+                    <TextBlock Classes="label" Text="{Binding ParentLabel}" />
+                    <ComboBox ItemsSource="{Binding Parents}" SelectedItem="{Binding Parent}" HorizontalAlignment="Stretch"
+                              AutomationProperties.Name="{Binding ParentLabel}" />
+                </StackPanel>
+            </Grid>
+            <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                <TextBlock Classes="label" Text="Summary" />
+                <TextBox Text="{Binding Summary}" PlaceholderText="What needs to be done?" AutomationProperties.Name="Summary"
+                         c:FocusOnLoad.IsEnabled="True" c:FocusRequest.Token="{Binding FocusSummary}" />
+            </StackPanel>
+            <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                <TextBlock Classes="label" Text="Description" />
+                <TextBox Text="{Binding Description}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="{DynamicResource Size.DescriptionEditor}"
+                         PlaceholderText="Markdown: **bold**, - lists, - [ ] tasks" AutomationProperties.Name="Description" />
+            </StackPanel>
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="{DynamicResource Spacing}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{DynamicResource Spacing}">
+                <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                    <TextBlock Classes="label" Text="Priority" />
+                    <ComboBox ItemsSource="{Binding Priorities}" SelectedItem="{Binding Priority}" HorizontalAlignment="Stretch" AutomationProperties.Name="Priority">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:NamedItem">
+                                <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}">
+                                    <c:PriorityIcon Kind="{Binding Icon}" />
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Spacing="{DynamicResource Spacing.Small}">
+                    <TextBlock Classes="label" Text="Assignee" />
+                    <ComboBox ItemsSource="{Binding People}" SelectedItem="{Binding Assignee}" HorizontalAlignment="Stretch" AutomationProperties.Name="Assignee" />
+                </StackPanel>
+                <StackPanel Grid.Row="1" Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding ShowPoints}">
+                    <TextBlock Classes="label" Text="Story points" />
+                    <TextBox Text="{Binding Points}" PlaceholderText="e.g. 3" AutomationProperties.Name="Story points" />
+                </StackPanel>
+                <StackPanel Grid.Row="1" Grid.Column="1" Spacing="{DynamicResource Spacing.Small}">
+                    <TextBlock Classes="label" Text="Original estimate" />
+                    <TextBox Text="{Binding Estimate}" PlaceholderText="e.g. 1d 4h" AutomationProperties.Name="Original estimate" />
+                </StackPanel>
+                <StackPanel Grid.Row="2" Spacing="{DynamicResource Spacing.Small}">
+                    <TextBlock Classes="label" Text="Labels" />
+                    <TextBox Text="{Binding Labels}" PlaceholderText="ui backend" AutomationProperties.Name="Labels" />
+                </StackPanel>
+                <StackPanel Grid.Row="2" Grid.Column="1" Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding ShowSprint}">
+                    <TextBlock Classes="label" Text="Sprint" />
+                    <ComboBox ItemsSource="{Binding Sprints}" SelectedItem="{Binding Sprint}" HorizontalAlignment="Stretch" AutomationProperties.Name="Sprint" />
+                </StackPanel>
+            </Grid>
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Spacing}">
+                <CheckBox Content="Create another" IsChecked="{Binding CreateAnother}" />
+                <TextBlock Grid.Column="1" Classes="secondary" Text="{Binding LastCreated}" VerticalAlignment="Center" />
+            </Grid>
+            <TextBlock Text="{Binding Error}" Foreground="{DynamicResource Brush.Status.Error}" TextWrapping="Wrap"
+                       IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

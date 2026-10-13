@@ -1,0 +1,12 @@
+<!--
+  The Backlog page: the shared planning layout (PlanningPageView) with one list, the backlog.
+  Board.Scrum's planning page uses the same layout with a list per sprint.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Board"
+             xmlns:v="using:DevHub.Views.Board"
+             x:Class="DevHub.Views.Board.BacklogPageView"
+             x:DataType="vm:BacklogPageViewModel">
+    <v:PlanningPageView />
+</UserControl>

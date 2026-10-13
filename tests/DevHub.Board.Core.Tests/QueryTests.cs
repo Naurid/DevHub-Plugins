@@ -206,3 +206,24 @@ public class QueryCompilerTests : IDisposable
         Assert.Contains(message, e.Message, StringComparison.OrdinalIgnoreCase);
     }
 }
+
+public class SavedFilterTests
+{
+    [Fact]
+    public void Filters_are_saved_changed_and_deleted()
+    {
+        using var board = TestBoard.Create();
+
+        board.Apply(new SaveFilter("My bugs", "type = bug and assignee = currentUser()") { Id = "f1" });
+        Assert.Equal("My bugs", board.Snapshot.Filters["f1"].Name);
+        Assert.Equal(board.Session.CurrentPersonId, board.Snapshot.Filters["f1"].Owner);
+
+        board.Apply(new SaveFilter("Open bugs", "type = bug and statusCategory != done") { Id = "f1" });
+        Assert.Equal("Open bugs", board.Reload().Filters["f1"].Name);
+        Assert.Throws<BoardRuleException>(() => board.Apply(new SaveFilter("Broken", "colour = red")));
+        Assert.Throws<BoardRuleException>(() => board.Apply(new SaveFilter("open BUGS", "type = bug")));
+
+        board.Apply(new DeleteFilter("f1"));
+        Assert.Empty(board.Snapshot.Filters);
+    }
+}

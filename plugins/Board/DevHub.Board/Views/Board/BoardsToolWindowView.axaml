@@ -1,0 +1,44 @@
+<!-- The Boards tool window: recent boards (double-click or Open), New Board, Open Board. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Board"
+             xmlns:core="using:DevHub.Board.Core"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Board.BoardsToolWindowView"
+             x:DataType="vm:BoardsToolWindowViewModel">
+    <c:ToolWindowFrame Header="Boards">
+        <c:ToolWindowFrame.HeaderActions>
+            <c:Toolbar>
+                <c:ActionButton IconKind="add" ToolTip.Tip="New Board…" Command="{Binding NewBoardCommand}" />
+                <c:ActionButton IconKind="folder" ToolTip.Tip="Open Board…" Command="{Binding OpenBoardCommand}" />
+                <c:ActionButton IconKind="close" ToolTip.Tip="Hide" Command="{Binding ToggleCommand}" />
+            </c:Toolbar>
+        </c:ToolWindowFrame.HeaderActions>
+        <Panel>
+            <c:EmptyState IconKind="menu" Title="No boards yet" IsVisible="{Binding !HasRecent}"
+                          Description="Plan work with epics, stories, sprints and columns you shape yourself. Boards are plain files: no server needed.">
+                <Button Classes="accent" Content="New Board…" Command="{Binding NewBoardCommand}" HorizontalAlignment="Center" />
+            </c:EmptyState>
+            <ListBox ItemsSource="{Binding Recent}" SelectedItem="{Binding Selected}" IsVisible="{Binding HasRecent}"
+                     Background="Transparent" AutomationProperties.Name="Recent boards">
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Open" Command="{Binding OpenCommand}" />
+                        <MenuItem Header="Remove from List" Command="{Binding ForgetCommand}" />
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="core:RecentBoard">
+                        <StackPanel Background="Transparent" ToolTip.Tip="{Binding Location}"
+                                    c:DoubleTap.Command="{Binding $parent[UserControl].((vm:BoardsToolWindowViewModel)DataContext).OpenCommand}">
+                            <TextBlock TextTrimming="CharacterEllipsis">
+                                <Run Text="{Binding Key}" FontWeight="SemiBold" /><Run Text="  " /><Run Text="{Binding Name}" />
+                            </TextBlock>
+                            <TextBlock Classes="small secondary" Text="{Binding Location}" TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Panel>
+    </c:ToolWindowFrame>
+</UserControl>
