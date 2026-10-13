@@ -98,6 +98,57 @@ public sealed class BoardOpener(BoardService boards, IDialogService dialogs, ISe
         await NewBoardAsync(new BoardLocation(FolderBoardStoreProvider.KindId, inFolder));
     }
 
+
+    /// <summary>
+    /// Copies a board to another store (a folder → the repository's devhub/board branch, or back) and opens the copy.
+    /// The original stays where it is, so nothing is lost; the message says where.
+    /// </summary>
+    public async Task CopyBoardAsync(BoardContext context)
+    {
+        var kinds = boards.Providers.ToList();
+        var dialog = new TextInputDialogViewModel("Copy Board To…", "", "", "Choose Folder…")
+        {
+            ShowText = false,
+            Explanation = $"Copies {context.Project.Key} with everything in it (issues, history, attachments) to another place and opens the copy. "
+                          + $"The board stays in {context.Session.Store.DisplayLocation} too.",
+            Choice = new ChoiceInput("Keep the copy", kinds.Select(k => k.DisplayName).ToList(), kinds.FirstOrDefault(k => k.Kind != context.Location.StoreKind)?.DisplayName ?? kinds[0].DisplayName),
+        };
+        if (!await dialogs.ShowDialogAsync(dialog))
+            return;
+        var provider = kinds.First(k => k.DisplayName == dialog.Choice!.Selected);
+        var folder = await dialogs.PickFolderAsync(provider.Kind == FolderBoardStoreProvider.KindId ? "Folder for the copy" : "Repository folder");
+        if (folder is null)
+            return;
+        if (!await provider.CanUseAsync(folder))
+        {
+            status.Show(provider.Kind == FolderBoardStoreProvider.KindId ? "That folder can't hold a board." : "That folder isn't a git repository.");
+            return;
+        }
+        var target = new BoardLocation(provider.Kind, Path.GetFullPath(folder));
+        if (target.Key.Equals(context.Location.Key, StringComparison.OrdinalIgnoreCase))
+        {
+            status.Show("That's where the board already is.");
+            return;
+        }
+        try
+        {
+            using var store = provider.Open(target.Location);
+            if (await store.LoadAsync() is not null)
+            {
+                status.Show("There's already a board there.");
+                return;
+            }
+            var files = context.Snapshot.Files.ToDictionary(f => f.Key, f => (byte[]?)f.Value, StringComparer.Ordinal);
+            await store.WriteAsync(new BoardChange($"Board {context.Project.Key} copied from {context.Session.Store.DisplayLocation}", files), BoardFiles.NoBoard);
+        }
+        catch (Exception e) when (e is BoardStoreException or BoardConflictException or IOException or UnauthorizedAccessException)
+        {
+            await dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Copy Board", "The board couldn't be copied.", "OK", [e.Message], destructive: false, showCancel: false));
+            return;
+        }
+        Documents.OpenById(BoardDocumentFactory.IdFor(target));
+        status.Show($"Board copied. The original is still in {context.Session.Store.DisplayLocation}: delete it there when you no longer need it.");
+    }
     /// <summary>The board in a folder: a folder store's board.json, or what another store finds there.</summary>
     public async Task<BoardLocation?> FindAsync(string folder)
     {

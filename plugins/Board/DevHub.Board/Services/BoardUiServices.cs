@@ -10,11 +10,13 @@ public sealed class BoardUiServices(
     IStatusService status,
     IEnumerable<IBoardPageProvider> pages,
     IEnumerable<IIssueSectionProvider> sections,
-    IEnumerable<IIssueActionProvider> issueActions)
+    IEnumerable<IIssueActionProvider> issueActions,
+    BoardOpener opener)
 {
     public BoardService Boards { get; } = boards;
     public IDialogService Dialogs { get; } = dialogs;
     public IStatusService Status { get; } = status;
+    public BoardOpener Opener { get; } = opener;
 
     /// <summary>Board's own pages plus those of plugins, in order (which replace which is decided per board).</summary>
     public IReadOnlyList<IBoardPageProvider> Pages { get; } = pages.OrderBy(p => p.Order).ToList();

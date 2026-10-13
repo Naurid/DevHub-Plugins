@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!--
+      Board.Git logic: the devhub/board branch store (git plumbing through Git's GitRunner; never touches the working
+      tree, the index or HEAD), issue keys in branch names and commit messages, branch names for issues, smart
+      commits. Requires Board and Git, so it references their .Core projects. No Avalonia.
+    -->
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Board\DevHub.Board.Core\DevHub.Board.Core.csproj" />
+        <ProjectReference Include="..\..\Git\DevHub.Git.Core\DevHub.Git.Core.csproj" />
+    </ItemGroup>
+
+</Project>

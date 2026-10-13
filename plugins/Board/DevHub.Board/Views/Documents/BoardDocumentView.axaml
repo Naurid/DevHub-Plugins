@@ -71,6 +71,7 @@
                                 <MenuItem Header="{Binding UndoText, StringFormat='Undo: {0}', TargetNullValue='Undo'}" Command="{Binding UndoCommand}"
                                           IsEnabled="{Binding UndoText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                                 <MenuItem Header="Reload from Disk" Command="{Binding ReloadCommand}" />
+                                <MenuItem Header="Copy Board To… (another folder, a repository branch)" Command="{Binding CopyBoardCommand}" />
                             </MenuFlyout>
                         </Button.Flyout>
                     </Button>

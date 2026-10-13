@@ -195,4 +195,18 @@ public class GitRepositoryClientTests
 
         Assert.False(await client.IsRepositoryAsync());
     }
+
+    [GitFact]
+    public async Task Binary_runs_pass_bytes_through_untouched()
+    {
+        using var repo = new TempGitRepo();
+        byte[] bytes = [0, 1, 2, 0xFF, 0xFE, (byte)'\r', (byte)'\n', 0x80, 0x00];
+
+        var hashed = await repo.Runner.RunBinaryAsync(repo.Path, ["hash-object", "-w", "--stdin"], bytes);
+        var sha = System.Text.Encoding.ASCII.GetString(hashed.StandardOutput).Trim();
+        var read = await repo.Runner.RunBinaryAsync(repo.Path, ["cat-file", "blob", sha]);
+
+        Assert.Equal(bytes, read.StandardOutput);
+        Assert.Contains(repo.Log.Entries, e => e.Output.Contains($"({bytes.Length} bytes)"));
+    }
 }

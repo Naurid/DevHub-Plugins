@@ -339,6 +339,13 @@ public sealed partial class BoardDocumentViewModel : DocumentViewModelBase, IDis
     }
 
     [RelayCommand]
+    private async Task CopyBoardAsync()
+    {
+        if (_context is not null)
+            await _services.Opener.CopyBoardAsync(_context);
+    }
+
+    [RelayCommand]
     private async Task UndoAsync()
     {
         if (_context is not null)

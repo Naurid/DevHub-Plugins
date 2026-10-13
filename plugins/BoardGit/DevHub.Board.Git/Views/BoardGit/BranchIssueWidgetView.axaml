@@ -1,0 +1,10 @@
+<!-- Status bar: the issue the current branch is named after (click opens it). -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.BoardGit"
+             x:Class="DevHub.Views.BoardGit.BranchIssueWidgetView"
+             x:DataType="vm:BranchIssueWidgetViewModel">
+    <Button Classes="flat" Content="{Binding Text}" ToolTip.Tip="{Binding ToolTip}" Command="{Binding OpenCommand}"
+            IsVisible="{Binding IsVisible}" Padding="{DynamicResource Padding.StatusWidget}"
+            AutomationProperties.Name="{Binding ToolTip}" />
+</UserControl>

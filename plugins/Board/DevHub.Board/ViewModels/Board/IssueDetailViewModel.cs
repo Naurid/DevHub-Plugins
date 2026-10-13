@@ -399,7 +399,7 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
             target.Add(item);
     }
 
-    internal static string RelativeOrDate(DateTimeOffset when) =>
+    public static string RelativeOrDate(DateTimeOffset when) =>
         DateTimeOffset.Now - when < TimeSpan.FromDays(7) ? RelativeTime.Format(when, DateTimeOffset.Now) : when.LocalDateTime.ToString("d MMM yyyy", CultureInfo.CurrentCulture);
 
     private static string FileSize(long bytes) => bytes switch

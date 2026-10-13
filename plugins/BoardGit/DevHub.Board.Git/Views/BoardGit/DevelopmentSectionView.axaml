@@ -1,0 +1,58 @@
+<!-- An issue's Development section: repository, branches, commits, pull requests, Create Branch. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.BoardGit"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.BoardGit.DevelopmentSectionView"
+             x:DataType="vm:DevelopmentSectionViewModel">
+    <StackPanel Spacing="{DynamicResource Spacing.Small}">
+        <TextBlock Classes="small secondary" Text="{Binding RepositoryText}" TextWrapping="Wrap" />
+        <WrapPanel Orientation="Horizontal">
+            <Button Classes="flat" Content="Create Branch…" Command="{Binding CreateBranchCommand}" IsVisible="{Binding HasRepository}" />
+            <Button Classes="flat" Content="Open Repository" Command="{Binding OpenRepositoryCommand}" IsVisible="{Binding HasRepository}" />
+            <Button Classes="flat" Content="Link Repository…" Command="{Binding LinkRepositoryCommand}"
+                    ToolTip.Tip="Choose the repository this board's issues are developed in" />
+            <Button Classes="flat" Content="Refresh" Command="{Binding RefreshCommand}" IsVisible="{Binding HasRepository}" />
+        </WrapPanel>
+        <TextBlock Classes="secondary" Text="{Binding Summary}" TextWrapping="Wrap"
+                   IsVisible="{Binding Summary, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        <ItemsControl ItemsSource="{Binding Branches}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:BranchRow">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}" MinHeight="{DynamicResource Size.RowHeight}">
+                        <c:Icon Kind="vcs" VerticalAlignment="Center" />
+                        <SelectableTextBlock Grid.Column="1" Classes="code" Text="{Binding Name}" VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="2" Classes="small secondary" Text="{Binding Kind}" VerticalAlignment="Center" />
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <ItemsControl ItemsSource="{Binding Commits}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:CommitRow">
+                    <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}" MinHeight="{DynamicResource Size.RowHeight}"
+                          ToolTip.Tip="{Binding Author}">
+                        <c:Icon Kind="commit" VerticalAlignment="Center" />
+                        <SelectableTextBlock Grid.Column="1" Classes="code small secondary" Text="{Binding ShortSha}" VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="2" Text="{Binding Subject}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="3" Classes="small secondary" Text="{Binding When}" VerticalAlignment="Center" />
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <ItemsControl ItemsSource="{Binding PullRequests}" IsVisible="{Binding HasPullRequests}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:PullRequestRow">
+                    <Button Classes="flat" HorizontalAlignment="Left" ToolTip.Tip="Open on GitHub"
+                            Command="{Binding $parent[UserControl].((vm:DevelopmentSectionViewModel)DataContext).OpenPullRequestCommand}"
+                            CommandParameter="{Binding}">
+                        <TextBlock>
+                            <Run Text="#" /><Run Text="{Binding Number}" /><Run Text=" " /><Run Text="{Binding Title}" />
+                            <Run Text="  " /><Run Text="{Binding State}" Foreground="{DynamicResource Brush.Text.Secondary}" />
+                        </TextBlock>
+                    </Button>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </StackPanel>
+</UserControl>

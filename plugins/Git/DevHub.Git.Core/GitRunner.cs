@@ -9,6 +9,12 @@ public sealed record GitResult(int ExitCode, string StandardOutput, string Stand
     public bool Succeeded => ExitCode == 0;
 }
 
+/// <summary>What a git command printed as bytes (<see cref="GitRunner.RunBinaryAsync"/>).</summary>
+public sealed record GitBinaryResult(int ExitCode, byte[] StandardOutput, string StandardError, TimeSpan Duration)
+{
+    public bool Succeeded => ExitCode == 0;
+}
+
 /// <summary>Per-command options for <see cref="GitRunner.RunAsync"/>.</summary>
 public sealed record GitRunOptions
 {
@@ -99,42 +105,7 @@ public sealed class GitRunner
     {
         options ??= new GitRunOptions();
 
-        var psi = new ProcessStartInfo(_git.Path)
-        {
-            WorkingDirectory = workingDirectory,
-            UseShellExecute = false,
-            CreateNoWindow = true,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            // Always redirected, and closed at once when there's nothing to send: a helper that
-            // wants to ask something on the console (ssh's passphrase or host-key question) gets
-            // "end of input" and fails, instead of waiting for an answer nobody can type.
-            RedirectStandardInput = true,
-            StandardOutputEncoding = Encoding.UTF8,
-            StandardErrorEncoding = Encoding.UTF8,
-        };
-        foreach (var option in CommonOptions)
-            psi.ArgumentList.Add(option);
-        foreach (var argument in arguments)
-            psi.ArgumentList.Add(argument);
-
-        // Never wait for a password/username prompt nobody can see (unless the command is a sign-in).
-        if (!options.Interactive)
-            psi.Environment["GIT_TERMINAL_PROMPT"] = "0";
-        // English output, whatever the system language: some machine formats are translated
-        // (for-each-ref's "ahead 2"/"gone"), and DevHub recognises a few error messages
-        // ("would be overwritten by checkout"). LC_ALL wins over LANG for git's gettext.
-        psi.Environment["LC_ALL"] = "C";
-        psi.Environment["LANGUAGE"] = "C";
-        if (options.ReadOnly)
-            psi.Environment["GIT_OPTIONAL_LOCKS"] = "0";
-        foreach (var (name, value) in options.Environment is null ? _environment : _environment.Concat(options.Environment))
-        {
-            if (value is null)
-                psi.Environment.Remove(name);
-            else
-                psi.Environment[name] = value;
-        }
+        var psi = CreateStartInfo(workingDirectory, arguments, options);
 
         var started = DateTimeOffset.Now;
         var stopwatch = Stopwatch.StartNew();
@@ -186,6 +157,99 @@ public sealed class GitRunner
         return result;
     }
 
+
+    /// <summary>
+    /// Like <see cref="RunAsync"/>, but stdin and stdout are bytes, untouched: file contents through
+    /// <c>hash-object --stdin</c> / <c>cat-file --batch</c> (Board.Git's branch store keeps attachments that way).
+    /// The Git Console records the command and the size of what it printed, not the bytes.
+    /// </summary>
+    public async Task<GitBinaryResult> RunBinaryAsync(
+        string workingDirectory,
+        IReadOnlyList<string> arguments,
+        byte[]? standardInput = null,
+        GitRunOptions? options = null,
+        CancellationToken ct = default)
+    {
+        options ??= new GitRunOptions();
+        var psi = CreateStartInfo(workingDirectory, arguments, options);
+
+        var started = DateTimeOffset.Now;
+        var stopwatch = Stopwatch.StartNew();
+        using var process = new Process { StartInfo = psi };
+        process.Start();
+
+        // Read both streams from the start (see RunAsync); stdout raw, into memory.
+        var output = new MemoryStream();
+        var stdoutTask = process.StandardOutput.BaseStream.CopyToAsync(output, ct);
+        var stderrTask = process.StandardError.ReadToEndAsync(ct);
+        try
+        {
+            if (standardInput is not null)
+                await process.StandardInput.BaseStream.WriteAsync(standardInput, ct);
+            process.StandardInput.Close();
+            await process.WaitForExitAsync(ct);
+        }
+        catch (OperationCanceledException)
+        {
+            TryKill(process);
+            _log.Add(new GitCommandEntry(workingDirectory, arguments, started, stopwatch.Elapsed, -1, "(cancelled)"));
+            throw;
+        }
+
+        await stdoutTask;
+        var stderr = await stderrTask;
+        var result = new GitBinaryResult(process.ExitCode, output.ToArray(), stderr, stopwatch.Elapsed);
+        var shown = string.IsNullOrWhiteSpace(stderr) ? $"({result.StandardOutput.Length} bytes)" : stderr;
+        _log.Add(new GitCommandEntry(workingDirectory, arguments, started, result.Duration, result.ExitCode,
+            shown.Length > LoggedOutputLength ? shown[..LoggedOutputLength] + "…" : shown,
+            FailureExpected: options.AllowFailure));
+
+        if (result.ExitCode != 0 && !options.AllowFailure)
+            throw new GitException(arguments, result.ExitCode, stderr);
+        return result;
+    }
+
+    // Arguments as a list (never a shell string), the common options, no prompts, English output.
+    private ProcessStartInfo CreateStartInfo(string workingDirectory, IReadOnlyList<string> arguments, GitRunOptions options)
+    {
+        var psi = new ProcessStartInfo(_git.Path)
+        {
+            WorkingDirectory = workingDirectory,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            // Always redirected, and closed at once when there's nothing to send: a helper that
+            // wants to ask something on the console (ssh's passphrase or host-key question) gets
+            // "end of input" and fails, instead of waiting for an answer nobody can type.
+            RedirectStandardInput = true,
+            StandardOutputEncoding = Encoding.UTF8,
+            StandardErrorEncoding = Encoding.UTF8,
+        };
+        foreach (var option in CommonOptions)
+            psi.ArgumentList.Add(option);
+        foreach (var argument in arguments)
+            psi.ArgumentList.Add(argument);
+
+        // Never wait for a password/username prompt nobody can see (unless the command is a sign-in).
+        if (!options.Interactive)
+            psi.Environment["GIT_TERMINAL_PROMPT"] = "0";
+        // English output, whatever the system language: some machine formats are translated
+        // (for-each-ref's "ahead 2"/"gone"), and DevHub recognises a few error messages
+        // ("would be overwritten by checkout"). LC_ALL wins over LANG for git's gettext.
+        psi.Environment["LC_ALL"] = "C";
+        psi.Environment["LANGUAGE"] = "C";
+        if (options.ReadOnly)
+            psi.Environment["GIT_OPTIONAL_LOCKS"] = "0";
+        foreach (var (name, value) in options.Environment is null ? _environment : _environment.Concat(options.Environment))
+        {
+            if (value is null)
+                psi.Environment.Remove(name);
+            else
+                psi.Environment[name] = value;
+        }
+        return psi;
+    }
     /// <summary>Reads a stream to the end, reporting each line ("\r" or "\n" ends one) as it arrives.</summary>
     private static async Task<string> ReadLinesAsync(StreamReader reader, IProgress<string> lines, CancellationToken ct)
     {

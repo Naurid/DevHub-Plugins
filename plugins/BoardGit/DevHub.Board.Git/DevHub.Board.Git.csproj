@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!--
+      Board.Git (docs/BOARD_PLAN.md, B8): boards on a repository's devhub/board branch, and issues linked to branches
+      and commits (Development section, Create Branch, keys in Git's commit list and branches, the commit box's
+      suggestion, smart commits). Requires Board and Git, so it references both (never the reverse).
+    -->
+
+    <PropertyGroup>
+        <RootNamespace>DevHub</RootNamespace>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Board\DevHub.Board\DevHub.Board.csproj" />
+        <ProjectReference Include="..\..\Git\DevHub.Git\DevHub.Git.csproj" />
+        <ProjectReference Include="..\DevHub.Board.Git.Core\DevHub.Board.Git.Core.csproj" />
+    </ItemGroup>
+
+</Project>
