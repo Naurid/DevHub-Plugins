@@ -1,0 +1,30 @@
+<!-- Import Issues: the source, its file or repository, Load, and what would happen. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Dialogs"
+             x:Class="DevHub.Views.Dialogs.ImportDialogView"
+             x:DataType="vm:ImportDialogViewModel">
+    <DockPanel Margin="{DynamicResource Padding.Dialog}">
+        <StackPanel DockPanel.Dock="Top" Spacing="{DynamicResource Spacing}">
+            <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                <TextBlock Classes="secondary" Text="From" />
+                <ComboBox ItemsSource="{Binding Sources}" SelectedItem="{Binding Source}" HorizontalAlignment="Stretch" AutomationProperties.Name="Import from" />
+            </StackPanel>
+            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}" IsVisible="{Binding IsJira}">
+                <TextBox Text="{Binding File}" PlaceholderText="Jira's CSV export (all fields)" AutomationProperties.Name="CSV file" />
+                <Button Grid.Column="1" Content="Browse…" Command="{Binding BrowseCommand}" />
+                <Button Grid.Column="2" Content="Load" Command="{Binding LoadCommand}" />
+            </Grid>
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing}" IsVisible="{Binding !IsJira}">
+                <TextBox Text="{Binding Repository}" PlaceholderText="owner/name" AutomationProperties.Name="GitHub repository" />
+                <Button Grid.Column="1" Content="Load" Command="{Binding LoadCommand}" />
+            </Grid>
+            <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsLoading}" />
+            <TextBlock Text="{Binding Error}" Foreground="{DynamicResource Brush.Status.Error}" TextWrapping="Wrap"
+                       IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        </StackPanel>
+        <ScrollViewer Margin="{DynamicResource Margin.BlockBelow}">
+            <SelectableTextBlock Text="{Binding Preview}" TextWrapping="Wrap" />
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>

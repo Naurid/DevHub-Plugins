@@ -11,12 +11,16 @@ public sealed class BoardUiServices(
     IEnumerable<IBoardPageProvider> pages,
     IEnumerable<IIssueSectionProvider> sections,
     IEnumerable<IIssueActionProvider> issueActions,
-    BoardOpener opener)
+    BoardOpener opener,
+    IEnumerable<DevHub.Integration.IGitHubApi> gitHub)
 {
     public BoardService Boards { get; } = boards;
     public IDialogService Dialogs { get; } = dialogs;
     public IStatusService Status { get; } = status;
     public BoardOpener Opener { get; } = opener;
+
+    /// <summary>GitHub's API when the GitHub plugin is on (GitHub Issues import), else null.</summary>
+    public DevHub.Integration.IGitHubApi? GitHub { get; } = gitHub.FirstOrDefault();
 
     /// <summary>Board's own pages plus those of plugins, in order (which replace which is decided per board).</summary>
     public IReadOnlyList<IBoardPageProvider> Pages { get; } = pages.OrderBy(p => p.Order).ToList();

@@ -339,6 +339,37 @@ public sealed partial class BoardDocumentViewModel : DocumentViewModelBase, IDis
     }
 
     [RelayCommand]
+    private async Task ImportIssuesAsync()
+    {
+        if (_context is not null)
+            await _services.Dialogs.ShowDialogAsync(new ImportDialogViewModel(_context, _services.GitHub));
+    }
+
+    [RelayCommand]
+    private Task ExportCsvAsync() => ExportAsync("csv", "CSV files", c => DevHub.Board.Core.Import.BoardExport.ToCsv(c.Snapshot));
+
+    [RelayCommand]
+    private Task ExportJsonAsync() => ExportAsync("json", "JSON files", c => DevHub.Board.Core.Import.BoardExport.ToJson(c.Snapshot));
+
+    private async Task ExportAsync(string extension, string filter, Func<BoardContext, string> content)
+    {
+        if (_context is null)
+            return;
+        var path = await _services.Dialogs.PickSaveFileAsync("Export issues", $"{_context.Project.Key.ToLowerInvariant()}-issues.{extension}", filter, extension);
+        if (path is null)
+            return;
+        try
+        {
+            await File.WriteAllTextAsync(path, content(_context), new System.Text.UTF8Encoding(false));
+            _services.Status.Show($"Exported {_context.Snapshot.Issues.Count} issues to {path}.");
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+        {
+            _services.Status.Show("The export couldn't be written: " + e.Message);
+        }
+    }
+
+    [RelayCommand]
     private async Task CopyBoardAsync()
     {
         if (_context is not null)

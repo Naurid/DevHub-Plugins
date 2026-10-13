@@ -84,12 +84,13 @@ public sealed class ChangeBuilder(BoardSnapshot board, OperationContext context)
     /// Writes an issue (new when <paramref name="before"/> is null), stamps <see cref="Model.Issue.Updated"/>
     /// and adds a change-log line for each field that changed.
     /// </summary>
-    public void WriteIssue(Issue? before, Issue after)
+    /// <param name="keepTimes">Keep a creation time the issue already has (imports bring their own).</param>
+    public void WriteIssue(Issue? before, Issue after, bool keepTimes = false)
     {
         after = after with { Updated = context.Now };
         if (before is null)
         {
-            after = after with { Created = context.Now };
+            after = after with { Created = keepTimes && after.Created != default ? after.Created : context.Now };
             AddHistory(after.Id, "created", null, after.Key);
         }
         else

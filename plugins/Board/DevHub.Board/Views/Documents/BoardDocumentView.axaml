@@ -72,6 +72,10 @@
                                           IsEnabled="{Binding UndoText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                                 <MenuItem Header="Reload from Disk" Command="{Binding ReloadCommand}" />
                                 <MenuItem Header="Copy Board To… (another folder, a repository branch)" Command="{Binding CopyBoardCommand}" />
+                                <Separator />
+                                <MenuItem Header="Import Issues… (Jira CSV, GitHub)" Command="{Binding ImportIssuesCommand}" />
+                                <MenuItem Header="Export Issues as CSV…" Command="{Binding ExportCsvCommand}" />
+                                <MenuItem Header="Export Board as JSON…" Command="{Binding ExportJsonCommand}" />
                             </MenuFlyout>
                         </Button.Flyout>
                     </Button>
