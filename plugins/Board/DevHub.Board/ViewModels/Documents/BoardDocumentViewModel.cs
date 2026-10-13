@@ -165,7 +165,13 @@ public sealed partial class BoardDocumentViewModel : DocumentViewModelBase, IDis
             SelectedBoard = again;
             _suppressBoardChange = false;
             if (_host is not null)
+            {
+                // Scrum ↔ Kanban changes which pages apply (Board.Scrum's planning page): rebuild them.
+                var kindChanged = _host.Definition.Kind != again.Kind;
                 _host.Definition = again;
+                if (kindChanged)
+                    RebuildPages(again);
+            }
         }
         else if (again is null && Boards.Count > 0)
         {
@@ -199,7 +205,7 @@ public sealed partial class BoardDocumentViewModel : DocumentViewModelBase, IDis
             ShowPage = id => SelectedPage = Pages.FirstOrDefault(p => p.Id == id) ?? SelectedPage,
         };
         Pages.Clear();
-        foreach (var provider in _services.Pages.Where(p => p.AppliesTo(definition)))
+        foreach (var provider in _services.PagesFor(definition))
             Pages.Add(new BoardPageTab(provider));
         SelectedPage = Pages.FirstOrDefault(p => p.Id == keepPage) ?? Pages.FirstOrDefault();
     }

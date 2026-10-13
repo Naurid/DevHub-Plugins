@@ -140,6 +140,24 @@
         <Setter Property="Width" Value="{DynamicResource Size.IssueFieldLabel}" />
     </Style>
 
+
+    <!-- A collapsible section header (backlog lists, swimlanes): flat, whether open or not. -->
+    <Style Selector="ToggleButton.headerToggle">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="{DynamicResource Padding.Swimlane}" />
+    </Style>
+    <Style Selector="ToggleButton.headerToggle:checked /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+    </Style>
+    <Style Selector="ToggleButton.headerToggle:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg.Hover}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+    </Style>
+    <Style Selector="ToggleButton.headerToggle:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg.Hover}" />
+    </Style>
     <!-- Toggle buttons used as filter chips (quick filters, assignees, pages). -->
     <Style Selector="ToggleButton.chip">
         <Setter Property="Padding" Value="{DynamicResource Padding.Button}" />

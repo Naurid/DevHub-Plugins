@@ -1,0 +1,12 @@
+// The package's description of the plugin (docs/PLUGINS.md in DevHub); keep it equal to the plugin class's PluginInfo.
+// The version is computed from git (build/Get-PluginVersion.ps1); don't write one here.
+{
+  "id": "devhub.board.scrum",
+  "name": "Board Scrum",
+  "description": "Sprints for boards: plan sprints in the backlog by dragging issues into them, start them with a goal and dates, see capacity and points, complete them and move what's left.",
+  "category": "Planning",
+  "apiVersion": 1,
+  "requires": [
+    "devhub.board"
+  ]
+}

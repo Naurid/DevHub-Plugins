@@ -56,7 +56,7 @@
     <DataTemplate x:Key="IssueRow" x:DataType="vm:IssueItemViewModel">
         <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}"
               Background="Transparent" ToolTip.Tip="{Binding ToolTip}"
-              c:DoubleTap.Command="{Binding OpenCommand}">
+              c:DoubleTap.Command="{Binding OpenCommand}" c:Tap.Command="{Binding SelectCommand}">
             <Grid.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Open in Tab" Command="{Binding OpenCommand}" />

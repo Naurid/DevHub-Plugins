@@ -16,17 +16,22 @@ public sealed class BoardUiServices(
     public IDialogService Dialogs { get; } = dialogs;
     public IStatusService Status { get; } = status;
 
-    /// <summary>Board's own pages plus those of plugins, with replaced ones dropped, in order.</summary>
-    public IReadOnlyList<IBoardPageProvider> Pages { get; } = Resolve(pages.ToList());
+    /// <summary>Board's own pages plus those of plugins, in order (which replace which is decided per board).</summary>
+    public IReadOnlyList<IBoardPageProvider> Pages { get; } = pages.OrderBy(p => p.Order).ToList();
+
+    /// <summary>
+    /// The pages a board shows: those that apply to it, minus any an applying page replaces (Board.Scrum's sprint
+    /// planning replaces the plain backlog on Scrum boards only).
+    /// </summary>
+    public IReadOnlyList<IBoardPageProvider> PagesFor(DevHub.Board.Core.Model.BoardDefinition definition)
+    {
+        var applying = Pages.Where(p => p.AppliesTo(definition)).ToList();
+        var replaced = applying.Select(p => p.Replaces).OfType<string>().ToHashSet(StringComparer.Ordinal);
+        return applying.Where(p => !replaced.Contains(p.Id)).ToList();
+    }
 
     public IReadOnlyList<IIssueSectionProvider> Sections { get; } = sections.OrderBy(s => s.Order).ToList();
     public IReadOnlyList<IIssueActionProvider> IssueActions { get; } = issueActions.ToList();
-
-    private static IReadOnlyList<IBoardPageProvider> Resolve(List<IBoardPageProvider> pages)
-    {
-        var replaced = pages.Select(p => p.Replaces).OfType<string>().ToHashSet(StringComparer.Ordinal);
-        return pages.Where(p => !replaced.Contains(p.Id)).OrderBy(p => p.Order).ToList();
-    }
 
     /// <summary>Saves an attachment to a temporary file and opens it with its Windows app.</summary>
     public void OpenFile(string fileName, byte[] bytes)

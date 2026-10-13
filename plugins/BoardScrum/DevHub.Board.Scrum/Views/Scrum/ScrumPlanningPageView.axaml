@@ -1,0 +1,9 @@
+<!-- Sprint planning: the shared planning layout from Board (a list per open sprint, then the backlog). -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Scrum"
+             xmlns:board="using:DevHub.Views.Board"
+             x:Class="DevHub.Views.Scrum.ScrumPlanningPageView"
+             x:DataType="vm:ScrumPlanningPageViewModel">
+    <board:PlanningPageView />
+</UserControl>

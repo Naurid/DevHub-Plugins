@@ -1,0 +1,17 @@
+<!-- Complete Sprint: what got done, and where the unfinished issues go. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Scrum"
+             x:Class="DevHub.Views.Scrum.CompleteSprintDialogView"
+             x:DataType="vm:CompleteSprintDialogViewModel">
+    <StackPanel Margin="{DynamicResource Padding.Dialog}" Spacing="{DynamicResource Spacing}">
+        <TextBlock Classes="header" Text="{Binding SprintName}" />
+        <TextBlock Text="{Binding Summary}" TextWrapping="Wrap" />
+        <StackPanel Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding HasOpen}">
+            <TextBlock Text="{Binding OpenText}" TextWrapping="Wrap" />
+            <ComboBox ItemsSource="{Binding Targets}" SelectedItem="{Binding Target}" HorizontalAlignment="Stretch" AutomationProperties.Name="Move unfinished issues to" />
+        </StackPanel>
+        <TextBlock Classes="small secondary" TextWrapping="Wrap"
+                   Text="Finished issues stay with this sprint (reports read them). The sprint is kept, closed." />
+    </StackPanel>
+</UserControl>

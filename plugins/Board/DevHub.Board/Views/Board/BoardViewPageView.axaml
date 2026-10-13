@@ -138,8 +138,8 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="vm:LaneViewModel">
                                 <StackPanel Spacing="{DynamicResource Spacing.Small}">
-                                    <ToggleButton Classes="flat" IsChecked="{Binding IsExpanded}" IsVisible="{Binding HasHeader}"
-                                                  Padding="{DynamicResource Padding.Swimlane}" Background="Transparent" BorderThickness="0"
+                                    <ToggleButton Classes="headerToggle" IsChecked="{Binding IsExpanded}" IsVisible="{Binding HasHeader}"
+                                                  
                                                   AutomationProperties.Name="{Binding Title}">
                                         <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}">
                                             <c:Icon Kind="chevronDown" IsVisible="{Binding IsExpanded}" />

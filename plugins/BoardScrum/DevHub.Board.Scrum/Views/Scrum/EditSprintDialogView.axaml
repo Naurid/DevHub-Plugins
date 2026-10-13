@@ -1,0 +1,33 @@
+<!-- Edit Sprint: name, goal, dates, capacity. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Scrum"
+             x:Class="DevHub.Views.Scrum.EditSprintDialogView"
+             x:DataType="vm:EditSprintDialogViewModel">
+    <StackPanel Margin="{DynamicResource Padding.Dialog}" Spacing="{DynamicResource Spacing}">
+        <StackPanel Spacing="{DynamicResource Spacing.Small}">
+            <TextBlock Classes="secondary" Text="Name" />
+            <TextBox Text="{Binding Name}" AutomationProperties.Name="Sprint name" />
+        </StackPanel>
+        <StackPanel Spacing="{DynamicResource Spacing.Small}">
+            <TextBlock Classes="secondary" Text="Goal" />
+            <TextBox Text="{Binding Goal}" AutomationProperties.Name="Sprint goal" />
+        </StackPanel>
+        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="{DynamicResource Spacing}">
+            <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                <TextBlock Classes="secondary" Text="Starts" />
+                <CalendarDatePicker SelectedDate="{Binding StartDate}" HorizontalAlignment="Stretch" AutomationProperties.Name="Start date" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Spacing="{DynamicResource Spacing.Small}">
+                <TextBlock Classes="secondary" Text="Ends" />
+                <CalendarDatePicker SelectedDate="{Binding EndDate}" HorizontalAlignment="Stretch" AutomationProperties.Name="End date" />
+            </StackPanel>
+            <StackPanel Grid.Column="2" Spacing="{DynamicResource Spacing.Small}">
+                <TextBlock Classes="secondary" Text="Capacity (points)" />
+                <TextBox Text="{Binding Capacity}" PlaceholderText="e.g. 20" AutomationProperties.Name="Capacity" />
+            </StackPanel>
+        </Grid>
+        <TextBlock Text="{Binding Error}" Foreground="{DynamicResource Brush.Status.Error}" TextWrapping="Wrap"
+                   IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+    </StackPanel>
+</UserControl>

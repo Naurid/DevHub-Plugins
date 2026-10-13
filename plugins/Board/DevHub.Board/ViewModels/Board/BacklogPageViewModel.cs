@@ -56,6 +56,9 @@ public abstract partial class PlanningPageViewModel : BoardPageViewModel, IItems
 
     public ObservableCollection<IssueListViewModel> Lists { get; } = [];
 
+    /// <summary>Buttons on the page's header (Board.Scrum: Create Sprint).</summary>
+    public ObservableCollection<ListAction> PageActions { get; } = [];
+
     [ObservableProperty] private string _newSummary = "";
     public ObservableCollection<NamedItem> NewTypes { get; } = [];
     [ObservableProperty] private NamedItem? _newType;
@@ -82,8 +85,8 @@ public abstract partial class PlanningPageViewModel : BoardPageViewModel, IItems
         if (_rebuilding || _filling)
             return;
         OnPropertyChanged(nameof(SelectedIssues));
-        if (e.NewItems is { Count: > 0 } added && added[^1] is IssueItemViewModel item)
-            Host.SelectIssue(item.Id);
+        // The issue panel opens on a tap (Tap.Command in the row), not on selection: selection happens on press,
+        // and opening the panel then would move the lists under a drag that's just starting.
     }
 
     private bool _filling;

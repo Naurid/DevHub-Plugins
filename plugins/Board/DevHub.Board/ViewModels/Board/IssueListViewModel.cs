@@ -22,7 +22,10 @@ public sealed partial class IssueListViewModel(string id, string title) : Observ
     [ObservableProperty] private string? _emptyText = "Nothing here.";
 
     /// <summary>Anything the page wants to keep with the list (Board.Scrum: the sprint).</summary>
-    public object? Tag { get; init; }
+    public object? Tag { get; set; }
+
+    /// <summary>Buttons in the list's header (Board.Scrum: Start Sprint, Complete Sprint, Edit, Delete).</summary>
+    public ObservableCollection<ListAction> Actions { get; } = [];
 
     public ObservableCollection<IssueItemViewModel> Items { get; } = [];
     public ObservableCollection<IssueItemViewModel> Selected { get; } = [];
@@ -67,4 +70,12 @@ public static class IssueListDrops
         index = Math.Clamp(index, 0, others.Count);
         return new IssueListDrop(source, target, item, index > 0 ? others[index - 1].Id : null, index < others.Count ? others[index].Id : null);
     }
+}
+
+/// <summary>A button in a list's or a page's header.</summary>
+public sealed record ListAction(string Text, System.Windows.Input.ICommand Command)
+{
+    public string? ToolTip { get; init; }
+    public bool IsAccent { get; init; }
+    public override string ToString() => Text;
 }

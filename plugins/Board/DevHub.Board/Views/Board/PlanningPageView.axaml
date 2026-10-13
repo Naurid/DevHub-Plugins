@@ -68,6 +68,18 @@
                 <ComboBox Grid.Column="1" ItemsSource="{Binding VersionFilters}" SelectedItem="{Binding VersionFilter}"
                           AutomationProperties.Name="Version filter" ToolTip.Tip="Only issues planned for a version" />
                 <CheckBox Grid.Column="2" Content="Show done" IsChecked="{Binding ShowDone}" />
+                <ItemsControl Grid.Column="3" ItemsSource="{Binding PageActions}" HorizontalAlignment="Right">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ListAction">
+                            <Button Classes.accent="{Binding IsAccent}" Content="{Binding Text}" Command="{Binding Command}" ToolTip.Tip="{Binding ToolTip}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
                 <Button Grid.Column="4" Content="Edit Selected…" Command="{Binding BulkEditCommand}"
                         ToolTip.Tip="Change a field of every selected issue (Ctrl+click, Shift+click to select)" />
             </Grid>
@@ -107,8 +119,8 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="vm:IssueListViewModel">
                         <StackPanel Spacing="{DynamicResource Spacing.Small}" Margin="{DynamicResource Margin.BlockBelow}">
-                            <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing}">
-                                <ToggleButton Classes="flat" IsChecked="{Binding IsExpanded}" Background="Transparent" BorderThickness="0"
+                            <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                                <ToggleButton Classes="headerToggle" IsChecked="{Binding IsExpanded}"
                                               AutomationProperties.Name="{Binding Title}">
                                     <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}">
                                         <c:Icon Kind="chevronDown" IsVisible="{Binding IsExpanded}" />
@@ -118,6 +130,19 @@
                                 </ToggleButton>
                                 <TextBlock Grid.Column="1" Classes="secondary" Text="{Binding Subtitle}" VerticalAlignment="Center" />
                                 <TextBlock Grid.Column="3" Classes="small secondary" Text="{Binding Summary}" VerticalAlignment="Center" />
+                                <ItemsControl Grid.Column="4" ItemsSource="{Binding Actions}" VerticalAlignment="Center">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:ListAction">
+                                            <Button Classes="flat" Classes.accent="{Binding IsAccent}" Content="{Binding Text}" Command="{Binding Command}"
+                                                    ToolTip.Tip="{Binding ToolTip}" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
                             </Grid>
                             <Border Classes="listPanel" IsVisible="{Binding IsExpanded}">
                                 <Panel>
