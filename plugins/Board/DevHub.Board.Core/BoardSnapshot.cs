@@ -166,14 +166,20 @@ public sealed class BoardSnapshot
         return _children[id].ToList();
     }
 
-    /// <summary>The workflow an issue type follows: its own, else the first one.</summary>
+    /// <summary>The workflow an issue type follows: its own, else the default one.</summary>
     public Workflow? WorkflowFor(string? issueTypeId)
     {
         var id = Project.IssueType(issueTypeId)?.Workflow;
         if (id is not null && Workflows.TryGetValue(id, out var own))
             return own;
-        return Workflows.Values.OrderBy(w => w.Name, StringComparer.Ordinal).ThenBy(w => w.Id, StringComparer.Ordinal).FirstOrDefault();
+        return DefaultWorkflow;
     }
+
+    /// <summary>The workflow of issue types without their own (<see cref="BoardProject.DefaultWorkflow"/>, else the first by id).</summary>
+    public Workflow? DefaultWorkflow =>
+        Project.DefaultWorkflow is { } id && Workflows.TryGetValue(id, out var chosen)
+            ? chosen
+            : Workflows.Values.OrderBy(w => w.Id, StringComparer.Ordinal).FirstOrDefault();
 
     public StatusCategory CategoryOf(Issue issue) => Project.Status(issue.Status)?.Category ?? StatusCategory.ToDo;
 

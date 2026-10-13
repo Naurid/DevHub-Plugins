@@ -49,6 +49,7 @@ public sealed record CreateBoard(string Key, string Name, BoardPreset Preset, Bo
             Name = name,
             Statuses = statuses,
             People = [new BoardPerson { Id = CreatorId ?? context.NewId(), Name = Creator.Name.Trim(), Email = Creator.Email }],
+            DefaultWorkflow = workflowId,
         };
 
         var workflow = new Workflow { Id = workflowId, Name = "Default", Statuses = statuses.Select(s => s.Id).ToList() };

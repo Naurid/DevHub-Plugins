@@ -32,6 +32,9 @@ public sealed record BoardProject
     /// <summary>The priority new issues get; null = the middle one.</summary>
     public string? DefaultPriority { get; init; }
 
+    /// <summary>The workflow of issue types without their own; null = the first workflow by id.</summary>
+    public string? DefaultWorkflow { get; init; }
+
     public ProjectSettings Settings { get; init; } = new();
 
     /// <summary>Fields written by a newer DevHub: kept as they are when this file is rewritten.</summary>
