@@ -193,6 +193,10 @@
                     <Button Grid.Column="2" Classes="flat" Content="Log work…" Command="{Binding LogWorkCommand}" />
                 </Grid>
                 <Grid ColumnDefinitions="Auto,*">
+                    <TextBlock Classes="fieldLabel" Text="Start date" />
+                    <CalendarDatePicker Grid.Column="1" SelectedDate="{Binding Start}" HorizontalAlignment="Stretch" AutomationProperties.Name="Start date" />
+                </Grid>
+                <Grid ColumnDefinitions="Auto,*">
                     <TextBlock Classes="fieldLabel" Text="Due date" />
                     <CalendarDatePicker Grid.Column="1" SelectedDate="{Binding Due}" HorizontalAlignment="Stretch" AutomationProperties.Name="Due date" />
                 </Grid>

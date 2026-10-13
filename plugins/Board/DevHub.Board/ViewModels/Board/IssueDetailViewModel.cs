@@ -188,6 +188,7 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
     [ObservableProperty] private string _remainingEstimate = "";
     [ObservableProperty] private string _timeSpent = "";
     [ObservableProperty] private double _timeProgress;
+    [ObservableProperty] private DateTime? _start;
     [ObservableProperty] private DateTime? _due;
     [ObservableProperty] private string _labels = "";
     [ObservableProperty] private string _components = "";
@@ -318,6 +319,7 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
         TimeSpent = spent > 0 ? WorkDuration.Format(spent, project.Settings) + " logged" : "nothing logged";
         var total = spent + (issue.Time.RemainingMinutes ?? 0);
         TimeProgress = total > 0 ? (double)spent / total : 0;
+        Start = issue.Start?.ToDateTime(TimeOnly.MinValue);
         Due = issue.Due?.ToDateTime(TimeOnly.MinValue);
         Labels = string.Join(" ", issue.Labels);
         Components = string.Join(", ", issue.Components.Select(c => project.Component(c)?.Name ?? c));
@@ -509,6 +511,13 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
             _context.Status.Show("A duration looks like 2h, 1d 4h or 30m.");
             Refresh();
         }
+    }
+
+    partial void OnStartChanged(DateTime? value)
+    {
+        var date = value is { } d ? DateOnly.FromDateTime(d) : (DateOnly?)null;
+        if (!_loading && date != _issue.Start)
+            _ = Save(IssueFields.Start, new FieldValue.Date(date));
     }
 
     partial void OnDueChanged(DateTime? value)

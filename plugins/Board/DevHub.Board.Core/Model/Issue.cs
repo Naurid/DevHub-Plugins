@@ -43,6 +43,9 @@ public sealed record Issue
     public IReadOnlyList<string> FixVersions { get; init; } = [];
     public double? StoryPoints { get; init; }
     public TimeTracking Time { get; init; } = new();
+    /// <summary>When work is planned to start (the timeline draws epics from Start to Due).</summary>
+    public DateOnly? Start { get; init; }
+
     public DateOnly? Due { get; init; }
 
     /// <summary>The sprint it's planned in (Board.Scrum), or null: in the backlog.</summary>

@@ -504,3 +504,21 @@ public class CreateBoardIdTests
         Assert.Null(project.People.Single().Email);
     }
 }
+
+public class StartDateTests
+{
+    [Fact]
+    public void Start_and_due_dates_stay_in_order()
+    {
+        using var board = TestBoard.Create();
+        var epic = board.Create("epic", "Accounts");
+
+        board.Apply(new EditIssue(epic.Id, IssueFields.Start, new FieldValue.Date(new DateOnly(2026, 11, 1))));
+        board.Apply(new EditIssue(epic.Id, IssueFields.Due, new FieldValue.Date(new DateOnly(2026, 12, 1))));
+
+        Assert.Equal(new DateOnly(2026, 11, 1), board.Get(epic.Id).Start);
+        Assert.Throws<BoardRuleException>(() => board.Apply(new EditIssue(epic.Id, IssueFields.Due, new FieldValue.Date(new DateOnly(2026, 10, 1)))));
+        Assert.Throws<BoardRuleException>(() => board.Apply(new EditIssue(epic.Id, IssueFields.Start, new FieldValue.Date(new DateOnly(2026, 12, 2)))));
+        Assert.Contains(board.Snapshot.HistoryOf(epic.Id), h => h.Field == IssueFields.Start);
+    }
+}

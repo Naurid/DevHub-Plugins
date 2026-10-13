@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- Board.Timeline (docs/BOARD_PLAN.md, B10): the roadmap of epics (Timeline page) and releases with their notes (Releases page). Requires Board. -->
+
+    <PropertyGroup>
+        <RootNamespace>DevHub</RootNamespace>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Board\DevHub.Board\DevHub.Board.csproj" />
+        <ProjectReference Include="..\DevHub.Board.Timeline.Core\DevHub.Board.Timeline.Core.csproj" />
+    </ItemGroup>
+
+</Project>

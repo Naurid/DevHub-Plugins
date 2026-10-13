@@ -98,4 +98,6 @@
     <!-- Board.Reports: a report chart's height, a dashboard pie's height. -->
     <x:Double x:Key="Size.ReportChart">300</x:Double>
     <x:Double x:Key="Size.ReportPie">220</x:Double>
+    <!-- Board.Timeline: the key and summary column left of the roadmap bars. -->
+    <x:Double x:Key="Size.TimelineLabels">300</x:Double>
 </ResourceDictionary>

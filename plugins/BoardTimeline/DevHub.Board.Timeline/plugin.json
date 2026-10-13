@@ -1,0 +1,12 @@
+// The package's description of the plugin (docs/PLUGINS.md in DevHub); keep it equal to the plugin class's PluginInfo.
+// The version is computed from git (build/Get-PluginVersion.ps1); don't write one here.
+{
+  "id": "devhub.board.timeline",
+  "name": "Board Timeline",
+  "description": "A roadmap of epics with their dates, progress and blockers, and releases (fix versions) with their progress and release notes.",
+  "category": "Planning",
+  "apiVersion": 1,
+  "requires": [
+    "devhub.board"
+  ]
+}

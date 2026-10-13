@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- Board.Timeline logic: the roadmap of epics (dates, progress, dependencies), releases and their notes. Requires Board. No Avalonia. -->
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Board\DevHub.Board.Core\DevHub.Board.Core.csproj" />
+    </ItemGroup>
+
+</Project>

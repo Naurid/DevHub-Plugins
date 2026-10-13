@@ -50,6 +50,7 @@ public static class IssueFields
     public const string StoryPoints = "storyPoints";
     public const string OriginalEstimate = "originalEstimate";
     public const string RemainingEstimate = "remainingEstimate";
+    public const string Start = "start";
     public const string Due = "due";
     public const string Sprint = "sprint";
     public const string Rank = "rank";
@@ -61,7 +62,7 @@ public static class IssueFields
     public static IReadOnlyList<string> Editable { get; } =
     [
         Summary, Description, Type, Priority, Parent, Assignee, Reporter, Labels, Components, FixVersions,
-        StoryPoints, OriginalEstimate, RemainingEstimate, Due, Sprint,
+        StoryPoints, OriginalEstimate, RemainingEstimate, Start, Due, Sprint,
     ];
 
     /// <summary>Fields compared for the change log (besides custom fields).</summary>
@@ -87,6 +88,7 @@ public static class IssueFields
         StoryPoints => "Story points",
         OriginalEstimate => "Original estimate",
         RemainingEstimate => "Remaining estimate",
+        Start => "Start date",
         Due => "Due date",
         Sprint => "Sprint",
         Rank => "Rank",
@@ -112,6 +114,7 @@ public static class IssueFields
         StoryPoints => new FieldValue.Number(issue.StoryPoints),
         OriginalEstimate => new FieldValue.Minutes(issue.Time.OriginalMinutes),
         RemainingEstimate => new FieldValue.Minutes(issue.Time.RemainingMinutes),
+        Start => new FieldValue.Date(issue.Start),
         Due => new FieldValue.Date(issue.Due),
         Sprint => new FieldValue.Text(issue.Sprint),
         Rank => new FieldValue.Text(issue.Rank),
@@ -138,6 +141,7 @@ public static class IssueFields
             StoryPoints => issue with { StoryPoints = Number() },
             OriginalEstimate => issue with { Time = issue.Time with { OriginalMinutes = MinutesValue() } },
             RemainingEstimate => issue with { Time = issue.Time with { RemainingMinutes = MinutesValue() } },
+            Start => issue with { Start = DateValue() },
             Due => issue with { Due = DateValue() },
             Sprint => issue with { Sprint = Text() },
             _ when field.StartsWith(CustomPrefix, StringComparison.Ordinal) => SetCustom(field[CustomPrefix.Length..], Text()),
@@ -254,10 +258,18 @@ public static class IssueFields
                 if (value is not (FieldValue.Minutes or FieldValue.Number))
                     throw new BoardRuleException("An estimate is a number of minutes.");
                 break;
-            case Due:
+            case Start or Due:
                 if (value is FieldValue.Text { Value: { Length: > 0 } d }
                     && !DateOnly.TryParseExact(d, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
-                    throw new BoardRuleException("A due date looks like 2026-10-31.");
+                    throw new BoardRuleException("A date looks like 2026-10-31.");
+                var date = value switch
+                {
+                    FieldValue.Date { Value: { } dv } => dv,
+                    FieldValue.Text { Value: { Length: > 0 } dt } => DateOnly.ParseExact(dt, "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                    _ => (DateOnly?)null,
+                };
+                if (date is { } chosen && (field == Start ? issue.Due is { } due && chosen > due : issue.Start is { } start && chosen < start))
+                    throw new BoardRuleException("The start date can't be after the due date.");
                 break;
             case Sprint:
                 if (text is not null && !board.Sprints.ContainsKey(text))

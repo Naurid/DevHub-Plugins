@@ -1,0 +1,56 @@
+<!-- The roadmap: a row per epic (and its issues, when chosen): key and summary on the left, its bar on the right. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Timeline"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Timeline.TimelinePageView"
+             x:DataType="vm:TimelinePageViewModel">
+    <UserControl.Styles>
+        <StyleInclude Source="avares://DevHub.Board/Views/Board/BoardStyles.axaml" />
+        <Style Selector="Grid.timelineRow:pointerover">
+            <Setter Property="Background" Value="{DynamicResource Brush.Bg.Hover}" />
+        </Style>
+    </UserControl.Styles>
+
+    <DockPanel>
+        <Border DockPanel.Dock="Top" Classes="pageHeader">
+            <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                <CheckBox Content="Show each epic's issues" IsChecked="{Binding WithIssues}" />
+                <CheckBox Grid.Column="1" Content="Show done epics" IsChecked="{Binding ShowDone}" />
+                <TextBlock Grid.Column="2" Classes="secondary" Text="{Binding Summary}" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                <Button Grid.Column="3" Content="Create Epic…" Command="{Binding CreateEpicCommand}" />
+            </Grid>
+        </Border>
+        <Panel>
+            <c:EmptyState IconKind="info" Title="No epics yet" IsVisible="{Binding IsEmpty}"
+                          Description="The timeline shows epics from their start date to their due date. Create an epic, then set its dates in the issue panel." />
+            <ScrollViewer IsVisible="{Binding !IsEmpty}" HorizontalScrollBarVisibility="Disabled">
+                <Grid ColumnDefinitions="Auto,*" Margin="{DynamicResource Padding.Board}">
+                    <TextBlock Classes="small secondary" Text="Epic" VerticalAlignment="Center" Width="{DynamicResource Size.TimelineLabels}" />
+                    <c:TimelineScale Grid.Column="1" From="{Binding From}" Days="{Binding Days}" Today="{Binding Today}" />
+                    <ItemsControl Grid.Row="1" Grid.ColumnSpan="2" ItemsSource="{Binding Rows}" Margin="{DynamicResource Margin.BlockBelow}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:TimelineRowViewModel">
+                                <Grid Classes="timelineRow" ColumnDefinitions="Auto,*" Background="Transparent" ToolTip.Tip="{Binding ToolTip}"
+                                      c:Tap.Command="{Binding SelectCommand}" AutomationProperties.Name="{Binding}">
+                                    <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}" Width="{DynamicResource Size.TimelineLabels}">
+                                        <Border Width="{DynamicResource Spacing.Large}" IsVisible="{Binding IsChild}" />
+                                        <TextBlock Classes="small secondary" Text="{Binding Key}" VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding Summary}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    <c:TimelineBar Grid.Column="1" Start="{Binding Start}" End="{Binding End}" Progress="{Binding Progress}"
+                                                   IsLate="{Binding Item.IsLate}" IsDone="{Binding Item.IsDone}" IsGuessed="{Binding Item.DatesGuessed}"
+                                                   HasConflict="{Binding Item.HasConflict}" IsChild="{Binding IsChild}" Today="{Binding Today}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                </Grid>
+            </ScrollViewer>
+        </Panel>
+    </DockPanel>
+</UserControl>
