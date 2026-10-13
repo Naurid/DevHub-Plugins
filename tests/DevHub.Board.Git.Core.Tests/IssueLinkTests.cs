@@ -53,10 +53,10 @@ public class IssueKeyTests
         Assert.Equal(keys.Length == 0 ? [] : keys.Split(','), IssueKeys.Find(text, "DEV"));
 
     [Fact]
-    public void Maps_keys_to_issues_and_old_keys_count()
+    public async Task Maps_keys_to_issues_and_old_keys_count()
     {
         using var board = new SampleBoard();
-        board.Session.ApplyAsync(new ChangeProjectKey("APP")).GetAwaiter().GetResult();
+        await board.Session.ApplyAsync(new ChangeProjectKey("APP"));
 
         var found = IssueKeys.Issues("Fixes DEV-1 (now APP-1) and APP-2", board.Snapshot);
 
@@ -100,13 +100,13 @@ public class SmartCommitTests
     }
 
     [Fact]
-    public void Done_picks_a_done_status_and_applies()
+    public async Task Done_picks_a_done_status_and_applies()
     {
         using var board = new SampleBoard();
         var commands = SmartCommits.Parse("Fix the crash DEV-2 #done", board.Snapshot);
 
         foreach (var command in commands)
-            board.Session.ApplyAsync(command.ToOperation(DateTimeOffset.Now)).GetAwaiter().GetResult();
+            await board.Session.ApplyAsync(command.ToOperation(DateTimeOffset.Now));
 
         Assert.Equal("done", board.Snapshot.Issue(board.Bug.Id)!.Status);
     }
