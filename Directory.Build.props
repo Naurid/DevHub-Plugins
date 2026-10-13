@@ -4,7 +4,7 @@
       DevHub.Sdk + DevHub.Sdk.Core) and Avalonia / CommunityToolkit.Mvvm / DI;
     - a ".Core" project (no UI): DevHub.Sdk.Core only, never Avalonia;
     - a test project (".Tests", and DevHub.TestKit): runs, so it gets real copies of everything it uses (through
-      the projects it tests).
+      the projects it tests). A console tool under tools/ (like tools/BoardDemo) runs too and is built the same way.
   DevHub ships the Sdk, Avalonia, CommunityToolkit.Mvvm and DI itself, so for plugins and .Core projects they're
   build-only (ExcludeAssets="runtime") and never copied into a plugin's package. Avalonia, CommunityToolkit.Mvvm
   and DI are referenced directly because their build parts (the XAML compiler, the [ObservableProperty]
@@ -23,6 +23,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
 
         <DevHubProjectKind Condition="$(MSBuildProjectName.EndsWith('.Tests')) Or '$(MSBuildProjectName)' == 'DevHub.TestKit'">test</DevHubProjectKind>
+        <DevHubProjectKind Condition="'$(DevHubProjectKind)' == '' And $(MSBuildProjectDirectory.StartsWith('$(MSBuildThisFileDirectory)tools'))">test</DevHubProjectKind>
         <DevHubProjectKind Condition="'$(DevHubProjectKind)' == '' And $(MSBuildProjectName.EndsWith('.Core'))">core</DevHubProjectKind>
         <DevHubProjectKind Condition="'$(DevHubProjectKind)' == ''">plugin</DevHubProjectKind>
 

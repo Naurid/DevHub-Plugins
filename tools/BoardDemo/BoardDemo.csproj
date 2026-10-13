@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- Writes a demo board (and a git repository its issues are developed in) to try every Board feature with.
+         Never shipped. How to run it: README.md next to this file. -->
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\plugins\Board\DevHub.Board.Core\DevHub.Board.Core.csproj" />
+    </ItemGroup>
+
+</Project>
