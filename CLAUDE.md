@@ -26,10 +26,16 @@ plugins/<Name>/                  one plugin; grouped ones have a UI project and 
   GitHub/DevHub.GitHub/ + DevHub.GitHub.Core/   GitHub account, Publish, IGitHubApi for other plugins (requires Git)
   Projects/DevHub.Projects/ + .Core/            Projects tool window, Open With
   Templates/DevHub.Templates/ + .Core/          New Project, Add Files, template editor and import; the engine
+  Board/DevHub.Board/ + DevHub.Board.Core/       boards (no server, no git needed): issues, workflows, board / backlog / search pages,
+                                                issue view, settings, import / export; extension points for the Board.* plugins
+  BoardScrum/DevHub.Board.Scrum/                sprint planning, Start / Complete Sprint (requires Board; sprint rules are in Board.Core)
+  BoardGit/DevHub.Board.Git/ + .Core/            devhub/board branch store, branches / commits of issues, smart commits (requires Board + Git)
+  BoardReports/DevHub.Board.Reports/ + .Core/    burndown, velocity, flow, control chart, dashboard (requires Board)
+  BoardTimeline/DevHub.Board.Timeline/ + .Core/  roadmap of epics, releases and release notes (requires Board)
   HelloWorld/                                   the sample plugin (one project)
   (plugin.json sits next to the UI project: id, name, description, category, apiVersion, requires)
 tests/                           DevHub.<X>.Core.Tests (xUnit), DevHub.TestKit (TempGitRepo, [GitFact])
-docs/                            GIT_CLIENT_PLAN.md (Git plugin), BOARD_PLAN.md (Board), TEMPLATE_FORMAT.md (the template spec)
+docs/                            GIT_CLIENT_PLAN.md (Git plugin), BOARD_PLAN.md (Board plugins), TEMPLATE_FORMAT.md (the template spec)
 build/                           Get-PluginVersion, Pack-Plugin, Publish-Plugins, Test-Plugins (README.md)
 Directory.Build.props            project kinds (plugin / .Core / test) and their Sdk references
 Directory.Build.targets          after a build: plugin.json next to the DLLs, Properties/launchSettings.json (F5)
@@ -73,6 +79,17 @@ DevHub-Plugins.sln
   API call with `credential fill`, run as `Sensitive`); the GitHub token only ever goes to api.github.com.
 - Core git tests use real git in temp repos (`TempGitRepo`, `[GitFact]`); UI checks use scratch repositories,
   never the user's own.
+
+## Board rules (Board plugins; details in docs/BOARD_PLAN.md)
+- **Every change is an operation** (`IBoardOperation` in `DevHub.Board.Core`, a plain argument object) run through
+  `BoardSession` / `BoardContext.RunAsync`: rules live in the operation (tested), ViewModels only build operations.
+- **Stores are compare-and-swap:** a write names the version it's based on; a moved store means reload, never
+  overwrite. The branch store (Board.Git) never touches the working tree, the index or HEAD.
+- **Board needs nothing but itself:** Scrum, Git, Reports and Timeline plug in through `DevHub.Board`'s extension
+  points (`IBoardPageProvider`, `IIssueSectionProvider`, `IIssueActionProvider`, `IBoardStoreProvider`); Board never
+  references them.
+- Files keep unknown fields and stable bytes (`BoardJson`); history is the per-issue change log (`history/*.jsonl`).
+- Smart commits are shown and confirmed, never applied silently.
 
 ## Template engine rules (Templates plugin; details in the `template-engine` skill and docs/TEMPLATE_FORMAT.md)
 - **Unknown `{{...}}` tokens pass through untouched** (Vue, Handlebars, Jinja, Go templates, GitHub Actions `${{ }}`).

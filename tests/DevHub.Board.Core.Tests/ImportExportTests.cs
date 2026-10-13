@@ -154,3 +154,29 @@ public class ExportTests
         Assert.True(issue.GetProperty("history").GetArrayLength() >= 2);
     }
 }
+
+public class SampleJiraFileTests
+{
+    // docs/examples/jira-sample.csv: the file to try Import Issues with. It must keep importing cleanly.
+    [Fact]
+    public void The_sample_file_imports()
+    {
+        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+        while (dir is not null && !File.Exists(Path.Combine(dir.FullName, "DevHub-Plugins.sln")))
+            dir = dir.Parent;
+        var path = Path.Combine(dir!.FullName, "docs", "examples", "jira-sample.csv");
+        var issues = JiraCsvImport.Read(File.ReadAllText(path));
+        Assert.Equal(13, issues.Count);
+
+        using var board = TestBoard.Create();
+        board.Apply(new ImportIssues(issues, "Jira"));
+
+        var snapshot = board.Snapshot;
+        Assert.Equal(13, snapshot.Issues.Count);
+        Assert.Equal(2, snapshot.Issues.Values.Count(i => i.Type == "epic"));
+        Assert.Equal(snapshot.IssueByKey("SHOP-3")!.Id, snapshot.IssueByKey("SHOP-4")!.Parent);
+        Assert.Equal("wontdo", snapshot.IssueByKey("SHOP-13")!.Resolution);
+        Assert.Equal(2, snapshot.IssueByKey("SHOP-3")!.Comments.Count);
+        Assert.Contains("- [x] email + password fields", snapshot.IssueByKey("SHOP-3")!.Description.ReplaceLineEndings("\n"));
+    }
+}

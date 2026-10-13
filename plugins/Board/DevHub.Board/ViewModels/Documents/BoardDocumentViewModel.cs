@@ -282,6 +282,26 @@ public sealed partial class BoardDocumentViewModel : DocumentViewModelBase, IDis
 
     public void OpenIssue(string issueId) => OpenDocument?.Invoke(IssueDocumentFactory.IdFor(Location, issueId));
 
+    /// <summary>Shows the Search page with a query run (My Open Issues).</summary>
+    public void ShowSearch(string query)
+    {
+        SelectedPage = Pages.FirstOrDefault(p => p.Id == SearchPageProvider.PageId) ?? SelectedPage;
+        if (Page is SearchPageViewModel search)
+        {
+            search.Query = query;
+            search.Run();
+        }
+    }
+
+    /// <summary>Opens the issue with this key (also an old key) in its own tab; false when there's none.</summary>
+    public bool GoToIssue(string key)
+    {
+        if (_context?.Snapshot.IssueByKey(key.Trim()) is not { } issue)
+            return false;
+        OpenIssue(issue.Id);
+        return true;
+    }
+
     [RelayCommand]
     private void CloseIssuePanel() => IssuePanel = null;
 

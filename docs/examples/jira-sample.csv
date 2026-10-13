@@ -1,0 +1,17 @@
+Summary,Issue key,Issue id,Parent id,Issue Type,Status,Priority,Resolution,Assignee,Reporter,Created,Updated,Resolved,Due Date,Labels,Labels,Component/s,Fix Version/s,Custom field (Story Points),Original Estimate,Remaining Estimate,Time Spent,Description,Comment,Comment
+Accounts and sign-in,SHOP-1,10001,,Epic,In Progress,High,,Grace Hopper,Ada Lovelace,01/Sep/26 9:00 AM,20/Sep/26 3:00 PM,,31/Oct/26,auth,,Backend,1.0,,,,,Everything about signing in: login, sign-up and password reset.,,
+Product catalogue,SHOP-2,10002,,Epic,To Do,Medium,,,Ada Lovelace,01/Sep/26 9:15 AM,01/Sep/26 9:15 AM,,30/Nov/26,catalogue,,Frontend,1.1,,,,,"Browse, search and filter products.",,
+Login form with email and password,SHOP-3,10003,10001,Story,Done,High,Done,Grace Hopper,Ada Lovelace,02/Sep/26 10:30 AM,10/Sep/26 4:00 PM,10/Sep/26 4:00 PM,,auth,ui,Frontend,1.0,5,28800,0,30600,"As a customer I want to sign in so that I see my orders.
+
+- [x] email + password fields
+- [x] show errors under the fields","03/Sep/26 11:00 AM;Grace Hopper;Started on the layout.","09/Sep/26 2:30 PM;Ada Lovelace;Looks good, ship it."
+Layout of the login form,SHOP-4,10004,10003,Sub-task,Done,Medium,Done,Grace Hopper,Grace Hopper,02/Sep/26 11:00 AM,05/Sep/26 5:00 PM,05/Sep/26 5:00 PM,,,,Frontend,,,14400,0,14400,,,
+Validation messages,SHOP-5,10005,10003,Sub-task,Done,Medium,Done,Grace Hopper,Grace Hopper,02/Sep/26 11:05 AM,09/Sep/26 1:00 PM,09/Sep/26 1:00 PM,,,,Frontend,,,7200,0,9000,,,
+Reset a forgotten password,SHOP-6,10006,10001,Story,In Progress,Medium,,Alan Turing,Ada Lovelace,04/Sep/26 9:00 AM,22/Sep/26 10:00 AM,,15/Oct/26,auth,,Backend,1.0,3,14400,7200,7200,Send a reset link by email; the link expires after an hour.,"20/Sep/26 9:45 AM;Alan Turing;The mail template is done, the token check is next.",
+Sign up with email confirmation,SHOP-7,10007,10001,Story,Code Review,Medium,,Alan Turing,Ada Lovelace,05/Sep/26 2:00 PM,23/Sep/26 11:00 AM,,,auth,,Backend,1.0,5,,,,,,
+Crash when the network drops during sign-in,SHOP-8,10008,10001,Bug,To Do,Highest,,,Grace Hopper,18/Sep/26 4:20 PM,18/Sep/26 4:20 PM,,,crash,auth,Frontend,1.0,2,,,,"Steps: start signing in, turn off Wi-Fi, press Sign in. The app closes.",,
+Product list page,SHOP-9,10009,10002,Story,To Do,Medium,,,Ada Lovelace,06/Sep/26 10:00 AM,06/Sep/26 10:00 AM,,,catalogue,ui,Frontend,1.1,8,,,,Show products in a grid with picture, name and price.,,
+Search products by name,SHOP-10,10010,10002,Story,Selected for Development,Low,,Grace Hopper,Ada Lovelace,06/Sep/26 10:30 AM,15/Sep/26 9:00 AM,,,catalogue,search,Backend,1.1,5,,,,,,
+Filter by price range,SHOP-11,10011,10002,Story,To Do,Lowest,,,Ada Lovelace,06/Sep/26 11:00 AM,06/Sep/26 11:00 AM,,,catalogue,,Frontend,1.1,3,,,,,,
+Set up the CI pipeline,SHOP-12,10012,,Task,Done,Medium,Done,Alan Turing,Alan Turing,01/Sep/26 8:30 AM,03/Sep/26 6:00 PM,03/Sep/26 6:00 PM,,devops,,,,2,10800,0,12600,Build and test on every push.,,
+Prices show without currency symbol,SHOP-13,10013,,Bug,Closed,Low,Won't Fix,,Grace Hopper,12/Sep/26 3:00 PM,14/Sep/26 9:00 AM,14/Sep/26 9:00 AM,,ui,,Frontend,,1,,,,Duplicate of the design change planned for 1.1.,"14/Sep/26 9:00 AM;Ada Lovelace;Will be handled by the new design.",

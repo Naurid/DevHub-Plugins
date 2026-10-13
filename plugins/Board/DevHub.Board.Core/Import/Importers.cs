@@ -330,6 +330,19 @@ public sealed record ImportIssues(IReadOnlyList<ImportedIssue> Issues, string So
             return mapped.Id;
         }
 
+
+        // A resolution by name, else one sharing a word with it ("Won't Fix" → "Won't Do"), else the first.
+        string? ResolutionFor(string? name)
+        {
+            if (name is null)
+                return project.Resolutions.FirstOrDefault()?.Id;
+            var exact = project.Resolutions.FirstOrDefault(r => string.Equals(r.Name, name, StringComparison.OrdinalIgnoreCase));
+            if (exact is not null)
+                return exact.Id;
+            var words = name.Split([' ', '-', '_'], StringSplitOptions.RemoveEmptyEntries).Where(w => w.Length >= 4).ToList();
+            return (project.Resolutions.FirstOrDefault(r => words.Any(w => r.Name.Contains(w, StringComparison.OrdinalIgnoreCase)))
+                    ?? project.Resolutions.FirstOrDefault())?.Id;
+        }
         // Pass 1: create every issue (keys in order, ranked last).
         var number = project.NextNumber;
         var rank = CreateIssue.MaxRank(board);
@@ -345,7 +358,7 @@ public sealed record ImportIssues(IReadOnlyList<ImportedIssue> Issues, string So
             var done = project.Status(status)?.Category == StatusCategory.Done;
             rank = Rank.Between(rank, null);
             var resolution = done
-                ? project.Resolutions.FirstOrDefault(r => string.Equals(r.Name, source.Resolution, StringComparison.OrdinalIgnoreCase))?.Id
+                ? ResolutionFor(source.Resolution)
                   ?? project.Resolutions.FirstOrDefault()?.Id
                 : null;
             var issue = new Issue

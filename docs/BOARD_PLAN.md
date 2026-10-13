@@ -312,3 +312,23 @@ Not built now, but the format allows it:
 - **Key collisions** (`DEV-13` created on both sides): the later one is renumbered, its old key kept as an alias.
 - **`team.json`**: members, display names, who can be assigned.
 - `board.json`'s next number becomes a hint; the real next number is the highest key + 1 after a merge.
+
+---
+
+## 11. Status (2026-10-13): B1–B12 built
+
+All milestones are in: Board, Board.Scrum, Board.Git, Board.Reports, Board.Timeline. What changed on the way:
+- **Search (B6) came early**, with B3: board filters and quick filters are search queries.
+- **Sprint data and rules live in Board.Core** (search and reports understand sprints without Board.Scrum);
+  Board.Scrum is the planning screens.
+- **Statuses are defined in board.json**; a workflow lists which ones and the transitions. An explicit default
+  workflow (`defaultWorkflow`), not "the first by name".
+- **Time tracking in minutes** (`originalMinutes`, `remainingMinutes`, work log), shown Jira-style (1d 4h).
+- **A start date on issues** (B10): the timeline draws epics from start to due.
+- **Board.Git needs the Git plugin version with `GitRunner.RunBinaryAsync`** (attachments on the branch are bytes).
+- **Copy Board To…** (Board) moves a board between stores; the original stays until you delete it.
+- **Import** maps names onto the board (types, statuses, resolutions by name, shared word or kind) and adds missing
+  people, components and versions; sprints aren't imported. `docs/examples/jira-sample.csv` is a file to try it with.
+- **M10 command tools (part of B12) are left for M10**; B12 added Find Action entries (Go to Issue, My Open Issues).
+
+Still open: multi-user merging (§10), sprint import, drawing dependency arrows on the timeline.

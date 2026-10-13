@@ -23,7 +23,7 @@ public static class BoardActionIds
 /// Board actions: in the Board main-menu group, Find Action, the Welcome view and shortcuts. Those that work on "the
 /// board in front" use the active board tab (or the board of the issue tab in front).
 /// </summary>
-public sealed class BoardActionProvider(BoardOpener opener, IServiceProvider services, IStatusService status) : IActionProvider
+public sealed class BoardActionProvider(BoardOpener opener, IServiceProvider services, IStatusService status, IDialogService dialogs) : IActionProvider
 {
     public IEnumerable<AppAction> GetActions()
     {
@@ -75,6 +75,24 @@ public sealed class BoardActionProvider(BoardOpener opener, IServiceProvider ser
             MenuOrder = 102,
             Description = "Search the board in front with the query language (type = bug AND assignee = currentUser()).",
         };
+        yield return new AppAction("Board.GoToIssue", "Go to Issue…", new AsyncRelayCommand(() => OnBoard(GoToIssueAsync)))
+        {
+            Category = "Board",
+            Menu = "Board",
+            MenuOrder = 103,
+            Description = "Open an issue of the board in front by its key (DEV-12).",
+        };
+        yield return new AppAction("Board.MyOpenIssues", "My Open Issues", new AsyncRelayCommand(() => OnBoard(b =>
+        {
+            b.ShowSearch("assignee = currentUser() AND statusCategory != Done ORDER BY priority, rank");
+            return Task.CompletedTask;
+        })))
+        {
+            Category = "Board",
+            Menu = "Board",
+            MenuOrder = 104,
+            Description = "The open issues assigned to you on the board in front.",
+        };
         yield return new AppAction(BoardActionIds.Undo, "Undo Last Board Change", new AsyncRelayCommand(() => OnBoard(b => b.UndoCommand.ExecuteAsync(null))))
         {
             Category = "Board",
@@ -95,6 +113,15 @@ public sealed class BoardActionProvider(BoardOpener opener, IServiceProvider ser
         };
     }
 
+
+    private async Task GoToIssueAsync(BoardDocumentViewModel board)
+    {
+        var dialog = new ViewModels.Dialogs.TextInputDialogViewModel("Go to Issue", "Issue key", board.Context!.Project.Key + "-", "Open");
+        if (!await dialogs.ShowDialogAsync(dialog))
+            return;
+        if (!board.GoToIssue(dialog.Text))
+            status.Show($"There's no issue {dialog.Text} on this board.");
+    }
     private static Task ShowPage(BoardDocumentViewModel board, string page)
     {
         board.SelectedPage = board.Pages.FirstOrDefault(p => p.Id == page) ?? board.SelectedPage;
