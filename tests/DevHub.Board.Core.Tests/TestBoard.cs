@@ -94,6 +94,20 @@ public sealed class TestBoard : IDisposable
 
     public void WriteRaw<T>(string path, T value) => WriteRaw(path, BoardJson.Serialize(value));
 
+    /// <summary>A sprint file, written straight to the store.</summary>
+    public Sprint AddSprint(string id, string name, SprintState state, int sequence = 1)
+    {
+        var sprint = new Sprint { Id = id, Name = name, State = state, Sequence = sequence };
+        WriteRaw(BoardPaths.Sprint(id), sprint);
+        return sprint;
+    }
+
+    /// <summary>What a query finds on this board, as keys, for Ada at <see cref="ManualTime.Now"/>.</summary>
+    public IReadOnlyList<string> Find(string query) =>
+        Search.QueryCompiler.Compile(query, Context).Run(Snapshot.Issues.Values).Select(i => i.Key).ToList();
+
+    public Search.QueryContext Context => new(Snapshot, Session.CurrentPersonId, Time.Now) { TimeZone = TimeZoneInfo.Utc };
+
     /// <summary>The same board loaded fresh from disk.</summary>
     public BoardSnapshot Reload() =>
         BoardSnapshot.Load(new FolderBoardStore(Folder.Path).LoadAsync().GetAwaiter().GetResult()!);

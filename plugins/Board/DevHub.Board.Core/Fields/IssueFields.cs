@@ -260,7 +260,7 @@ public static class IssueFields
                     throw new BoardRuleException("A due date looks like 2026-10-31.");
                 break;
             case Sprint:
-                if (text is not null && !board.Files.ContainsKey("sprints/" + text + ".json"))
+                if (text is not null && !board.Sprints.ContainsKey(text))
                     throw new BoardRuleException($"There's no sprint \"{text}\".");
                 if (board.LevelOf(issue) == IssueTypeLevel.Subtask && text != board.Issue(issue.Parent)?.Sprint)
                     throw new BoardRuleException("A sub-task is in its parent's sprint.");

@@ -23,6 +23,7 @@ public sealed class BoardSnapshot
         ImmutableDictionary<string, Workflow> workflows,
         ImmutableDictionary<string, BoardDefinition> boards,
         ImmutableDictionary<string, FixVersion> versions,
+        ImmutableDictionary<string, Sprint> sprints,
         ImmutableDictionary<string, string> problems)
     {
         Version = version;
@@ -32,6 +33,7 @@ public sealed class BoardSnapshot
         Workflows = workflows;
         Boards = boards;
         Versions = versions;
+        Sprints = sprints;
         Problems = problems;
     }
 
@@ -49,6 +51,9 @@ public sealed class BoardSnapshot
     public ImmutableDictionary<string, Workflow> Workflows { get; }
     public ImmutableDictionary<string, BoardDefinition> Boards { get; }
     public ImmutableDictionary<string, FixVersion> Versions { get; }
+
+    /// <summary>Sprints by id (<c>sprints/</c>; planned and run with Board.Scrum).</summary>
+    public ImmutableDictionary<string, Sprint> Sprints { get; }
 
     /// <summary>Files that couldn't be read (path → why); the board still loads without them.</summary>
     public ImmutableDictionary<string, string> Problems { get; }
@@ -76,6 +81,7 @@ public sealed class BoardSnapshot
             ImmutableDictionary.Create<string, Workflow>(StringComparer.Ordinal),
             ImmutableDictionary.Create<string, BoardDefinition>(StringComparer.Ordinal),
             ImmutableDictionary.Create<string, FixVersion>(StringComparer.Ordinal),
+            ImmutableDictionary.Create<string, Sprint>(StringComparer.Ordinal),
             ImmutableDictionary.Create<string, string>(StringComparer.Ordinal));
         return empty.Parse(all.Keys, files.Version, all, project);
     }
@@ -106,6 +112,7 @@ public sealed class BoardSnapshot
         var workflows = Workflows.ToBuilder();
         var boards = Boards.ToBuilder();
         var versions = Versions.ToBuilder();
+        var sprints = Sprints.ToBuilder();
         var problems = Problems.ToBuilder();
 
         foreach (var path in paths)
@@ -120,10 +127,12 @@ public sealed class BoardSnapshot
                 Read(boards, boardId, path, bytes, (BoardDefinition b) => b.Id == boardId ? null : "its id doesn't match the file name");
             else if (BoardPaths.IdOf(path, BoardPaths.VersionsFolder, ".json") is { } versionId)
                 Read(versions, versionId, path, bytes, (FixVersion v) => v.Id == versionId ? null : "its id doesn't match the file name");
+            else if (BoardPaths.IdOf(path, BoardPaths.SprintsFolder, ".json") is { } sprintId)
+                Read(sprints, sprintId, path, bytes, (Sprint s) => s.Id == sprintId ? null : "its id doesn't match the file name");
         }
 
         return new BoardSnapshot(version, all, project, issues.ToImmutable(), workflows.ToImmutable(), boards.ToImmutable(),
-            versions.ToImmutable(), problems.ToImmutable());
+            versions.ToImmutable(), sprints.ToImmutable(), problems.ToImmutable());
 
         void Read<T>(ImmutableDictionary<string, T>.Builder target, string id, string path, byte[]? bytes, Func<T, string?> check)
         {

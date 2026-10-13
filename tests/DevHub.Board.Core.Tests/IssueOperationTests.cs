@@ -364,7 +364,7 @@ public class IssueOperationTests
     public void Sub_tasks_follow_their_parent_into_a_sprint()
     {
         using var board = TestBoard.Create();
-        board.WriteRaw("sprints/s1.json", "{}"u8.ToArray());
+        board.AddSprint("s1", "Sprint 1", SprintState.Active);
         var story = board.Create("story", "Login");
         var sub = board.Create("subtask", "Layout", parent: story.Id);
 
