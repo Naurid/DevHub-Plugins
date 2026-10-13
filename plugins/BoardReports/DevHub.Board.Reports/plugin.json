@@ -1,0 +1,12 @@
+// The package's description of the plugin (docs/PLUGINS.md in DevHub); keep it equal to the plugin class's PluginInfo.
+// The version is computed from git (build/Get-PluginVersion.ps1); don't write one here.
+{
+  "id": "devhub.board.reports",
+  "name": "Board Reports",
+  "description": "Reports for boards: sprint burndown and burnup, sprint report, velocity, cumulative flow, control chart, epic progress, and a dashboard of gadgets.",
+  "category": "Planning",
+  "apiVersion": 1,
+  "requires": [
+    "devhub.board"
+  ]
+}

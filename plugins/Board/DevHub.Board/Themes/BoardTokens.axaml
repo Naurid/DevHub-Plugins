@@ -95,4 +95,7 @@
     <x:Double x:Key="Size.DescriptionEditor">160</x:Double>
     <x:Double x:Key="Size.CommentEditor">72</x:Double>
     <x:Double x:Key="Size.TransitionCell">90</x:Double>
+    <!-- Board.Reports: a report chart's height, a dashboard pie's height. -->
+    <x:Double x:Key="Size.ReportChart">300</x:Double>
+    <x:Double x:Key="Size.ReportPie">220</x:Double>
 </ResourceDictionary>

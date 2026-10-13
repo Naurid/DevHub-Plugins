@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- Board.Reports logic: burndown / burnup, velocity, cumulative flow, cycle times, sprint report, epic progress, worked out from the board and its change log. Requires Board. No Avalonia. -->
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Board\DevHub.Board.Core\DevHub.Board.Core.csproj" />
+    </ItemGroup>
+
+</Project>

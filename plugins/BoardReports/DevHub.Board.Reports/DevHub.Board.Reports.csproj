@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- Board.Reports (docs/BOARD_PLAN.md, B9): a Reports page on boards — burndown, burnup, sprint report, velocity, cumulative flow, control chart, epic progress, and a dashboard of gadgets. Requires Board. -->
+
+    <PropertyGroup>
+        <RootNamespace>DevHub</RootNamespace>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Board\DevHub.Board\DevHub.Board.csproj" />
+        <ProjectReference Include="..\DevHub.Board.Reports.Core\DevHub.Board.Reports.Core.csproj" />
+    </ItemGroup>
+
+</Project>

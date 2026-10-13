@@ -1,0 +1,92 @@
+<!-- The Reports page: the list of reports on the left, the chosen report (or the dashboard) on the right. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Reports"
+             xmlns:core="using:DevHub.Board.Core.Model"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Reports.ReportsPageView"
+             x:DataType="vm:ReportsPageViewModel">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://DevHub.Board/Views/Board/BoardTemplates.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+        <StyleInclude Source="avares://DevHub.Board/Views/Board/BoardStyles.axaml" />
+    </UserControl.Styles>
+
+    <DockPanel>
+        <ListBox DockPanel.Dock="Left" ItemsSource="{Binding Kinds}" SelectedItem="{Binding Kind}" Width="{DynamicResource Size.EpicsPanel}"
+                 Background="Transparent" AutomationProperties.Name="Reports">
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="vm:ReportKind">
+                    <TextBlock Text="{Binding Name}" ToolTip.Tip="{Binding Description}" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Margin="{DynamicResource Padding.Board}" Spacing="{DynamicResource Spacing}">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                    <TextBlock Classes="header" Text="{Binding Kind.Name}" VerticalAlignment="Center" />
+                    <ComboBox Grid.Column="1" ItemsSource="{Binding Sprints}" SelectedItem="{Binding Sprint}" IsVisible="{Binding ShowSprints}"
+                              AutomationProperties.Name="Sprint">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="core:Sprint">
+                                <TextBlock Text="{Binding Name}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button Grid.Column="1" Content="Add Gadget…" Command="{Binding AddGadgetCommand}" IsVisible="{Binding IsDashboard}" />
+                </Grid>
+                <TextBlock Classes="secondary" Text="{Binding Summary}" TextWrapping="Wrap" />
+                <c:EmptyState IconKind="info" Title="Nothing to show yet" Description="{Binding Empty}"
+                              IsVisible="{Binding Empty, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+                <c:LineChart Data="{Binding Chart}" Height="{DynamicResource Size.ReportChart}" IsVisible="{Binding IsLine}" />
+                <c:BarChart Data="{Binding Chart}" Height="{DynamicResource Size.ReportChart}" IsVisible="{Binding IsBar}" />
+
+                <TextBlock Classes="section" Text="{Binding RowsTitle}" IsVisible="{Binding HasRows}" />
+                <ItemsControl ItemsSource="{Binding Rows}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ReportRow">
+                            <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}" MinHeight="{DynamicResource Size.RowHeight}">
+                                <TextBlock Classes="secondary" Text="{Binding Key}" VerticalAlignment="Center" MinWidth="{DynamicResource Size.IssueKey}" />
+                                <TextBlock Grid.Column="1" Text="{Binding Summary}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                <ProgressBar Grid.Column="2" Value="{Binding Fraction}" Maximum="1" Width="{DynamicResource Size.StatusPill}" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="3" Classes="small secondary" Text="{Binding Detail}" VerticalAlignment="Center" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Dashboard gadgets. -->
+                <ItemsControl ItemsSource="{Binding Gadgets}" IsVisible="{Binding IsDashboard}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:GadgetViewModel">
+                            <Border Classes="listPanel" Margin="{DynamicResource Margin.BlockBelow}">
+                                <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock Classes="columnName" Text="{Binding Title}" VerticalAlignment="Center" />
+                                        <Button Grid.Column="1" Classes="flat" ToolTip.Tip="Remove the gadget" AutomationProperties.Name="Remove gadget"
+                                                Command="{Binding RemoveCommand}">
+                                            <c:Icon Kind="close" />
+                                        </Button>
+                                    </Grid>
+                                    <c:PieChart Data="{Binding Chart}" IsDonut="True" Height="{DynamicResource Size.ReportPie}" IsVisible="{Binding IsChart}" />
+                                    <ItemsControl ItemsSource="{Binding Issues}" ItemTemplate="{StaticResource IssueRow}" />
+                                    <TextBlock Classes="secondary" Text="{Binding Note}"
+                                               IsVisible="{Binding Note, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>
