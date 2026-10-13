@@ -90,7 +90,7 @@ they lose focus, not per keystroke.
 
 ### Folder store (Board)
 
-- The files (§4) in a folder. Load = read the folder; the version token is a counter in `board.json`.
+- The files (§4) in a folder. Load = read the folder; the version token is a counter in `.version` (a store file, not part of the board).
 - **Write**: take a lock file (`.lock`, short-lived), check the counter, write each changed file to a temp name
   and rename it over the old one (a crash never leaves a half-written file), bump the counter, release.
 - **Outside changes**: a `FileSystemWatcher` on the folder (ignoring our own writes) raises `ChangedOutside`.
@@ -126,8 +126,9 @@ area or your current branch. If you ever check the branch out by accident you ju
 The same files in every store:
 
 ```
-board.json              the project: key, next issue number, issue types, priorities, custom fields, store counter
-workflows/<id>.json     statuses, their categories, allowed transitions, resolutions
+board.json              the project: key, next issue number, issue types, statuses (name + category), priorities,
+                        resolutions, link types, custom fields, components, people
+workflows/<id>.json     which statuses (in order) and which transitions between them
 boards/<id>.json        a board: columns → statuses, filter, swimlanes, quick filters, card layout, WIP limits
 issues/<id>.json        one file per issue
 history/<id>.jsonl      one per issue: its change log, one line per change (append-only)
@@ -167,27 +168,27 @@ Every JSON file has `"schema": 1`, so a later format change can migrate old file
   "fixVersions": [],
   "storyPoints": 3,
   "time": {
-    "original": "PT8H",
-    "remaining": "PT4H",
-    "log": [ { "id": "w1", "who": "ada", "started": "2026-10-13T09:00:00Z", "spent": "PT4H", "note": "Layout" } ]
+    "originalMinutes": 480,
+    "remainingMinutes": 240,
+    "log": [ { "id": "w1", "author": "ada", "started": "2026-10-13T09:00:00Z", "minutes": 240, "note": "Layout" } ]
   },
   "due": null,
   "sprint": "p2c91d0e",
   "rank": "0|hzzzzz:",
   "links": [ { "type": "blocks", "target": "a0d4e7f1" } ],
   "custom": { "f-team": "Platform" },
-  "comments": [ { "id": "c1", "who": "ada", "created": "2026-10-13T09:12:00Z", "body": "Started on this." } ],
+  "comments": [ { "id": "c1", "author": "ada", "created": "2026-10-13T09:12:00Z", "body": "Started on this." } ],
   "created": "2026-10-12T15:40:00Z",
   "updated": "2026-10-13T09:12:00Z"
 }
 ```
 
 - **Epics and sub-tasks are just `parent`**: a story's parent is an epic, a sub-task's parent is a story. Which
-  type may be whose parent is part of the issue type definition (`board.json`), so custom hierarchies work.
+  type may be whose parent follows each type's level in `board.json` (epic → standard → sub-task), so custom types fit in.
 - **Links** are stored on one side only (the issue that "blocks"); the other side ("is blocked by") is computed.
 - **Sprint** is a single field: an issue is in one sprint or in the backlog. A finished sprint keeps the list of
   issues it completed and the points committed / completed, for reports.
-- **Time tracking**: durations as ISO 8601 (`PT4H`), shown and typed Jira-style (`1d 4h`, with a configurable
+- **Time tracking**: durations in minutes, shown and typed Jira-style (`1d 4h`, with a configurable
   hours-per-day). Logging work lowers "remaining" by the time spent unless you set it yourself. Sub-task time adds
   up on the parent.
 

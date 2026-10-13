@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!--
+      Board plugin logic (docs/BOARD_PLAN.md): the model (issues, workflows, boards), the JSON files, the stores
+      (IBoardStore; the folder store lives here, the devhub/board branch store in Board.Git) and the operations
+      every change goes through. No Avalonia, no git.
+    -->
+
+</Project>
