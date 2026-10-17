@@ -138,22 +138,47 @@ public sealed class TimelineScale : TimelineControlBase
         var family = this.TryFindResource("Font.UI", out var f) && f is FontFamily font ? font : FontFamily.Default;
         var size = this.TryFindResource("FontSize.Small", out var s) && s is double d ? d : 12;
         var dayWidth = w / Days;
+        double X(int dayIndex) => Math.Round(dayIndex * dayWidth) + 0.5;
+
+        // A line at each month start (and where the range starts), week ticks on Mondays.
+        var monthStarts = new List<int>();
         for (var i = 0; i < Days; i++)
         {
             var day = From.AddDays(i);
-            var x = Math.Round(i * dayWidth) + 0.5;
             if (day.Day == 1 || i == 0)
             {
-                context.DrawLine(line, new Point(x, 0), new Point(x, h));
-                var label = new FormattedText(day.ToString(dayWidth * 30 > 90 ? "MMMM yyyy" : "MMM", CultureInfo.CurrentCulture),
-                    CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(family), size, text);
-                context.DrawText(label, new Point(x + 4, (h - label.Height) / 2));
+                monthStarts.Add(i);
+                context.DrawLine(line, new Point(X(i), 0), new Point(X(i), h));
             }
             else if (day.DayOfWeek == DayOfWeek.Monday && dayWidth * 7 > 24)
             {
-                context.DrawLine(line, new Point(x, h * 0.7), new Point(x, h));
+                context.DrawLine(line, new Point(X(i), h * 0.7), new Point(X(i), h));
             }
         }
-        DrawToday(context);
+
+        // Each month's name, only where it fits before the next month (a few days of a month at the start of the
+        // range would run into the next name) and inside the right edge.
+        const double gap = 4;
+        var labels = new List<Rect>();
+        for (var m = 0; m < monthStarts.Count; m++)
+        {
+            var x = X(monthStarts[m]);
+            var limit = m + 1 < monthStarts.Count ? X(monthStarts[m + 1]) : w;
+            var label = new FormattedText(From.AddDays(monthStarts[m]).ToString(dayWidth * 30 > 90 ? "MMMM yyyy" : "MMM", CultureInfo.CurrentCulture),
+                CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(family), size, text);
+            if (x + gap + label.Width + gap > limit)
+                continue;
+            var at = new Point(x + gap, (h - label.Height) / 2);
+            context.DrawText(label, at);
+            labels.Add(new Rect(at, new Size(label.Width, label.Height)));
+        }
+
+        // Today's line, starting below a month name it would cross.
+        if (Today is >= 0 and <= 1)
+        {
+            var x = Math.Round(Today * w) + 0.5;
+            var top = labels.Where(r => x >= r.Left - 1 && x <= r.Right + 1).Select(r => r.Bottom).DefaultIfEmpty(0).Max();
+            context.DrawLine(new Pen(Brush("Brush.Status.Error", Brushes.Red), 1), new Point(x, top), new Point(x, h));
+        }
     }
 }
