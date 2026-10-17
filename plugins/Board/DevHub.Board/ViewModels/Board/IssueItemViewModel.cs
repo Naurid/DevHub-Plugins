@@ -49,6 +49,7 @@ public sealed class IssueItemViewModel : ViewModelBase
         ShowRemaining = fields.Contains("remainingEstimate") && Remaining is not null;
         var subtasks = board.ChildrenOf(issue.Id).Where(c => board.LevelOf(c) == IssueTypeLevel.Subtask).ToList();
         SubtaskText = subtasks.Count == 0 ? null : $"{subtasks.Count(board.IsDone)}/{subtasks.Count}";
+        CriteriaText = issue.Criteria.Count == 0 ? null : $"AC {issue.Criteria.Count(c => c.Done)}/{issue.Criteria.Count}";
         IsEpic = type?.Level == IssueTypeLevel.Epic;
         Updated = issue.Updated;
     }
@@ -80,6 +81,9 @@ public sealed class IssueItemViewModel : ViewModelBase
     public string? Remaining { get; }
     public bool ShowRemaining { get; }
     public string? SubtaskText { get; }
+
+    /// <summary>"AC 2/3": acceptance criteria met, or null without criteria.</summary>
+    public string? CriteriaText { get; }
     public DateTimeOffset Updated { get; }
 
     public bool IsToDo => StatusCategory == StatusCategory.ToDo;

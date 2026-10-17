@@ -136,6 +136,79 @@
                 </StackPanel>
             </StackPanel>
 
+            <!-- Acceptance criteria and Definition of Done: tick as they're met; right-click a criterion to edit or move it. -->
+            <StackPanel Spacing="{DynamicResource Spacing.Small}" DataContext="{Binding Checks}" x:DataType="vm:IssueChecksViewModel">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Classes="section" Text="Acceptance criteria" />
+                    <TextBlock Grid.Column="1" Classes="small secondary" Text="{Binding CriteriaProgress}" VerticalAlignment="Center" />
+                </Grid>
+                <ItemsControl ItemsSource="{Binding Criteria}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:CheckRowViewModel">
+                            <Panel>
+                                <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding !IsEditing}" Background="Transparent"
+                                      c:DoubleTap.Command="{Binding EditCommand}">
+                                    <Grid.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Edit" Command="{Binding EditCommand}" />
+                                            <MenuItem Header="Move Up" Command="{Binding MoveUpCommand}" />
+                                            <MenuItem Header="Move Down" Command="{Binding MoveDownCommand}" />
+                                            <Separator />
+                                            <MenuItem Header="Remove" Command="{Binding RemoveCommand}" />
+                                        </ContextMenu>
+                                    </Grid.ContextMenu>
+                                    <CheckBox IsChecked="{Binding IsChecked}" AutomationProperties.Name="{Binding Text}">
+                                        <TextBlock Text="{Binding Text}" TextWrapping="Wrap" />
+                                    </CheckBox>
+                                    <Button Grid.Column="1" Classes="flat" VerticalAlignment="Top" Command="{Binding RemoveCommand}"
+                                            ToolTip.Tip="Remove this criterion" AutomationProperties.Name="Remove criterion">
+                                        <c:Icon Kind="delete" />
+                                    </Button>
+                                </Grid>
+                                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing.Small}" IsVisible="{Binding IsEditing}">
+                                    <TextBox Text="{Binding Draft}" AutomationProperties.Name="Criterion" c:FocusOnLoad.IsEnabled="True">
+                                        <TextBox.KeyBindings>
+                                            <KeyBinding Gesture="Enter" Command="{Binding SaveCommand}" />
+                                            <KeyBinding Gesture="Escape" Command="{Binding CancelEditCommand}" />
+                                        </TextBox.KeyBindings>
+                                    </TextBox>
+                                    <Button Grid.Column="1" Classes="accent" Content="Save" Command="{Binding SaveCommand}" />
+                                    <Button Grid.Column="2" Content="Cancel" Command="{Binding CancelEditCommand}" />
+                                </Grid>
+                            </Panel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}">
+                    <TextBox Text="{Binding NewCriterion}" PlaceholderText="Add: Given … when … then … (Enter)" AutomationProperties.Name="New acceptance criterion">
+                        <TextBox.KeyBindings>
+                            <KeyBinding Gesture="Enter" Command="{Binding AddCriterionCommand}" />
+                        </TextBox.KeyBindings>
+                    </TextBox>
+                    <Button Grid.Column="1" Content="Add" Command="{Binding AddCriterionCommand}" />
+                </Grid>
+
+                <StackPanel Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding ShowDefinitionOfDone}">
+                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                        <TextBlock Classes="section" Text="Definition of Done" />
+                        <TextBlock Grid.Column="1" Classes="small secondary" Text="{Binding DoneProgress}" VerticalAlignment="Center" />
+                        <Button Grid.Column="2" Classes="flat" Content="Tick all" Command="{Binding TickAllDoneCommand}"
+                                ToolTip.Tip="Tick every Definition of Done item" />
+                    </Grid>
+                    <ItemsControl ItemsSource="{Binding DoneItems}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:CheckRowViewModel">
+                                <CheckBox IsChecked="{Binding IsChecked}" AutomationProperties.Name="{Binding Text}">
+                                    <TextBlock Text="{Binding Text}" TextWrapping="Wrap" />
+                                </CheckBox>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+                <TextBlock Classes="small" Text="{Binding ReadyText}"
+                           Foreground="{DynamicResource Brush.Status.Success}" IsVisible="{Binding IsReady}" />
+            </StackPanel>
+
             <!-- Details. -->
             <StackPanel Classes="fields" Spacing="{DynamicResource Spacing.Small}">
                 <TextBlock Classes="section" Text="Details" />

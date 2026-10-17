@@ -167,6 +167,10 @@ internal sealed class ShopDemo(string folder, string myName, DemoGit? git)
         var t = At(0, 9);
         foreach (var person in new[] { _ada, _grace, _alan, _katherine, _edsger })
             Do(t, _me, new AddPerson(person.Name, person.Email) { Id = person.Id });
+        Do(t, _me, new SetPersonRole(_ada.Id, "Product Owner"));
+        Do(t, _me, new SetPersonRole(_grace.Id, "Scrum Master"));
+        foreach (var person in new[] { _me, _alan, _katherine, _edsger })
+            Do(t, _me, new SetPersonRole(person.Id, "Developer"));
 
         Do(t, _me, new AddComponent("Web", "The storefront: pages, styles, scripts") { Id = _web });
         Do(t, _me, new AddComponent("API", "The HTTP API behind the shop") { Id = _api });
@@ -247,7 +251,7 @@ internal sealed class ShopDemo(string folder, string myName, DemoGit? git)
     }
 
     private DemoIssue Create(DateTimeOffset when, Person who, string type, string summary, string description, DemoIssue? parent,
-        double? points, string component, string? version, IReadOnlyList<(string, FieldValue)> extra, params string[] labels)
+        double? points, string component, string? version, IReadOnlyList<(string, FieldValue)> extra, string[]? criteria = null, params string[] labels)
     {
         var id = BoardIds.New();
         var fields = new List<(string Field, FieldValue Value)>();
@@ -265,14 +269,14 @@ internal sealed class ShopDemo(string folder, string myName, DemoGit? git)
         if (type is "story" or "bug")
             fields.Add((IssueFields.Custom(Platform), new FieldValue.Text(component == _mobile ? "All" : "Web")));
         fields.AddRange(extra);
-        Do(when, who, new CreateIssue(type, summary) { Id = id, Parent = parent?.Id, Description = description, Fields = fields });
+        Do(when, who, new CreateIssue(type, summary) { Id = id, Parent = parent?.Id, Description = description, Fields = fields, Criteria = criteria ?? [] });
         var area = component == _web ? "web" : component == _api ? "api" : component == _db ? "database" : component == _infra ? "infra" : component == _mobile ? "mobile" : "shop";
         return new DemoIssue(id, type, summary, area);
     }
 
     private DemoIssue Story(int day, string summary, double points, DemoIssue? epic, string component, string? version, int value, params string[] labels) =>
         Create(At(day, 10 + _random.Next(0, 6)), _ada, "story", summary, StoryText(summary), epic, points, component, version,
-            [(IssueFields.Custom(Value), new FieldValue.Text(value.ToString(CultureInfo.InvariantCulture)))], labels);
+            [(IssueFields.Custom(Value), new FieldValue.Text(value.ToString(CultureInfo.InvariantCulture)))], StoryCriteria(), labels);
 
     private DemoIssue Bug(DateTimeOffset when, Person reporter, string summary, string priority, string component, string? version, string? customer, string steps)
     {
@@ -285,14 +289,22 @@ internal sealed class ShopDemo(string folder, string myName, DemoGit? git)
     private DemoIssue Subtask(DateTimeOffset when, Person who, DemoIssue parent, string summary) =>
         Create(when, who, "subtask", summary, "", parent, null, "", null, []);
 
+    private static string[] StoryCriteria() =>
+    [
+        "Works on desktop and phone widths",
+        "Errors are explained in plain words",
+        "Covered by tests (unit + one end-to-end path)",
+    ];
+
+    /// <summary>Before Done: every acceptance criterion met and the Definition of Done ticked (standard issues).</summary>
+    private void TickEverything(DateTimeOffset when, Person who, DemoIssue issue)
+    {
+        Do(when, who, new TickAll(issue.Id));
+    }
+
     private static string StoryText(string summary) =>
         $"""
         As a customer I want **{summary.ToLowerInvariant()}**, so that shopping here is quick and pleasant.
-
-        ### Acceptance criteria
-        - Works on desktop and phone widths
-        - Errors are explained in plain words
-        - Covered by tests (unit + one end-to-end path)
 
         ### Notes
         See the design board for the latest mock-ups. Questions go in the comments below.
@@ -342,6 +354,7 @@ internal sealed class ShopDemo(string folder, string myName, DemoGit? git)
                 Do(qa, _edsger, new TransitionIssue(issue.Id, Qa));
             if (estimate > 0)
                 Do(d.AddMinutes(-5), who, b => new LogWork(issue.Id, Spent(b, issue, 0.4 * spentFactor), reviewed) { Note = "Review fixes and tests", Remaining = RemainingAdjustment.Set, NewRemainingMinutes = 0 });
+            TickEverything(d.AddMinutes(-2), who, issue);
             Do(d, review is null ? who : _ada, new TransitionIssue(issue.Id, "done"));
             if (withGit)
                 Git(d.AddMinutes(1), who, (g, b) => g.Merge(BranchOf(b), who, $"Merge {BranchOf(b)}: {KeyOf(b, issue)} {issue.Summary}", delete: !keepBranch));
@@ -461,7 +474,7 @@ internal sealed class ShopDemo(string folder, string myName, DemoGit? git)
         var index = Story(29, "Search index with Postgres full-text", 5, _catalogue, _db, _v11, 8, "performance");
         var details = Story(29, "Product detail page", 5, _catalogue, _web, _v11, 9, "ux");
         _filters = Story(30, "Filter by price and brand", 3, _catalogue, _web, _v11, 6);
-        var upgrade = Create(At(30, 10), _edsger, "task", "Upgrade to .NET 10", "Move every project to net10.0 and the new LTS SDK.", null, 2, _infra, _v11, [], "tech-debt");
+        var upgrade = Create(At(30, 10), _edsger, "task", "Upgrade to .NET 10", "Move every project to net10.0 and the new LTS SDK.", null, 2, _infra, _v11, [], null, "tech-debt");
 
         foreach (var issue in new[] { search, index, details, _filters, upgrade })
             Plan(At(31, 9.8), issue, 2);
@@ -576,9 +589,9 @@ internal sealed class ShopDemo(string folder, string myName, DemoGit? git)
         Story(41, "Dark mode", 3, null, _web, null, 2, "ux");
         Story(42, "Mobile app: sign in", 5, _mobileApp, _mobile, null, 5, "mobile");
         Story(42, "Mobile app: product list", 5, _mobileApp, _mobile, null, 5, "mobile");
-        var audit = Create(At(42, 10), _ada, "task", "Accessibility audit of the storefront", "Keyboard paths, contrast, screen reader labels (WCAG 2.2 AA).", null, 3, _web, _v11, [], "accessibility");
+        var audit = Create(At(42, 10), _ada, "task", "Accessibility audit of the storefront", "Keyboard paths, contrast, screen reader labels (WCAG 2.2 AA).", null, 3, _web, _v11, [], null, "accessibility");
         Do(At(42, 10.1), _ada, new EditIssue(audit.Id, IssueFields.Due, new FieldValue.Date(Date(46))));   // overdue
-        Create(At(42, 11), _grace, "task", "Load test the API", "500 concurrent shoppers against the staging API; find the first bottleneck.", null, 3, _api, null, [], "performance");
+        Create(At(42, 11), _grace, "task", "Load test the API", "500 concurrent shoppers against the staging API; find the first bottleneck.", null, 3, _api, null, [], null, "performance");
         // A story nobody estimated yet ("Stories without points").
         Create(At(43, 15), _katherine, "story", "Gift cards", "Sell and redeem gift cards. Needs a talk with finance first.", null, null, _web, null, []);
     }
@@ -740,5 +753,20 @@ internal sealed class DemoGit
         process.WaitForExit();
         if (process.ExitCode != 0)
             throw new InvalidOperationException($"git {string.Join(' ', arguments)} failed: {error.Trim()} {output.Result.Trim()}");
+    }
+}
+
+/// <summary>The demo's shortcut: every acceptance criterion met and the whole Definition of Done ticked, in one change.</summary>
+internal sealed record TickAll(string IssueId) : IBoardOperation
+{
+    public BoardChange Apply(BoardSnapshot board, OperationContext context)
+    {
+        var issue = board.Issue(IssueId)!;
+        var change = new ChangeBuilder(board, context);
+        var dod = board.LevelOf(issue) == IssueTypeLevel.Standard ? board.Project.DefinitionOfDone.Select(d => d.Id).ToList() : [];
+        change.WriteIssue(issue, issue with { Criteria = issue.Criteria.Select(c => c with { Done = true }).ToList(), DoneChecks = dod });
+        foreach (var c in issue.Criteria.Where(c => !c.Done))
+            change.AddHistory(issue.Id, "criteria-met", null, c.Text);
+        return change.Build($"{issue.Key}: everything ticked");
     }
 }

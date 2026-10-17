@@ -45,6 +45,11 @@
                     <TextBlock Text="{Binding TasksText}" TextWrapping="Wrap" />
                 </CheckBox>
             </StackPanel>
+            <StackPanel Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding ShowCriteria}">
+                <TextBlock Classes="label" Text="Acceptance criteria" />
+                <TextBox Text="{Binding Criteria}" AcceptsReturn="True" TextWrapping="Wrap"
+                         PlaceholderText="One per line: Given … when … then …" AutomationProperties.Name="Acceptance criteria" />
+            </StackPanel>
             <Grid ColumnDefinitions="*,*" ColumnSpacing="{DynamicResource Spacing}" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="{DynamicResource Spacing}">
                 <StackPanel Spacing="{DynamicResource Spacing.Small}">
                     <TextBlock Classes="label" Text="Priority" />

@@ -30,7 +30,7 @@ public sealed partial class ProjectSettingsDocumentViewModel : DocumentViewModel
     {
         Location = location;
         _services = services;
-        Sections = ["General", "Workflows", "Statuses", "Issue types", "Priorities", "Resolutions", "Custom fields",
+        Sections = ["General", "Workflows", "Statuses", "Issue types", "Priorities", "Resolutions", "Definition of Done", "Custom fields",
             "Components", "Versions", "People", "Link types"];
         _section = Sections[0];
     }
@@ -52,6 +52,7 @@ public sealed partial class ProjectSettingsDocumentViewModel : DocumentViewModel
     public bool IsIssueTypes => Section == "Issue types";
     public bool IsPriorities => Section == "Priorities";
     public bool IsResolutions => Section == "Resolutions";
+    public bool IsDefinitionOfDone => Section == "Definition of Done";
     public bool IsCustomFields => Section == "Custom fields";
     public bool IsComponents => Section == "Components";
     public bool IsVersions => Section == "Versions";
@@ -61,7 +62,7 @@ public sealed partial class ProjectSettingsDocumentViewModel : DocumentViewModel
     partial void OnSectionChanged(string value)
     {
         foreach (var name in new[] { nameof(IsGeneral), nameof(IsWorkflows), nameof(IsStatuses), nameof(IsIssueTypes), nameof(IsPriorities),
-                     nameof(IsResolutions), nameof(IsCustomFields), nameof(IsComponents), nameof(IsVersions), nameof(IsPeople), nameof(IsLinkTypes) })
+                     nameof(IsResolutions), nameof(IsDefinitionOfDone), nameof(IsCustomFields), nameof(IsComponents), nameof(IsVersions), nameof(IsPeople), nameof(IsLinkTypes) })
             OnPropertyChanged(name);
     }
 
@@ -683,6 +684,54 @@ public sealed partial class ProjectSettingsModel : ObservableObject
             await Run(new RemovePerson(row.Id));
     }
 
+    // ---- Definition of Done -------------------------------------------------------------------------------
+
+    public ObservableCollection<NamedRow> DoneItems { get; } = [];
+
+    public IReadOnlyList<NamedItem> DoneCheckModes { get; } =
+    [
+        new(nameof(DoneCheck.Off), "Off: moving to Done is never checked"),
+        new(nameof(DoneCheck.Warn), "Ask: confirm when something isn't ticked"),
+        new(nameof(DoneCheck.Block), "Strict: refuse until everything is ticked"),
+    ];
+
+    [ObservableProperty] private NamedItem? _doneCheckMode;
+
+    partial void OnDoneCheckModeChanged(NamedItem? value)
+    {
+        if (!_reloading && value?.Id is { } id && Enum.TryParse<DoneCheck>(id, out var check))
+            _ = Run(new SetDoneCheck(check));
+    }
+
+    [RelayCommand]
+    private async Task AddDoneItemAsync()
+    {
+        var dialog = new TextInputDialogViewModel("Add to the Definition of Done", "What every story needs (\"Code reviewed\")", "", "Add");
+        if (await _context.Dialogs.ShowDialogAsync(dialog))
+            await Run(new AddDoneItem(dialog.Text));
+    }
+
+    [RelayCommand]
+    private async Task MoveDoneItemUpAsync(NamedRow? row)
+    {
+        if (row is not null && DoneItems.IndexOf(row) > 0)
+            await Run(new MoveDoneItem(row.Id, DoneItems.IndexOf(row) - 1));
+    }
+
+    [RelayCommand]
+    private async Task MoveDoneItemDownAsync(NamedRow? row)
+    {
+        if (row is not null && DoneItems.IndexOf(row) < DoneItems.Count - 1)
+            await Run(new MoveDoneItem(row.Id, DoneItems.IndexOf(row) + 1));
+    }
+
+    [RelayCommand]
+    private async Task DeleteDoneItemAsync(NamedRow? row)
+    {
+        if (row is not null)
+            await Run(new RemoveDoneItem(row.Id));
+    }
+
     [RelayCommand]
     private async Task AddLinkTypeAsync()
     {
@@ -716,6 +765,12 @@ public sealed partial class ProjectSettingsModel : ObservableObject
             ProjectKey = project.Key;
             HoursPerDay = project.Settings.HoursPerDay.ToString(CultureInfo.CurrentCulture);
             DaysPerWeek = project.Settings.DaysPerWeek.ToString(CultureInfo.CurrentCulture);
+
+            DoneItems.Clear();
+            foreach (var d in project.DefinitionOfDone)
+                DoneItems.Add(new NamedRow(d.Id, d.Text, (r, text) => Run(new EditDoneItem(r.Id, text)),
+                    $"{board.Issues.Values.Count(i => i.DoneChecks.Contains(d.Id))} ticked"));
+            DoneCheckMode = DoneCheckModes.First(m => m.Id == project.Settings.DoneCheck.ToString());
 
             var selected = SelectedWorkflow?.Id ?? board.DefaultWorkflow?.Id;
             Workflows.Clear();
@@ -842,10 +897,13 @@ public sealed partial class ProjectSettingsModel : ObservableObject
                 var row = new NamedRow(p.Id, p.Name, (r, name) => Run(new EditPerson(r.Id, name, r.Second)),
                     p.Id == _context.Me ? "you" : $"{board.Issues.Values.Count(i => i.Assignee == p.Id)} assigned")
                 {
-                    Changed = (r, _) => Run(new EditPerson(r.Id, r.Name, r.Second)),
+                    Changed = (r, what) => what == nameof(NamedRow.Third)
+                        ? Run(new SetPersonRole(r.Id, r.Third))
+                        : Run(new EditPerson(r.Id, r.Name, r.Second)),
                 };
                 row.Loading();
                 row.Second = p.Email ?? "";
+                row.Third = p.Role ?? "";
                 row.Loaded();
                 People.Add(row);
             }

@@ -128,6 +128,8 @@ public abstract partial class PlanningPageViewModel : BoardPageViewModel, IItems
         try
         {
             var board = Context.Snapshot;
+            OnPropertyChanged(nameof(CanRankByValue));
+            OnPropertyChanged(nameof(RankByValueText));
             var project = board.Project;
 
             var epicId = SelectedEpic?.Id;
@@ -257,6 +259,27 @@ public abstract partial class PlanningPageViewModel : BoardPageViewModel, IItems
     {
         if (item is not null)
             Host.OpenIssue(item.Id);
+    }
+
+    // The number field to prioritise by: one named like "value" (the Scrum preset's Business value), else the first.
+    private FieldDefinition? ValueField =>
+        Context.Project.CustomFields.Where(f => f.Type == FieldType.Number)
+            .OrderBy(f => f.Name.Contains("value", StringComparison.OrdinalIgnoreCase) ? 0 : 1).FirstOrDefault();
+
+    public bool CanRankByValue => ValueField is not null;
+    public string RankByValueText => $"Rank by {ValueField?.Name}";
+
+    /// <summary>Orders every list on the page by the value field, highest first (each list among its own places).</summary>
+    [RelayCommand]
+    private async Task RankByValueAsync()
+    {
+        if (ValueField is not { } field)
+            return;
+        foreach (var list in Lists.ToList())
+        {
+            if (list.Items.Count > 1)
+                await Context.RunAsync(new RankByField(list.Items.Select(i => i.Id).ToList(), IssueFields.Custom(field.Id)));
+        }
     }
 
     [RelayCommand]

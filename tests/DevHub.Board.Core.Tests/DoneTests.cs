@@ -170,6 +170,26 @@ public class DoneTests
     }
 
     [Fact]
+    public void Issues_are_ranked_by_business_value_among_their_own_places()
+    {
+        using var board = TestBoard.Create();
+        var a = board.Create("story", "A");
+        var outside = board.Create("story", "Outside");
+        var b = board.Create("story", "B");
+        var c = board.Create("story", "C");
+        board.Apply(new EditIssue(a.Id, IssueFields.Custom("value"), new FieldValue.Text("2")));
+        board.Apply(new EditIssue(b.Id, IssueFields.Custom("value"), new FieldValue.Text("13")));
+        var outsideRank = board.Get(outside.Id).Rank;
+
+        board.Apply(new RankByField([a.Id, b.Id, c.Id], IssueFields.Custom("value")));
+
+        var order = board.Snapshot.Issues.Values.OrderBy(i => i.Rank, StringComparer.Ordinal).Select(i => i.Summary);
+        Assert.Equal(["B", "Outside", "A", "C"], order);
+        Assert.Equal(outsideRank, board.Get(outside.Id).Rank);
+        Assert.Equal("3 issue(s) ranked by Business value", board.Session.UndoDescription);
+    }
+
+    [Fact]
     public void Csv_has_criteria_definition_of_done_and_custom_fields()
     {
         using var board = TestBoard.Create();
