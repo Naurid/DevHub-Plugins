@@ -32,7 +32,15 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="vm:TimelineRowViewModel">
                                 <Grid Classes="timelineRow" ColumnDefinitions="Auto,*" Background="Transparent" ToolTip.Tip="{Binding ToolTip}"
-                                      c:Tap.Command="{Binding SelectCommand}" AutomationProperties.Name="{Binding}">
+                                      c:Tap.Command="{Binding SelectCommand}" c:DoubleTap.Command="{Binding OpenCommand}"
+                                      AutomationProperties.Name="{Binding}">
+                                    <Grid.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Open in Tab" Command="{Binding OpenCommand}" />
+                                            <MenuItem Header="Edit in Issue Panel" Command="{Binding SelectCommand}" />
+                                            <MenuItem Header="Create Issue in Epic…" Command="{Binding CreateInCommand}" IsVisible="{Binding !IsChild}" />
+                                        </ContextMenu>
+                                    </Grid.ContextMenu>
                                     <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}" Width="{DynamicResource Size.TimelineLabels}">
                                         <Border Width="{DynamicResource Spacing.Large}" IsVisible="{Binding IsChild}" />
                                         <TextBlock Classes="small secondary" Text="{Binding Key}" VerticalAlignment="Center" />

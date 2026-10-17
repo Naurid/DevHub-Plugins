@@ -40,9 +40,12 @@
             <StackPanel Spacing="{DynamicResource Spacing.Small}">
                 <TextBlock Classes="label" Text="Description" />
                 <TextBox Text="{Binding Description}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="{DynamicResource Size.DescriptionEditor}"
-                         PlaceholderText="Markdown: **bold**, - lists, - [ ] tasks" AutomationProperties.Name="Description" />
+                         PlaceholderText="{Binding DescriptionHint}" AutomationProperties.Name="Description" />
+                <CheckBox IsChecked="{Binding CreateTasks}" IsVisible="{Binding HasTasks}" AutomationProperties.Name="{Binding TasksText}">
+                    <TextBlock Text="{Binding TasksText}" TextWrapping="Wrap" />
+                </CheckBox>
             </StackPanel>
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="{DynamicResource Spacing}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{DynamicResource Spacing}">
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="{DynamicResource Spacing}" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="{DynamicResource Spacing}">
                 <StackPanel Spacing="{DynamicResource Spacing.Small}">
                     <TextBlock Classes="label" Text="Priority" />
                     <ComboBox ItemsSource="{Binding Priorities}" SelectedItem="{Binding Priority}" HorizontalAlignment="Stretch" AutomationProperties.Name="Priority">
@@ -75,6 +78,14 @@
                 <StackPanel Grid.Row="2" Grid.Column="1" Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding ShowSprint}">
                     <TextBlock Classes="label" Text="Sprint" />
                     <ComboBox ItemsSource="{Binding Sprints}" SelectedItem="{Binding Sprint}" HorizontalAlignment="Stretch" AutomationProperties.Name="Sprint" />
+                </StackPanel>
+                <StackPanel Grid.Row="3" Spacing="{DynamicResource Spacing.Small}">
+                    <TextBlock Classes="label" Text="Start date" />
+                    <CalendarDatePicker SelectedDate="{Binding Start}" HorizontalAlignment="Stretch" AutomationProperties.Name="Start date" />
+                </StackPanel>
+                <StackPanel Grid.Row="3" Grid.Column="1" Spacing="{DynamicResource Spacing.Small}">
+                    <TextBlock Classes="label" Text="Due date" />
+                    <CalendarDatePicker SelectedDate="{Binding Due}" HorizontalAlignment="Stretch" AutomationProperties.Name="Due date" />
                 </StackPanel>
             </Grid>
             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Spacing}">
