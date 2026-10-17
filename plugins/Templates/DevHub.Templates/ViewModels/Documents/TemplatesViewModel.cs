@@ -37,7 +37,8 @@ public sealed partial class TemplatesViewModel : DocumentViewModelBase
     public override string Title => "Templates";
     public override string Icon => IconKind.Template;
     public override bool FillsEditorArea => true;
-    public override DocumentNavigation Navigation => new() { Menu = "File", MenuOrder = 100, WelcomeOrder = 30 };
+    // Not on Welcome: the Templates tool window (Alt+2) is there already, under the same name.
+    public override DocumentNavigation Navigation => new() { Text = "Manage Templates", Menu = "File", MenuOrder = 100 };
 
     public TemplateBrowserViewModel Browser { get; }
 
