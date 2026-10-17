@@ -17,7 +17,8 @@
             <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing}">
                 <CheckBox Content="Show each epic's issues" IsChecked="{Binding WithIssues}" />
                 <CheckBox Grid.Column="1" Content="Show done epics" IsChecked="{Binding ShowDone}" />
-                <TextBlock Grid.Column="2" Classes="secondary" Text="{Binding Summary}" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                <TextBlock Grid.Column="2" Classes="secondary" Text="{Binding Summary}" VerticalAlignment="Center" HorizontalAlignment="Right"
+                           TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Summary}" />
                 <Button Grid.Column="3" Content="Create Epic…" Command="{Binding CreateEpicCommand}" />
             </Grid>
         </Border>
