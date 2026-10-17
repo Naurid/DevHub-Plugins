@@ -93,7 +93,9 @@
                               IsVisible="{Binding Empty, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
                 <!-- The chart, its type and export. -->
-                <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}" IsVisible="{Binding HasChart}">
+                <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}" IsVisible="{Binding HasChart}">
+                    <Button Grid.Column="7" Classes="flat" Content="Open in Chart Maker" Command="{Binding OpenInChartMakerCommand}"
+                            IsVisible="{Binding CanOpenInChartMaker}" ToolTip.Tip="Restyle the chart or change its numbers in the chart maker" />
                     <TextBlock Text="Chart" VerticalAlignment="Center" />
                     <ComboBox Grid.Column="1" ItemsSource="{Binding ChartKindChoices}" SelectedItem="{Binding SelectedChartKind}"
                               AutomationProperties.Name="Chart type" ToolTip.Tip="Show this report as another kind of chart" />

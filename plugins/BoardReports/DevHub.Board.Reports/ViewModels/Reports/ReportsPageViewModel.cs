@@ -12,6 +12,7 @@ using BaselineStore = DevHub.Board.Reports.Core.Baselines;
 using DevHub.Sdk.Core.Charts;
 using DevHub.Sdk.Core.Settings;
 using DevHub.Sdk.Core.Tables;
+using DevHub.Integration;
 using DevHub.Services;
 using DevHub.ViewModels.Board;
 using DevHub.ViewModels.Dialogs;
@@ -19,12 +20,12 @@ using DevHub.ViewModels.Dialogs;
 namespace DevHub.ViewModels.Reports;
 
 /// <summary>The Reports page of every board.</summary>
-public sealed class ReportsPageProvider(ISettingsStore settings, IExportService export) : IBoardPageProvider
+public sealed class ReportsPageProvider(ISettingsStore settings, IExportService export, IChartMaker? chartMaker = null) : IBoardPageProvider
 {
     public string Id => "reports";
     public string Title => "Reports";
     public int Order => 700;
-    public BoardPageViewModel Create(BoardPageHost host) => new ReportsPageViewModel(host, settings, export);
+    public BoardPageViewModel Create(BoardPageHost host) => new ReportsPageViewModel(host, settings, export, chartMaker);
 }
 
 /// <summary>A report in the list on the left, with the chart type it starts with.</summary>
@@ -75,14 +76,16 @@ public sealed partial class ReportsPageViewModel : BoardPageViewModel, ICardHost
 {
     private readonly ISettingsStore _settings;
     private readonly IExportService _export;
+    private readonly IChartMaker? _chartMaker;
     private TableData _table = TableData.Empty;
     private Forecast? _forecast;
     private bool _refreshing;
 
-    public ReportsPageViewModel(BoardPageHost host, ISettingsStore settings, IExportService export) : base(host)
+    public ReportsPageViewModel(BoardPageHost host, ISettingsStore settings, IExportService export, IChartMaker? chartMaker = null) : base(host)
     {
         _settings = settings;
         _export = export;
+        _chartMaker = chartMaker;
         Kinds =
         [
             new("dashboard", "Dashboard", "Gadgets you choose: your issues, issues by a field, saved searches.", false),
@@ -367,6 +370,12 @@ public sealed partial class ReportsPageViewModel : BoardPageViewModel, ICardHost
 
     [RelayCommand]
     private Task CopyTableAsync() => _export.CopyTableAsync(_table);
+
+    /// <summary>The Charts plugin is on: the chart can be restyled and edited in its chart maker.</summary>
+    public bool CanOpenInChartMaker => _chartMaker is not null;
+
+    [RelayCommand]
+    private void OpenInChartMaker() => _chartMaker?.Open(SelectedChartKind?.Kind ?? Kind.DefaultChart, Chart);
 
     // ---- Forecast and scope change ------------------------------------------------------------------------
 

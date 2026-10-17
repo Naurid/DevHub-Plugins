@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- Chart maker logic: reading pasted or CSV tables, the *.devhub-chart.json format, building ChartData. No Avalonia. -->
+
+</Project>

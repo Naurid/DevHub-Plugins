@@ -33,6 +33,7 @@ plugins/<Name>/                  one plugin; grouped ones have a UI project and 
   BoardReports/DevHub.Board.Reports/ + .Core/    burndown, velocity, flow, control chart, dashboard (requires Board)
   BoardTimeline/DevHub.Board.Timeline/ + .Core/  roadmap of epics, releases and release notes (requires Board)
   BoardRisks/DevHub.Board.Risks/ + .Core/        risk register, probability × impact matrix, mitigation (requires Board)
+  Charts/DevHub.Charts/ + .Core/                 the chart maker: your own tables in every chart type, export (needs nothing)
   HelloWorld/                                   the sample plugin (one project)
   (plugin.json sits next to the UI project: id, name, description, category, apiVersion, requires)
 tests/                           DevHub.<X>.Core.Tests (xUnit), DevHub.TestKit (TempGitRepo, [GitFact])
