@@ -402,5 +402,6 @@
   "{0}, {1} templates": "{0}, {1} modèles",
   "{0} (broken)": "{0} (invalide)",
   "1 step": "1 étape",
-  "{0} steps": "{0} étapes"
+  "{0} steps": "{0} étapes",
+  "Import settings": "Réglages de l'import"
 }

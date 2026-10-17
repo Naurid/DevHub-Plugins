@@ -57,6 +57,9 @@
     <!-- Diff view (G2): the old / new line-number columns (5 digits) and the +/- column. -->
     <x:Double x:Key="Size.DiffLineNumber">44</x:Double>
     <x:Double x:Key="Size.DiffSign">16</x:Double>
+    <!-- Narrow panes: a long file or repository name ends in "…" here so the buttons beside it stay in the row. -->
+    <x:Double x:Key="Size.DiffFileNameMax">260</x:Double>
+    <x:Double x:Key="Size.RepositoryNameMax">150</x:Double>
     <!-- The small Stage / Discard / Unstage Hunk buttons on a diff hunk header (G3.1). -->
     <Thickness x:Key="Padding.HunkAction">6,0</Thickness>
     <!-- Commit box (G3): message height (grows up to the max as you type), the error area, padding. -->

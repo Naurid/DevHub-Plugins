@@ -63,34 +63,51 @@
     </UserControl.Styles>
 
     <DockPanel>
-        <!-- Header: file, side, counts, Blame, Open in Editor (external, F4), Open in New Tab. -->
+        <!-- Header: file, counts, then the buttons (one row: what doesn't fit goes into a ⋯ menu), then the
+             side in what's left. Docked in that order so a narrow diff keeps its buttons reachable. -->
         <Border DockPanel.Dock="Top" Classes="paneHeader" IsVisible="{Binding HasFile}">
-            <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
-                <TextBlock Text="{Binding File.FileName, FallbackValue=''}" VerticalAlignment="Center"
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Left" Text="{Binding File.FileName, FallbackValue=''}" VerticalAlignment="Center"
+                           MaxWidth="{DynamicResource Size.DiffFileNameMax}" TextTrimming="CharacterEllipsis"
                            ToolTip.Tip="{Binding File.ToolTip, FallbackValue=''}" />
-                <TextBlock Grid.Column="1" Classes="small secondary" Text="{Binding Subtitle}"
-                           TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
-                <TextBlock Grid.Column="2" Classes="code added" Text="{Binding AddedText}" VerticalAlignment="Center"
-                           ToolTip.Tip="{l:T 'Lines added'}" />
-                <TextBlock Grid.Column="3" Classes="code removed" Text="{Binding RemovedText}" VerticalAlignment="Center"
-                           ToolTip.Tip="{l:T 'Lines removed'}" />
-                <!-- Selected lines (click, Ctrl+click, Shift+click in the diff; Space toggles). -->
-                <!-- Only in the unified view: lines are picked there. -->
-                <StackPanel Grid.Column="4" Orientation="Horizontal">
-                    <StackPanel.IsVisible>
+                <TextBlock DockPanel.Dock="Left" Classes="code added" Text="{Binding AddedText}" VerticalAlignment="Center"
+                           Margin="{DynamicResource Margin.InnerLeft}" ToolTip.Tip="{l:T 'Lines added'}" />
+                <TextBlock DockPanel.Dock="Left" Classes="code removed" Text="{Binding RemovedText}" VerticalAlignment="Center"
+                           Margin="{DynamicResource Margin.InnerLeft}" ToolTip.Tip="{l:T 'Lines removed'}" />
+                <c:OverflowPanel DockPanel.Dock="Right" Spacing="{DynamicResource Spacing.Toolbar}"
+                                 Margin="{DynamicResource Margin.InnerLeft}">
+                    <!-- Selected lines (click, Ctrl+click, Shift+click in the diff; Space toggles); only in the
+                         unified view: lines are picked there. -->
+                    <Button Classes="flat" Content="{l:T 'Stage Lines'}" Command="{Binding StageLinesCommand}"
+                            ToolTip.Tip="{l:T 'Stage only the selected lines (Space)'}">
+                        <Button.IsVisible>
                         <MultiBinding Converter="{x:Static BoolConverters.And}">
                             <Binding Path="HasSelectedChanges" />
                             <Binding Path="!Layout.DiffSideBySide" />
+                            <Binding Path="CanStageParts" />
                         </MultiBinding>
-                    </StackPanel.IsVisible>
-                    <Button Classes="flat" Content="{l:T 'Stage Lines'}" Command="{Binding StageLinesCommand}"
-                            IsVisible="{Binding CanStageParts}" ToolTip.Tip="{l:T 'Stage only the selected lines (Space)'}" />
+                        </Button.IsVisible>
+                    </Button>
                     <Button Classes="flat" Content="{l:T 'Discard Lines…'}" Command="{Binding DiscardLinesCommand}"
-                            IsVisible="{Binding CanStageParts}" ToolTip.Tip="{l:T 'Undo the selected lines in the file (asks first)'}" />
+                            ToolTip.Tip="{l:T 'Undo the selected lines in the file (asks first)'}">
+                        <Button.IsVisible>
+                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                            <Binding Path="HasSelectedChanges" />
+                            <Binding Path="!Layout.DiffSideBySide" />
+                            <Binding Path="CanStageParts" />
+                        </MultiBinding>
+                        </Button.IsVisible>
+                    </Button>
                     <Button Classes="flat" Content="{l:T 'Unstage Lines'}" Command="{Binding UnstageLinesCommand}"
-                            IsVisible="{Binding CanUnstageParts}" ToolTip.Tip="{l:T 'Take only the selected lines out of the commit (Space)'}" />
-                </StackPanel>
-                <c:Toolbar Grid.Column="5">
+                            ToolTip.Tip="{l:T 'Take only the selected lines out of the commit (Space)'}">
+                        <Button.IsVisible>
+                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                            <Binding Path="HasSelectedChanges" />
+                            <Binding Path="!Layout.DiffSideBySide" />
+                            <Binding Path="CanUnstageParts" />
+                        </MultiBinding>
+                        </Button.IsVisible>
+                    </Button>
                     <!-- JetBrains' viewer switch: one setting for every diff (saved). -->
                     <ToggleButton Theme="{StaticResource IconToggle}" IsChecked="{Binding Layout.DiffSideBySide}"
                                   AutomationProperties.Name="{l:T 'Side-by-side'}"
@@ -106,8 +123,10 @@
                     <c:ActionButton IconKind="copy" ToolTip.Tip="{l:T 'Open diff in a new tab'}"
                                     AutomationProperties.Name="{l:T 'Open in New Tab'}"
                                     Command="{Binding OpenInTabCommand}" IsVisible="{Binding CanOpenInTab}" />
-                </c:Toolbar>
-            </Grid>
+                </c:OverflowPanel>
+                <TextBlock Classes="small secondary" Text="{Binding Subtitle}" Margin="{DynamicResource Margin.InnerLeft}"
+                           TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+            </DockPanel>
         </Border>
 
         <!-- "Showing the first 20,000 lines" -->

@@ -10,64 +10,70 @@
         <TextBlock DockPanel.Dock="Top" Classes="secondary" TextWrapping="Wrap" Margin="{DynamicResource Margin.BlockBelow}"
                    Text="{l:T 'Run in the project folder once its files are in place, in this order. New Project lists them before anything runs.'}" />
 
-        <Border DockPanel.Dock="Left" Width="{DynamicResource Size.EditorList}" BorderBrush="{DynamicResource Brush.Border.Control}"
-                BorderThickness="1" CornerRadius="{DynamicResource Radius.Control}" Margin="{DynamicResource Margin.RowEnd}">
-            <DockPanel>
-                <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,0,1"
-                        Padding="{DynamicResource Padding.Toolbar}">
-                    <c:Toolbar>
-                        <c:ActionButton IconKind="add" ToolTip.Tip="{l:T 'Add Command'}" AutomationProperties.Name="{l:T 'Add Command'}" Command="{Binding AddCommand}" />
-                        <c:ActionButton IconKind="delete" ToolTip.Tip="{l:T 'Remove'}" AutomationProperties.Name="{l:T 'Remove'}" Command="{Binding RemoveCommand}" />
-                        <c:ToolbarSeparator />
-                        <Button Classes="flat" Content="{l:T 'Up'}" ToolTip.Tip="{l:T 'Move Up'}" Command="{Binding MoveUpCommand}" />
-                        <Button Classes="flat" Content="{l:T 'Down'}" ToolTip.Tip="{l:T 'Move Down'}" Command="{Binding MoveDownCommand}" />
-                    </c:Toolbar>
+        <c:SidePane PaneWidth="{DynamicResource Size.EditorList}" MinPaneWidth="160" MinContentWidth="280"
+                    PaneIcon="menu" PaneTitle="{l:T 'Commands'}">
+            <c:SidePane.Pane>
+                <Border BorderBrush="{DynamicResource Brush.Border.Control}"
+                        BorderThickness="1" CornerRadius="{DynamicResource Radius.Control}" Margin="{DynamicResource Margin.RowEnd}">
+                    <DockPanel>
+                        <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,0,1"
+                                Padding="{DynamicResource Padding.Toolbar}">
+                            <c:Toolbar>
+                                <c:ActionButton IconKind="add" ToolTip.Tip="{l:T 'Add Command'}" AutomationProperties.Name="{l:T 'Add Command'}" Command="{Binding AddCommand}" />
+                                <c:ActionButton IconKind="delete" ToolTip.Tip="{l:T 'Remove'}" AutomationProperties.Name="{l:T 'Remove'}" Command="{Binding RemoveCommand}" />
+                                <c:ToolbarSeparator />
+                                <Button Classes="flat" Content="{l:T 'Up'}" ToolTip.Tip="{l:T 'Move Up'}" Command="{Binding MoveUpCommand}" />
+                                <Button Classes="flat" Content="{l:T 'Down'}" ToolTip.Tip="{l:T 'Move Down'}" Command="{Binding MoveDownCommand}" />
+                            </c:Toolbar>
+                        </Border>
+                        <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding Selected}" Background="Transparent"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" AutomationProperties.Name="{l:T 'Post-create commands'}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate x:DataType="e:PostCreateItemViewModel">
+                                    <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Preview}" />
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </DockPanel>
                 </Border>
-                <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding Selected}" Background="Transparent"
-                         ScrollViewer.HorizontalScrollBarVisibility="Disabled" AutomationProperties.Name="{l:T 'Post-create commands'}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate x:DataType="e:PostCreateItemViewModel">
-                            <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Preview}" />
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+            </c:SidePane.Pane>
+            <DockPanel>
+                <Panel>
+                    <c:EmptyState IconKind="run" Title="{l:T 'No command selected'}" Description="{l:T 'Add git init, a restore, an install…'}"
+                                  IsVisible="{Binding !HasSelection}" />
+                    <!-- Visibility on the wrapper: bindings on the element that sets DataContext="{Binding Selected}" are typed as the selected item. -->
+                    <Border IsVisible="{Binding HasSelection}">
+                    <ScrollViewer HorizontalScrollBarVisibility="Disabled" DataContext="{Binding Selected}">
+                        <StackPanel Spacing="{DynamicResource Spacing}" x:DataType="e:PostCreateItemViewModel"
+                                    MaxWidth="{DynamicResource Size.TemplatePageMax}" HorizontalAlignment="Left">
+                            <c:SettingsRow Label="{l:T 'Name'}" Description="{l:T 'What New Project calls it (Initialize git).'}">
+                                <TextBox Text="{Binding Name}" AutomationProperties.Name="{l:T 'Name'}" />
+                            </c:SettingsRow>
+                            <c:SettingsRow Label="{l:T 'Command'}" Description="{l:T 'A program on PATH or a tool alias. Never a shell line.'}">
+                                <TextBox Classes="code" Text="{Binding Command}" AutomationProperties.Name="{l:T 'Command'}" />
+                            </c:SettingsRow>
+                            <c:SettingsRow Label="{l:T 'Arguments'}" Description="{l:T 'One per line. Placeholders allowed.'}">
+                                <TextBox Classes="code" Text="{Binding Args}" AcceptsReturn="True" MinHeight="{DynamicResource Size.TemplateArgs}"
+                                         AutomationProperties.Name="{l:T 'Arguments'}" />
+                            </c:SettingsRow>
+                            <c:SettingsRow Label="{l:T 'Folder'}" Description="{l:T 'Where it runs, relative to the project folder (. = the project folder).'}">
+                                <TextBox Classes="code" Text="{Binding WorkingDirectory}" AutomationProperties.Name="{l:T 'Folder'}" />
+                            </c:SettingsRow>
+                            <c:SettingsRow Label="{l:T 'Runs'}" Description="{l:T 'Always, or only when a checkbox variable (bool) is checked.'}">
+                                <ComboBox ItemsSource="{Binding WhenChoices}" SelectedItem="{Binding When}" HorizontalAlignment="Stretch"
+                                          AutomationProperties.Name="{l:T 'Runs when'}" />
+                            </c:SettingsRow>
+                            <c:SettingsRow Label="{l:T 'If it fails'}">
+                                <CheckBox IsChecked="{Binding ContinueOnError}" Content="{l:T 'Keep going with the next command'}" />
+                            </c:SettingsRow>
+                            <c:SettingsRow Label="{l:T 'Reads as'}">
+                                <SelectableTextBlock Classes="code" Text="{Binding Preview}" TextWrapping="Wrap" />
+                            </c:SettingsRow>
+                        </StackPanel>
+                    </ScrollViewer>
+                    </Border>
+                </Panel>
             </DockPanel>
-        </Border>
-
-        <Panel>
-            <c:EmptyState IconKind="run" Title="{l:T 'No command selected'}" Description="{l:T 'Add git init, a restore, an install…'}"
-                          IsVisible="{Binding !HasSelection}" />
-            <!-- Visibility on the wrapper: bindings on the element that sets DataContext="{Binding Selected}" are typed as the selected item. -->
-            <Border IsVisible="{Binding HasSelection}">
-            <ScrollViewer HorizontalScrollBarVisibility="Disabled" DataContext="{Binding Selected}">
-                <StackPanel Spacing="{DynamicResource Spacing}" x:DataType="e:PostCreateItemViewModel"
-                            MaxWidth="{DynamicResource Size.TemplatePageMax}" HorizontalAlignment="Left">
-                    <c:SettingsRow Label="{l:T 'Name'}" Description="{l:T 'What New Project calls it (Initialize git).'}">
-                        <TextBox Text="{Binding Name}" AutomationProperties.Name="{l:T 'Name'}" />
-                    </c:SettingsRow>
-                    <c:SettingsRow Label="{l:T 'Command'}" Description="{l:T 'A program on PATH or a tool alias. Never a shell line.'}">
-                        <TextBox Classes="code" Text="{Binding Command}" AutomationProperties.Name="{l:T 'Command'}" />
-                    </c:SettingsRow>
-                    <c:SettingsRow Label="{l:T 'Arguments'}" Description="{l:T 'One per line. Placeholders allowed.'}">
-                        <TextBox Classes="code" Text="{Binding Args}" AcceptsReturn="True" MinHeight="{DynamicResource Size.TemplateArgs}"
-                                 AutomationProperties.Name="{l:T 'Arguments'}" />
-                    </c:SettingsRow>
-                    <c:SettingsRow Label="{l:T 'Folder'}" Description="{l:T 'Where it runs, relative to the project folder (. = the project folder).'}">
-                        <TextBox Classes="code" Text="{Binding WorkingDirectory}" AutomationProperties.Name="{l:T 'Folder'}" />
-                    </c:SettingsRow>
-                    <c:SettingsRow Label="{l:T 'Runs'}" Description="{l:T 'Always, or only when a checkbox variable (bool) is checked.'}">
-                        <ComboBox ItemsSource="{Binding WhenChoices}" SelectedItem="{Binding When}" HorizontalAlignment="Stretch"
-                                  AutomationProperties.Name="{l:T 'Runs when'}" />
-                    </c:SettingsRow>
-                    <c:SettingsRow Label="{l:T 'If it fails'}">
-                        <CheckBox IsChecked="{Binding ContinueOnError}" Content="{l:T 'Keep going with the next command'}" />
-                    </c:SettingsRow>
-                    <c:SettingsRow Label="{l:T 'Reads as'}">
-                        <SelectableTextBlock Classes="code" Text="{Binding Preview}" TextWrapping="Wrap" />
-                    </c:SettingsRow>
-                </StackPanel>
-            </ScrollViewer>
-            </Border>
-        </Panel>
+        </c:SidePane>
     </DockPanel>
 </UserControl>

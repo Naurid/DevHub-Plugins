@@ -34,67 +34,73 @@
         </Border>
 
         <!-- The table and the settings. -->
-        <ScrollViewer DockPanel.Dock="Left" Width="{DynamicResource Size.ChartMakerPanel}" HorizontalScrollBarVisibility="Disabled">
-            <StackPanel Margin="{DynamicResource Padding.Dialog}" Spacing="{DynamicResource Spacing.Small}">
-                <TextBlock Classes="label" Text="{l:T 'Table: first row the series, first column the labels'}" />
-                <TextBox Text="{Binding Table}" AcceptsReturn="True" AcceptsTab="True" TextWrapping="NoWrap" Classes="code"
-                         MinHeight="{DynamicResource Size.DescriptionEditor}" AutomationProperties.Name="{l:T 'Table'}" />
-                <CheckBox Content="{l:T 'Each row is a series'}" IsChecked="{Binding SeriesInRows}" />
+        <c:SidePane PaneWidth="{DynamicResource Size.ChartMakerPanel}" MinPaneWidth="240" MinContentWidth="360"
+                    PaneIcon="settings" PaneTitle="{l:T 'Chart settings'}">
+            <c:SidePane.Pane>
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="{DynamicResource Padding.Dialog}" Spacing="{DynamicResource Spacing.Small}">
+                        <TextBlock Classes="label" Text="{l:T 'Table: first row the series, first column the labels'}" />
+                        <TextBox Text="{Binding Table}" AcceptsReturn="True" AcceptsTab="True" TextWrapping="NoWrap" Classes="code"
+                                 MinHeight="{DynamicResource Size.DescriptionEditor}" AutomationProperties.Name="{l:T 'Table'}" />
+                        <CheckBox Content="{l:T 'Each row is a series'}" IsChecked="{Binding SeriesInRows}" />
 
-                <TextBlock Classes="label" Text="{l:T 'Chart type'}" />
-                <ComboBox ItemsSource="{Binding KindChoices}" SelectedItem="{Binding Kind}" HorizontalAlignment="Stretch" AutomationProperties.Name="{l:T 'Chart type'}" />
-                <CheckBox Content="{l:T 'Green, amber, red (risk matrix)'}" IsChecked="{Binding TrafficColors}" IsVisible="{Binding IsHeatmap}" />
-                <TextBlock Classes="label" Text="{l:T 'Title'}" />
-                <TextBox Text="{Binding ChartTitle}" AutomationProperties.Name="{l:T 'Title'}" />
-                <Grid ColumnDefinitions="*,*" ColumnSpacing="{DynamicResource Spacing}">
-                    <StackPanel Spacing="{DynamicResource Spacing.Small}">
-                        <TextBlock Classes="label" Text="{l:T 'Label axis'}" />
-                        <TextBox Text="{Binding XTitle}" PlaceholderText="{l:T 'e.g. Sprint'}" AutomationProperties.Name="{l:T 'Label axis title'}" />
-                    </StackPanel>
-                    <StackPanel Grid.Column="1" Spacing="{DynamicResource Spacing.Small}">
-                        <TextBlock Classes="label" Text="{l:T 'Value axis'}" />
-                        <TextBox Text="{Binding YTitle}" PlaceholderText="{l:T 'e.g. Story points'}" AutomationProperties.Name="{l:T 'Value axis title'}" />
-                    </StackPanel>
-                </Grid>
-                <TextBlock Classes="label" Text="{l:T 'After each value'}" />
-                <TextBox Text="{Binding ValueSuffix}" PlaceholderText="{l:T 'e.g. % or  pts'}" AutomationProperties.Name="{l:T 'Value suffix'}" />
-
-                <TextBlock Classes="section" Text="{l:T 'Series'}" IsVisible="{Binding HasChart}" />
-                <ItemsControl ItemsSource="{Binding Series}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="vm:SeriesStyleRow">
-                            <StackPanel Spacing="{DynamicResource Spacing.Small}" Margin="{DynamicResource Margin.BlockBelow}">
-                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
-                                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="{DynamicResource Spacing.Small}">
-                                    <ComboBox ItemsSource="{x:Static vm:SeriesStyleRow.Dashes}" SelectedItem="{Binding Dash}" HorizontalAlignment="Stretch"
-                                              ToolTip.Tip="{l:T 'Line'}" AutomationProperties.Name="{l:T 'Line'}" />
-                                    <ComboBox Grid.Column="1" ItemsSource="{x:Static vm:SeriesStyleRow.Kinds}" SelectedItem="{Binding Kind}" HorizontalAlignment="Stretch"
-                                              ToolTip.Tip="{l:T 'In a bars-and-lines chart: drawn as'}" AutomationProperties.Name="{l:T 'Drawn as'}" />
-                                    <ComboBox Grid.Column="2" ItemsSource="{x:Static vm:SeriesStyleRow.Colors}" SelectedItem="{Binding Color}" HorizontalAlignment="Stretch"
-                                              ToolTip.Tip="{l:T 'Color'}" AutomationProperties.Name="{l:T 'Color'}" />
-                                </Grid>
-                                <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}">
-                                    <CheckBox Content="{l:T 'Markers'}" IsChecked="{Binding Markers}" />
-                                    <CheckBox Content="{l:T 'Values'}" IsChecked="{Binding ValueLabels}" />
-                                </StackPanel>
+                        <TextBlock Classes="label" Text="{l:T 'Chart type'}" />
+                        <ComboBox ItemsSource="{Binding KindChoices}" SelectedItem="{Binding Kind}" HorizontalAlignment="Stretch" AutomationProperties.Name="{l:T 'Chart type'}" />
+                        <CheckBox Content="{l:T 'Green, amber, red (risk matrix)'}" IsChecked="{Binding TrafficColors}" IsVisible="{Binding IsHeatmap}" />
+                        <TextBlock Classes="label" Text="{l:T 'Title'}" />
+                        <TextBox Text="{Binding ChartTitle}" AutomationProperties.Name="{l:T 'Title'}" />
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="{DynamicResource Spacing}">
+                            <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                                <TextBlock Classes="label" Text="{l:T 'Label axis'}" />
+                                <TextBox Text="{Binding XTitle}" PlaceholderText="{l:T 'e.g. Sprint'}" AutomationProperties.Name="{l:T 'Label axis title'}" />
                             </StackPanel>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </StackPanel>
-        </ScrollViewer>
+                            <StackPanel Grid.Column="1" Spacing="{DynamicResource Spacing.Small}">
+                                <TextBlock Classes="label" Text="{l:T 'Value axis'}" />
+                                <TextBox Text="{Binding YTitle}" PlaceholderText="{l:T 'e.g. Story points'}" AutomationProperties.Name="{l:T 'Value axis title'}" />
+                            </StackPanel>
+                        </Grid>
+                        <TextBlock Classes="label" Text="{l:T 'After each value'}" />
+                        <TextBox Text="{Binding ValueSuffix}" PlaceholderText="{l:T 'e.g. % or  pts'}" AutomationProperties.Name="{l:T 'Value suffix'}" />
 
-        <!-- The chart. -->
-        <Border BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1,0,0,0" Padding="{DynamicResource Padding.Dialog}">
-            <Panel>
-                <c:EmptyState IconKind="info" Title="{l:T 'Nothing to draw yet'}" Description="{Binding Problem}" IsVisible="{Binding !HasChart}" />
-                <DockPanel IsVisible="{Binding HasChart}">
-                    <TextBlock DockPanel.Dock="Top" Classes="header" Text="{Binding ChartTitle}" HorizontalAlignment="Center"
-                               Margin="{DynamicResource Margin.BlockBelow}"
-                               IsVisible="{Binding ChartTitle, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                    <c:Chart Kind="{Binding Kind.Kind, FallbackValue=Bar}" Data="{Binding Data}" />
-                </DockPanel>
-            </Panel>
-        </Border>
+                        <TextBlock Classes="section" Text="{l:T 'Series'}" IsVisible="{Binding HasChart}" />
+                        <ItemsControl ItemsSource="{Binding Series}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:SeriesStyleRow">
+                                    <StackPanel Spacing="{DynamicResource Spacing.Small}" Margin="{DynamicResource Margin.BlockBelow}">
+                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                                        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="{DynamicResource Spacing.Small}">
+                                            <ComboBox ItemsSource="{x:Static vm:SeriesStyleRow.Dashes}" SelectedItem="{Binding Dash}" HorizontalAlignment="Stretch"
+                                                      ToolTip.Tip="{l:T 'Line'}" AutomationProperties.Name="{l:T 'Line'}" />
+                                            <ComboBox Grid.Column="1" ItemsSource="{x:Static vm:SeriesStyleRow.Kinds}" SelectedItem="{Binding Kind}" HorizontalAlignment="Stretch"
+                                                      ToolTip.Tip="{l:T 'In a bars-and-lines chart: drawn as'}" AutomationProperties.Name="{l:T 'Drawn as'}" />
+                                            <ComboBox Grid.Column="2" ItemsSource="{x:Static vm:SeriesStyleRow.Colors}" SelectedItem="{Binding Color}" HorizontalAlignment="Stretch"
+                                                      ToolTip.Tip="{l:T 'Color'}" AutomationProperties.Name="{l:T 'Color'}" />
+                                        </Grid>
+                                        <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}">
+                                            <CheckBox Content="{l:T 'Markers'}" IsChecked="{Binding Markers}" />
+                                            <CheckBox Content="{l:T 'Values'}" IsChecked="{Binding ValueLabels}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </ScrollViewer>
+            </c:SidePane.Pane>
+            <DockPanel>
+                <!-- The chart. -->
+                <Border BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1,0,0,0" Padding="{DynamicResource Padding.Dialog}">
+                    <Panel>
+                        <c:EmptyState IconKind="info" Title="{l:T 'Nothing to draw yet'}" Description="{Binding Problem}" IsVisible="{Binding !HasChart}" />
+                        <DockPanel IsVisible="{Binding HasChart}">
+                            <TextBlock DockPanel.Dock="Top" Classes="header" Text="{Binding ChartTitle}" HorizontalAlignment="Center"
+                                       Margin="{DynamicResource Margin.BlockBelow}"
+                                       IsVisible="{Binding ChartTitle, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                            <c:Chart Kind="{Binding Kind.Kind, FallbackValue=Bar}" Data="{Binding Data}" />
+                        </DockPanel>
+                    </Panel>
+                </Border>
+            </DockPanel>
+        </c:SidePane>
     </DockPanel>
 </UserControl>

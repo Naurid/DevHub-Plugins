@@ -35,16 +35,17 @@
                 IsVisible="{Binding Active.Repository.Branch, Converter={x:Static StringConverters.IsNotNullOrEmpty}, FallbackValue=False}"
                 ToolTip.Tip="{Binding Active.Repository.Branch, StringFormat={l:T 'Branch {0}: click for branches (Ctrl+Shift+`)'}, FallbackValue=''}"
                 AutomationProperties.Name="{l:T 'Branches'}">
-            <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}">
+            <!-- A Grid, not a StackPanel: in a narrow title bar the name column shrinks and ends in "…". -->
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing.Small}">
                 <c:Icon Kind="vcs" VerticalAlignment="Center" />
                 <!-- Capped so a long branch name ends in "…" instead of running into the toolbar. -->
-                <TextBlock Text="{Binding Active.Repository.Branch, FallbackValue=''}" VerticalAlignment="Center"
+                <TextBlock Grid.Column="1" Text="{Binding Active.Repository.Branch, FallbackValue=''}" VerticalAlignment="Center"
                            MaxWidth="{DynamicResource Size.BranchWidgetText}" TextTrimming="CharacterEllipsis" />
                 <!-- ↑ahead ↓behind the upstream (G1). -->
-                <TextBlock Classes="small secondary" Text="{Binding Active.Repository.SyncText, FallbackValue=''}"
+                <TextBlock Grid.Column="2" Classes="small secondary" Text="{Binding Active.Repository.SyncText, FallbackValue=''}"
                            VerticalAlignment="Center" />
-                <c:Icon Kind="chevronDown" VerticalAlignment="Center" />
-            </StackPanel>
+                <c:Icon Grid.Column="3" Kind="chevronDown" VerticalAlignment="Center" />
+            </Grid>
         </Button>
 
         <!-- The branch popup, under the widget. Light-dismiss: a click outside closes it. -->

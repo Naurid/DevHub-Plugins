@@ -536,5 +536,6 @@
   "  (deleted)": "  (supprimé)",
   "{0}: cancelled.": "{0}\u00A0: annulé.",
   "{0} (annotated)": "{0} (annoté)",
-  "exit {0}": "code de sortie {0}"
+  "exit {0}": "code de sortie {0}",
+  "Local changes": "Changements locaux"
 }

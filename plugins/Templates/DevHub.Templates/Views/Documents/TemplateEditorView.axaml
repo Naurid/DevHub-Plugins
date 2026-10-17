@@ -69,24 +69,30 @@
             </Border>
 
             <!-- Sections -->
-            <Border DockPanel.Dock="Left" Width="{DynamicResource Size.EditorSections}"
-                    Background="{DynamicResource Brush.Bg.Panel}" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,1,0">
-                <ListBox ItemsSource="{Binding Sections}" SelectedItem="{Binding SelectedSection}" Background="Transparent"
-                         ScrollViewer.HorizontalScrollBarVisibility="Disabled" AutomationProperties.Name="{l:T 'Sections'}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate x:DataType="docs:EditorSectionViewModel">
-                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Spacing}">
-                                <c:Icon Kind="{Binding IconKind}" VerticalAlignment="Center" />
-                                <TextBlock Grid.Column="1" Text="{Binding Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </Border>
-
-            <ContentControl Content="{Binding SelectedSection.Part}" IsEnabled="{Binding SectionEnabled}"
-                            Margin="{DynamicResource Padding.Document}"
-                            HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+            <c:SidePane PaneWidth="{DynamicResource Size.EditorSections}" MinPaneWidth="160" MinContentWidth="420"
+                        PaneIcon="menu" PaneTitle="{l:T 'Sections'}">
+                <c:SidePane.Pane>
+                    <Border
+                            Background="{DynamicResource Brush.Bg.Panel}">
+                        <ListBox ItemsSource="{Binding Sections}" SelectedItem="{Binding SelectedSection}" Background="Transparent"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" AutomationProperties.Name="{l:T 'Sections'}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate x:DataType="docs:EditorSectionViewModel">
+                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Spacing}">
+                                        <c:Icon Kind="{Binding IconKind}" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="1" Text="{Binding Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Border>
+                </c:SidePane.Pane>
+                <DockPanel>
+                    <ContentControl Content="{Binding SelectedSection.Part}" IsEnabled="{Binding SectionEnabled}"
+                                    Margin="{DynamicResource Padding.Document}"
+                                    HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+                </DockPanel>
+            </c:SidePane>
         </DockPanel>
     </Panel>
 </UserControl>

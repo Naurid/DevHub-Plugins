@@ -22,18 +22,20 @@
         <StyleInclude Source="avares://DevHub.Git/Views/Git/FileChangeStyles.axaml" />
     </UserControl.Styles>
 
-    <DockPanel>
-        <!-- Left column, resizable: Unstaged, Staged, commit box. Stays visible without changes
-             (Fork does too), so Amend works on a clean tree. -->
-        <Border DockPanel.Dock="Left" Width="{Binding Layout.ChangesListWidth}"
-                Background="{DynamicResource Brush.Bg.Panel}">
+    <!-- Left column, resizable: Unstaged, Staged, commit box. Stays visible without changes (Fork does too), so
+         Amend works on a clean tree. The diff keeps at least MinContentWidth; narrower, the list folds into a rail. -->
+    <c:SidePane PaneWidth="{Binding Layout.ChangesListWidth}" MinPaneWidth="260" MaxPaneFraction="0.7"
+                MinContentWidth="340" PaneIcon="commit" PaneTitle="{l:T 'Local changes'}">
+        <c:SidePane.Pane>
+        <Border Background="{DynamicResource Brush.Bg.Panel}">
             <Grid RowDefinitions="Auto,*,Auto,*,Auto">
                 <!-- Group headers: name, count, bulk actions; a line below separates them from the rows. -->
                 <Border Classes="listGroupHeader">
-                    <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                    <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="{DynamicResource Spacing}">
                         <TextBlock Classes="secondary" Text="{l:T 'Unstaged'}" VerticalAlignment="Center" />
                         <c:Badge Grid.Column="1" Content="{Binding UnstagedCount}" />
-                        <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="{DynamicResource Spacing}">
+                        <!-- One row; what doesn't fit goes into a ⋯ menu. -->
+                        <c:OverflowPanel Grid.Column="2" HorizontalAlignment="Right" Spacing="{DynamicResource Spacing}">
                             <!-- Fork's tree / flat switch, for both lists (remembered). An icon, so the header fits. -->
                             <ToggleButton Theme="{StaticResource IconToggle}" IsChecked="{Binding ChangesAsTree}"
                                           AutomationProperties.Name="{l:T 'Show folders'}"
@@ -44,7 +46,7 @@
                                     ToolTip.Tip="{l:T 'Stage every unstaged change (one file: double-click or Space)'}" />
                             <Button Classes="flat" Content="{l:T 'Discard All…'}" Command="{Binding DiscardAllCommand}"
                                     ToolTip.Tip="{l:T 'Throw away all unstaged changes (asks first)'}" />
-                        </StackPanel>
+                        </c:OverflowPanel>
                     </Grid>
                 </Border>
                 <!-- Several rows: Ctrl+click, Shift+click, Ctrl+A. Space stages the selected files
@@ -169,7 +171,7 @@
                 </Border>
             </Grid>
         </Border>
-        <c:SplitterThumb DockPanel.Dock="Left" Value="{Binding Layout.ChangesListWidth}" Minimum="290" MaximumFraction="0.7" />
+        </c:SidePane.Pane>
 
         <Panel>
             <c:EmptyState IconKind="success" Title="{l:T 'No local changes'}"
@@ -178,5 +180,5 @@
             <!-- Diff of the selected file: DiffViewModel → DiffView (ViewLocator). -->
             <ContentControl Content="{Binding Diff}" IsVisible="{Binding HasChanges}" />
         </Panel>
-    </DockPanel>
+    </c:SidePane>
 </UserControl>

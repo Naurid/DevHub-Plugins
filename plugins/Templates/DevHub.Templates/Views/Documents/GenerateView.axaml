@@ -20,61 +20,66 @@
 
     <DockPanel>
         <!-- Template list (TemplateBrowserView, through the ViewLocator) -->
-        <Border DockPanel.Dock="Left" Width="{DynamicResource Size.TemplateList}"
-                Background="{DynamicResource Brush.Bg.Panel}"
-                BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,1,0">
-            <ContentControl Content="{Binding Browser}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
-        </Border>
+        <c:SidePane PaneWidth="{DynamicResource Size.TemplateList}" MinPaneWidth="200" MinContentWidth="400"
+                    PaneIcon="template" PaneTitle="{l:T 'Templates'}">
+            <c:SidePane.Pane>
+                <Border
+                        Background="{DynamicResource Brush.Bg.Panel}">
+                    <ContentControl Content="{Binding Browser}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+                </Border>
+            </c:SidePane.Pane>
+            <DockPanel>
+                <!-- The generation -->
+                <Panel Background="{DynamicResource Brush.Bg.Editor}">
+                    <c:EmptyState IconKind="add" Title="{l:T 'New Project'}"
+                                  Description="{l:T 'Pick a template on the left: fill in its fields, check the commands it runs, arrange the files in the preview, then create.'}"
+                                  IsVisible="{Binding !HasPage}">
+                        <!-- Recent projects (Settings → Templates sets where new ones go). -->
+                        <StackPanel Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding HasRecentProjects}"
+                                    MinWidth="{DynamicResource Size.WelcomeWidth}" Margin="{DynamicResource Margin.BlockAbove}">
+                            <TextBlock Classes="secondary" Text="{l:T 'Recent'}" />
+                            <ItemsControl ItemsSource="{Binding RecentProjects}" AutomationProperties.Name="{l:T 'Recent projects'}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="t:RecentProjectViewModel">
+                                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing.Small}" ToolTip.Tip="{Binding Path}">
+                                            <StackPanel VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Classes="small secondary" Text="{Binding Detail}" TextTrimming="CharacterEllipsis" />
+                                            </StackPanel>
+                                            <Button Grid.Column="1" Classes="flat" Content="{l:T 'Open'}" Command="{Binding OpenCommand}" IsVisible="{Binding CanOpen}" />
+                                            <Button Grid.Column="2" Classes="flat" Content="{l:T 'Show'}" ToolTip.Tip="{l:T 'Show in Explorer'}" Command="{Binding RevealCommand}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </c:EmptyState>
 
-        <!-- The generation -->
-        <Panel Background="{DynamicResource Brush.Bg.Editor}">
-            <c:EmptyState IconKind="add" Title="{l:T 'New Project'}"
-                          Description="{l:T 'Pick a template on the left: fill in its fields, check the commands it runs, arrange the files in the preview, then create.'}"
-                          IsVisible="{Binding !HasPage}">
-                <!-- Recent projects (Settings → Templates sets where new ones go). -->
-                <StackPanel Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding HasRecentProjects}"
-                            MinWidth="{DynamicResource Size.WelcomeWidth}" Margin="{DynamicResource Margin.BlockAbove}">
-                    <TextBlock Classes="secondary" Text="{l:T 'Recent'}" />
-                    <ItemsControl ItemsSource="{Binding RecentProjects}" AutomationProperties.Name="{l:T 'Recent projects'}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="t:RecentProjectViewModel">
-                                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing.Small}" ToolTip.Tip="{Binding Path}">
-                                    <StackPanel VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
-                                        <TextBlock Classes="small secondary" Text="{Binding Detail}" TextTrimming="CharacterEllipsis" />
+                    <DockPanel Margin="{DynamicResource Padding.Document}" IsVisible="{Binding HasPage}">
+                        <ItemsControl DockPanel.Dock="Top" ItemsSource="{Binding Steps}" Margin="{DynamicResource Margin.BlockBelow}"
+                                      AutomationProperties.Name="{l:T 'Steps'}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="t:StepIndicatorViewModel">
+                                    <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}">
+                                        <c:Badge Content="{Binding Number}" Classes.accent="{Binding IsCurrent}"
+                                                 Classes.success="{Binding IsDone}" VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding Text}" VerticalAlignment="Center"
+                                                   Classes.secondary="{Binding !IsCurrent}" Classes.current="{Binding IsCurrent}" />
+                                        <TextBlock Classes="secondary" Text="›" VerticalAlignment="Center" IsVisible="{Binding !IsLast}" />
                                     </StackPanel>
-                                    <Button Grid.Column="1" Classes="flat" Content="{l:T 'Open'}" Command="{Binding OpenCommand}" IsVisible="{Binding CanOpen}" />
-                                    <Button Grid.Column="2" Classes="flat" Content="{l:T 'Show'}" ToolTip.Tip="{l:T 'Show in Explorer'}" Command="{Binding RevealCommand}" />
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </StackPanel>
-            </c:EmptyState>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
 
-            <DockPanel Margin="{DynamicResource Padding.Document}" IsVisible="{Binding HasPage}">
-                <ItemsControl DockPanel.Dock="Top" ItemsSource="{Binding Steps}" Margin="{DynamicResource Margin.BlockBelow}"
-                              AutomationProperties.Name="{l:T 'Steps'}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="t:StepIndicatorViewModel">
-                            <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}">
-                                <c:Badge Content="{Binding Number}" Classes.accent="{Binding IsCurrent}"
-                                         Classes.success="{Binding IsDone}" VerticalAlignment="Center" />
-                                <TextBlock Text="{Binding Text}" VerticalAlignment="Center"
-                                           Classes.secondary="{Binding !IsCurrent}" Classes.current="{Binding IsCurrent}" />
-                                <TextBlock Classes="secondary" Text="›" VerticalAlignment="Center" IsVisible="{Binding !IsLast}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-
-                <ContentControl Content="{Binding Page}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+                        <ContentControl Content="{Binding Page}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+                    </DockPanel>
+                </Panel>
             </DockPanel>
-        </Panel>
+        </c:SidePane>
     </DockPanel>
 </UserControl>

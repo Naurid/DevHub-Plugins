@@ -1,6 +1,8 @@
 <!--
   A board tab: header (board selector, pages, search, Create, the board menu), the page, and the issue panel on the
   right (resizable). Before the board loads: a message, with "Create Board…" when there's none here yet.
+  Narrow tab: the pages that don't fit go into a « More » menu, the search box gets smaller and Create becomes a +
+  (container queries on the header); the issue panel folds into a rail and opens over the page.
 -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -18,6 +20,19 @@
             <Setter Property="Margin" Value="{DynamicResource Margin.InnerRight}" />
             <Setter Property="CornerRadius" Value="{DynamicResource Radius.Control}" />
         </Style>
+        <Style Selector="c|SearchField.boardSearch">
+            <Setter Property="Width" Value="{DynamicResource Size.BoardSearch}" />
+        </Style>
+        <ContainerQuery Name="boardHeader" Query="max-width:1000">
+            <Style Selector="c|SearchField.boardSearch">
+                <Setter Property="Width" Value="{DynamicResource Size.BoardSearchCompact}" />
+            </Style>
+        </ContainerQuery>
+        <ContainerQuery Name="boardHeader" Query="max-width:720">
+            <Style Selector="TextBlock.createLabel">
+                <Setter Property="IsVisible" Value="False" />
+            </Style>
+        </ContainerQuery>
     </UserControl.Styles>
 
     <Panel>
@@ -31,23 +46,25 @@
         </c:EmptyState>
 
         <DockPanel IsVisible="{Binding IsLoaded}">
-            <Border DockPanel.Dock="Top" Classes="pageHeader">
+            <Border DockPanel.Dock="Top" Classes="pageHeader" Container.Name="boardHeader" Container.Sizing="Width">
                 <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
                     <ComboBox ItemsSource="{Binding Boards}" SelectedItem="{Binding SelectedBoard}" VerticalAlignment="Center"
+                              MaxWidth="{DynamicResource Size.BoardPickerMax}"
                               AutomationProperties.Name="{l:T 'Board'}" ToolTip.Tip="{l:T 'Which board of this project to show'}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate x:DataType="core:BoardDefinition">
-                                <TextBlock Text="{Binding Name}" />
+                                <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     <ListBox Grid.Column="1" Classes="pages" ItemsSource="{Binding Pages}" SelectedItem="{Binding SelectedPage}"
                              Background="Transparent" AutomationProperties.Name="{l:T 'Pages'}" VerticalAlignment="Center"
                              ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                        <!-- Wraps onto a second line when the pages don't fit beside the search box (a narrow window). -->
+                        <!-- One row: the pages that don't fit beside the search box go into « More ▾ » (the open page
+                             always stays in the row). -->
                         <ListBox.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <WrapPanel Orientation="Horizontal" />
+                                <c:OverflowPanel />
                             </ItemsPanelTemplate>
                         </ListBox.ItemsPanel>
                         <ListBox.ItemTemplate>
@@ -56,10 +73,15 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
-                    <c:SearchField Grid.Column="2" Text="{Binding Search}" PlaceholderText="{l:T 'Search this board'}"
-                                   Width="{DynamicResource Size.BoardSearch}" VerticalAlignment="Center" />
-                    <Button Grid.Column="3" Classes="accent" Content="{l:T 'Create'}" Command="{Binding CreateIssueCommand}"
-                            ToolTip.Tip="{l:T 'Create an issue (Ctrl+Alt+I)'}" VerticalAlignment="Center" />
+                    <c:SearchField Grid.Column="2" Classes="boardSearch" Text="{Binding Search}" PlaceholderText="{l:T 'Search this board'}"
+                                   VerticalAlignment="Center" />
+                    <Button Grid.Column="3" Classes="accent" Command="{Binding CreateIssueCommand}" AutomationProperties.Name="{l:T 'Create'}"
+                            ToolTip.Tip="{l:T 'Create an issue (Ctrl+Alt+I)'}" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}">
+                            <c:Icon Kind="add" VerticalAlignment="Center" />
+                            <TextBlock Classes="createLabel" Text="{l:T 'Create'}" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
                     <Button Grid.Column="4" Classes="flat" ToolTip.Tip="{l:T 'Board menu'}" AutomationProperties.Name="{l:T 'Board menu'}"
                             VerticalAlignment="Center">
                         <c:Icon Kind="moreVertical" />
@@ -85,15 +107,19 @@
                 </Grid>
             </Border>
 
-            <DockPanel>
-                <Border DockPanel.Dock="Right" Width="{Binding IssuePanelWidth}" Background="{DynamicResource Brush.Bg.Panel}"
-                        IsVisible="{Binding HasIssuePanel}">
-                    <ContentControl Content="{Binding IssuePanel}" />
-                </Border>
-                <c:SplitterThumb DockPanel.Dock="Right" Value="{Binding IssuePanelWidth}" Orientation="Vertical" Invert="True"
-                                 Minimum="{DynamicResource Size.IssuePanelMin}" IsVisible="{Binding HasIssuePanel}" />
+            <!-- The issue panel docks on the right while the page keeps MinContentWidth; narrower, it opens over the
+                 page (clicking another issue shows that one; Escape or the rail button puts it away). -->
+            <c:SidePane IsRight="True" PaneWidth="{Binding IssuePanelWidth}" MinPaneWidth="{DynamicResource Size.IssuePanelMin}"
+                        MaxPaneFraction="0.6" MinContentWidth="{DynamicResource Size.BoardPageMin}"
+                        CloseOnContentClick="False" CloseOnSelection="False"
+                        PaneIcon="info" PaneTitle="{l:T 'Issue'}">
+                <c:SidePane.Pane>
+                    <Border IsVisible="{Binding HasIssuePanel}">
+                        <ContentControl Content="{Binding IssuePanel}" />
+                    </Border>
+                </c:SidePane.Pane>
                 <ContentControl Content="{Binding Page}" />
-            </DockPanel>
+            </c:SidePane>
         </DockPanel>
     </Panel>
 </UserControl>

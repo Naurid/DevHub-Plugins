@@ -63,7 +63,7 @@
                         Command="{Binding OpenTabCommand}" IsVisible="{Binding IsPanel}">
                     <c:Icon Kind="externalTools" />
                 </Button>
-                <Button Grid.Column="4" Classes="flat" ToolTip.Tip="{l:T 'More'}" AutomationProperties.Name="{l:T 'Issue menu'}">
+                <Button Grid.Column="4" Classes="flat" ToolTip.Tip="{l:T 'More options'}" AutomationProperties.Name="{l:T 'Issue menu'}">
                     <c:Icon Kind="moreVertical" />
                     <Button.Flyout>
                         <MenuFlyout>

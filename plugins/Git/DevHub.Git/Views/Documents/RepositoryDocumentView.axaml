@@ -25,22 +25,30 @@
                       Description="{l:T 'DevHub runs the git command-line tool. Install Git for Windows (git-scm.com), then restart DevHub.'}"
                       IsVisible="{Binding !IsGitAvailable}" />
 
-        <DockPanel IsVisible="{Binding IsGitAvailable}">
-            <!-- Sidebar -->
-            <Border DockPanel.Dock="Left" Width="{Binding Layout.SidebarWidth}"
-                    Background="{DynamicResource Brush.Bg.Panel}">
+        <!-- The sidebar docks next to the section while both fit (its width is shared by all repository
+             tabs); in a narrow window it folds into a rail and opens over the section, so the diff keeps
+             a readable width. -->
+        <c:SidePane IsVisible="{Binding IsGitAvailable}" PaneWidth="{Binding Layout.SidebarWidth}"
+                    MinPaneWidth="200" MaxPaneFraction="0.4" MinContentWidth="600"
+                    PaneIcon="vcs" PaneTitle="{l:T 'Repository sidebar'}">
+            <c:SidePane.Pane>
+            <Border Background="{DynamicResource Brush.Bg.Panel}">
                 <DockPanel>
                     <!-- Repository header: name, path, branch. -->
                     <StackPanel DockPanel.Dock="Top" Margin="{DynamicResource Padding.SidebarHeader}"
                                 Spacing="{DynamicResource Spacing.Small}">
-                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing}">
-                            <c:Icon Kind="vcs" Width="{DynamicResource Size.StripeIcon}"
+                        <!-- The name first (up to Size.RepositoryNameMax), the buttons in the rest of the row: what
+                             doesn't fit goes into a ⋯ menu instead of squeezing the name to "…". -->
+                        <DockPanel>
+                            <c:Icon DockPanel.Dock="Left" Kind="vcs" Width="{DynamicResource Size.StripeIcon}"
                                     Height="{DynamicResource Size.StripeIcon}" VerticalAlignment="Center" />
-                            <TextBlock Grid.Column="1" Classes="header" Text="{Binding Name}"
+                            <TextBlock DockPanel.Dock="Left" Classes="header" Text="{Binding Name}" ToolTip.Tip="{Binding Name}"
+                                       MaxWidth="{DynamicResource Size.RepositoryNameMax}" Margin="{DynamicResource Margin.InnerLeft}"
                                        TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
                             <!-- Fork's Fetch / Pull / Push buttons (also Git menu, Ctrl+T, Ctrl+Shift+K).
                                  Disabled while one runs; progress and Cancel are in the status bar. -->
-                            <c:Toolbar Grid.Column="2">
+                            <c:OverflowPanel HorizontalAlignment="Right" Spacing="{DynamicResource Spacing.Toolbar}"
+                                             Margin="{DynamicResource Margin.InnerLeft}">
                                 <c:ActionButton IconKind="fetch" AutomationProperties.Name="{l:T 'Fetch'}"
                                                 ToolTip.Tip="{l:T 'Fetch: download what\'s new on the remotes (changes nothing locally)'}"
                                                 Command="{Binding Remote.FetchCommand}" />
@@ -56,8 +64,8 @@
                                 <c:ActionButton IconKind="terminal" AutomationProperties.Name="{l:T 'Open Terminal'}"
                                                 ToolTip.Tip="{l:T 'Open Terminal (Alt+F12): Git Bash in this repository, for any git command'}"
                                                 Command="{Binding OpenTerminalCommand}" />
-                            </c:Toolbar>
-                        </Grid>
+                            </c:OverflowPanel>
+                        </DockPanel>
                         <TextBlock Classes="small secondary" Text="{Binding Path}"
                                    TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Path}" />
                         <!-- A Grid, not a horizontal StackPanel: the "*" column limits the badge to the
@@ -233,10 +241,7 @@
                     </TreeView>
                 </DockPanel>
             </Border>
-            <!-- Drag to resize the sidebar (the thumb also draws its edge line). The width is
-                 shared by all repository tabs. -->
-            <c:SplitterThumb DockPanel.Dock="Left" Value="{Binding Layout.SidebarWidth}"
-                             Minimum="160" MaximumFraction="0.4" />
+            </c:SidePane.Pane>
 
             <!-- Selected section, on the editor color. -->
             <DockPanel>
@@ -283,6 +288,6 @@
                     </ContentControl.DataTemplates>
                 </ContentControl>
             </DockPanel>
-        </DockPanel>
+        </c:SidePane>
     </Panel>
 </UserControl>

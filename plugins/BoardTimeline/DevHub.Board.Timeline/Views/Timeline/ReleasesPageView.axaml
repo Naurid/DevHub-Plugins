@@ -18,43 +18,49 @@
     </UserControl.Styles>
 
     <DockPanel>
-        <DockPanel DockPanel.Dock="Left" Width="{DynamicResource Size.EpicsPanel}">
-            <StackPanel DockPanel.Dock="Top" Margin="{DynamicResource Padding.BoardHeader}" Spacing="{DynamicResource Spacing.Small}">
-                <Button Content="{l:T 'New Version…'}" Command="{Binding NewVersionCommand}" HorizontalAlignment="Stretch" />
-                <CheckBox Content="{l:T 'Show archived'}" IsChecked="{Binding ShowArchived}" />
-            </StackPanel>
-            <ListBox ItemsSource="{Binding Releases}" SelectedItem="{Binding Selected}" Background="Transparent" AutomationProperties.Name="{l:T 'Releases'}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate x:DataType="vm:ReleaseRow">
-                        <StackPanel Spacing="{DynamicResource Spacing.Small}">
-                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
-                            <ProgressBar Value="{Binding Fraction}" Maximum="1" />
-                            <TextBlock Classes="small secondary" Text="{Binding Detail}" Classes.overdue="{Binding IsLate}" TextWrapping="Wrap" />
+        <c:SidePane PaneWidth="{DynamicResource Size.EpicsPanel}" MinPaneWidth="180" MinContentWidth="380"
+                    PaneIcon="menu" PaneTitle="{l:T 'Releases'}">
+            <c:SidePane.Pane>
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Top" Margin="{DynamicResource Padding.BoardHeader}" Spacing="{DynamicResource Spacing.Small}">
+                        <Button Content="{l:T 'New Version…'}" Command="{Binding NewVersionCommand}" HorizontalAlignment="Stretch" />
+                        <CheckBox Content="{l:T 'Show archived'}" IsChecked="{Binding ShowArchived}" />
+                    </StackPanel>
+                    <ListBox ItemsSource="{Binding Releases}" SelectedItem="{Binding Selected}" Background="Transparent" AutomationProperties.Name="{l:T 'Releases'}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:ReleaseRow">
+                                <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                                    <ProgressBar Value="{Binding Fraction}" Maximum="1" />
+                                    <TextBlock Classes="small secondary" Text="{Binding Detail}" Classes.overdue="{Binding IsLate}" TextWrapping="Wrap" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </c:SidePane.Pane>
+            <DockPanel>
+                <Panel>
+                    <c:EmptyState IconKind="info" Title="{l:T 'No versions yet'}" IsVisible="{Binding !HasSelection}"
+                                  Description="{l:T 'Versions are the releases issues are planned for (an issue\'s Fix versions). Create one to see its progress and release notes.'}" />
+                    <ScrollViewer IsVisible="{Binding HasSelection}" HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel Margin="{DynamicResource Padding.Board}" Spacing="{DynamicResource Spacing}">
+                            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                                <TextBlock Classes="header" Text="{Binding Selected.Name}" VerticalAlignment="Center" />
+                                <Button Grid.Column="1" Content="{l:T 'Save Release Notes…'}" Command="{Binding SaveNotesCommand}" />
+                                <Button Grid.Column="2" Classes="accent" Content="{l:T 'Release…'}" Command="{Binding ReleaseCommand}" IsVisible="{Binding CanRelease}" />
+                            </Grid>
+                            <TextBlock Classes="secondary" Text="{Binding Selected.Detail}" />
+                            <TextBlock Classes="section" Text="{l:T 'Issues'}" />
+                            <ItemsControl ItemsSource="{Binding Issues}" ItemTemplate="{StaticResource IssueRow}" />
+                            <TextBlock Classes="section" Text="{l:T 'Release notes'}" />
+                            <Border Classes="listPanel">
+                                <c:MarkdownView Markdown="{Binding Notes}" />
+                            </Border>
                         </StackPanel>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-        </DockPanel>
-
-        <Panel>
-            <c:EmptyState IconKind="info" Title="{l:T 'No versions yet'}" IsVisible="{Binding !HasSelection}"
-                          Description="{l:T 'Versions are the releases issues are planned for (an issue\'s Fix versions). Create one to see its progress and release notes.'}" />
-            <ScrollViewer IsVisible="{Binding HasSelection}" HorizontalScrollBarVisibility="Disabled">
-                <StackPanel Margin="{DynamicResource Padding.Board}" Spacing="{DynamicResource Spacing}">
-                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
-                        <TextBlock Classes="header" Text="{Binding Selected.Name}" VerticalAlignment="Center" />
-                        <Button Grid.Column="1" Content="{l:T 'Save Release Notes…'}" Command="{Binding SaveNotesCommand}" />
-                        <Button Grid.Column="2" Classes="accent" Content="{l:T 'Release…'}" Command="{Binding ReleaseCommand}" IsVisible="{Binding CanRelease}" />
-                    </Grid>
-                    <TextBlock Classes="secondary" Text="{Binding Selected.Detail}" />
-                    <TextBlock Classes="section" Text="{l:T 'Issues'}" />
-                    <ItemsControl ItemsSource="{Binding Issues}" ItemTemplate="{StaticResource IssueRow}" />
-                    <TextBlock Classes="section" Text="{l:T 'Release notes'}" />
-                    <Border Classes="listPanel">
-                        <c:MarkdownView Markdown="{Binding Notes}" />
-                    </Border>
-                </StackPanel>
-            </ScrollViewer>
-        </Panel>
+                    </ScrollViewer>
+                </Panel>
+            </DockPanel>
+        </c:SidePane>
     </DockPanel>
 </UserControl>
