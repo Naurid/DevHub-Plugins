@@ -29,7 +29,7 @@ public sealed class ReleasesPageProvider : IBoardPageProvider
 }
 
 /// <summary>A roadmap row: the issue and its bar's position across the range.</summary>
-public sealed class TimelineRowViewModel(TimelineItem item, TimelineResult range, double today, Action<string> select) : ViewModelBase
+public sealed class TimelineRowViewModel(TimelineItem item, TimelineResult range, double today, BoardPageHost host) : ViewModelBase
 {
     public TimelineItem Item { get; } = item;
     public string Key => Item.Issue.Key;
@@ -45,13 +45,17 @@ public sealed class TimelineRowViewModel(TimelineItem item, TimelineResult range
                              + (Item.BlockedBy.Count > 0 ? "\nBlocked by " + string.Join(", ", Item.BlockedBy.Select(b => b.Key)) : "")
                              + (Item.HasConflict ? "\nStarts before a blocker is due." : "");
     public string? BlockedText => Item.BlockedBy.Count == 0 ? null : "blocked by " + string.Join(", ", Item.BlockedBy.Select(b => b.Key));
-    public IRelayCommand SelectCommand => new RelayCommand(() => select(Item.Issue.Id));
+    public IRelayCommand SelectCommand => new RelayCommand(() => host.SelectIssue(Item.Issue.Id));
+    public IRelayCommand OpenCommand => new RelayCommand(() => host.OpenIssue(Item.Issue.Id));
+
+    /// <summary>Create Issue in this epic (only on an epic's row; it starts with the epic's dates and labels).</summary>
+    public IAsyncRelayCommand CreateInCommand => new AsyncRelayCommand(() => host.CreateIssue(new CreateIssueDefaults { Parent = Item.Issue.Id }));
     public override string ToString() => $"{Key} {Summary}, {Dates}";
 }
 
 /// <summary>
 /// The roadmap: a bar per epic from its start to its due date (worked out from its issues when not set), progress,
-/// late epics and blockers marked, today's line. Click a row to edit its dates in the issue panel.
+/// late epics and blockers marked, today's line. Click a row to edit its dates in the issue panel, double-click to open it in a tab.
 /// </summary>
 public sealed partial class TimelinePageViewModel : BoardPageViewModel
 {
@@ -86,7 +90,7 @@ public sealed partial class TimelinePageViewModel : BoardPageViewModel
         Today = result.Fraction(today);
         Rows.Clear();
         foreach (var item in result.Items)
-            Rows.Add(new TimelineRowViewModel(item, result, Today, id => Host.SelectIssue(id)));
+            Rows.Add(new TimelineRowViewModel(item, result, Today, Host));
         IsEmpty = Rows.Count == 0;
         var epics = result.Items.Where(i => i.Depth == 0).ToList();
         Summary = epics.Count == 0 ? "" : $"{epics.Count} epics · {epics.Count(e => e.IsLate)} late · {epics.Count(e => e.DatesGuessed)} without dates";

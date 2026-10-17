@@ -607,7 +607,7 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
                    ?? snapshot.Project.IssueTypes.FirstOrDefault(t => t.Level == level - 1);
         if (type is null)
             return;
-        if (await _context.RunAsync(new CreateIssue(type.Id, summary) { Parent = IssueId }))
+        if (await _context.RunAsync(new CreateIssue(type.Id, summary) { Parent = IssueId, Fields = EpicDefaults.For(snapshot, IssueId) }))
             NewChildSummary = "";
         Refresh();
     }

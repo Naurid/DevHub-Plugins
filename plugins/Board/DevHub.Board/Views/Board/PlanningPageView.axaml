@@ -45,7 +45,18 @@
                             <StackPanel Spacing="{DynamicResource Spacing.Small}" Background="Transparent"
                                         ToolTip.Tip="{Binding Summary}">
                                 <TextBlock Text="{Binding Summary}" TextTrimming="CharacterEllipsis" FontWeight="SemiBold" IsVisible="{Binding IsSpecial}" />
-                                <StackPanel Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding !IsSpecial}">
+                                <!-- An epic: double-click opens it in a tab, right-click for its menu. -->
+                                <StackPanel Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding !IsSpecial}" Background="Transparent"
+                                            c:DoubleTap.Command="{Binding OpenInTabCommand}">
+                                    <StackPanel.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Open in Tab" Command="{Binding OpenInTabCommand}" />
+                                            <MenuItem Header="Edit in Issue Panel" Command="{Binding EditCommand}" />
+                                            <MenuItem Header="Create Issue in Epic…" Command="{Binding CreateInCommand}" />
+                                            <Separator />
+                                            <MenuItem Header="Delete…" Command="{Binding DeleteCommand}" />
+                                        </ContextMenu>
+                                    </StackPanel.ContextMenu>
                                     <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}">
                                         <c:IssueTypeIcon Kind="epic" />
                                         <TextBlock Classes="small secondary" Text="{Binding Key}" VerticalAlignment="Center" />

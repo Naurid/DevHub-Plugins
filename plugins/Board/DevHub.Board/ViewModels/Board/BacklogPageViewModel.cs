@@ -23,9 +23,15 @@ public sealed class BacklogPageProvider : IBoardPageProvider
     public BoardPageViewModel Create(BoardPageHost host) => new BacklogPageViewModel(host);
 }
 
-/// <summary>An epic in the epics panel: its progress and points.</summary>
-public sealed record EpicRow(string? Id, string Key, string Summary, string Progress, double Done, bool IsSpecial)
+/// <summary>An epic in the epics panel: its progress and points. <see cref="Page"/> runs its menu and double-click.</summary>
+public sealed record EpicRow(string? Id, string Key, string Summary, string Progress, double Done, bool IsSpecial,
+    PlanningPageViewModel? Page = null)
 {
+    public System.Windows.Input.ICommand? OpenInTabCommand => Page is null ? null : new RelayCommand(() => Page.OpenEpicInTabCommand.Execute(this));
+    public System.Windows.Input.ICommand? EditCommand => Page is null ? null : new RelayCommand(() => Page.OpenEpicCommand.Execute(this));
+    public System.Windows.Input.ICommand? CreateInCommand => Page is null ? null : new RelayCommand(() => Page.CreateInEpicCommand.Execute(this));
+    public System.Windows.Input.ICommand? DeleteCommand => Page is null ? null : new RelayCommand(() => Page.DeleteEpicCommand.Execute(this));
+
     public override string ToString() => IsSpecial ? Summary : $"{Key} {Summary}";
 }
 
@@ -137,7 +143,7 @@ public abstract partial class PlanningPageViewModel : BoardPageViewModel, IItems
                 var points = children.Sum(c => c.StoryPoints ?? 0);
                 Epics.Add(new EpicRow(epic.Id, epic.Key, epic.Summary,
                     children.Count == 0 ? "no issues" : $"{done}/{children.Count} done · {points.ToString("0.##", CultureInfo.CurrentCulture)} pts",
-                    children.Count == 0 ? 0 : (double)done / children.Count, false));
+                    children.Count == 0 ? 0 : (double)done / children.Count, false, this));
             }
             _suppress = true;
             SelectedEpic = Epics.FirstOrDefault(e => epicSpecial is not null ? e.IsSpecial && e.Key == epicSpecial : !e.IsSpecial && e.Id == epicId) ?? Epics[0];
@@ -239,7 +245,7 @@ public abstract partial class PlanningPageViewModel : BoardPageViewModel, IItems
         var parent = SelectedEpic is { IsSpecial: false, Id: { } epic } ? epic : null;
         if (VersionFilter?.Id is { Length: > 1 } version)
             fields.Add((IssueFields.FixVersions, new FieldValue.Items([version])));
-        if (await Context.RunAsync(new CreateIssue(type, summary) { Parent = parent, Fields = fields }))
+        if (await Context.RunAsync(new CreateIssue(type, summary) { Parent = parent, Fields = EpicDefaults.Add(Context.Snapshot, parent, fields) }))
             NewSummary = "";
     }
 
@@ -294,11 +300,34 @@ public abstract partial class PlanningPageViewModel : BoardPageViewModel, IItems
     private async Task CreateEpicAsync() =>
         await Host.CreateIssue(new CreateIssueDefaults { Type = Context.Project.IssueTypes.FirstOrDefault(t => t.Level == IssueTypeLevel.Epic)?.Id });
 
+    /// <summary>Shows the epic in the issue panel, to edit it there.</summary>
     [RelayCommand]
     private void OpenEpic(EpicRow? epic)
     {
         if (epic?.Id is { } id)
             Host.SelectIssue(id);
+    }
+
+    [RelayCommand]
+    private void OpenEpicInTab(EpicRow? epic)
+    {
+        if (epic?.Id is { } id)
+            Host.OpenIssue(id);
+    }
+
+    /// <summary>Create Issue with the epic as parent (so it starts with the epic's dates and labels).</summary>
+    [RelayCommand]
+    private async Task CreateInEpicAsync(EpicRow? epic)
+    {
+        if (epic?.Id is { } id)
+            await Host.CreateIssue(new CreateIssueDefaults { Parent = id });
+    }
+
+    [RelayCommand]
+    private async Task DeleteEpicAsync(EpicRow? epic)
+    {
+        if (epic?.Id is { } id)
+            await IssueCommands.DeleteAsync(Context, id);
     }
 }
 

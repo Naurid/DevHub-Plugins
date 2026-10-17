@@ -222,12 +222,15 @@ public sealed partial class CreateIssueDialogViewModel : DialogViewModelBase
         _sprint = Sprints.FirstOrDefault(s => s.Id == defaults.Sprint) ?? Sprints[0];
         UpdateParents();
         _parent = Parents.FirstOrDefault(p => p.Id == defaults.Parent) ?? Parents.FirstOrDefault();
+        _taskType = project.IssueTypes.FirstOrDefault(t => t.Id == "task" && t.Level == IssueTypeLevel.Standard)
+                    ?? project.IssueTypes.FirstOrDefault(t => t.Level == IssueTypeLevel.Standard);
+        ApplyEpicDefaults();
     }
 
     public override string Title => "Create Issue";
     public override string OkText => "Create";
     public override double Width => 620;
-    public override double Height => 600;
+    public override double Height => 640;
 
     public IReadOnlyList<NamedItem> Types { get; }
     public IReadOnlyList<NamedItem> Priorities { get; }
@@ -245,6 +248,9 @@ public sealed partial class CreateIssueDialogViewModel : DialogViewModelBase
     [ObservableProperty] private string _points = "";
     [ObservableProperty] private string _estimate = "";
     [ObservableProperty] private string _labels = "";
+    [ObservableProperty] private DateTime? _start;
+    [ObservableProperty] private DateTime? _due;
+    [ObservableProperty] private bool _createTasks = true;
     [ObservableProperty] private bool _createAnother;
     [ObservableProperty] private string? _error;
     [ObservableProperty] private string? _lastCreated;
@@ -254,6 +260,49 @@ public sealed partial class CreateIssueDialogViewModel : DialogViewModelBase
     public bool ShowParent => Level != IssueTypeLevel.Epic;
     public string ParentLabel => Level == IssueTypeLevel.Subtask ? "Parent" : "Epic";
     public bool ShowPoints => Level != IssueTypeLevel.Subtask;
+
+    // An epic's open "- [ ]" lines become its issues, of this type (Task, or the first standard type).
+    private readonly IssueType? _taskType;
+    private IReadOnlyList<string> TaskItems => Level == IssueTypeLevel.Epic && _taskType is not null ? TaskList.Items(Description) : [];
+    public bool HasTasks => TaskItems.Count > 0;
+    public string TasksText => TaskItems.Count switch
+    {
+        0 => "",
+        1 => $"Create 1 {_taskType!.Name.ToLowerInvariant()} in this epic from the - [ ] line (same labels and dates; the line leaves the description)",
+        var n => $"Create {n} {Plural(_taskType!.Name)} in this epic from the - [ ] lines (same labels and dates; the lines leave the description)",
+    };
+    public string DescriptionHint => Level == IssueTypeLevel.Epic
+        ? "Markdown: **bold**, - lists. Each - [ ] line becomes an issue in this epic"
+        : "Markdown: **bold**, - lists, - [ ] tasks";
+
+    private static string Plural(string name) => name.ToLowerInvariant() is var n && n.EndsWith('s') ? n : n + "s";
+
+    partial void OnDescriptionChanged(string value)
+    {
+        OnPropertyChanged(nameof(HasTasks));
+        OnPropertyChanged(nameof(TasksText));
+    }
+
+    partial void OnParentChanged(NamedItem? value) => ApplyEpicDefaults();
+
+    // What the last epic filled in, so choosing another epic replaces it but never what you typed yourself.
+    private (DateTime? Start, DateTime? Due, string Labels) _filled = (null, null, "");
+
+    /// <summary>Fills start, due and labels from the chosen epic: an issue in an epic starts with its dates and labels.</summary>
+    private void ApplyEpicDefaults()
+    {
+        var epic = Level == IssueTypeLevel.Standard ? _context.Snapshot.Issue(Parent?.Id) : null;
+        (DateTime? Start, DateTime? Due, string Labels) next = epic is null
+            ? (null, null, "")
+            : (epic.Start?.ToDateTime(TimeOnly.MinValue), epic.Due?.ToDateTime(TimeOnly.MinValue), string.Join(' ', epic.Labels));
+        if (Start == _filled.Start)
+            Start = next.Start;
+        if (Due == _filled.Due)
+            Due = next.Due;
+        if (Labels.Trim() == _filled.Labels)
+            Labels = next.Labels;
+        _filled = next;
+    }
 
     /// <summary>Asks the summary box for focus (after "Create another").</summary>
     [ObservableProperty] private int _focusSummary;
@@ -271,6 +320,10 @@ public sealed partial class CreateIssueDialogViewModel : DialogViewModelBase
         OnPropertyChanged(nameof(ShowParent));
         OnPropertyChanged(nameof(ParentLabel));
         OnPropertyChanged(nameof(ShowPoints));
+        OnPropertyChanged(nameof(HasTasks));
+        OnPropertyChanged(nameof(TasksText));
+        OnPropertyChanged(nameof(DescriptionHint));
+        ApplyEpicDefaults();
     }
 
     private void UpdateParents()
@@ -316,19 +369,30 @@ public sealed partial class CreateIssueDialogViewModel : DialogViewModelBase
             }
             fields.Add((IssueFields.OriginalEstimate, new FieldValue.Minutes(minutes)));
         }
+        // Labels and dates are what an epic's new issues share with it.
+        var shared = new List<(string, FieldValue)>();
         if (Labels.Trim().Length > 0)
-            fields.Add((IssueFields.Labels, new FieldValue.Items(Labels.Split([' ', ','], StringSplitOptions.RemoveEmptyEntries))));
+            shared.Add((IssueFields.Labels, new FieldValue.Items(Labels.Split([' ', ','], StringSplitOptions.RemoveEmptyEntries))));
+        if (Start is { } start)
+            shared.Add((IssueFields.Start, new FieldValue.Date(DateOnly.FromDateTime(start))));
+        if (Due is { } due)
+            shared.Add((IssueFields.Due, new FieldValue.Date(DateOnly.FromDateTime(due))));
+        fields.AddRange(shared);
 
         var id = BoardIds.New();
-        var operation = new CreateIssue(Type.Id!, Summary.Trim())
+        var tasks = CreateTasks ? TaskItems : [];
+        var issue = new CreateIssue(Type.Id!, Summary.Trim())
         {
             Id = id,
             Parent = ShowParent ? Parent?.Id : null,
-            Description = Description,
+            Description = tasks.Count > 0 ? TaskList.Without(Description) : Description,
             Status = _defaults.Status is { } s && _context.Snapshot.WorkflowFor(Type.Id)?.Statuses.Contains(s) == true ? s : null,
             Fields = fields,
             RankAbove = _defaults.RankAbove,
         };
+        IBoardOperation operation = tasks.Count == 0
+            ? issue
+            : new CreateIssueWithChildren(issue, tasks.Select(t => new CreateIssue(_taskType!.Id, t) { Fields = shared }).ToList());
         // Check first, so a refusal (empty summary, sub-task without parent) stays in the dialog.
         try
         {
@@ -347,7 +411,9 @@ public sealed partial class CreateIssueDialogViewModel : DialogViewModelBase
         CreatedId = id;
         if (!CreateAnother)
             return true;
-        LastCreated = $"Created {_context.Snapshot.Issue(id)?.Key}.";
+        LastCreated = tasks.Count == 0
+            ? $"Created {_context.Snapshot.Issue(id)?.Key}."
+            : $"Created {_context.Snapshot.Issue(id)?.Key} with {tasks.Count} issue(s).";
         Summary = "";
         Description = "";
         Points = "";
