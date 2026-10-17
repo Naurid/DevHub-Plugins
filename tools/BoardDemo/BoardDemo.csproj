@@ -10,6 +10,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\plugins\Board\DevHub.Board.Core\DevHub.Board.Core.csproj" />
+        <ProjectReference Include="..\..\plugins\BoardRisks\DevHub.Board.Risks.Core\DevHub.Board.Risks.Core.csproj" />
     </ItemGroup>
 
 </Project>

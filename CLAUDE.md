@@ -32,6 +32,7 @@ plugins/<Name>/                  one plugin; grouped ones have a UI project and 
   BoardGit/DevHub.Board.Git/ + .Core/            devhub/board branch store, branches / commits of issues, smart commits (requires Board + Git)
   BoardReports/DevHub.Board.Reports/ + .Core/    burndown, velocity, flow, control chart, dashboard (requires Board)
   BoardTimeline/DevHub.Board.Timeline/ + .Core/  roadmap of epics, releases and release notes (requires Board)
+  BoardRisks/DevHub.Board.Risks/ + .Core/        risk register, probability × impact matrix, mitigation (requires Board)
   HelloWorld/                                   the sample plugin (one project)
   (plugin.json sits next to the UI project: id, name, description, category, apiVersion, requires)
 tests/                           DevHub.<X>.Core.Tests (xUnit), DevHub.TestKit (TempGitRepo, [GitFact])

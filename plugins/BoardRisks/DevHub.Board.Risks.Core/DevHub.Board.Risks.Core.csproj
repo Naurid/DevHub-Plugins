@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- Board.Risks logic: the risk register (risks/<id>.json), scores and the probability × impact matrix. Requires Board. No Avalonia. -->
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Board\DevHub.Board.Core\DevHub.Board.Core.csproj" />
+    </ItemGroup>
+
+</Project>

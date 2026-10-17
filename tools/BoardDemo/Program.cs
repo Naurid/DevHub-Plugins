@@ -5,6 +5,7 @@ using DevHub.Board.Core;
 using DevHub.Board.Core.Fields;
 using DevHub.Board.Core.Model;
 using DevHub.Board.Core.Storage;
+using DevHub.Board.Risks.Core;
 
 // Writes a demo board: seven weeks of a small team building a web shop, replayed through the same operations the
 // Board UI uses (so the change log, reports and history are real), and a git repository with branches and commits
@@ -171,6 +172,13 @@ internal sealed class ShopDemo(string folder, string myName, DemoGit? git)
         Do(t, _me, new SetPersonRole(_grace.Id, "Scrum Master"));
         foreach (var person in new[] { _me, _alan, _katherine, _edsger })
             Do(t, _me, new SetPersonRole(person.Id, "Developer"));
+
+        // The risk register (Board.Risks): what the team saw coming at the kick-off.
+        Do(At(1, 11), _grace, new AddRisk("The team is new together: slow first sprints") { Probability = 4, Impact = 3, Category = "Team", Owner = _grace.Id });
+        Do(At(1, 11), _grace, new AddRisk("The payment provider changes its API") { Probability = 2, Impact = 5, Category = "External", Owner = _alan.Id });
+        Do(At(1, 11), _grace, new AddRisk("Nobody knows the search engine well") { Probability = 3, Impact = 4, Category = "Technical", Owner = _katherine.Id });
+        Do(At(1, 11), _grace, new AddRisk("A key developer leaves mid-project") { Probability = 1, Impact = 4, Category = "Team" });
+        Do(At(1, 11), _grace, new AddRisk("The launch date is fixed by marketing") { Probability = 5, Impact = 4, Category = "Schedule", Owner = _ada.Id });
 
         Do(t, _me, new AddComponent("Web", "The storefront: pages, styles, scripts") { Id = _web });
         Do(t, _me, new AddComponent("API", "The HTTP API behind the shop") { Id = _api });
