@@ -436,7 +436,7 @@ public static class QueryCompiler
             return minutes;
         throw new QueryException(field.Durations
             ? L.T($"{field.Name} takes a duration like 2h or 1d 4h.")
-            : $"{field.Name} takes a number, not \"{text}\".", position);
+            : L.T($"{field.Name} takes a number, not \"{text}\"."), position);
     }
 
     private static StatusCategory ParseCategory(string text, int position) => Normalize(text) switch
@@ -480,7 +480,7 @@ public static class QueryCompiler
                 'h' => TimeSpan.FromHours(amount),
                 'd' => TimeSpan.FromDays(amount),
                 'w' => TimeSpan.FromDays(7 * amount),
-                _ => throw new QueryException($"\"{text}\": use m, h, d or w (like -2w).", position),
+                _ => throw new QueryException(L.T($"\"{text}\": use m, h, d or w (like -2w)."), position),
             };
             return context.Now + sign * span;
         }

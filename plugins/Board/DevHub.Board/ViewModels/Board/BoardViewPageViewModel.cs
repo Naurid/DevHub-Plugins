@@ -57,11 +57,11 @@ public sealed class ColumnViewModel(BoardViewPageViewModel page, ColumnLayout la
 
     public string CountText => Column.WipLimit is { } max
         ? $"{Count} / {max}"
-        : Column.WipMinimum is { } min ? $"{Count} (min {min})" : Count.ToString(CultureInfo.CurrentCulture);
+        : Column.WipMinimum is { } min ? L.T($"{Count} (min {min})") : Count.ToString(CultureInfo.CurrentCulture);
 
     public string ToolTip => HasNoStatus
         ? L.T("No status yet: cards can't be dropped here. Use Statuses… in the column menu.")
-        : "Statuses: " + string.Join(", ", Column.Statuses.Select(page.Context.StatusName));
+        : L.T("Statuses: ") + string.Join(", ", Column.Statuses.Select(page.Context.StatusName));
 
     public bool CanMoveLeft => Index > 0;
     public bool CanMoveRight => Index < columnCount - 1;
@@ -76,7 +76,7 @@ public sealed class ColumnViewModel(BoardViewPageViewModel page, ColumnLayout la
     public IAsyncRelayCommand AddIssueCommand => new AsyncRelayCommand(() => page.CreateIssueInAsync(this));
     public IAsyncRelayCommand AddColumnAfterCommand => new AsyncRelayCommand(() => page.AddColumnAsync(Index + 1));
 
-    public override string ToString() => $"{Name}, {CountText} cards";
+    public override string ToString() => L.T($"{Name}, {CountText} cards");
 }
 
 /// <summary>One column of one swimlane: a list of cards you can drop into.</summary>
@@ -94,7 +94,7 @@ public sealed partial class LaneViewModel(string key, string title, int count, I
     public string Key { get; } = key;
     public string Title { get; } = title;
     public bool HasHeader => Title.Length > 0;
-    public string CountText => count == 1 ? "1 issue" : $"{count} issues";
+    public string CountText => count == 1 ? L.T("1 issue") : L.T($"{count} issues");
     public IReadOnlyList<CellViewModel> Cells { get; } = cells;
     [ObservableProperty] private bool _isExpanded = true;
     public override string ToString() => Title;
@@ -140,7 +140,7 @@ public sealed partial class BoardViewPageViewModel : BoardPageViewModel, IItemsD
     private readonly HashSet<string> _picked = new(StringComparer.Ordinal);
 
     public bool HasPicked => _picked.Count > 1;
-    public string PickedText => $"{_picked.Count} selected";
+    public string PickedText => L.T($"{_picked.Count} selected");
 
     public override void OnBoardChanged() => Rebuild();
 
@@ -228,9 +228,9 @@ public sealed partial class BoardViewPageViewModel : BoardPageViewModel, IItemsD
         }
         var all = layout.Columns.SelectMany(c => c.Cards).ToList();
         var done = layout.Columns.Where(c => c.Category == StatusCategory.Done).SelectMany(c => c.Cards).ToList();
-        parts.Add($"{done.Sum(i => i.StoryPoints ?? 0):0.##} of {all.Sum(i => i.StoryPoints ?? 0):0.##} points done");
+        parts.Add(L.T($"{done.Sum(i => i.StoryPoints ?? 0):0.##} of {all.Sum(i => i.StoryPoints ?? 0):0.##} points done"));
         if (sprint.Goal.Length > 0)
-            parts.Add("Goal: " + sprint.Goal);
+            parts.Add(L.T("Goal: ") + sprint.Goal);
         return string.Join(" · ", parts);
     }
 

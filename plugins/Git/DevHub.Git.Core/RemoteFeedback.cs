@@ -29,7 +29,7 @@ public static partial class ProgressParser
         return m.Success ? new GitProgress(Phase(m), null) : null;
 
         static string Phase(Match m) =>
-            m.Groups["remote"].Success ? m.Groups["phase"].Value + " (remote)" : m.Groups["phase"].Value;
+            m.Groups["remote"].Success ? m.Groups["phase"].Value + L.T(" (remote)") : m.Groups["phase"].Value;
     }
 }
 

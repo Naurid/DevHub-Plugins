@@ -19,9 +19,9 @@ public sealed partial class StartSprintDialogViewModel : DialogViewModelBase
         UpdateEnd();
         var issues = board.Issues.Values.Where(i => i.Sprint == sprint.Id && board.LevelOf(i) == IssueTypeLevel.Standard).ToList();
         var points = issues.Sum(i => i.StoryPoints ?? 0);
-        Summary = $"{issues.Count} issues, {points.ToString("0.##", CultureInfo.CurrentCulture)} points"
+        Summary = L.T($"{issues.Count} issues, {points.ToString("0.##", CultureInfo.CurrentCulture)} points")
                   + (issues.Count(i => i.StoryPoints is null) is var unestimated and > 0 ? L.T($" ({unestimated} not estimated)") : "")
-                  + (sprint.Capacity is { } c ? $" · capacity {c.ToString("0.##", CultureInfo.CurrentCulture)}" : "");
+                  + (sprint.Capacity is { } c ? L.T($" · capacity {c.ToString("0.##", CultureInfo.CurrentCulture)}") : "");
     }
 
     public override string Title => L.T("Start Sprint");
@@ -220,7 +220,7 @@ public sealed partial class CompleteSprintDialogViewModel : DialogViewModelBase
         var open = issues.Count - done.Count;
         SprintName = sprint.Name;
         Summary = L.T($"{done.Count} of {issues.Count} issues done ({done.Sum(i => i.StoryPoints ?? 0).ToString("0.##", CultureInfo.CurrentCulture)} of ")
-                  + $"{issues.Sum(i => i.StoryPoints ?? 0).ToString("0.##", CultureInfo.CurrentCulture)} points; "
+                  + L.T($"{issues.Sum(i => i.StoryPoints ?? 0).ToString("0.##", CultureInfo.CurrentCulture)} points; ")
                   + L.T($"{sprint.CommittedPoints.ToString("0.##", CultureInfo.CurrentCulture)} committed at the start).");
         HasOpen = open > 0;
         OpenText = open == 1 ? L.T("1 issue isn't done. Move it to:") : L.T($"{open} issues aren't done. Move them to:");

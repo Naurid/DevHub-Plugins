@@ -82,7 +82,7 @@ public sealed partial class ImportDialogViewModel : DialogViewModelBase
                     return;
                 }
                 issues = GitHubIssuesImport.Read(await GitHubPagesAsync(repo));
-                source = "GitHub " + repo;
+                source = L.T("GitHub ") + repo;
             }
             if (issues.Count == 0)
             {
@@ -131,9 +131,9 @@ public sealed partial class ImportDialogViewModel : DialogViewModelBase
         if (preview.NewVersions.Count > 0)
             text.Append(L.T("Versions added: ")).Append(string.Join(", ", preview.NewVersions)).Append('\n');
         if (preview.Types.Count > 0)
-            text.Append("\nTypes: ").Append(string.Join(", ", preview.Types.Select(t => $"{t.Key} → {t.Value}"))).Append('\n');
+            text.Append(L.T("\nTypes: ")).Append(string.Join(", ", preview.Types.Select(t => $"{t.Key} → {t.Value}"))).Append('\n');
         if (preview.Statuses.Count > 0)
-            text.Append("Statuses: ").Append(string.Join(", ", preview.Statuses.Select(s => $"{s.Key} → {s.Value}"))).Append('\n');
+            text.Append(L.T("Statuses: ")).Append(string.Join(", ", preview.Statuses.Select(s => $"{s.Key} → {s.Value}"))).Append('\n');
         foreach (var warning in preview.Warnings)
             text.Append("\n• ").Append(warning);
         text.Append(L.T("\n\nSprints aren't imported. Undo (Board menu) takes the whole import back."));

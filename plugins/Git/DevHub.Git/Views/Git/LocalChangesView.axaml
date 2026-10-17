@@ -133,7 +133,7 @@
                         <!-- Another plugin's suggestion (DevHub.Integration), only while the box is empty; Use puts it in. -->
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing}" IsVisible="{Binding Commit.ShowsSuggestion}">
                             <TextBlock Classes="secondary" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
-                                       Text="{Binding Commit.Suggestion, StringFormat='Suggested: {0}'}" />
+                                       Text="{Binding Commit.Suggestion, StringFormat={l:T 'Suggested: {0}'}}" />
                             <Button Grid.Column="1" Content="{l:T 'Use'}" Command="{Binding Commit.UseSuggestionCommand}"
                                     ToolTip.Tip="{l:T 'Put the suggested message in the box'}" />
                         </Grid>

@@ -154,7 +154,7 @@ public sealed class FileTree
             case StepOp.Delete:
             {
                 if (Match(step.Path!, out var error) is not { } matches)
-                    return $"Delete: {error}";
+                    return L.T($"Delete: {error}");
                 foreach (var entry in matches)
                     Remove(entry);
                 return null;
@@ -173,7 +173,7 @@ public sealed class FileTree
             case StepOp.Move:
             {
                 if (Match(step.From!, out var error) is not { } matches)
-                    return $"Move: {error}";
+                    return L.T($"Move: {error}");
                 if (step.To!.EndsWith('/'))
                     return MoveInto(matches, step.To.TrimEnd('/'), step.From!);
                 return matches.Count switch
@@ -200,7 +200,7 @@ public sealed class FileTree
         {
             if (this[pattern] is { } entry)
                 return [entry];
-            error = $"\"{pattern}\" doesn't exist.";
+            error = L.T($"\"{pattern}\" doesn't exist.");
             return null;
         }
 
@@ -250,7 +250,7 @@ public sealed class FileTree
         if (this[target] is { } existing && existing != entry)
             return L.T($"{what}: \"{target}\" already exists.");
         if (target.LastIndexOf('/') is var slash and >= 0 && this[target[..slash]] is { IsFolder: false })
-            return $"{what}: \"{target[..slash]}\" is a file, not a folder.";
+            return L.T($"{what}: \"{target[..slash]}\" is a file, not a folder.");
 
         AddFolder(target.LastIndexOf('/') is var s and >= 0 ? target[..s] : "", EntryOrigin.Template);
         Relocate(entry, target);

@@ -91,7 +91,7 @@ public sealed partial class IssueChecksViewModel(BoardContext context, string is
             Criteria.Add(row);
         }
         var met = issue.Criteria.Count(c => c.Done);
-        CriteriaProgress = issue.Criteria.Count == 0 ? "" : $"{met} of {issue.Criteria.Count} met";
+        CriteriaProgress = issue.Criteria.Count == 0 ? "" : L.T($"{met} of {issue.Criteria.Count} met");
 
         DoneItems.Clear();
         ShowDefinitionOfDone = project.DefinitionOfDone.Count > 0 && project.IssueType(issue.Type)?.Level == IssueTypeLevel.Standard;

@@ -83,7 +83,7 @@ public sealed partial class ChartMakerViewModel : DocumentViewModelBase
         Load(ChartSpec.Sample, null);
     }
 
-    public override string Title => _path is null ? L.T("Chart Maker") : $"Chart: {Path.GetFileName(_path)}";
+    public override string Title => _path is null ? L.T("Chart Maker") : L.T($"Chart: {Path.GetFileName(_path)}");
     public override string Icon => IconKind.Palette;
     public override bool FillsEditorArea => true;
     public override DocumentNavigation Navigation => new() { Text = L.T("Chart Maker"), Menu = "File", MenuOrder = 60, WelcomeOrder = 70 };

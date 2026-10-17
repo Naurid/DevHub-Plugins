@@ -56,7 +56,7 @@ public sealed partial class FilesPartViewModel : ViewModelBase
     public string PlaceholderHint =>
         L.T("Placeholders you can use in file contents and names: ")
         + string.Join(" ", _variables().Select(v => "{{" + v + "}}"))
-        + "  ·  built-in: {{Year}} {{Date}} {{Author}} {{Guid1}}…{{Guid9}}"
+        + L.T("  ·  built-in: {{Year}} {{Date}} {{Author}} {{Guid1}}…{{Guid9}}")
         + L.T("  ·  transforms: {{Name:kebab}} in files, {{Name.kebab}} in file names (pascal, camel, kebab, snake, upper, lower).");
 
     public bool CanOpenInVsCode => _templates.VsCodePath is not null;
@@ -232,5 +232,5 @@ public sealed partial class ContentNodeViewModel : ViewModelBase
     public static IEnumerable<ContentNodeViewModel> Sorted(IEnumerable<ContentNodeViewModel> nodes) =>
         nodes.OrderBy(n => n.IsFolder ? 0 : 1).ThenBy(n => n.Name, StringComparer.OrdinalIgnoreCase);
 
-    public override string ToString() => IsFolder ? $"{Name} folder" : Name;
+    public override string ToString() => IsFolder ? L.T($"{Name} folder") : Name;
 }

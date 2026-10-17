@@ -198,7 +198,7 @@ public sealed record CompleteSprint(string SprintId, OpenIssuesGoTo MoveTo = Ope
     {
         var sprint = Sprints.Require(board, SprintId);
         if (sprint.State != SprintState.Active)
-            throw new BoardRuleException($"{sprint.Name} isn't running.");
+            throw new BoardRuleException(L.T($"{sprint.Name} isn't running."));
         var change = new ChangeBuilder(board, context);
 
         string? target = null;

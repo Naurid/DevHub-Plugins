@@ -39,6 +39,9 @@ jobs:
       - name: Test
         run: dotnet test DevHub-Plugins.sln --no-build -c Release --logger trx --results-directory test-results
 
+      - name: Translations (every text has its French)
+        run: dotnet run --project tools/I18n -c Release -- check plugins
+
       - name: Test results
         if: always()
         uses: actions/upload-artifact@v4

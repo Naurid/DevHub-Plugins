@@ -87,7 +87,7 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="vm:RetroActionRow">
                                 <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.RowBelow}">
-                                    <CheckBox IsChecked="{Binding Done}" ToolTip.Tip="{l:T 'Done'}" AutomationProperties.Name="{Binding Text, StringFormat='{}{0} done'}" />
+                                    <CheckBox IsChecked="{Binding Done}" ToolTip.Tip="{l:T 'Done'}" AutomationProperties.Name="{Binding Text, StringFormat={l:T 'Done: {0}'}}" />
                                     <TextBox Grid.Column="1" Text="{Binding Text, UpdateSourceTrigger=LostFocus}" AutomationProperties.Name="{l:T 'Action'}" />
                                     <ComboBox Grid.Column="2" ItemsSource="{Binding People}" SelectedItem="{Binding Owner}"
                                               MinWidth="{DynamicResource Size.StatusPill}" AutomationProperties.Name="{l:T 'Owner'}" ToolTip.Tip="{l:T 'Who takes care of it'}" />

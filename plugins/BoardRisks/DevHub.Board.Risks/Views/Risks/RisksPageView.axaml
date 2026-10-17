@@ -79,7 +79,7 @@
                 <!-- The selected risk. -->
                 <StackPanel Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding HasSelection}">
                     <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
-                        <TextBlock Classes="section" Text="{Binding Selected.Key, StringFormat='Risk {0}'}" VerticalAlignment="Center" />
+                        <TextBlock Classes="section" Text="{Binding Selected.Key, StringFormat={l:T 'Risk {0}'}}" VerticalAlignment="Center" />
                         <Button Grid.Column="1" Classes="flat" Content="{l:T 'Delete…'}" Command="{Binding DeleteCommand}" />
                         <Button Grid.Column="2" Content="{l:T 'Revert'}" Command="{Binding RevertCommand}" IsEnabled="{Binding IsDirty}" />
                         <Button Grid.Column="3" Classes="accent" Content="{l:T 'Save'}" Command="{Binding SaveCommand}" IsEnabled="{Binding IsDirty}" />

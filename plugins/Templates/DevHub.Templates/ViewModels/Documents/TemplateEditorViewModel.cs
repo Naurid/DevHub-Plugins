@@ -83,7 +83,7 @@ public sealed partial class TemplateEditorViewModel : DocumentViewModelBase
 
     public bool HasProblems => Problems.Count > 0;
 
-    public string LibraryText => IsReadOnly ? $"{Library.Name} (read-only)" : Library.Name;
+    public string LibraryText => IsReadOnly ? L.T($"{Library.Name} (read-only)") : Library.Name;
     public string FolderText => _folder;
 
     public bool CanOpenInVsCode => _templates.VsCodePath is not null;
@@ -207,7 +207,7 @@ public sealed partial class TemplateEditorViewModel : DocumentViewModelBase
         if (manifest is null)
         {
             json.Error = problems[0];
-            Problems = ["template.json: " + problems[0] + L.T(" (your text is kept in the template.json section)")];
+            Problems = [L.T("template.json: ") + problems[0] + L.T(" (your text is kept in the template.json section)")];
             return false;
         }
         var text = json.Text;

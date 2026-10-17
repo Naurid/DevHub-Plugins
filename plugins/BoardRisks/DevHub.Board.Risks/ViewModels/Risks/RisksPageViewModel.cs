@@ -33,7 +33,7 @@ public sealed record RiskRow(Risk Risk, string OwnerName)
     public bool IsClosed => Risk.Status == RiskStatus.Closed;
     public bool IsCritical => Risk.Score >= 16 && !IsClosed;
     public bool IsHigh => Risk.Score is >= 10 and < 16 && !IsClosed;
-    public override string ToString() => $"{Key} {Title}, score {Score}";
+    public override string ToString() => L.T($"{Key} {Title}, score {Score}");
 }
 
 /// <summary>A linked issue in the risk editor.</summary>

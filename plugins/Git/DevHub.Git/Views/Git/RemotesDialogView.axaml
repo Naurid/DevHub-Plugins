@@ -29,7 +29,7 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate x:DataType="git:GitRemote">
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Spacing}" Background="Transparent"
-                              ToolTip.Tip="{Binding PushUrl, StringFormat='Push URL: {0}'}">
+                              ToolTip.Tip="{Binding PushUrl, StringFormat={l:T 'Push URL: {0}'}}">
                             <TextBlock Text="{Binding Name}" FontWeight="SemiBold" VerticalAlignment="Center"
                                        MinWidth="{DynamicResource Size.RemoteName}" />
                             <TextBlock Grid.Column="1" Classes="secondary" Text="{Binding FetchUrl}"

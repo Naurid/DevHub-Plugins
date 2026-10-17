@@ -231,5 +231,5 @@ public sealed class HostRepositoryRowViewModel(HostRepository repository, DateTi
     public bool IsPrivate => Repository.IsPrivate;
     public string Updated { get; } = repository.PushedAt is { } at ? RelativeTime.Format(at, now) : "";
 
-    public override string ToString() => IsPrivate ? $"{FullName} (private)" : FullName;
+    public override string ToString() => IsPrivate ? L.T($"{FullName} (private)") : FullName;
 }

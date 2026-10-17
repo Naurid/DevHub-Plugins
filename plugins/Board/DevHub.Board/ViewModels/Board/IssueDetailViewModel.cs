@@ -27,13 +27,13 @@ public sealed record LinkChoice(string LinkType, string Phrase, bool Inward)
 
 public sealed record CommentRow(string Id, string Author, string When, string Body, bool IsMine, bool Edited)
 {
-    public string WhenText => Edited ? When + " (edited)" : When;
+    public string WhenText => Edited ? When + L.T(" (edited)") : When;
     public override string ToString() => $"{Author}, {When}: {Body}";
 }
 
 public sealed record WorkLogRow(string Id, string Author, string When, string Spent, string Note, bool IsMine)
 {
-    public override string ToString() => $"{Author} logged {Spent} {When}";
+    public override string ToString() => L.T($"{Author} logged {Spent} {When}");
 }
 
 public sealed record HistoryRow(string Who, string When, string Text)
@@ -67,7 +67,7 @@ public sealed partial class CustomFieldRow : ObservableObject
     public string Name => Definition.Name;
     public IReadOnlyList<NamedItem> Choices { get; }
     public bool IsChoice => Choices.Count > 0;
-    public string Placeholder => Definition.Type switch { FieldType.Number => "a number", FieldType.Date => "2026-10-31", _ => "" };
+    public string Placeholder => Definition.Type switch { FieldType.Number => L.T("a number"), FieldType.Date => "2026-10-31", _ => "" };
 
     [ObservableProperty] private string _text;
     [ObservableProperty] private NamedItem? _choice;
@@ -314,7 +314,7 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
         ShowSprint = board.Sprints.Count > 0 && level == IssueTypeLevel.Standard;
         Fill(SprintChoices, [new NamedItem(null, L.T("Backlog")), .. board.Sprints.Values
             .Where(s => s.State != SprintState.Closed || s.Id == issue.Sprint).OrderBy(s => s.Sequence)
-            .Select(s => new NamedItem(s.Id, s.State == SprintState.Active ? s.Name + " (active)" : s.Name))]);
+            .Select(s => new NamedItem(s.Id, s.State == SprintState.Active ? s.Name + L.T(" (active)") : s.Name))]);
         Sprint = SprintChoices.FirstOrDefault(s => s.Id == issue.Sprint) ?? SprintChoices[0];
 
         ShowPoints = level != IssueTypeLevel.Subtask;
@@ -322,7 +322,7 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
         OriginalEstimate = _context.Duration(issue.Time.OriginalMinutes);
         RemainingEstimate = issue.Time.RemainingMinutes is { } rm ? WorkDuration.Format(rm, project.Settings) : "";
         var spent = issue.Time.SpentMinutes + board.ChildrenOf(issue.Id).Sum(c => c.Time.SpentMinutes);
-        TimeSpent = spent > 0 ? WorkDuration.Format(spent, project.Settings) + " logged" : L.T("nothing logged");
+        TimeSpent = spent > 0 ? WorkDuration.Format(spent, project.Settings) + L.T(" logged") : L.T("nothing logged");
         var total = spent + (issue.Time.RemainingMinutes ?? 0);
         TimeProgress = total > 0 ? (double)spent / total : 0;
         Start = issue.Start?.ToDateTime(TimeOnly.MinValue);
@@ -354,7 +354,7 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
         foreach (var child in children)
             Children.Add(new IssueItemViewModel(child, board, _context) { Host = this });
         var done = children.Count(board.IsDone);
-        ChildrenProgress = children.Count == 0 ? null : $"{done} of {children.Count} done";
+        ChildrenProgress = children.Count == 0 ? null : L.T($"{done} of {children.Count} done");
         ChildrenDone = children.Count == 0 ? 0 : (double)done / children.Count;
 
         Links.Clear();
@@ -841,13 +841,13 @@ public static class HistoryText
             case "created":
                 return L.T("created the issue");
             case "comment":
-                return entry.To is not null ? "added a comment" : "deleted a comment";
+                return entry.To is not null ? L.T("added a comment") : L.T("deleted a comment");
             case "worklog":
-                return entry.To is not null ? $"logged {Minutes(entry.To)}" : L.T($"deleted {Minutes(entry.From)} of logged work");
+                return entry.To is not null ? L.T($"logged {Minutes(entry.To)}") : L.T($"deleted {Minutes(entry.From)} of logged work");
             case "attachment":
-                return entry.To is not null ? $"attached {entry.To}" : $"removed {entry.From}";
+                return entry.To is not null ? L.T($"attached {entry.To}") : L.T($"removed {entry.From}");
             case "link":
-                return entry.To is not null ? "added a link " + LinkText(entry.To) : "removed a link " + LinkText(entry.From);
+                return entry.To is not null ? L.T("added a link ") + LinkText(entry.To) : L.T("removed a link ") + LinkText(entry.From);
             case "key":
                 return L.T($"moved it from {entry.From} to {entry.To}");
             case IssueFields.Description:
@@ -858,9 +858,9 @@ public static class HistoryText
         var to = Value(entry.Field, entry.To);
         return (from, to) switch
         {
-            (null, _) => $"set {name} to {to}",
-            (_, null) => $"cleared {name} (was {from})",
-            _ => $"changed {name} from {from} to {to}",
+            (null, _) => L.T($"set {name} to {to}"),
+            (_, null) => L.T($"cleared {name} (was {from})"),
+            _ => L.T($"changed {name} from {from} to {to}"),
         };
 
         string Minutes(string? raw) => int.TryParse(raw, out var m) ? WorkDuration.Format(m, project.Settings) : raw ?? "";

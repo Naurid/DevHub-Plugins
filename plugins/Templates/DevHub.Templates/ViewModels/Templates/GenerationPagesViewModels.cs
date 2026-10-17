@@ -170,7 +170,7 @@ public sealed class CommandResultRowViewModel(CommandResult result) : ViewModelB
     public string? Error { get; } = result.Error;
     public string IconKind { get; } = result.Succeeded ? Controls.IconKind.Success : Controls.IconKind.Error;
 
-    public override string ToString() => Succeeded ? $"{Name}: done" : $"{Name}: {Error}";
+    public override string ToString() => Succeeded ? L.T($"{Name}: done") : $"{Name}: {Error}";
 }
 
 /// <summary>A project New Project made, on its start page: open it (Git's repository tab) or show it in Explorer.</summary>

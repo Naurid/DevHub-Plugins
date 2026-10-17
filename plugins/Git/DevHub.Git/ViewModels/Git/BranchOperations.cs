@@ -190,7 +190,7 @@ public sealed class BranchOperations(GitRepositoryClient? client, IDialogService
         }
         catch (Exception ex)
         {
-            status.Show($"{what} failed: {(ex is GitException git && git.StandardError.Trim() is { Length: > 0 } e ? FirstLine(e) : ex.Message)}");
+            status.Show(L.T($"{what} failed: {(ex is GitException git && git.StandardError.Trim() is { Length: > 0 } e ? FirstLine(e) : ex.Message)}"));
         }
         await refresh();
     }

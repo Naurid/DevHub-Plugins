@@ -142,7 +142,7 @@ public static class TemplateContent
             return problem;
         var from = FullPath(template, path);
         if (from is null || path.Length == 0 || !(File.Exists(from) || Directory.Exists(from)))
-            return $"\"{path}\" doesn't exist.";
+            return L.T($"\"{path}\" doesn't exist.");
         var to = Path.Combine(Path.GetDirectoryName(from)!, newName);
         var caseOnly = string.Equals(from, to, StringComparison.OrdinalIgnoreCase);
         if (!caseOnly && (File.Exists(to) || Directory.Exists(to)))
@@ -181,7 +181,7 @@ public static class TemplateContent
         else if (File.Exists(full))
             File.Delete(full);
         else
-            return $"\"{path}\" doesn't exist.";
+            return L.T($"\"{path}\" doesn't exist.");
         return null;
     }
 

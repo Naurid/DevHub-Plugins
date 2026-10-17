@@ -38,7 +38,7 @@
                         <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.RowBelow}">
                             <TextBlock Text="{Binding Name}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
                             <TextBox Grid.Column="1" Text="{Binding Days}" MinWidth="{DynamicResource Size.NumberBox}"
-                                     AutomationProperties.Name="{Binding Name, StringFormat='Days available for {0}'}" />
+                                     AutomationProperties.Name="{Binding Name, StringFormat={l:T 'Days available for {0}'}}" />
                             <TextBlock Grid.Column="2" Classes="secondary" Text="{l:T 'days'}" VerticalAlignment="Center" />
                         </Grid>
                     </DataTemplate>

@@ -34,7 +34,7 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-                    <TextBlock Classes="small secondary" Text="{Binding LibraryText, StringFormat='Library: {0}'}"
+                    <TextBlock Classes="small secondary" Text="{Binding LibraryText, StringFormat={l:T 'Library: {0}'}}"
                                VerticalAlignment="Center" />
                 </WrapPanel>
             </StackPanel>

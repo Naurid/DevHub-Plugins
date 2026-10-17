@@ -97,8 +97,8 @@ public abstract record SmartCommand(Issue Issue)
     public string Describe(ProjectSettings settings) => this switch
     {
         Transition t => L.T($"{Issue.Key}: move to {t.Status.Name}"),
-        Comment c => $"{Issue.Key}: comment \"{(c.Text.Length > 60 ? c.Text[..60] + "…" : c.Text)}\"",
-        Time w => $"{Issue.Key}: log {WorkDuration.Format(w.Minutes, settings)}",
+        Comment c => L.T($"{Issue.Key}: comment \"{(c.Text.Length > 60 ? c.Text[..60] + "…" : c.Text)}\""),
+        Time w => L.T($"{Issue.Key}: log {WorkDuration.Format(w.Minutes, settings)}"),
         _ => Issue.Key,
     };
 

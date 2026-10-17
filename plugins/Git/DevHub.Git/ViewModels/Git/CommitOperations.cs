@@ -151,7 +151,7 @@ public sealed class CommitOperations(GitRepositoryClient? client, IDialogService
         catch (Exception ex)
         {
             // "error: …\nhint: …": the first line says it; the rest is in the Git Console.
-            status.Show($"{what} failed: {(ex is GitException git && git.StandardError.Trim() is { Length: > 0 } e ? e.Split('\n')[0].Trim() : ex.Message)}");
+            status.Show(L.T($"{what} failed: {(ex is GitException git && git.StandardError.Trim() is { Length: > 0 } e ? e.Split('\n')[0].Trim() : ex.Message)}"));
         }
         await refresh();
     }

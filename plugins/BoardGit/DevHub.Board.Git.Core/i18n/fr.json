@@ -1,0 +1,12 @@
+{
+  "The {0} branch has no board.json: it isn't a board.": "La branche {0} n'a pas de board.json : ce n'est pas un tableau.",
+  "git cat-file answered something unexpected.": "git cat-file a répondu quelque chose d'inattendu.",
+  "\"{0}\" isn't a path a board may write.": "« {0} » n'est pas un chemin où un tableau peut écrire.",
+  "The repository already has a {0} branch.": "Le dépôt a déjà une branche {0}.",
+  "The board was changed somewhere else.": "Le tableau a été modifié ailleurs.",
+  "git hash-object answered something unexpected.": "git hash-object a répondu quelque chose d'inattendu.",
+  "On the repository's devhub/board branch": "Sur la branche devhub/board du dépôt",
+  "{0}: move to {1}": "{0} : passer à {1}",
+  "{0}: comment \"{1}\"": "{0} : commentaire « {1} »",
+  "{0}: log {1}": "{0} : temps {1}"
+}

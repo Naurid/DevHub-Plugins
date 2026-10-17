@@ -66,12 +66,12 @@
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing}">
                             <c:Badge Classes="accent"
                                      IsVisible="{Binding Branch, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                     ToolTip.Tip="{Binding Branch, StringFormat='Current branch: {0}'}">
+                                     ToolTip.Tip="{Binding Branch, StringFormat={l:T 'Current branch: {0}'}}">
                                 <TextBlock Text="{Binding Branch}" TextTrimming="CharacterEllipsis" />
                             </c:Badge>
                             <!-- Ahead / behind the upstream. -->
                             <TextBlock Grid.Column="1" Classes="small secondary" Text="{Binding SyncText}" VerticalAlignment="Center"
-                                       ToolTip.Tip="{Binding Upstream, StringFormat='Commits ahead (↑) / behind (↓) {0}'}"
+                                       ToolTip.Tip="{Binding Upstream, StringFormat={l:T 'Commits ahead (↑) / behind (↓) {0}'}}"
                                        IsVisible="{Binding SyncText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                         </Grid>
                     </StackPanel>

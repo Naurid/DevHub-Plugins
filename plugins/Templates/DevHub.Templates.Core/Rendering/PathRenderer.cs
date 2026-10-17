@@ -55,8 +55,8 @@ public static class PathRenderer
                 var because = result.UsedVariables.Count switch
                 {
                     0 => "",
-                    1 => $" (from {{{{{result.UsedVariables[0]}}}}})",
-                    _ => $" (from {string.Join(", ", result.UsedVariables.Select(v => "{{" + v + "}}"))})",
+                    1 => L.T($" (from {{{{{result.UsedVariables[0]}}}}})"),
+                    _ => L.T($" (from {string.Join(", ", result.UsedVariables.Select(v => "{{" + v + "}}"))})"),
                 };
                 return new RenderedPath(null, $"\"{result.Text}\" in \"{path}\" {problem}{because}.");
             }

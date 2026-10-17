@@ -114,7 +114,7 @@ public sealed partial class DevelopmentSectionViewModel : IssueSectionViewModel
                 Commits.Add(new CommitRow(commit.ShortSha, commit.Subject, commit.Author, DevHub.ViewModels.Board.IssueDetailViewModel.RelativeOrDate(commit.Date)));
             Summary = info.Branches.Count == 0 && info.Commits.Count == 0
                 ? L.T($"No branch or commit mentions {_key} yet.")
-                : $"{info.Branches.Count} branch(es), {info.Commits.Count} commit(s)";
+                : L.T($"{info.Branches.Count} branch(es), {info.Commits.Count} commit(s)");
             await LoadPullRequestsAsync(info.Branches, cts.Token);
         }
         catch (OperationCanceledException)

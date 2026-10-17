@@ -164,10 +164,10 @@ public static class Kpis
                 var before = double.TryParse(h.From, NumberStyles.Float, CultureInfo.InvariantCulture, out var b) ? b : 0;
                 var after = double.TryParse(h.To, NumberStyles.Float, CultureInfo.InvariantCulture, out var a) ? a : 0;
                 if (Math.Abs(after - before) > 1e-9 && issue.Created < from)
-                    changes.Add(new ScopeChange(issue, $"re-estimated {before:0.##} → {after:0.##}", after - before, h.At));
+                    changes.Add(new ScopeChange(issue, L.T($"re-estimated {before:0.##} → {after:0.##}"), after - before, h.At));
             }
             if (issue.Resolved is { } r && r >= from && r <= to && issue.Resolution is { } res && res != "done")
-                changes.Add(new ScopeChange(issue, "dropped (" + (board.Project.Resolution(res)?.Name ?? res) + ")", -(issue.StoryPoints ?? 0), r));
+                changes.Add(new ScopeChange(issue, L.T("dropped (") + (board.Project.Resolution(res)?.Name ?? res) + ")", -(issue.StoryPoints ?? 0), r));
         }
         return changes.OrderBy(c => c.At).ToList();
     }

@@ -147,7 +147,7 @@ public sealed class SidebarBranchNode : SidebarNode
     public IAsyncRelayCommand RenameCommand { get; }
     public IAsyncRelayCommand DeleteCommand { get; }
 
-    public override string ToString() => IsCurrent ? $"{Branch.ShortName} (current)" : Branch.ShortName;
+    public override string ToString() => IsCurrent ? L.T($"{Branch.ShortName} (current)") : Branch.ShortName;
 }
 
 /// <summary>A muted line in place of an empty group ("No remotes yet: Manage Remotes…"); double-click acts.</summary>

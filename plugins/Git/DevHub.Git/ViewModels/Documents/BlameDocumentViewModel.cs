@@ -33,7 +33,7 @@ public sealed partial class BlameDocumentViewModel : DocumentViewModelBase
         _client = client;
         _editor = editor;
         var name = filePath[(filePath.LastIndexOf('/') + 1)..];
-        Title = commitId is null ? $"{name} (blame)" : $"{name} @ {commitId[..Math.Min(8, commitId.Length)]}";
+        Title = commitId is null ? L.T($"{name} (blame)") : $"{name} @ {commitId[..Math.Min(8, commitId.Length)]}";
         Subtitle = commitId is null ? L.T($"{filePath} · as on disk now") : L.T($"{filePath} · in commit {commitId[..Math.Min(8, commitId.Length)]}");
         _ = LoadAsync();
     }
@@ -107,7 +107,7 @@ public sealed partial class BlameDocumentViewModel : DocumentViewModelBase
             var commits = committed.Select(l => l.Commit.Id).Distinct().Count();
             var authors = committed.Select(l => l.Commit.Author).Distinct().Count();
             Summary = lines.Count == 0 ? L.T("Empty file")
-                : $"{lines.Count:N0} line{(lines.Count == 1 ? "" : "s")} · {commits:N0} commit{(commits == 1 ? "" : "s")} · {authors:N0} author{(authors == 1 ? "" : "s")}";
+                : L.T($"{lines.Count:N0} line{(lines.Count == 1 ? "" : "s")} · {commits:N0} commit{(commits == 1 ? "" : "s")} · {authors:N0} author{(authors == 1 ? "" : "s")}");
             Error = lines.Count == 0 ? L.T("The file is empty.") : null;
         }
         catch (OperationCanceledException)

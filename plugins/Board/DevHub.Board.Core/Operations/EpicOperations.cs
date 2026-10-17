@@ -2,6 +2,7 @@ using System.Text.RegularExpressions;
 using DevHub.Board.Core.Fields;
 using DevHub.Board.Core.Model;
 using DevHub.Board.Core.Storage;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Board.Core;
 
@@ -75,6 +76,6 @@ public sealed record CreateIssueWithChildren(CreateIssue Parent, IReadOnlyList<C
             current = current.Apply(step, board.Version);
         }
         var parent = current.Issue(parentId)!;
-        return new BoardChange($"{parent.Key}: created \"{parent.Summary}\" with {Children.Count} issue(s)", files);
+        return new BoardChange(L.T($"{parent.Key}: created \"{parent.Summary}\" with {Children.Count} issue(s)"), files);
     }
 }

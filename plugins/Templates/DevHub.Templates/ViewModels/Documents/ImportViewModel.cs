@@ -258,7 +258,7 @@ public sealed class ImportNodeViewModel(ImportEntry entry) : ViewModelBase
     public bool IsFolder => Entry.IsFolder;
     public bool IsIgnored => Entry.IsIgnored;
     public bool HasHits => Entry.Hits > 0;
-    public string HitsText => Entry.Hits == 1 ? "1 placeholder" : $"{Entry.Hits} placeholders";
+    public string HitsText => Entry.Hits == 1 ? L.T("1 placeholder") : L.T($"{Entry.Hits} placeholders");
 
     /// <summary>Its name in the template when that differs ("{{Name}}.csproj").</summary>
     public string? TargetName => Entry.TargetPath is { } target && target[(target.LastIndexOf('/') + 1)..] is var name && name != Name ? "→ " + name : null;

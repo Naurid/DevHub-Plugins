@@ -238,7 +238,7 @@ public sealed partial class RetrospectivePageViewModel : BoardPageViewModel
             foreach (var s in board.Sprints.Values.Where(s => s.State != SprintState.Future)
                          .OrderByDescending(s => s.State == SprintState.Closed ? 0 : 1)
                          .ThenByDescending(s => s.Completed ?? s.Start ?? DateTimeOffset.MinValue))
-                Sprints.Add(new NamedItem(s.Id, s.State == SprintState.Active ? $"{s.Name} (running)" : s.Name));
+                Sprints.Add(new NamedItem(s.Id, s.State == SprintState.Active ? L.T($"{s.Name} (running)") : s.Name));
             // By default the last sprint that finished: the one a retrospective is about.
             Sprint = Sprints.FirstOrDefault(s => s.Id == selected)
                      ?? Sprints.FirstOrDefault(s => board.Sprints[s.Id!].State == SprintState.Closed)
@@ -288,8 +288,8 @@ public sealed partial class RetrospectivePageViewModel : BoardPageViewModel
 
             SprintSummary = string.Join(" · ", new[]
             {
-                sprint.Goal.Length > 0 ? "Goal: " + sprint.Goal : null,
-                sprint.State == SprintState.Closed ? $"committed {sprint.CommittedPoints:0.##} points, completed {sprint.CompletedPoints:0.##}" : L.T("still running"),
+                sprint.Goal.Length > 0 ? L.T("Goal: ") + sprint.Goal : null,
+                sprint.State == SprintState.Closed ? L.T($"committed {sprint.CommittedPoints:0.##} points, completed {sprint.CompletedPoints:0.##}") : L.T("still running"),
                 retro.Updated == default ? L.T("not held yet") : null,
             }.OfType<string>());
         }

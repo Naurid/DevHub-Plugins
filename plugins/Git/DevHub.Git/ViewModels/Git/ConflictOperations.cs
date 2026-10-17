@@ -58,6 +58,16 @@ public sealed partial class ConflictOperations : ObservableObject
         _ => "",
     };
 
+    // The operation's own name, for "Abort Merge" and "Merge finished.".
+    private string Name => Operation switch
+    {
+        RepositoryOperation.Merging => L.T("Merge"),
+        RepositoryOperation.Rebasing => L.T("Rebase"),
+        RepositoryOperation.CherryPicking => L.T("Cherry-pick"),
+        RepositoryOperation.Reverting => L.T("Revert"),
+        _ => "",
+    };
+
     /// <summary>What to do next, under the title.</summary>
     public string Hint => ConflictCount switch
     {
@@ -109,7 +119,7 @@ public sealed partial class ConflictOperations : ObservableObject
     private async Task AbortAsync()
     {
         var what = Title.Replace(" in progress", "").ToLowerInvariant();
-        var confirm = new ConfirmDialogViewModel(L.T($"Abort {Title.Split(' ')[0]}"),
+        var confirm = new ConfirmDialogViewModel(L.T($"Abort {Name}"),
             L.T($"Abort the {what}? The branch and files go back to how they were before it started; conflicts you've resolved so far are thrown away."), L.T("Abort"));
         if (await _dialogs.ShowDialogAsync(confirm))
             await RunAsync("Abort", async client =>
@@ -219,7 +229,7 @@ public sealed partial class ConflictOperations : ObservableObject
         _status.Show(outcome switch
         {
             OperationOutcome.Conflicts => L.T("Stopped on conflicts again (the next commit): resolve them, then Continue."),
-            _ => $"{Title.Replace(" in progress", "")} finished.",
+            _ => L.T($"{Name} finished."),
         });
 
     private async Task RunAsync(string what, Func<GitRepositoryClient, Task> operation)
@@ -233,7 +243,7 @@ public sealed partial class ConflictOperations : ObservableObject
         }
         catch (Exception ex)
         {
-            _status.Show($"{what} failed: {Describe(ex)}");
+            _status.Show(L.T($"{what} failed: {Describe(ex)}"));
         }
         finally
         {

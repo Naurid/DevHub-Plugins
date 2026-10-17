@@ -33,7 +33,7 @@
                 WindowDecorationProperties.ElementRole="User"
                 Command="{Binding Active.Repository.BranchPopup.OpenCommand, FallbackValue={x:Null}}"
                 IsVisible="{Binding Active.Repository.Branch, Converter={x:Static StringConverters.IsNotNullOrEmpty}, FallbackValue=False}"
-                ToolTip.Tip="{Binding Active.Repository.Branch, StringFormat='Branch {0}: click for branches (Ctrl+Shift+`)', FallbackValue=''}"
+                ToolTip.Tip="{Binding Active.Repository.Branch, StringFormat={l:T 'Branch {0}: click for branches (Ctrl+Shift+`)'}, FallbackValue=''}"
                 AutomationProperties.Name="{l:T 'Branches'}">
             <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}">
                 <c:Icon Kind="vcs" VerticalAlignment="Center" />

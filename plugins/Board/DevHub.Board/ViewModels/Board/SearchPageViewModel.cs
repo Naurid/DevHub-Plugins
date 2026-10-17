@@ -117,14 +117,14 @@ public sealed partial class SearchPageViewModel : BoardPageViewModel, ICardHost
             return;
         }
         var results = compiled.Run(board.Issues.Values);
-        ResultText = results.Count == 1 ? "1 issue" : $"{results.Count} issues";
+        ResultText = results.Count == 1 ? L.T("1 issue") : L.T($"{results.Count} issues");
         if (!AsBoard)
         {
             foreach (var issue in results.Take(1000))
                 Results.Add(new SearchRow(new IssueItemViewModel(issue, board, Context) { Host = this }, Context.PersonName(issue.Assignee),
                     IssueDetailViewModel.RelativeOrDate(issue.Updated)));
             if (results.Count > 1000)
-                ResultText += " (first 1000 shown)";
+                ResultText += L.T(" (first 1000 shown)");
             return;
         }
         // As a board: the shown board's columns, results in them; statuses on no column go last.

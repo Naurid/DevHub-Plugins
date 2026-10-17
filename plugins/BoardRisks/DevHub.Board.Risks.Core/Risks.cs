@@ -178,7 +178,7 @@ public sealed record AddRisk(string Title) : IBoardOperation
         if (all.Any(r => r.Id == risk.Id))
             throw new BoardRuleException(L.T("That risk id is taken."));
         change.Write(RiskRegister.PathOf(risk.Id), risk);
-        return change.Build($"{risk.Key} raised: {risk.Title}");
+        return change.Build(L.T($"{risk.Key} raised: {risk.Title}"));
     }
 }
 
@@ -191,7 +191,7 @@ public sealed record EditRisk(Risk Risk) : IBoardOperation
         var risk = RiskRules.Check(board, Risk with { Number = before.Number, Created = before.Created, Updated = context.Now });
         var change = new ChangeBuilder(board, context);
         change.Write(RiskRegister.PathOf(risk.Id), risk);
-        return change.Build($"{risk.Key} changed");
+        return change.Build(L.T($"{risk.Key} changed"));
     }
 }
 
@@ -202,7 +202,7 @@ public sealed record DeleteRisk(string RiskId) : IBoardOperation
         var risk = RiskRegister.Get(board, RiskId) ?? throw new BoardRuleException(L.T("That risk doesn't exist any more."));
         var change = new ChangeBuilder(board, context);
         change.Delete(RiskRegister.PathOf(RiskId));
-        return change.Build($"{risk.Key} deleted");
+        return change.Build(L.T($"{risk.Key} deleted"));
     }
 }
 

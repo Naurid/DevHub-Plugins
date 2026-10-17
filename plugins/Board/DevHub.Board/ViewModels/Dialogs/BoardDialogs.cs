@@ -591,7 +591,7 @@ public sealed partial class BulkEditDialogViewModel : DialogViewModelBase
         Error = null;
         var snapshot = _context.Snapshot;
         var issues = _issueIds.Select(snapshot.Issue).OfType<Issue>().ToList();
-        var label = $"{issues.Count} issues";
+        var label = L.T($"{issues.Count} issues");
         switch (Field.Id)
         {
             case StatusField:
@@ -642,7 +642,7 @@ public sealed partial class BulkEditDialogViewModel : DialogViewModelBase
                     .ToList<IBoardOperation>();
                 if (steps.Count == 0)
                     return Fail("They all have those labels already.");
-                return await _context.RunAsync(new Batch(steps, $"{label}: labels {string.Join(" ", added)} added"));
+                return await _context.RunAsync(new Batch(steps, L.T($"{label}: labels {string.Join(" ", added)} added")));
             }
         }
 

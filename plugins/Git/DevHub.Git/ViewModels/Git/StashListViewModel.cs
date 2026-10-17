@@ -146,7 +146,7 @@ public sealed partial class StashListViewModel : ViewModelBase
         catch (Exception ex)
         {
             // e.g. "Your local changes to the following files would be overwritten": the first line says it.
-            _status.Show($"{what} failed: {(ex is GitException git && git.StandardError.Trim() is { Length: > 0 } e ? e.Split('\n')[0].Trim() : ex.Message)}");
+            _status.Show(L.T($"{what} failed: {(ex is GitException git && git.StandardError.Trim() is { Length: > 0 } e ? e.Split('\n')[0].Trim() : ex.Message)}"));
         }
         finally
         {

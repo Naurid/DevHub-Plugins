@@ -240,9 +240,9 @@ public sealed partial class PreviewPageViewModel : ViewModelBase, Controls.ITree
     private static string Describe(TemplateStep edit) => edit.Op switch
     {
         StepOp.CreateFolder => L.T($"new folder {edit.Path}"),
-        StepOp.Delete => $"delete {edit.Path}",
-        StepOp.Rename => $"rename {edit.From} to {edit.To}",
-        _ => $"move {edit.From} to {edit.To}",
+        StepOp.Delete => L.T($"delete {edit.Path}"),
+        StepOp.Rename => L.T($"rename {edit.From} to {edit.To}"),
+        _ => L.T($"move {edit.From} to {edit.To}"),
     };
 
     // ── Drag and drop (TreeDragDrop): a row onto a folder (or a file: its folder), or onto the empty space (the top). ──
@@ -316,7 +316,7 @@ public sealed partial class PreviewPageViewModel : ViewModelBase, Controls.ITree
         var fromTemplate = files.Count(f => f.Origin == EntryOrigin.Template);
         var moved = files.Count(f => f.IsMoved);
         Summary = L.T($"{Count(files.Count, L.T("file"))}: {fromTemplate} from the template, {files.Count - fromTemplate} from {_commandName}")
-                  + (moved > 0 ? $"; {moved} moved" : "")
+                  + (moved > 0 ? L.T($"; {moved} moved") : "")
                   + (_staged.Edits.Count > 0 ? L.T($"; {Count(_staged.Edits.Count, L.T("edit"))} of yours") : "");
     }
 
@@ -345,13 +345,13 @@ public sealed partial class PreviewPageViewModel : ViewModelBase, Controls.ITree
         Deleted = changes.Deleted;
         var parts = new List<string> { $"{Count(changes.Added.Count, L.T("new file"))}" };
         if (changes.Overwritten.Count > 0)
-            parts.Add($"{changes.Overwritten.Count} overwritten");
+            parts.Add(L.T($"{changes.Overwritten.Count} overwritten"));
         if (changes.Kept.Count > 0)
-            parts.Add($"{Count(changes.Kept.Count, L.T("file"))} of yours kept instead of the template's");
+            parts.Add(L.T($"{Count(changes.Kept.Count, L.T("file"))} of yours kept instead of the template's"));
         if (changes.Moved.Count > 0)
-            parts.Add($"{Count(changes.Moved.Count, L.T("file"))} of yours moved");
+            parts.Add(L.T($"{Count(changes.Moved.Count, L.T("file"))} of yours moved"));
         if (changes.Deleted.Count > 0)
-            parts.Add($"{Count(changes.Deleted.Count, L.T("file"))} of yours deleted");
+            parts.Add(L.T($"{Count(changes.Deleted.Count, L.T("file"))} of yours deleted"));
         Summary = string.Join("; ", parts) + (changes.IsEmpty ? L.T(". Nothing would change.") : ".");
     }
 
@@ -389,7 +389,7 @@ public sealed partial class ConflictRowViewModel : ViewModelBase, IDisposable
     /// <summary>The row is replaced (the list was rebuilt): stop reporting.</summary>
     public void Dispose() => _changed = null;
 
-    public override string ToString() => Overwrite ? $"{Path}: overwrite" : L.T($"{Path}: keep yours");
+    public override string ToString() => Overwrite ? L.T($"{Path}: overwrite") : L.T($"{Path}: keep yours");
 }
 
 /// <summary>What Save to Template did: saved (the edits are now steps) or not, and a sentence about it.</summary>
@@ -449,7 +449,7 @@ public sealed partial class PreviewNodeViewModel : ViewModelBase
     public static IEnumerable<PreviewNodeViewModel> Sorted(IEnumerable<PreviewNodeViewModel> nodes) =>
         nodes.OrderBy(n => n.IsFolder ? 0 : 1).ThenBy(n => n.Name, StringComparer.OrdinalIgnoreCase);
 
-    public override string ToString() => IsMoved ? $"{Name}, {MovedText}" : IsFolder ? $"{Name} folder" : Name;
+    public override string ToString() => IsMoved ? $"{Name}, {MovedText}" : IsFolder ? L.T($"{Name} folder") : Name;
 }
 
 /// <summary>Asks for one file or folder name (New Folder, Rename); refuses names Windows doesn't allow.</summary>

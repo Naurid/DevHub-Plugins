@@ -214,7 +214,7 @@ public sealed partial class TemplateGroupViewModel(TemplateGroup group, bool byL
 
     [ObservableProperty] private bool _isExpanded = true;
 
-    public override string ToString() => $"{Name}, {Templates.Count} templates";
+    public override string ToString() => L.T($"{Name}, {Templates.Count} templates");
 }
 
 /// <summary>One template in the list.</summary>
@@ -238,5 +238,5 @@ public sealed class TemplateRowViewModel(TemplateEntry template, bool byLanguage
         ? string.Join(Environment.NewLine, Template.Problems)
         : $"{Template.Manifest!.Description}{Environment.NewLine}{Template.Reference}".Trim();
 
-    public override string ToString() => IsBroken ? $"{Name} (broken)" : Name;
+    public override string ToString() => IsBroken ? L.T($"{Name} (broken)") : Name;
 }

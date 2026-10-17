@@ -1,0 +1,11 @@
+{
+  "GitHub refused the name \"{0}\": a repository with that name probably exists on your account already.": "GitHub a refusé le nom « {0} » : un dépôt de ce nom existe probablement déjà sur votre compte.",
+  "\"{0}\" isn't a method DevHub sends to GitHub.": "« {0} » n'est pas une méthode que DevHub envoie à GitHub.",
+  "\"{0}\" isn't on api.github.com; DevHub sends your GitHub sign-in nowhere else.": "« {0} » n'est pas sur api.github.com ; DevHub n'envoie votre connexion GitHub nulle part ailleurs.",
+  "Couldn't reach GitHub. Check your internet connection.": "Impossible de joindre GitHub. Vérifiez votre connexion internet.",
+  "GitHub didn't accept the sign-in (it expired or was revoked). Sign in again in Settings → GitHub.": "GitHub n'a pas accepté la connexion (elle a expiré ou a été révoquée). Reconnectez-vous dans Paramètres → GitHub.",
+  "GitHub refused the request: the sign-in lacks the permission, or the API rate limit was hit. Try again later or sign in again.": "GitHub a refusé la requête : la connexion n'a pas la permission, ou la limite d'appels de l'API est atteinte. Réessayez plus tard ou reconnectez-vous.",
+  "GitHub answered {0} {1}.": "GitHub a répondu {0} {1}.",
+  "Nobody is signed in to GitHub. Sign in in Settings → GitHub.": "Personne n'est connecté à GitHub. Connectez-vous dans Paramètres → GitHub.",
+  "Git Credential Manager has no stored sign-in for {0}. Sign in again in Settings → GitHub.": "Git Credential Manager n'a pas de connexion enregistrée pour {0}. Reconnectez-vous dans Paramètres → GitHub."
+}

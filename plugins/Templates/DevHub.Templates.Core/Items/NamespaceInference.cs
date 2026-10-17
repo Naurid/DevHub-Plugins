@@ -39,9 +39,9 @@ public static class NamespaceInference
             }
 
             if (FromCsproj(dir) is { } csproj)
-                return Guess(csproj.Root, below, $"from {csproj.File}");
+                return Guess(csproj.Root, below, L.T($"from {csproj.File}"));
             if (FromAsmdef(dir) is { } asmdef)
-                return Guess(asmdef.Root, below, $"from {asmdef.File}");
+                return Guess(asmdef.Root, below, L.T($"from {asmdef.File}"));
             if (IsUnityProject(dir))
             {
                 // Inside Assets: the folders below it, without Assets itself and a leading Scripts.

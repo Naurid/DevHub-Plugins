@@ -204,10 +204,10 @@ public sealed partial class ReportsPageViewModel : BoardPageViewModel, ICardHost
                         var detail = string.Join(" · ", new[]
                         {
                             row[2].Length > 0 ? $"{row[2]} – {row[3]}" : null,
-                            row[5].Length > 0 ? $"capacity {row[5]}" : null,
+                            row[5].Length > 0 ? L.T($"capacity {row[5]}") : null,
                             row[7].Length > 0 ? L.T($"{row[7]} focused days") : null,
                             row[8].Length > 0 ? $"{(row[1] == nameof(SprintState.Future) ? L.T("planned") : L.T("committed"))} {row[8]}" : null,
-                            row[9].Length > 0 ? $"completed {row[9]}" : null,
+                            row[9].Length > 0 ? L.T($"completed {row[9]}") : null,
                         }.OfType<string>());
                         Rows.Add(new ReportRow(row[0], row[4], detail, double.TryParse(row[8], NumberStyles.Float, CultureInfo.InvariantCulture, out var planned) && planned > 0
                             && double.TryParse(row[9], NumberStyles.Float, CultureInfo.InvariantCulture, out var done) ? Math.Min(1, done / planned) : -1));
@@ -278,7 +278,7 @@ public sealed partial class ReportsPageViewModel : BoardPageViewModel, ICardHost
                     var leads = Kpis.LeadTimes(board, now);
                     Chart = Kpis.LeadTimeChart(leads);
                     Summary = leads.Count == 0 ? L.T("No issue was resolved in the last 90 days.")
-                        : $"{leads.Count} issues · average {leads.Average(l => l.Days):0.#} days · median {Median(leads.Select(l => l.Days)):0.#} days";
+                        : L.T($"{leads.Count} issues · average {leads.Average(l => l.Days):0.#} days · median {Median(leads.Select(l => l.Days)):0.#} days");
                     if (leads.Count == 0)
                         Empty = Summary;
                     break;
@@ -299,7 +299,7 @@ public sealed partial class ReportsPageViewModel : BoardPageViewModel, ICardHost
                     var cycles = BoardReports.CycleTimes(board, now);
                     Chart = BoardReports.ControlChart(cycles) with { Title = L.T("Control chart"), YTitle = L.T("Days") };
                     Summary = cycles.Count == 0 ? L.T("No issue was resolved in the last 90 days.")
-                        : $"{cycles.Count} issues · average {cycles.Average(c => c.Days):0.#} days · median {Median(cycles.Select(c => c.Days)):0.#} days";
+                        : L.T($"{cycles.Count} issues · average {cycles.Average(c => c.Days):0.#} days · median {Median(cycles.Select(c => c.Days)):0.#} days");
                     if (cycles.Count == 0)
                         Empty = Summary;
                     break;
@@ -310,7 +310,7 @@ public sealed partial class ReportsPageViewModel : BoardPageViewModel, ICardHost
                     var epics = BoardReports.Epics(board);
                     foreach (var e in epics)
                         Rows.Add(new ReportRow(e.Epic.Key, e.Epic.Summary,
-                            $"{e.DoneIssues}/{e.Issues} issues · {N(e.DonePoints)}/{N(e.Points)} points", e.Fraction));
+                            L.T($"{e.DoneIssues}/{e.Issues} issues · {N(e.DonePoints)}/{N(e.Points)} points"), e.Fraction));
                     Chart = new ChartData(epics.Select(e => e.Epic.Summary).ToList(),
                     [
                         new ChartSeries(L.T("Done"), epics.Select(e => (double?)e.DonePoints).ToList()),
@@ -525,7 +525,7 @@ public sealed partial class ReportsPageViewModel : BoardPageViewModel, ICardHost
         Chart = _forecast.Chart;
         foreach (var s in _forecast.Scenarios)
             ScenarioRows.Add(new ForecastRow(s.Name, L.T($"{N(s.Velocity)} points per sprint"), s.Text));
-        TargetText = target is { } t ? $"Target: {t:d MMM yyyy}" : L.T("No target date (versions have release dates, epics due dates)");
+        TargetText = target is { } t ? L.T($"Target: {t:d MMM yyyy}") : L.T("No target date (versions have release dates, epics due dates)");
         Summary = L.T($"{N(_forecast.Remaining)} of {N(_forecast.ScopePoints)} points left") +
                   (_forecast.Unestimated > 0 ? L.T($" · {_forecast.Unestimated} open issues not estimated (counted as 0)") : "") +
                   L.T($" · next sprint starts {_forecast.NextSprintStart:d MMM}, {_forecast.SprintDays} days each");
@@ -548,7 +548,7 @@ public sealed partial class ReportsPageViewModel : BoardPageViewModel, ICardHost
         if (Baseline is not { } baseline || _forecast is null)
             return;
         CompareText = L.T($"Since \"{baseline.Name}\" ({baseline.Taken.LocalDateTime:d MMM}): scope {N(baseline.ScopePoints)} → {N(_forecast.ScopePoints)} points, ") +
-                      $"left {N(baseline.ScopePoints - baseline.DonePoints)} → {N(_forecast.Remaining)}";
+                      L.T($"left {N(baseline.ScopePoints - baseline.DonePoints)} → {N(_forecast.Remaining)}");
         foreach (var (name, before, now, moved) in BaselineStore.Compare(baseline, _forecast))
             CompareRows.Add(new ForecastRow(name, $"{before} → {now}", moved switch
             {
@@ -590,7 +590,7 @@ public sealed partial class ReportsPageViewModel : BoardPageViewModel, ICardHost
         Chart = Kpis.ScopeChangeChart(board, changes);
         RowsTitle = L.T("Changes");
         foreach (var c in changes)
-            Rows.Add(new ReportRow(c.Issue.Key, c.Issue.Summary, $"{c.What} · {(c.Points >= 0 ? "+" : "")}{N(c.Points)} points · {c.At.LocalDateTime:d MMM}", -1));
+            Rows.Add(new ReportRow(c.Issue.Key, c.Issue.Summary, L.T($"{c.What} · {(c.Points >= 0 ? "+" : "")}{N(c.Points)} points · {c.At.LocalDateTime:d MMM}"), -1));
         var added = changes.Where(c => c.Points > 0).Sum(c => c.Points);
         var removed = -changes.Where(c => c.Points < 0).Sum(c => c.Points);
         Summary = L.T($"{Scope?.Name}, since {from.LocalDateTime:d MMM yyyy}: +{N(added)} points added, −{N(removed)} removed, net {(added - removed >= 0 ? "+" : "")}{N(added - removed)}");

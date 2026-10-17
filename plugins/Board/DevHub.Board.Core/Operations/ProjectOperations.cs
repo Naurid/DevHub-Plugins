@@ -438,7 +438,7 @@ public sealed record EditPerson(string PersonId, string Name, string? Email) : I
             People = Definitions.Replace(board.Project.People, p => p.Id == PersonId,
                 p => p with { Name = name, Email = string.IsNullOrWhiteSpace(Email) ? null : Email.Trim() }),
         });
-        return change.Build($"{person.Name} changed");
+        return change.Build(L.T($"{person.Name} changed"));
     }
 }
 

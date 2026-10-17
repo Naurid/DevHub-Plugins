@@ -281,7 +281,7 @@
                 </Grid>
                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}" IsVisible="{Binding HasComponents}">
                     <TextBlock Classes="fieldLabel" Text="{l:T 'Components'}" />
-                    <TextBlock Grid.Column="1" Text="{Binding Components, TargetNullValue='None'}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Grid.Column="1" Text="{Binding Components, TargetNullValue={l:T 'None'}}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
                     <Button Grid.Column="2" Classes="flat" Content="{l:T 'Change…'}" Command="{Binding EditComponentsCommand}" />
                 </Grid>
                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}" IsVisible="{Binding HasVersions}">

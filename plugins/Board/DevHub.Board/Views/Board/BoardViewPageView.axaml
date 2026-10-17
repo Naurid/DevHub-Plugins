@@ -60,7 +60,7 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="vm:AssigneeToggle">
-                            <ToggleButton Theme="{StaticResource IconToggle}" IsChecked="{Binding IsOn}" ToolTip.Tip="{Binding Name, StringFormat='Only issues assigned to {0}'}"
+                            <ToggleButton Theme="{StaticResource IconToggle}" IsChecked="{Binding IsOn}" ToolTip.Tip="{Binding Name, StringFormat={l:T 'Only issues assigned to {0}'}}"
                                           AutomationProperties.Name="{Binding Name}">
                                 <c:Avatar Text="{Binding Name}" Width="{DynamicResource Size.Avatar}" Height="{DynamicResource Size.Avatar}" />
                             </ToggleButton>

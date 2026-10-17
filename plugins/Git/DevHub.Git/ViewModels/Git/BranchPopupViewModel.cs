@@ -145,5 +145,5 @@ public sealed class BranchPopupRow
     /// <summary>Click on the row.</summary>
     public RelayCommand RunCommand { get; }
 
-    public override string ToString() => IsCurrent ? $"{Text} (current)" : Text;
+    public override string ToString() => IsCurrent ? L.T($"{Text} (current)") : Text;
 }

@@ -66,7 +66,7 @@ public sealed record AddLink(string IssueId, string LinkType, string Target) : I
             throw new BoardRuleException(L.T("An issue can't be linked to itself."));
         if (issue.Links.Any(l => l.Type == type.Id && l.Target == target.Id)
             || target.Links.Any(l => l.Type == type.Id && l.Target == issue.Id && type.Outward == type.Inward))
-            throw new BoardRuleException($"{issue.Key} already {type.Outward} {target.Key}.");
+            throw new BoardRuleException(L.T($"{issue.Key} already {type.Outward} {target.Key}."));
 
         var change = new ChangeBuilder(board, context);
         change.WriteIssue(issue, issue with { Links = [.. issue.Links, new IssueLink { Type = type.Id, Target = target.Id }] });
@@ -189,7 +189,7 @@ public sealed record AddAttachment(string IssueId, string FileName, byte[] Bytes
         change.WriteBytes(BoardPaths.Attachment(issue.Id, attachment.Id, name), Bytes);
         change.WriteIssue(issue, issue with { Attachments = [.. issue.Attachments, attachment] });
         change.AddHistory(issue.Id, "attachment", null, name);
-        return change.Build($"{issue.Key}: {name} attached");
+        return change.Build(L.T($"{issue.Key}: {name} attached"));
     }
 }
 
@@ -204,7 +204,7 @@ public sealed record RemoveAttachment(string IssueId, string AttachmentId) : IBo
         change.Delete(BoardPaths.Attachment(issue.Id, attachment.Id, attachment.FileName));
         change.WriteIssue(issue, issue with { Attachments = issue.Attachments.Where(a => a.Id != AttachmentId).ToList() });
         change.AddHistory(issue.Id, "attachment", attachment.FileName, null);
-        return change.Build($"{issue.Key}: {attachment.FileName} removed");
+        return change.Build(L.T($"{issue.Key}: {attachment.FileName} removed"));
     }
 }
 

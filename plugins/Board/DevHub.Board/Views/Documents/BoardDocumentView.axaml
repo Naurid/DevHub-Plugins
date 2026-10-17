@@ -71,7 +71,7 @@
                                 <Separator />
                                 <MenuItem Header="{l:T 'Project Settings (workflows, statuses, types, fields…)'}" Command="{Binding ProjectSettingsCommand}" />
                                 <Separator />
-                                <MenuItem Header="{Binding UndoText, StringFormat='Undo: {0}', TargetNullValue='Undo'}" Command="{Binding UndoCommand}"
+                                <MenuItem Header="{Binding UndoText, StringFormat={l:T 'Undo: {0}'}, TargetNullValue={l:T 'Undo'}}" Command="{Binding UndoCommand}"
                                           IsEnabled="{Binding UndoText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                                 <MenuItem Header="{l:T 'Reload from Disk'}" Command="{Binding ReloadCommand}" />
                                 <MenuItem Header="{l:T 'Copy Board To… (another folder, a repository branch)'}" Command="{Binding CopyBoardCommand}" />

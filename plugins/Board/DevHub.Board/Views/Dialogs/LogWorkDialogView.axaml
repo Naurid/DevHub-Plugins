@@ -22,7 +22,7 @@
             <TextBox Text="{Binding Note}" AcceptsReturn="True" TextWrapping="Wrap" AutomationProperties.Name="{l:T 'Note'}" />
         </StackPanel>
         <StackPanel Spacing="{DynamicResource Spacing.Small}">
-            <TextBlock Classes="secondary" Text="{Binding RemainingNow, StringFormat='Remaining estimate (now {0})'}" />
+            <TextBlock Classes="secondary" Text="{Binding RemainingNow, StringFormat={l:T 'Remaining estimate (now {0})'}}" />
             <RadioButton GroupName="remaining" Content="{l:T 'Lower it by the time spent'}" IsChecked="{Binding AdjustAutomatically}" />
             <RadioButton GroupName="remaining" Content="{l:T 'Leave it'}" IsChecked="{Binding LeaveRemaining}" />
             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Spacing}">

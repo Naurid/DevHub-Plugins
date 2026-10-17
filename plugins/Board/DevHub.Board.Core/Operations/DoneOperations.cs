@@ -14,7 +14,7 @@ public static class DoneReadiness
     /// <summary>One line per missing item ("Criterion: Totals include VAT", "Definition of Done: Code reviewed").</summary>
     public static IReadOnlyList<string> Missing(BoardProject project, Issue issue)
     {
-        var missing = issue.Criteria.Where(c => !c.Done).Select(c => "Criterion: " + c.Text).ToList();
+        var missing = issue.Criteria.Where(c => !c.Done).Select(c => L.T("Criterion: ") + c.Text).ToList();
         if (project.IssueType(issue.Type)?.Level == IssueTypeLevel.Standard)
             missing.AddRange(project.DefinitionOfDone.Where(d => !issue.DoneChecks.Contains(d.Id)).Select(d => L.T("Definition of Done: ") + d.Text));
         return missing;

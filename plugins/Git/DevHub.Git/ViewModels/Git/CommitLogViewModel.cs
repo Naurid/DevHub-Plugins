@@ -313,8 +313,8 @@ public partial class CommitLogViewModel : ViewModelBase
         var text = Filter.Trim();
         Rows = text.Length == 0 ? _allRows : _allRows.Where(r => r.Matches(text)).ToList();
         CountText = text.Length == 0
-            ? $"{_allRows.Count:N0}{(HasMore ? "+" : "")} commits"
-            : $"{Rows.Count:N0} of {_allRows.Count:N0} commits";
+            ? L.T($"{_allRows.Count:N0}{(HasMore ? "+" : "")} commits")
+            : L.T($"{Rows.Count:N0} of {_allRows.Count:N0} commits");
 
         Selected = (keep is null ? null : Rows.FirstOrDefault(r => r.Commit.Id == keep)) ?? Rows.FirstOrDefault();
     }

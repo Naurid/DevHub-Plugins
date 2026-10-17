@@ -123,7 +123,7 @@ public sealed partial class BoardDocumentViewModel : DocumentViewModelBase, IDis
     private void ShowBoard()
     {
         var context = _context!;
-        _title = context.Project.Key + " board";
+        _title = context.Project.Key + L.T(" board");
         OnPropertyChanged(nameof(Title));
         IsLoaded = true;
         CanCreateHere = false;
@@ -252,7 +252,7 @@ public sealed partial class BoardDocumentViewModel : DocumentViewModelBase, IDis
             else
                 panel.Refresh();
         }
-        var key = _context.Project.Key + " board";
+        var key = _context.Project.Key + L.T(" board");
         if (key != _title)
         {
             _title = key;
@@ -336,7 +336,7 @@ public sealed partial class BoardDocumentViewModel : DocumentViewModelBase, IDis
     {
         if (_context is null)
             return;
-        var dialog = new TextInputDialogViewModel(L.T("New Board"), L.T("Name"), $"{_context.Project.Key} board {Boards.Count + 1}", L.T("Create"))
+        var dialog = new TextInputDialogViewModel(L.T("New Board"), L.T("Name"), L.T($"{_context.Project.Key} board {Boards.Count + 1}"), L.T("Create"))
         {
             Choice = new ChoiceInput(L.T("Kind"), [L.T("Kanban"), L.T("Scrum")], L.T("Kanban")),
         };

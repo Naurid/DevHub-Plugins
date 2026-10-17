@@ -341,9 +341,9 @@ public sealed partial class StepItemViewModel : EditorPartViewModel
     public string Summary => Op switch
     {
         StepOp.CreateFolder => L.T($"create folder {Path}"),
-        StepOp.Delete => $"delete {Path}",
-        StepOp.Rename => $"rename {From} → {To}",
-        _ => $"move {From} → {To}",
+        StepOp.Delete => L.T($"delete {Path}"),
+        StepOp.Rename => L.T($"rename {From} → {To}"),
+        _ => L.T($"move {From} → {To}"),
     };
 
     public string Help => Op switch

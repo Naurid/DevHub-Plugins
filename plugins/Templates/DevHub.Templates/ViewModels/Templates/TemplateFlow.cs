@@ -36,7 +36,7 @@ internal static class TemplateFlow
                 return (null, new SaveOutcome(false, L.T("Couldn't save the template: ") + string.Join(" ", saved.Errors)));
 
             templates.NotifyChanged(); // the Templates tab and open editors see it too
-            var count = steps.Count == 1 ? "1 step" : $"{steps.Count} steps";
+            var count = steps.Count == 1 ? L.T("1 step") : L.T($"{steps.Count} steps");
             return (entry, new SaveOutcome(true, L.T($"Saved {count} to {entry.Reference}. The next {what} from it is arranged this way.")));
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)

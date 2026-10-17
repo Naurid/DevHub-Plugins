@@ -79,7 +79,7 @@ public static class TemplateStore
         var problems = ManifestValidator.Validate(manifest).Select(i => i.ToString()).ToList();
         var folderName = Path.GetFileName(folder);
         if (manifest.Id != folderName)
-            problems.Add($"id: \"{manifest.Id}\" doesn't match the folder name \"{folderName}\".");
+            problems.Add(L.T($"id: \"{manifest.Id}\" doesn't match the folder name \"{folderName}\"."));
         return new TemplateEntry(library, folder, manifest, problems);
     }
 
@@ -155,7 +155,7 @@ public static class TemplateStore
         var copy = manifest with
         {
             Id = id,
-            Name = target == entry.Library ? manifest.Name + " (copy)" : manifest.Name,
+            Name = target == entry.Library ? manifest.Name + L.T(" (copy)") : manifest.Name,
         };
         await WriteManifestAsync(folder, copy, ct);
         return new TemplateStoreResult(await LoadAsync(target, folder, ct), []);

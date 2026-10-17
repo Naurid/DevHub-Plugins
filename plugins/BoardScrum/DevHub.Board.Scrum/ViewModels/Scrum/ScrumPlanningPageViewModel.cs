@@ -98,7 +98,7 @@ public sealed class ScrumPlanningPageViewModel : PlanningPageViewModel
         if (sprint.Capacity is { } capacity)
         {
             var over = points > capacity ? L.T(" · over capacity") : "";
-            list.Summary = $"{list.Items.Count} issues · {points.ToString("0.##", CultureInfo.CurrentCulture)} of {capacity.ToString("0.##", CultureInfo.CurrentCulture)} points{over}";
+            list.Summary = L.T($"{list.Items.Count} issues · {points.ToString("0.##", CultureInfo.CurrentCulture)} of {capacity.ToString("0.##", CultureInfo.CurrentCulture)} points{over}");
         }
     }
 

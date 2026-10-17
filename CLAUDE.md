@@ -69,6 +69,11 @@ DevHub-Plugins.sln
 - User operations are actions (`AppAction` + `IActionProvider`); screens are documents, tool windows or dialogs.
 - Async disk / process work; never `.Result` / `.Wait()` on the UI thread. Every `+=` has its `-=`.
 - Accessible names: list items override `ToString()`; icon-only buttons get `AutomationProperties.Name`.
+- Text is translated (English and French; DevHub's UI_GUIDE §5 "Translate text"): `{l:T 'Apply'}` in XAML,
+  `L.T("Apply")` / `L.T($"{n} issues")` in C#, whole sentences per case (no glued pieces). Ids, query syntax, git
+  output and anything compared stay plain strings; a choice is matched by `SelectedIndex`, not its text. After
+  changing text: `dotnet run --project tools/I18n -- keys plugins`, fill in `i18n/fr.json`, then `-- check plugins`
+  (CI runs it). New boards get French names when DevHub is in French; existing boards keep theirs.
 
 ## Git client rules (Git plugin; details in docs/GIT_CLIENT_PLAN.md)
 - Run git **only through `GitRunner`** (`DevHub.Git.Core`): `ArgumentList`, no shell string, `GIT_TERMINAL_PROMPT=0`;

@@ -1,0 +1,12 @@
+{
+  "Velocity": "Vélocité",
+  "Sprint": "Sprint",
+  "Story points": "Story points",
+  "Sprint\tCommitted\tCompleted\nSprint 1\t21\t13\nSprint 2\t20\t18\nSprint 3\t22\t21\nSprint 4\t24\t23\n": "Sprint\tEngagé\tTerminé\nSprint 1\t21\t13\nSprint 2\t20\t18\nSprint 3\t22\t21\nSprint 4\t24\t23\n",
+  "Committed": "Engagé",
+  "Completed": "Terminé",
+  "Paste a table: the first row names the series, the first column the labels (copy cells from Excel, Sheets or Word).": "Collez un tableau : la première ligne nomme les séries, la première colonne les libellés (copiez des cellules d'Excel, Sheets ou Word).",
+  "A table needs a header row and at least one row of numbers, with labels in the first column.": "Un tableau a besoin d'une ligne d'en-tête et d'au moins une ligne de nombres, avec les libellés dans la première colonne.",
+  "No numbers found: the cells after the first column (or row) should hold numbers.": "Aucun nombre trouvé : les cellules après la première colonne (ou ligne) doivent contenir des nombres.",
+  "Series {0}": "Série {0}"
+}

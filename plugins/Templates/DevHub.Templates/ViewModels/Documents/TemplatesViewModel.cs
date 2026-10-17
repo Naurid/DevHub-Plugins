@@ -225,7 +225,7 @@ public sealed class TemplateSummaryViewModel(TemplateEntry template) : ViewModel
     public string Language => Manifest?.Language ?? "";
     public IReadOnlyList<string> Categories => Manifest?.Categories ?? [];
     public string KindText => Manifest?.Kind == TemplateKind.Item ? L.T("Item template: adds files to a folder") : L.T("Project template: creates a project folder");
-    public string LibraryText => Template.Library.IsReadOnly ? $"{Template.Library.Name} (read-only)" : Template.Library.Name;
+    public string LibraryText => Template.Library.IsReadOnly ? L.T($"{Template.Library.Name} (read-only)") : Template.Library.Name;
     public string Folder => Template.Folder;
     public bool IsReadOnly => Template.Library.IsReadOnly;
     public bool IsBroken => !Template.IsUsable;

@@ -7,7 +7,7 @@
              x:Class="DevHub.Views.Templates.MoveDialogView"
              x:DataType="t:MoveDialogViewModel">
     <DockPanel Margin="{DynamicResource Padding.Dialog}">
-        <TextBlock DockPanel.Dock="Top" Classes="secondary" Text="{Binding What, StringFormat='Move {0} into:'}"
+        <TextBlock DockPanel.Dock="Top" Classes="secondary" Text="{Binding What, StringFormat={l:T 'Move {0} into:'}}"
                    TextWrapping="Wrap" Margin="{DynamicResource Margin.BlockBelow}" />
         <ListBox ItemsSource="{Binding Folders}" SelectedItem="{Binding SelectedFolder}"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" AutomationProperties.Name="{l:T 'Folders'}"

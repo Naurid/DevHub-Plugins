@@ -112,7 +112,7 @@ public sealed partial class ProjectSettingsDocumentViewModel : DocumentViewModel
 
     private void UpdateTitle()
     {
-        var title = $"{_context?.Project.Key} settings";
+        var title = L.T($"{_context?.Project.Key} settings");
         if (title == _title)
             return;
         _title = title;
@@ -770,7 +770,7 @@ public sealed partial class ProjectSettingsModel : ObservableObject
             DoneItems.Clear();
             foreach (var d in project.DefinitionOfDone)
                 DoneItems.Add(new NamedRow(d.Id, d.Text, (r, text) => Run(new EditDoneItem(r.Id, text)),
-                    $"{board.Issues.Values.Count(i => i.DoneChecks.Contains(d.Id))} ticked"));
+                    L.T($"{board.Issues.Values.Count(i => i.DoneChecks.Contains(d.Id))} ticked")));
             DoneCheckMode = DoneCheckModes.First(m => m.Id == project.Settings.DoneCheck.ToString());
 
             var selected = SelectedWorkflow?.Id ?? board.DefaultWorkflow?.Id;
@@ -785,7 +785,7 @@ public sealed partial class ProjectSettingsModel : ObservableObject
             foreach (var s in project.Statuses)
             {
                 var row = new NamedRow(s.Id, s.Name, (r, name) => Run(new RenameStatus(r.Id, name)),
-                    $"{board.Issues.Values.Count(i => i.Status == s.Id)} issues")
+                    L.T($"{board.Issues.Values.Count(i => i.Status == s.Id)} issues"))
                 {
                     Choices = Categories,
                     Changed = (r, _) => Run(new SetStatusCategory(r.Id, ParseCategory(r.Choice?.Id))),
@@ -879,7 +879,7 @@ public sealed partial class ProjectSettingsModel : ObservableObject
             foreach (var v in board.Versions.Values.OrderBy(v => v.Release ?? DateOnly.MaxValue).ThenBy(v => v.Name, StringComparer.CurrentCultureIgnoreCase))
             {
                 var count = board.Issues.Values.Count(i => i.FixVersions.Contains(v.Id));
-                var row = new NamedRow(v.Id, v.Name, (r, name) => SaveVersion(r, name), $"{count} issues")
+                var row = new NamedRow(v.Id, v.Name, (r, name) => SaveVersion(r, name), L.T($"{count} issues"))
                 {
                     Changed = (r, _) => SaveVersion(r, r.Name),
                 };
@@ -896,7 +896,7 @@ public sealed partial class ProjectSettingsModel : ObservableObject
             foreach (var p in project.People)
             {
                 var row = new NamedRow(p.Id, p.Name, (r, name) => Run(new EditPerson(r.Id, name, r.Second)),
-                    p.Id == _context.Me ? "you" : $"{board.Issues.Values.Count(i => i.Assignee == p.Id)} assigned")
+                    p.Id == _context.Me ? "you" : L.T($"{board.Issues.Values.Count(i => i.Assignee == p.Id)} assigned"))
                 {
                     Changed = (r, what) => what == nameof(NamedRow.Third)
                         ? Run(new SetPersonRole(r.Id, r.Third))

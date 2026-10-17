@@ -116,7 +116,7 @@ public sealed partial class BoardContext : ObservableObject
         {
             var what = Session.UndoDescription;
             await Session.UndoAsync();
-            _status.Show("Undone: " + what);
+            _status.Show(L.T("Undone: ") + what);
         }
         catch (BoardRuleException e)
         {

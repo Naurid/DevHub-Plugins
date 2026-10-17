@@ -64,7 +64,7 @@ public partial class CommitDetailsViewModel : ViewModelBase
         null => "",
         { ParentIds.Count: > 0 } c when _isStash => L.T("Made on ") + Short(c.ParentIds[0]) + (c.ParentIds.Count >= 3 ? L.T(" · includes untracked files") : ""),
         { ParentIds.Count: 0 } => L.T("Root commit"),
-        { ParentIds.Count: 1 } c => "Parent: " + Short(c.ParentIds[0]),
+        { ParentIds.Count: 1 } c => L.T("Parent: ") + Short(c.ParentIds[0]),
         var c => L.T("Merge of ") + string.Join(", ", c.ParentIds.Select(Short)) + L.T(" (files: changes brought in, vs. the first parent)"),
     };
 

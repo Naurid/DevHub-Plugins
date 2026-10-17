@@ -1,0 +1,23 @@
+{
+  "(output hidden: it may contain a credential)": "(sortie masquée : elle peut contenir un identifiant)",
+  "Stopped on conflicts": "Arrêté sur des conflits",
+  "Some of your changes conflict with the remote ones. The conflicting files are marked in Local Changes; resolve them and continue, or abort to go back to how things were (\"git rebase --abort\" / \"git merge --abort\" in a terminal for now; DevHub gets buttons for this in G7).": "Certains de vos changements sont en conflit avec ceux du remote. Les fichiers en conflit sont marqués dans Changements locaux ; résolvez-les et continuez, ou abandonnez pour revenir à l'état d'avant (« git rebase --abort » / « git merge --abort » dans un terminal pour l'instant ; DevHub aura des boutons pour cela en G7).",
+  "Push rejected": "Push refusé",
+  "The remote branch has commits that you don't have yet. Update (pull) first, then push again.": "La branche distante a des commits que vous n'avez pas encore. Mettez à jour (pull) d'abord, puis poussez à nouveau.",
+  "No upstream branch": "Pas de branche amont",
+  "This branch isn't connected to a remote branch yet. Push it once to create and track it.": "Cette branche n'est pas encore reliée à une branche distante. Poussez-la une fois pour la créer et la suivre.",
+  "Branches have diverged": "Les branches ont divergé",
+  "Both your branch and the remote branch have new commits, so it can't simply move forward. Rebase puts your commits on top of the remote ones.": "Votre branche et la branche distante ont toutes deux de nouveaux commits, elle ne peut donc pas simplement avancer. Un rebase place vos commits par-dessus ceux du remote.",
+  "Local changes in the way": "Des changements locaux gênent",
+  "Updating would overwrite files you've changed. Commit or stash your changes, then update again.": "La mise à jour écraserait des fichiers que vous avez modifiés. Commitez ou mettez de côté (stash) vos changements, puis mettez à jour à nouveau.",
+  "Unknown or changed SSH host key": "Clé d'hôte SSH inconnue ou modifiée",
+  "SSH doesn't trust this server yet (or its key changed). Connect once from a terminal (for example \"ssh -T git@github.com\") to check and accept the key, then try again.": "SSH ne fait pas encore confiance à ce serveur (ou sa clé a changé). Connectez-vous une fois depuis un terminal (par exemple « ssh -T git@github.com ») pour vérifier et accepter la clé, puis réessayez.",
+  "Authentication failed": "Échec de l'authentification",
+  "The remote didn't accept your credentials, or you don't have access. For HTTPS, sign in through Git Credential Manager (run a fetch from a terminal once) or use a personal access token; for SSH, check that your key is loaded (ssh-agent) and added to your account.": "Le remote n'a pas accepté vos identifiants, ou vous n'avez pas l'accès. En HTTPS, connectez-vous via Git Credential Manager (lancez une fois un fetch depuis un terminal) ou utilisez un jeton d'accès personnel ; en SSH, vérifiez que votre clé est chargée (ssh-agent) et ajoutée à votre compte.",
+  "Repository not found": "Dépôt introuvable",
+  "The remote address doesn't point to a repository you can reach. Check the remote URL, and that your account has access if it's private.": "L'adresse du remote ne mène pas à un dépôt accessible. Vérifiez l'URL du remote, et que votre compte y a accès s'il est privé.",
+  "Can't reach the remote": "Impossible de joindre le remote",
+  "The connection to the server failed (no network, the host name is wrong, a proxy or firewall, or a certificate problem). Check your connection and try again.": "La connexion au serveur a échoué (pas de réseau, nom d'hôte erroné, proxy ou pare-feu, ou problème de certificat). Vérifiez votre connexion et réessayez.",
+  "Git reported an error": "Git a signalé une erreur",
+  " (remote)": " (distant)"
+}

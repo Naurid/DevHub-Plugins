@@ -41,7 +41,7 @@ public sealed class TimelineRowViewModel(TimelineItem item, TimelineResult range
     public double Today { get; } = today;
     public double Progress => Item.Progress;
     public string Dates => $"{Item.Start:d MMM} – {Item.End:d MMM yyyy}" + (Item.DatesGuessed ? L.T(" (estimated: set start and due dates)") : "");
-    public string ToolTip => $"{Key} {Summary}\n{Dates}\n{Item.Progress:P0} done"
+    public string ToolTip => L.T($"{Key} {Summary}\n{Dates}\n{Item.Progress:P0} done")
                              + (Item.IsLate ? L.T("\nLate: its due date has passed.") : "")
                              + (Item.BlockedBy.Count > 0 ? L.T("\nBlocked by ") + string.Join(", ", Item.BlockedBy.Select(b => b.Key)) : "")
                              + (Item.HasConflict ? L.T("\nStarts before a blocker is due.") : "");
@@ -109,7 +109,7 @@ public sealed record ReleaseRow(ReleaseStatus Status)
     public string Name => Status.Version.Name;
     public string Detail => (Status.Version.Released ? L.T("Released") : Status.IsLate ? L.T("Late") : L.T("Unreleased"))
                             + (Status.Version.Release is { } d ? " · " + d.ToString("d MMM yyyy", CultureInfo.CurrentCulture) : "")
-                            + $" · {Status.Done}/{Status.Issues.Count} done";
+                            + L.T($" · {Status.Done}/{Status.Issues.Count} done");
     public double Fraction => Status.Fraction;
     public bool IsLate => Status.IsLate;
     public override string ToString() => $"{Name}, {Detail}";

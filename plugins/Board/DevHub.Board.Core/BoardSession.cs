@@ -149,7 +149,7 @@ public sealed class BoardSession : IDisposable
                     throw new BoardRuleException(L.T("It can't be undone: the board changed since."));
                 }
             }
-            var change = new BoardChange("Undo: " + step.Message, step.Previous);
+            var change = new BoardChange(L.T("Undo: ") + step.Message, step.Previous);
             var version = await _store.WriteAsync(change, Snapshot.Version, ct);
             Snapshot = Snapshot.Apply(change, version);
             Changed?.Invoke(this, new BoardChangedEventArgs(Snapshot, change));

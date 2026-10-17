@@ -401,7 +401,7 @@ public partial class LocalChangesViewModel : ViewModelBase
         // One file: the message already names it. Several: list them, marking the ones deleted.
         var items = files.Count == 1
             ? null
-            : files.Select(f => f.IsUntracked ? f.Change.Path + "  (deleted)" : f.Change.Path).ToList();
+            : files.Select(f => f.IsUntracked ? f.Change.Path + L.T("  (deleted)") : f.Change.Path).ToList();
         var confirm = new ConfirmDialogViewModel(L.T("Discard Changes"), DiscardMessage(files), L.T("Discard"), items);
         if (!await _dialogs.ShowDialogAsync(confirm))
             return;
@@ -480,7 +480,7 @@ public partial class LocalChangesViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            _status.Show($"{what} failed: {(ex is GitException git && git.StandardError.Trim() is { Length: > 0 } e ? e : ex.Message)}");
+            _status.Show(L.T($"{what} failed: {(ex is GitException git && git.StandardError.Trim() is { Length: > 0 } e ? e : ex.Message)}"));
         }
         finally
         {

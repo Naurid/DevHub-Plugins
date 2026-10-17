@@ -344,7 +344,7 @@ public sealed partial class RemoteOperations : ObservableObject
         }
         catch (OperationCanceledException)
         {
-            _status.Show($"{title}: cancelled.");
+            _status.Show(L.T($"{title}: cancelled."));
             return false;
         }
         catch (RemoteOperationException ex) when (ex.Error.Kind == throwOn)

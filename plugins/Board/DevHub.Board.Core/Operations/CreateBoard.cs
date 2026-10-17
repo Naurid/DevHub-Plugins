@@ -63,7 +63,7 @@ public sealed record CreateBoard(string Key, string Name, BoardPreset Preset, Bo
             {
                 BoardPreset.Scrum => L.T($"{key} Scrum board"),
                 BoardPreset.BugTriage => L.T("Bug triage"),
-                _ => $"{key} board",
+                _ => L.T($"{key} board"),
             },
             Kind = kind,
             Columns = columns.Select(c => new BoardColumn { Id = context.NewId(), Name = c.Name, Statuses = c.Statuses }).ToList(),

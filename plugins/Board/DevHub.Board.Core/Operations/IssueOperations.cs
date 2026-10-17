@@ -73,7 +73,7 @@ public sealed record CreateIssue(string Type, string Summary) : IBoardOperation
         issue = issue with { Criteria = [.. criteria] };
         change.WriteProject(project with { NextNumber = project.NextNumber + 1 });
         change.WriteIssue(null, issue);
-        return change.Build($"{issue.Key}: created \"{issue.Summary}\"");
+        return change.Build(L.T($"{issue.Key}: created \"{issue.Summary}\""));
     }
 
     internal static string? MaxRank(BoardSnapshot board) =>
@@ -144,8 +144,8 @@ public sealed record BulkEdit(IReadOnlyList<string> IssueIds, IReadOnlyList<(str
             }
         }
         var fields = string.Join(", ", Changes.Select(c => IssueFields.DisplayName(c.Field, board.Project).ToLowerInvariant()));
-        var who = keys.Count == 1 ? keys[0] : $"{keys.Count} issues";
-        return change.Build(keys.Count == 0 ? L.T("No change") : $"{who}: {fields} changed");
+        var who = keys.Count == 1 ? keys[0] : L.T($"{keys.Count} issues");
+        return change.Build(keys.Count == 0 ? L.T("No change") : L.T($"{who}: {fields} changed"));
     }
 }
 
@@ -176,7 +176,7 @@ public sealed record TransitionIssue(string IssueId, string Status) : IBoardOper
         var change = new ChangeBuilder(board, context);
         change.WriteIssue(before, after);
         var fromName = board.Project.Status(before.Status)?.Name ?? before.Status;
-        return change.Build($"{before.Key}: status {fromName} → {target.Name}");
+        return change.Build(L.T($"{before.Key}: status {fromName} → {target.Name}"));
     }
 }
 
@@ -230,7 +230,7 @@ public sealed record RankIssue(string IssueId, string? Above, string? Below) : I
         }
 
         change.WriteIssue(change.Issue(issue.Id), issue with { Rank = rank });
-        return change.Build($"{issue.Key}: ranked");
+        return change.Build(L.T($"{issue.Key}: ranked"));
     }
 
     // The rank just before (or after) an issue, skipping the one being moved.
@@ -324,6 +324,6 @@ public sealed record DeleteIssue(string IssueId, bool WithSubtasks = false) : IB
         }
         foreach (var id in deleted)
             change.DeleteIssue(board.Issue(id)!);
-        return change.Build(deleted.Count == 1 ? $"{issue.Key}: deleted" : L.T($"{issue.Key}: deleted with {deleted.Count - 1} sub-tasks"));
+        return change.Build(deleted.Count == 1 ? L.T($"{issue.Key}: deleted") : L.T($"{issue.Key}: deleted with {deleted.Count - 1} sub-tasks"));
     }
 }

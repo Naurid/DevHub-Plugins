@@ -338,7 +338,7 @@ public static class QueryParser
                     while (TryTake(Kind.Comma));
                 }
                 if (!TryTake(Kind.Close))
-                    throw new QueryException($"\"{token.Value}(\" isn't closed.", Peek.Position);
+                    throw new QueryException(L.T($"\"{token.Value}(\" isn't closed."), Peek.Position);
                 return new QueryValue.Function(token.Value, args);
             }
             return new QueryValue.Literal(token.Value);

@@ -32,19 +32,19 @@ public static partial class ManifestValidator
         void Add(string field, string message) => issues.Add(new ManifestIssue(field, message));
 
         if (!IdPattern().IsMatch(manifest.Id))
-            Add("id", "Use lowercase letters, digits and single dashes, e.g. \"unity-game\".");
+            Add("id", L.T("Use lowercase letters, digits and single dashes, e.g. \"unity-game\"."));
         if (string.IsNullOrWhiteSpace(manifest.Name))
-            Add("name", "Give the template a name.");
+            Add("name", L.T("Give the template a name."));
         if (string.IsNullOrWhiteSpace(manifest.Language))
-            Add("language", "Give a language, or \"Any\".");
+            Add("language", L.T("Give a language, or \"Any\"."));
 
         for (var i = 0; i < manifest.Categories.Count; i++)
         {
             if (string.IsNullOrWhiteSpace(manifest.Categories[i]))
-                Add($"categories[{i}]", "A category can't be empty.");
+                Add($"categories[{i}]", L.T("A category can't be empty."));
         }
         foreach (var duplicate in Duplicates(manifest.Categories))
-            Add("categories", $"\"{duplicate}\" is listed twice.");
+            Add("categories", L.T($"\"{duplicate}\" is listed twice."));
 
         ValidateVariables(manifest, Add);
         ValidateKind(manifest, Add);
@@ -54,7 +54,7 @@ public static partial class ManifestValidator
         for (var i = 0; i < manifest.BinaryExtensions.Count; i++)
         {
             if (manifest.BinaryExtensions[i] is not ['.', _, ..])
-                Add($"binaryExtensions[{i}]", "Write an extension with its dot, e.g. \".png\".");
+                Add($"binaryExtensions[{i}]", L.T("Write an extension with its dot, e.g. \".png\"."));
         }
         return issues;
     }

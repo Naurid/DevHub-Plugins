@@ -109,5 +109,5 @@ public sealed class TagItemViewModel(GitTag tag, DateTimeOffset now)
     public string ToolTip => (Tag.IsAnnotated ? L.T($"Annotated tag {Tag.Name}") : L.T($"Lightweight tag {Tag.Name}")) +
                              $" on {Tag.ShortId}\n{Tag.Subject}";
 
-    public override string ToString() => Tag.IsAnnotated ? $"{Name} (annotated)" : Name;
+    public override string ToString() => Tag.IsAnnotated ? L.T($"{Name} (annotated)") : Name;
 }

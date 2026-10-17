@@ -35,7 +35,7 @@ public sealed class DiffDocumentViewModel : DocumentViewModelBase, IDisposable
         _client = client;
         var trimmed = filePath.TrimEnd('/');
         var name = trimmed[(trimmed.LastIndexOf('/') + 1)..];
-        Title = staged ? name + " (staged)" : name;
+        Title = staged ? name + L.T(" (staged)") : name;
         Diff = new DiffViewModel(layout, client, (file, line) => editor.Open(repositoryPath, file.Change.Path, line),
             annotate: (file, commitId) => OpenDocument?.Invoke(BlameDocumentFactory.IdFor(repositoryPath, file, commitId)));
 

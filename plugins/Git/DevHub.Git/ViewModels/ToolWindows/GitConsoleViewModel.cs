@@ -75,7 +75,7 @@ public sealed class GitConsoleRow(GitCommandEntry entry)
     {
         0 => "",
         -1 => "cancelled",
-        var code => $"exit {code}",
+        var code => L.T($"exit {code}"),
     };
 
     /// <summary>Output (stderr first), shown as a tooltip.</summary>

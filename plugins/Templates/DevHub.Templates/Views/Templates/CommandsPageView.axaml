@@ -11,9 +11,9 @@
              x:DataType="t:CommandsPageViewModel">
     <DockPanel MaxWidth="{DynamicResource Size.TemplatePageMax}" HorizontalAlignment="Left">
         <StackPanel DockPanel.Dock="Top" Spacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.BlockBelow}">
-            <TextBlock Classes="header" Text="{Binding TemplateName, StringFormat='Commands of {0}'}" TextWrapping="Wrap" />
+            <TextBlock Classes="header" Text="{Binding TemplateName, StringFormat={l:T 'Commands of {0}'}}" TextWrapping="Wrap" />
             <TextBlock Text="{Binding Intro}" TextWrapping="Wrap" />
-            <SelectableTextBlock Classes="secondary" Text="{Binding TargetPath, StringFormat='Project folder: {0}'}" TextWrapping="Wrap" />
+            <SelectableTextBlock Classes="secondary" Text="{Binding TargetPath, StringFormat={l:T 'Project folder: {0}'}}" TextWrapping="Wrap" />
         </StackPanel>
 
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="{DynamicResource Spacing}"

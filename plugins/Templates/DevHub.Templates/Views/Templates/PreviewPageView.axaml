@@ -29,7 +29,7 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="t:ConflictRowViewModel">
                                 <CheckBox IsChecked="{Binding Overwrite}">
-                                    <TextBlock Classes="code" Text="{Binding Path, StringFormat='Overwrite {0}'}" TextWrapping="Wrap" />
+                                    <TextBlock Classes="code" Text="{Binding Path, StringFormat={l:T 'Overwrite {0}'}}" TextWrapping="Wrap" />
                                 </CheckBox>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>

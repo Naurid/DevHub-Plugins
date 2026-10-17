@@ -145,7 +145,7 @@ public abstract partial class PlanningPageViewModel : BoardPageViewModel, IItems
                 var done = children.Count(board.IsDone);
                 var points = children.Sum(c => c.StoryPoints ?? 0);
                 Epics.Add(new EpicRow(epic.Id, epic.Key, epic.Summary,
-                    children.Count == 0 ? L.T("no issues") : $"{done}/{children.Count} done · {points.ToString("0.##", CultureInfo.CurrentCulture)} pts",
+                    children.Count == 0 ? L.T("no issues") : L.T($"{done}/{children.Count} done · {points.ToString("0.##", CultureInfo.CurrentCulture)} pts"),
                     children.Count == 0 ? 0 : (double)done / children.Count, false, this));
             }
             _suppress = true;
