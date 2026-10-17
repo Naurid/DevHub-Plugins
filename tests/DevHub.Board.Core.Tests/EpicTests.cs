@@ -16,7 +16,7 @@ public class EpicTests
     }
 
     [Fact]
-    public void An_epic_is_created_with_its_tasks_in_one_change()
+    public async Task An_epic_is_created_with_its_tasks_in_one_change()
     {
         using var board = TestBoard.Create();
         var start = new DateOnly(2026, 11, 2);
@@ -49,7 +49,7 @@ public class EpicTests
 
         // Reloaded from disk it's the same, and one Undo takes all three back.
         Assert.Equal(3, board.Reload().Issues.Count);
-        board.Session.UndoAsync().GetAwaiter().GetResult();
+        await board.Session.UndoAsync();
         Assert.Empty(board.Snapshot.Issues);
     }
 
