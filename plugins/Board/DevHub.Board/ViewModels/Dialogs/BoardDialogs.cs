@@ -269,11 +269,12 @@ public sealed partial class CreateIssueDialogViewModel : DialogViewModelBase
     public bool ShowPoints => Level != IssueTypeLevel.Subtask;
     public bool ShowCriteria => Level != IssueTypeLevel.Epic;
 
-    private IReadOnlyList<string> CriteriaLines => ShowCriteria
-        ? Criteria.Replace("\r\n", "\n").Split('\n').Select(l => CriterionPrefix().Replace(l, "").Trim()).Where(l => l.Length > 0).ToList()
-        : [];
+    private IReadOnlyList<string> CriteriaLines => ShowCriteria ? LinesOf(Criteria) : [];
 
-    // "- ", "* ", "- [ ] ", "1. " in front of a pasted criterion.
+    /// <summary>One criterion per non-empty line, without a pasted "- ", "* ", "- [ ] " or "1. " in front.</summary>
+    internal static IReadOnlyList<string> LinesOf(string text) =>
+        text.Replace("\r\n", "\n").Split('\n').Select(l => CriterionPrefix().Replace(l, "").Trim()).Where(l => l.Length > 0).ToList();
+
     [System.Text.RegularExpressions.GeneratedRegex(@"^\s*(?:[-*+]\s*(?:\[[ xX]?\]\s*)?|\d+[.)]\s*)")]
     private static partial System.Text.RegularExpressions.Regex CriterionPrefix();
 
@@ -493,9 +494,15 @@ public sealed partial class LogWorkDialogViewModel(BoardContext context, Issue i
     }
 }
 
-/// <summary>Bulk edit: one field, one value, for every selected issue.</summary>
+/// <summary>Bulk edit: one field, one value, for every selected issue — one change, one Undo.</summary>
 public sealed partial class BulkEditDialogViewModel : DialogViewModelBase
 {
+    // Fields that aren't a single issue field.
+    private const string StatusField = "status";
+    private const string AddLabelsField = "labels+";
+    private const string AddCriteriaField = "criteria+";
+    private const string DoneField = "dod";
+
     private readonly BoardContext _context;
     private readonly IReadOnlyList<string> _issueIds;
 
@@ -506,12 +513,16 @@ public sealed partial class BulkEditDialogViewModel : DialogViewModelBase
         var project = context.Project;
         Fields =
         [
-            new NamedItem(IssueFields.Assignee, "Assignee"), new NamedItem(IssueFields.Priority, "Priority"),
-            new NamedItem(IssueFields.StoryPoints, "Story points"), new NamedItem(IssueFields.Labels, "Labels"),
-            new NamedItem(IssueFields.Parent, "Epic"), new NamedItem(IssueFields.FixVersions, "Fix versions"),
-            new NamedItem(IssueFields.Components, "Components"), new NamedItem(IssueFields.Due, "Due date"),
+            new NamedItem(StatusField, "Status"), new NamedItem(IssueFields.Type, "Type"),
+            new NamedItem(IssueFields.Priority, "Priority"), new NamedItem(IssueFields.Assignee, "Assignee"),
+            new NamedItem(IssueFields.StoryPoints, "Story points"),
+            new NamedItem(AddCriteriaField, "Acceptance criteria (add)"),
+            .. (project.DefinitionOfDone.Count > 0 ? [new NamedItem(DoneField, "Definition of Done")] : Array.Empty<NamedItem>()),
+            new NamedItem(AddLabelsField, "Labels (add)"), new NamedItem(IssueFields.Labels, "Labels (replace)"),
+            new NamedItem(IssueFields.Parent, "Epic"),
             .. (context.Snapshot.Sprints.Count > 0 ? [new NamedItem(IssueFields.Sprint, "Sprint")] : Array.Empty<NamedItem>()),
-            new NamedItem("status", "Status (transition)"),
+            new NamedItem(IssueFields.FixVersions, "Fix versions"), new NamedItem(IssueFields.Components, "Components"),
+            new NamedItem(IssueFields.Start, "Start date"), new NamedItem(IssueFields.Due, "Due date"),
         ];
         _field = Fields[0];
         UpdateChoices();
@@ -529,6 +540,7 @@ public sealed partial class BulkEditDialogViewModel : DialogViewModelBase
     [ObservableProperty] private NamedItem? _choice;
     [ObservableProperty] private string _text = "";
     [ObservableProperty] private bool _showChoices;
+    [ObservableProperty] private bool _multiLine;
     [ObservableProperty] private string _hint = "";
     [ObservableProperty] private string? _error;
 
@@ -541,26 +553,34 @@ public sealed partial class BulkEditDialogViewModel : DialogViewModelBase
         Choices.Clear();
         IEnumerable<NamedItem> items = Field.Id switch
         {
+            StatusField => project.Statuses.Select(s => new NamedItem(s.Id, s.Name)),
+            IssueFields.Type => project.IssueTypes.Select(t => new NamedItem(t.Id, t.Name)),
             IssueFields.Assignee => [new NamedItem(null, "Unassigned"), .. project.People.Select(NamedItem.Person)],
             IssueFields.Priority => project.Priorities.Select(p => new NamedItem(p.Id, p.Name)),
             IssueFields.Parent => [new NamedItem(null, "No epic"), .. snapshot.Issues.Values.Where(i => snapshot.LevelOf(i) == IssueTypeLevel.Epic)
                 .OrderBy(i => i.Rank, StringComparer.Ordinal).Select(i => new NamedItem(i.Id, $"{i.Key} {i.Summary}"))],
             IssueFields.Sprint => [new NamedItem(null, "Backlog"), .. snapshot.Sprints.Values.Where(s => s.State != SprintState.Closed)
                 .OrderBy(s => s.Sequence).Select(s => new NamedItem(s.Id, s.Name))],
-            "status" => project.Statuses.Select(s => new NamedItem(s.Id, s.Name)),
+            DoneField => [new NamedItem("tick", "Tick every item"), new NamedItem("clear", "Clear every tick")],
             _ => [],
         };
         foreach (var item in items)
             Choices.Add(item);
         ShowChoices = Choices.Count > 0;
+        MultiLine = Field.Id == AddCriteriaField;
         Choice = Choices.FirstOrDefault();
         Hint = Field.Id switch
         {
+            StatusField => "Issues whose workflow doesn't allow the move stay where they are.",
+            IssueFields.Type => "A type of the same level (story, task, bug…); an epic stays an epic.",
             IssueFields.StoryPoints => "A number; empty clears it.",
-            IssueFields.Labels => "Labels separated by spaces; empty clears them.",
+            AddCriteriaField => "One criterion per line; added to every selected issue, after the ones it has.",
+            DoneField => "Ticks or clears the Definition of Done items on every selected issue (not epics or sub-tasks).",
+            AddLabelsField => "Labels separated by spaces, added to the ones each issue has.",
+            IssueFields.Labels => "Labels separated by spaces, replacing the ones each issue has; empty clears them.",
             IssueFields.FixVersions => "Version names separated by commas; empty clears them.",
             IssueFields.Components => "Component names separated by commas; empty clears them.",
-            IssueFields.Due => "A date like 2026-10-31; empty clears it.",
+            IssueFields.Start or IssueFields.Due => "A date like 2026-10-31; empty clears it.",
             _ => "",
         };
     }
@@ -568,90 +588,128 @@ public sealed partial class BulkEditDialogViewModel : DialogViewModelBase
     protected override async Task<bool> ApplyChangesAsync()
     {
         Error = null;
-        var project = _context.Project;
-        if (Field.Id == "status")
-        {
-            var refused = 0;
-            foreach (var id in _issueIds)
-            {
-                var issue = _context.Snapshot.Issue(id);
-                if (issue is null || issue.Status == Choice?.Id)
-                    continue;
-                if (!await _context.RunAsync(new TransitionIssue(id, Choice!.Id!)))
-                    refused++;
-            }
-            if (refused > 0)
-                _context.Status.Show($"{refused} issue(s) couldn't move there: their workflow doesn't allow it.");
-            return true;
-        }
-
-        FieldValue value;
+        var snapshot = _context.Snapshot;
+        var issues = _issueIds.Select(snapshot.Issue).OfType<Issue>().ToList();
+        var label = $"{issues.Count} issues";
         switch (Field.Id)
         {
-            case IssueFields.StoryPoints:
-                if (Text.Trim().Length == 0)
-                    value = new FieldValue.Number(null);
-                else if (double.TryParse(Text.Trim().Replace(',', '.'), NumberStyles.Float, CultureInfo.InvariantCulture, out var n))
-                    value = new FieldValue.Number(n);
-                else
-                {
-                    Error = "Story points must be a number.";
-                    return false;
-                }
-                break;
-            case IssueFields.Labels:
-                value = new FieldValue.Items(Text.Split([' ', ','], StringSplitOptions.RemoveEmptyEntries));
-                break;
-            case IssueFields.FixVersions:
-            case IssueFields.Components:
+            case StatusField:
             {
-                var names = Text.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                var ids = new List<string>();
-                foreach (var name in names)
+                var status = Choice!.Id!;
+                var name = Choice.Name;
+                var moving = issues.Where(i => i.Status != status && snapshot.WorkflowFor(i.Type) is { } w && w.Allows(i.Status, status)).ToList();
+                var stuck = issues.Count(i => i.Status != status) - moving.Count;
+                if (moving.Count == 0)
                 {
-                    var id = Field.Id == IssueFields.FixVersions
-                        ? _context.Snapshot.Versions.Values.FirstOrDefault(v => string.Equals(v.Name, name, StringComparison.OrdinalIgnoreCase))?.Id
-                        : project.Components.FirstOrDefault(c => string.Equals(c.Name, name, StringComparison.OrdinalIgnoreCase))?.Id;
-                    if (id is null)
-                    {
-                        Error = $"There's no {(Field.Id == IssueFields.FixVersions ? "version" : "component")} \"{name}\".";
-                        return false;
-                    }
-                    ids.Add(id);
-                }
-                value = new FieldValue.Items(ids);
-                break;
-            }
-            case IssueFields.Due:
-                if (Text.Trim().Length == 0)
-                    value = new FieldValue.Date(null);
-                else if (DateOnly.TryParse(Text.Trim(), CultureInfo.CurrentCulture, out var date)
-                         || DateOnly.TryParseExact(Text.Trim(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
-                    value = new FieldValue.Date(date);
-                else
-                {
-                    Error = "A date looks like 2026-10-31.";
+                    Error = stuck > 0 ? $"None of them can move to {name}: their workflow doesn't allow it." : $"They're all in {name} already.";
                     return false;
                 }
-                break;
-            default:
-                value = new FieldValue.Text(Choice?.Id);
-                break;
+                var ok = await _context.RunAsync(new Batch([.. moving.Select(i => new TransitionIssue(i.Id, status))], $"{moving.Count} issues moved to {name}"));
+                if (ok && stuck > 0)
+                    _context.Status.Show($"{moving.Count} issues moved to {name}; {stuck} couldn't (their workflow doesn't allow it).");
+                return ok;
+            }
+            case AddCriteriaField:
+            {
+                var lines = CreateIssueDialogViewModel.LinesOf(Text);
+                var targets = issues.Where(i => snapshot.LevelOf(i) != IssueTypeLevel.Epic).ToList();
+                if (lines.Count == 0)
+                    return Fail("Type the criteria, one per line.");
+                if (targets.Count == 0)
+                    return Fail("Epics have no acceptance criteria; select stories, tasks or bugs.");
+                return await _context.RunAsync(new Batch([.. targets.SelectMany(i => lines.Select(l => new AddCriterion(i.Id, l)))],
+                    $"{targets.Count} issues: {lines.Count} acceptance criteria added"));
+            }
+            case DoneField:
+            {
+                var tick = Choice?.Id == "tick";
+                var items = snapshot.Project.DefinitionOfDone;
+                var steps = issues.Where(i => snapshot.LevelOf(i) == IssueTypeLevel.Standard)
+                    .SelectMany(i => items.Where(d => i.DoneChecks.Contains(d.Id) != tick).Select(d => new CheckDoneItem(i.Id, d.Id, tick)))
+                    .ToList<IBoardOperation>();
+                if (steps.Count == 0)
+                    return Fail(tick ? "Every item is ticked already." : "Nothing is ticked.");
+                return await _context.RunAsync(new Batch(steps, $"{label}: Definition of Done {(tick ? "ticked" : "cleared")}"));
+            }
+            case AddLabelsField:
+            {
+                var added = Text.Split([' ', ','], StringSplitOptions.RemoveEmptyEntries);
+                if (added.Length == 0)
+                    return Fail("Type the labels to add.");
+                var steps = issues.Where(i => added.Except(i.Labels, StringComparer.Ordinal).Any())
+                    .Select(i => new EditIssue(i.Id, IssueFields.Labels, new FieldValue.Items([.. i.Labels.Union(added, StringComparer.Ordinal)])))
+                    .ToList<IBoardOperation>();
+                if (steps.Count == 0)
+                    return Fail("They all have those labels already.");
+                return await _context.RunAsync(new Batch(steps, $"{label}: labels {string.Join(" ", added)} added"));
+            }
         }
 
+        if (ValueFromInput() is not { } value)
+            return false;
+
         // Only the issues the field applies to (an epic has no epic, a sub-task no sprint of its own).
-        var snapshot = _context.Snapshot;
-        var ids2 = _issueIds.Where(id => snapshot.Issue(id) is { } i && Field.Id switch
+        var ids = issues.Where(i => Field.Id switch
         {
             IssueFields.Parent => snapshot.LevelOf(i) == IssueTypeLevel.Standard,
             IssueFields.Sprint => snapshot.LevelOf(i) != IssueTypeLevel.Subtask,
             _ => true,
-        }).ToList();
-        if (ids2.Count == 0)
+        }).Select(i => i.Id).ToList();
+        if (ids.Count == 0)
+            return Fail("That field doesn't apply to any of the selected issues.");
+        return await _context.RunAsync(new BulkEdit(ids, [(Field.Id!, value)]));
+    }
+
+    private bool Fail(string message)
+    {
+        Error = message;
+        return false;
+    }
+
+    // The typed or chosen value for a plain issue field; null (and Error set) when it doesn't parse.
+    private FieldValue? ValueFromInput()
+    {
+        var text = Text.Trim();
+        switch (Field.Id)
         {
-            Error = "That field doesn't apply to any of the selected issues.";
-            return false;
+            case IssueFields.StoryPoints:
+                if (text.Length == 0)
+                    return new FieldValue.Number(null);
+                if (double.TryParse(text.Replace(',', '.'), NumberStyles.Float, CultureInfo.InvariantCulture, out var n))
+                    return new FieldValue.Number(n);
+                Error = "Story points must be a number.";
+                return null;
+            case IssueFields.Labels:
+                return new FieldValue.Items(text.Split([' ', ','], StringSplitOptions.RemoveEmptyEntries));
+            case IssueFields.FixVersions:
+            case IssueFields.Components:
+            {
+                var ids = new List<string>();
+                foreach (var name in text.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                {
+                    var id = Field.Id == IssueFields.FixVersions
+                        ? _context.Snapshot.Versions.Values.FirstOrDefault(v => string.Equals(v.Name, name, StringComparison.OrdinalIgnoreCase))?.Id
+                        : _context.Project.Components.FirstOrDefault(c => string.Equals(c.Name, name, StringComparison.OrdinalIgnoreCase))?.Id;
+                    if (id is null)
+                    {
+                        Error = $"There's no {(Field.Id == IssueFields.FixVersions ? "version" : "component")} \"{name}\".";
+                        return null;
+                    }
+                    ids.Add(id);
+                }
+                return new FieldValue.Items(ids);
+            }
+            case IssueFields.Start:
+            case IssueFields.Due:
+                if (text.Length == 0)
+                    return new FieldValue.Date(null);
+                if (DateOnly.TryParse(text, CultureInfo.CurrentCulture, out var date)
+                    || DateOnly.TryParseExact(text, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
+                    return new FieldValue.Date(date);
+                Error = "A date looks like 2026-10-31.";
+                return null;
+            default:
+                return new FieldValue.Text(Choice?.Id);
         }
-        return await _context.RunAsync(new BulkEdit(ids2, [(Field.Id!, value)]));
     }
 }

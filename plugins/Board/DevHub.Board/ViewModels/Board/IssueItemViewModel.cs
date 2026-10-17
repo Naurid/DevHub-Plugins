@@ -104,7 +104,16 @@ public sealed class IssueItemViewModel : ViewModelBase
     public bool CanDelete => Host?.DeleteCommand is not null;
     public bool CanRank => Host?.MoveToTopCommand is not null;
     public bool CanMoveColumns => Host?.NextColumnCommand is not null;
-    private ICommand? _select, _open;
+    public ICommand? PickCommand => Host?.PickCommand is null ? null : _pick ??= Forward(h => h.PickCommand);
+    private ICommand? _select, _open, _pick;
+
+    /// <summary>Picked into a selection of several cards (Ctrl+click), to drag or edit together.</summary>
+    public bool IsPicked
+    {
+        get => _isPicked;
+        set => SetProperty(ref _isPicked, value);
+    }
+    private bool _isPicked;
 
     private RelayCommand Forward(Func<ICardHost, ICommand?> command) =>
         new(() => { if (Host is not null && command(Host) is { } c && c.CanExecute(this)) c.Execute(this); });

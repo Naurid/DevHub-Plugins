@@ -13,7 +13,8 @@
             <TextBlock Classes="secondary" Text="New value" />
             <ComboBox ItemsSource="{Binding Choices}" SelectedItem="{Binding Choice}" HorizontalAlignment="Stretch" IsVisible="{Binding ShowChoices}"
                       AutomationProperties.Name="New value" />
-            <TextBox Text="{Binding Text}" IsVisible="{Binding !ShowChoices}" AutomationProperties.Name="New value" />
+            <TextBox Text="{Binding Text}" IsVisible="{Binding !ShowChoices}" AutomationProperties.Name="New value"
+                     AcceptsReturn="{Binding MultiLine}" TextWrapping="Wrap" />
             <TextBlock Classes="small secondary" Text="{Binding Hint}" TextWrapping="Wrap" />
         </StackPanel>
         <TextBlock Text="{Binding Error}" Foreground="{DynamicResource Brush.Status.Error}" TextWrapping="Wrap"

@@ -116,6 +116,7 @@ public sealed partial class BoardViewPageViewModel : BoardPageViewModel, IItemsD
     System.Windows.Input.ICommand ICardHost.DeleteCommand => DeleteCardCommand;
     System.Windows.Input.ICommand ICardHost.NextColumnCommand => MoveCardToNextColumnCommand;
     System.Windows.Input.ICommand ICardHost.PreviousColumnCommand => MoveCardToPreviousColumnCommand;
+    System.Windows.Input.ICommand ICardHost.PickCommand => PickCommand;
 
     public bool HasQuickFilters => QuickFilters.Count > 0;
 
@@ -133,6 +134,12 @@ public sealed partial class BoardViewPageViewModel : BoardPageViewModel, IItemsD
     [ObservableProperty] private bool _hasNoColumns;
     [ObservableProperty] private bool _compactCards;
     [ObservableProperty] private string? _selectedIssueId;
+
+    // Cards picked with Ctrl+click, kept across rebuilds while they're on the board.
+    private readonly HashSet<string> _picked = new(StringComparer.Ordinal);
+
+    public bool HasPicked => _picked.Count > 1;
+    public string PickedText => $"{_picked.Count} selected";
 
     public override void OnBoardChanged() => Rebuild();
 
@@ -201,6 +208,8 @@ public sealed partial class BoardViewPageViewModel : BoardPageViewModel, IItemsD
                     lane.Cells[i].Select(issue => new IssueItemViewModel(issue, snapshot, Context, definition.CardFields) { Host = this }))).ToList();
                 Lanes.Add(new LaneViewModel(lane.Key, lane.Title, lane.Count, cells));
             }
+            _picked.IntersectWith(AllCards.Select(c => c.Id));
+            ShowPicks();
         }
         finally
         {
@@ -226,12 +235,58 @@ public sealed partial class BoardViewPageViewModel : BoardPageViewModel, IItemsD
 
     // ---- Cards --------------------------------------------------------------------------------------------
 
+    private IEnumerable<IssueItemViewModel> AllCards => Lanes.SelectMany(l => l.Cells).SelectMany(c => c.Cards);
+
     [RelayCommand]
     private void Select(IssueItemViewModel? card)
     {
+        _picked.Clear();
+        ShowPicks();
         SelectedIssueId = card?.Id;
         Host.SelectIssue(card?.Id);
     }
+
+    /// <summary>Ctrl+click: the card joins the selection (with the one selected before it), or leaves it.</summary>
+    [RelayCommand]
+    private void Pick(IssueItemViewModel? card)
+    {
+        if (card is null)
+            return;
+        if (_picked.Count == 0 && SelectedIssueId is { } selected && selected != card.Id && AllCards.Any(c => c.Id == selected))
+            _picked.Add(selected);
+        if (!_picked.Add(card.Id))
+            _picked.Remove(card.Id);
+        ShowPicks();
+        SelectedIssueId = card.Id;
+        Host.SelectIssue(card.Id);
+    }
+
+    [RelayCommand]
+    private void ClearPicks()
+    {
+        _picked.Clear();
+        ShowPicks();
+    }
+
+    [RelayCommand]
+    private async Task EditPickedAsync()
+    {
+        if (_picked.Count > 0)
+            await Context.Dialogs.ShowDialogAsync(new BulkEditDialogViewModel(Context, [.. PickedInOrder().Select(p => p.Card.Id)]));
+    }
+
+    private void ShowPicks()
+    {
+        foreach (var card in AllCards)
+            card.IsPicked = _picked.Contains(card.Id);
+        OnPropertyChanged(nameof(HasPicked));
+        OnPropertyChanged(nameof(PickedText));
+    }
+
+    // The picked cards as the board shows them: column by column, lane by lane, top to bottom.
+    private List<(IssueItemViewModel Card, CellViewModel Cell)> PickedInOrder() =>
+        Columns.SelectMany(column => Lanes.SelectMany(l => l.Cells).Where(c => c.ColumnId == column.Id))
+            .SelectMany(cell => cell.Cards.Where(c => _picked.Contains(c.Id)).Select(c => (c, cell))).ToList();
 
     [RelayCommand]
     private void Open(IssueItemViewModel? card)
@@ -319,25 +374,46 @@ public sealed partial class BoardViewPageViewModel : BoardPageViewModel, IItemsD
                 break;
             }
             case { Item: IssueItemViewModel card, TargetList: CellViewModel cell }:
-            {
-                var others = cell.Cards.Where(c => c.Id != card.Id).ToList();
-                var index = drop.Index;
-                if (drop.SourceList == cell && cell.Cards.IndexOf(card) is var from && from >= 0 && from < index)
-                    index--;   // the card leaves its old place first
-                index = Math.Clamp(index, 0, others.Count);
-                var above = index > 0 ? others[index - 1].Id : null;
-                var below = index < others.Count ? others[index].Id : null;
-                var sameColumn = (drop.SourceList as CellViewModel)?.ColumnId == cell.ColumnId;
-                await Context.RunAsync(new MoveCard(Host.Definition.Id, card.Id, sameColumn ? null : cell.ColumnId, above, below));
-                if (drop.SourceList is CellViewModel source && source.LaneKey != cell.LaneKey)
-                    await ChangeLaneAsync(card.Id, cell.LaneKey);
+                await DropCardsAsync(drop, card, cell);
                 break;
-            }
         }
     }
 
+    // Dragging a picked card moves every picked card that may go there, in board order, together where it's dropped.
+    private async Task DropCardsAsync(ItemsDrop drop, IssueItemViewModel card, CellViewModel cell)
+    {
+        var group = _picked.Contains(card.Id) && _picked.Count > 1
+            ? PickedInOrder()
+            : [(card, drop.SourceList as CellViewModel ?? cell)];
+        var moving = group.Where(g => g.Card == card || CanDropCard(g.Card, cell)).ToList();
+        var ids = moving.Select(g => g.Card.Id).ToHashSet(StringComparer.Ordinal);
+
+        // The neighbours of the whole group, none of them moving; the drop index counts the moving cards above it.
+        var others = cell.Cards.Where(c => !ids.Contains(c.Id)).ToList();
+        var index = drop.Index - cell.Cards.Take(Math.Max(drop.Index, 0)).Count(c => ids.Contains(c.Id));
+        index = Math.Clamp(index, 0, others.Count);
+        var above = index > 0 ? others[index - 1].Id : null;
+        var below = index < others.Count ? others[index].Id : null;
+
+        var steps = new List<IBoardOperation>();
+        foreach (var (each, from) in moving)
+        {
+            steps.Add(new MoveCard(Host.Definition.Id, each.Id, from.ColumnId == cell.ColumnId ? null : cell.ColumnId, above, below));
+            if (from.LaneKey != cell.LaneKey && ChangeLane(each.Id, cell.LaneKey) is { } lane)
+                steps.Add(lane);
+            above = each.Id;   // the next one goes below it
+        }
+        if (steps.Count == 1)
+            await Context.RunAsync(steps[0]);
+        else if (await Context.RunAsync(new Batch(steps, $"{moving.Count} cards moved to {ColumnName(cell.ColumnId)}"))
+                 && moving.Count < group.Count)
+            Context.Status.Show($"{moving.Count} cards moved; {group.Count - moving.Count} can't go to {ColumnName(cell.ColumnId)} (their workflow doesn't allow it).");
+    }
+
+    private string ColumnName(string columnId) => Columns.FirstOrDefault(c => c.Id == columnId)?.Name ?? columnId;
+
     // Dropping into another swimlane sets what the lanes group by (assignee, epic, priority, type).
-    private async Task ChangeLaneAsync(string issueId, string laneKey)
+    private IBoardOperation? ChangeLane(string issueId, string laneKey)
     {
         var value = laneKey.Length == 0 ? null : laneKey;
         var field = Host.Definition.Swimlanes switch
@@ -348,8 +424,7 @@ public sealed partial class BoardViewPageViewModel : BoardPageViewModel, IItemsD
             SwimlaneMode.Epic => Context.Snapshot.Issue(issueId) is { } i && Context.Snapshot.LevelOf(i) == IssueTypeLevel.Standard ? IssueFields.Parent : null,
             _ => null,
         };
-        if (field is not null)
-            await Context.RunAsync(new EditIssue(issueId, field, new FieldValue.Text(value)));
+        return field is null ? null : new EditIssue(issueId, field, new FieldValue.Text(value));
     }
 
     // ---- Column menu --------------------------------------------------------------------------------------

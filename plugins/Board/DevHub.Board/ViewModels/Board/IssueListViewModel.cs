@@ -58,15 +58,21 @@ public sealed record IssueListDrop(IssueListViewModel Source, IssueListViewModel
 /// <summary>Turns an <see cref="Controls.ItemsDrop"/> on issue lists into an <see cref="IssueListDrop"/>.</summary>
 public static class IssueListDrops
 {
-    public static IssueListDrop? From(Controls.ItemsDrop drop)
+    public static IssueListDrop? From(Controls.ItemsDrop drop) =>
+        drop.Item is IssueItemViewModel item ? From(drop, new HashSet<string>([item.Id], StringComparer.Ordinal)) : null;
+
+    /// <summary>
+    /// A drop of several issues at once (the dragged one and the others selected with it): <see cref="IssueListDrop.Above"/>
+    /// and <see cref="IssueListDrop.Below"/> are the neighbours of the whole group, none of them moving.
+    /// </summary>
+    public static IssueListDrop? From(Controls.ItemsDrop drop, IReadOnlySet<string> moving)
     {
         if (drop is not { Item: IssueItemViewModel item, TargetList: IssueListViewModel target })
             return null;
         var source = drop.SourceList as IssueListViewModel ?? target;
-        var others = target.Items.Where(i => i.Id != item.Id).ToList();
-        var index = drop.Index;
-        if (ReferenceEquals(source, target) && target.Items.IndexOf(item) is var from && from >= 0 && from < index)
-            index--;
+        var others = target.Items.Where(i => !moving.Contains(i.Id)).ToList();
+        // The drop index counts the moving issues above it in this list; the group goes into the gap they leave.
+        var index = drop.Index - target.Items.Take(Math.Max(drop.Index, 0)).Count(i => moving.Contains(i.Id));
         index = Math.Clamp(index, 0, others.Count);
         return new IssueListDrop(source, target, item, index > 0 ? others[index - 1].Id : null, index < others.Count ? others[index].Id : null);
     }

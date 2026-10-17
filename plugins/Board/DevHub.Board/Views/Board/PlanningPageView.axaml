@@ -163,7 +163,7 @@
                                 <Panel>
                                     <TextBlock Classes="secondary" Text="{Binding EmptyText}" IsVisible="{Binding IsEmpty}"
                                                HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                    <ListBox Classes="issues" ItemsSource="{Binding Items}" SelectedItems="{Binding Selected}" SelectionMode="Multiple"
+                                    <ListBox Classes="issues" ItemsSource="{Binding Items}" SelectedItems="{Binding Selected}" SelectionMode="Multiple" c:KeepSelection.IsEnabled="True"
                                              ItemTemplate="{StaticResource IssueRow}" Background="Transparent"
                                              ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                              AutomationProperties.Name="{Binding Title}"

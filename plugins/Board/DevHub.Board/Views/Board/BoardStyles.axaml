@@ -17,6 +17,11 @@
     <Style Selector="Border.issueCard:pointerover">
         <Setter Property="Background" Value="{DynamicResource Brush.Board.CardHover}" />
     </Style>
+    <!-- Picked with Ctrl+click, to drag or edit with the others. -->
+    <Style Selector="Border.issueCard.picked">
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent.Subtle}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+    </Style>
     <Style Selector="Border.issueCard:focus-within">
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
     </Style>

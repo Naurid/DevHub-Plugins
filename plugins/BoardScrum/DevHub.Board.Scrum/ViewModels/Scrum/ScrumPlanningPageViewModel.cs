@@ -101,13 +101,18 @@ public sealed class ScrumPlanningPageViewModel : PlanningPageViewModel
         }
     }
 
-    protected override async Task DropAsync(IssueListDrop drop)
+    protected override IBoardOperation MoveOperation(IssueListDrop drop, string issueId, string? above, string? below) =>
+        new PlanIssue(issueId, (drop.Target.Tag as Sprint)?.Id, above, below);
+
+    protected override void OnDropping(IssueListDrop drop, IReadOnlyList<Issue> moving)
     {
-        var sprint = (drop.Target.Tag as Sprint)?.Id;
-        if (drop.Target.Tag is Sprint { State: SprintState.Active } active && drop.Source != drop.Target
-            && Context.Snapshot.Issue(drop.Item.Id) is { } issue && issue.Sprint != active.Id)
-            Context.Status.Show($"{issue.Key} joins the running sprint: its scope grows.");
-        await Context.RunAsync(new PlanIssue(drop.Item.Id, sprint, drop.Above, drop.Below));
+        if (drop.Target.Tag is not Sprint { State: SprintState.Active } active)
+            return;
+        var joining = moving.Where(i => i.Sprint != active.Id).ToList();
+        if (joining.Count > 0)
+            Context.Status.Show(joining.Count == 1
+                ? $"{joining[0].Key} joins the running sprint: its scope grows."
+                : $"{joining.Count} issues join the running sprint: its scope grows.");
     }
 
     protected override IReadOnlyList<(string Field, FieldValue Value)> FieldsForNewIssue() => [];

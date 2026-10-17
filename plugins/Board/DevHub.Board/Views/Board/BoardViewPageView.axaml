@@ -75,6 +75,12 @@
             <TextBlock Classes="small secondary" Text="{Binding NotOnBoard}" TextWrapping="Wrap"
                        ToolTip.Tip="These statuses aren't in any column of this board. Add them to a column with its Statuses… menu."
                        IsVisible="{Binding NotOnBoard, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}" IsVisible="{Binding HasPicked}">
+                <TextBlock Text="{Binding PickedText}" VerticalAlignment="Center" />
+                <Button Content="Edit Selected…" Command="{Binding EditPickedCommand}" />
+                <Button Classes="flat" Content="Clear selection" Command="{Binding ClearPicksCommand}" />
+                <TextBlock Classes="small secondary" Text="Drag one of them to move them all." VerticalAlignment="Center" />
+            </StackPanel>
         </StackPanel>
 
         <Panel>

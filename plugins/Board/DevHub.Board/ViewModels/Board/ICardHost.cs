@@ -18,4 +18,7 @@ public interface ICardHost
     ICommand? MoveToBottomCommand => null;
     ICommand? NextColumnCommand => null;
     ICommand? PreviousColumnCommand => null;
+
+    /// <summary>Ctrl+click: adds the card to (or takes it out of) a selection of several; null where a page has none.</summary>
+    ICommand? PickCommand => null;
 }

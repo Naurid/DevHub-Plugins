@@ -222,9 +222,14 @@ public abstract partial class PlanningPageViewModel : BoardPageViewModel, IItems
     /// <summary>Puts the shown issues into the page's lists.</summary>
     protected abstract void FillLists(IReadOnlyList<Issue> issues, BoardSnapshot board);
 
-    /// <summary>A drop between or within lists: rank it (and, in Scrum, move it to another sprint).</summary>
-    protected virtual async Task DropAsync(IssueListDrop drop) =>
-        await Context.RunAsync(new RankIssue(drop.Item.Id, drop.Above, drop.Below));
+    /// <summary>Moves one dropped issue between two others: rank it (and, in Scrum, put it in the target's sprint).</summary>
+    protected virtual IBoardOperation MoveOperation(IssueListDrop drop, string issueId, string? above, string? below) =>
+        new RankIssue(issueId, above, below);
+
+    /// <summary>Before a drop runs, with the issues it moves (Scrum: says when they join the running sprint).</summary>
+    protected virtual void OnDropping(IssueListDrop drop, IReadOnlyList<Issue> moving)
+    {
+    }
 
     /// <summary>Extra fields a quick-created issue gets in this list (Scrum: its sprint).</summary>
     protected virtual IReadOnlyList<(string Field, FieldValue Value)> FieldsForNewIssue() => [];
@@ -233,8 +238,33 @@ public abstract partial class PlanningPageViewModel : BoardPageViewModel, IItems
 
     public void Drop(ItemsDrop drop)
     {
-        if (IssueListDrops.From(drop) is { } listDrop)
-            _ = DropAsync(listDrop);
+        // Dragging one of several selected issues moves them all, in the order they're shown, together where it's dropped.
+        var selected = SelectedIssues;
+        var group = drop.Item is IssueItemViewModel item && selected.Count > 1 && selected.Any(i => i.Id == item.Id)
+            ? Lists.SelectMany(l => l.Items).Where(i => selected.Any(s => s.Id == i.Id)).Select(i => i.Id).Distinct().ToList()
+            : drop.Item is IssueItemViewModel one ? [one.Id] : [];
+        if (IssueListDrops.From(drop, group.ToHashSet(StringComparer.Ordinal)) is { } listDrop)
+            _ = DropAsync(listDrop, group);
+    }
+
+    private async Task DropAsync(IssueListDrop drop, IReadOnlyList<string> ids)
+    {
+        var snapshot = Context.Snapshot;
+        OnDropping(drop, [.. ids.Select(snapshot.Issue).OfType<Issue>()]);
+        if (ids.Count == 1)
+        {
+            await Context.RunAsync(MoveOperation(drop, ids[0], drop.Above, drop.Below));
+            return;
+        }
+        // Each goes below the one before it, so the group keeps its order.
+        var steps = new List<IBoardOperation>();
+        var above = drop.Above;
+        foreach (var id in ids)
+        {
+            steps.Add(MoveOperation(drop, id, above, drop.Below));
+            above = id;
+        }
+        await Context.RunAsync(new Batch(steps, $"{ids.Count} issues moved to {drop.Target.Title}"));
     }
 
     [RelayCommand]

@@ -10,9 +10,9 @@
                     xmlns:c="using:DevHub.Controls">
 
     <DataTemplate x:Key="IssueCard" x:DataType="vm:IssueItemViewModel">
-        <Border Classes="issueCard" Classes.done="{Binding IsDone}" ToolTip.Tip="{Binding ToolTip}"
+        <Border Classes="issueCard" Classes.done="{Binding IsDone}" Classes.picked="{Binding IsPicked}" ToolTip.Tip="{Binding ToolTip}"
                 AutomationProperties.Name="{Binding}" Focusable="True"
-                c:DoubleTap.Command="{Binding OpenCommand}">
+                c:DoubleTap.Command="{Binding OpenCommand}" c:CardPick.Command="{Binding PickCommand}">
             <Border.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Open in Tab" Command="{Binding OpenCommand}" />
