@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHub.Controls;
 using DevHub.ViewModels.Documents;
 using DevHub.ViewModels.Git;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Actions.Providers;
 
@@ -85,166 +86,166 @@ public sealed class GitActionProvider : IActionProvider, IDisposable
     public IEnumerable<AppAction> GetActions()
     {
         // Ctrl+K = JetBrains' Commit: go to the commit box; Ctrl+Enter there commits.
-        yield return new AppAction(GitActionIds.Commit, "Commit…", _commit)
+        yield return new AppAction(GitActionIds.Commit, L.T("Commit…"), _commit)
         {
             Category = "Git",
             Menu = "Git",
             MenuOrder = 0,
             IconKind = IconKind.Commit,
             Gesture = "Ctrl+K",
-            Description = "Show Changes of the active repository with the cursor in the commit message.",
+            Description = L.T("Show Changes of the active repository with the cursor in the commit message."),
         };
 
         // Ctrl+Alt+Z = JetBrains' Rollback. Window-wide, so it works wherever the focus is.
-        yield return new AppAction(GitActionIds.Discard, "Discard Changes…", _discard)
+        yield return new AppAction(GitActionIds.Discard, L.T("Discard Changes…"), _discard)
         {
             Category = "Git",
             Menu = "Git",
             MenuOrder = 100,
             IconKind = IconKind.Delete,
             Gesture = "Ctrl+Alt+Z",
-            Description = "Throw away the unstaged changes of the file selected in Changes (asks first).",
+            Description = L.T("Throw away the unstaged changes of the file selected in Changes (asks first)."),
         };
 
         // Ctrl+Shift+` = JetBrains' Branches popup (the key left of 1 on US keyboards).
-        yield return new AppAction(GitActionIds.Branches, "Branches…", _branches)
+        yield return new AppAction(GitActionIds.Branches, L.T("Branches…"), _branches)
         {
             Category = "Git",
             Menu = "Git",
             MenuOrder = 200,
             IconKind = IconKind.Vcs,
             Gesture = "Ctrl+Shift+OemTilde",
-            Description = "Search the active repository's branches and check one out.",
+            Description = L.T("Search the active repository's branches and check one out."),
         };
 
         // JetBrains: Push… = Ctrl+Shift+K, Update Project… = Ctrl+T.
-        yield return new AppAction(GitActionIds.Push, "Push…", _push)
+        yield return new AppAction(GitActionIds.Push, L.T("Push…"), _push)
         {
             Category = "Git",
             Menu = "Git",
             MenuOrder = 1,
             IconKind = IconKind.Push,
             Gesture = "Ctrl+Shift+K",
-            Description = "Push the current branch of the active repository (shows the commits first).",
+            Description = L.T("Push the current branch of the active repository (shows the commits first)."),
         };
 
-        yield return new AppAction(GitActionIds.Pull, "Update", _pull)
+        yield return new AppAction(GitActionIds.Pull, L.T("Update"), _pull)
         {
             Category = "Git",
             Menu = "Git",
             MenuOrder = 2,
             IconKind = IconKind.Update,
             Gesture = "Ctrl+T",
-            Description = "Pull the current branch's new commits (fast-forward; offers a rebase if both sides changed).",
+            Description = L.T("Pull the current branch's new commits (fast-forward; offers a rebase if both sides changed)."),
         };
 
-        yield return new AppAction(GitActionIds.Fetch, "Fetch", _fetch)
+        yield return new AppAction(GitActionIds.Fetch, L.T("Fetch"), _fetch)
         {
             Category = "Git",
             Menu = "Git",
             MenuOrder = 3,
             IconKind = IconKind.Fetch,
-            Description = "Download what's new on every remote of the active repository; changes nothing locally.",
+            Description = L.T("Download what's new on every remote of the active repository; changes nothing locally."),
         };
 
-        yield return new AppAction(GitActionIds.ForcePush, "Force Push…", _forcePush)
+        yield return new AppAction(GitActionIds.ForcePush, L.T("Force Push…"), _forcePush)
         {
             Category = "Git",
             Menu = "Git",
             MenuOrder = 4,
             IconKind = IconKind.Push,
-            Description = "Overwrite the remote branch with yours (after amend / rebase). Asks first; --force-with-lease.",
+            Description = L.T("Overwrite the remote branch with yours (after amend / rebase). Asks first; --force-with-lease."),
         };
 
         // JetBrains: Git → Uncommitted Changes → Stash Changes… / Unstash Changes….
-        yield return new AppAction(GitActionIds.Stash, "Stash Changes…", _stash)
+        yield return new AppAction(GitActionIds.Stash, L.T("Stash Changes…"), _stash)
         {
             Category = "Git",
             Menu = "Git",
             MenuOrder = 101,
             IconKind = IconKind.Copy,
-            Description = "Put the uncommitted changes of the active repository aside (asks for a message first).",
+            Description = L.T("Put the uncommitted changes of the active repository aside (asks for a message first)."),
         };
 
-        yield return new AppAction(GitActionIds.Unstash, "Unstash Changes…", _unstash)
+        yield return new AppAction(GitActionIds.Unstash, L.T("Unstash Changes…"), _unstash)
         {
             Category = "Git",
             Menu = "Git",
             MenuOrder = 102,
             IconKind = IconKind.Copy,
-            Description = "Show the stashes of the active repository, to apply or pop one.",
+            Description = L.T("Show the stashes of the active repository, to apply or pop one."),
         };
 
         // JetBrains: Git → Manage Remotes…, Share Project on GitHub, Get from Version Control….
-        yield return new AppAction(GitActionIds.ManageRemotes, "Manage Remotes…", _manageRemotes)
+        yield return new AppAction(GitActionIds.ManageRemotes, L.T("Manage Remotes…"), _manageRemotes)
         {
             Category = "Git",
             Menu = "Git",
             MenuOrder = 300,
             IconKind = IconKind.Fetch,
-            Description = "Add a remote (name + URL) to the active repository, change its URL, rename or remove it.",
+            Description = L.T("Add a remote (name + URL) to the active repository, change its URL, rename or remove it."),
         };
 
         // Only with a hosting plugin (GitHub): "Git.PublishToGitHub", "Publish to GitHub…".
         if (_host is not null)
-            yield return new AppAction(GitActionIds.PublishPrefix + _host.Name, $"Publish to {_host.Name}…", _publish)
+            yield return new AppAction(GitActionIds.PublishPrefix + _host.Name, L.T($"Publish to {_host.Name}…"), _publish)
         {
             Category = "Git",
             Menu = "Git",
             MenuOrder = 301,
             IconKind = IconKind.Push,
-            Description = $"Create a repository on your {_host.Name} account, add it as a remote and push the current branch.",
+            Description = L.T($"Create a repository on your {_host.Name} account, add it as a remote and push the current branch."),
         };
 
-        yield return new AppAction(GitActionIds.OpenRepository, "Open Repository…", _openRepository)
+        yield return new AppAction(GitActionIds.OpenRepository, L.T("Open Repository…"), _openRepository)
         {
             Category = "Git",
             Menu = "Git",
             MenuOrder = 302,
             WelcomeOrder = 45,
             IconKind = IconKind.Vcs,
-            Description = "Choose a folder and open its git repository as a tab.",
+            Description = L.T("Choose a folder and open its git repository as a tab."),
         };
 
-        yield return new AppAction(GitActionIds.Clone, "Clone Repository…", _clone)
+        yield return new AppAction(GitActionIds.Clone, L.T("Clone Repository…"), _clone)
         {
             Category = "Git",
             Menu = "Git",
             MenuOrder = 303,
             WelcomeOrder = 46,
             IconKind = IconKind.Fetch,
-            Description = "Clone one of your GitHub repositories (or any URL) and open it as a repository tab.",
+            Description = L.T("Clone one of your GitHub repositories (or any URL) and open it as a repository tab."),
         };
 
-        yield return new AppAction(GitActionIds.NewBranch, "New Branch…", _newBranch)
+        yield return new AppAction(GitActionIds.NewBranch, L.T("New Branch…"), _newBranch)
         {
             Category = "Git",
             Menu = "Git",
             MenuOrder = 201,
             IconKind = IconKind.Add,
-            Description = "Create a branch from the current commit in the active repository.",
+            Description = L.T("Create a branch from the current commit in the active repository."),
         };
 
         // Alt+F12 = JetBrains' Terminal.
-        yield return new AppAction(GitActionIds.OpenTerminal, "Open Terminal", _openTerminal)
+        yield return new AppAction(GitActionIds.OpenTerminal, L.T("Open Terminal"), _openTerminal)
         {
             Category = "Git",
             Menu = "Git",
             MenuOrder = 400,
             IconKind = IconKind.Terminal,
             Gesture = "Alt+F12",
-            Description = "Open Git Bash (or Windows Terminal / PowerShell) in the active repository's folder.",
+            Description = L.T("Open Git Bash (or Windows Terminal / PowerShell) in the active repository's folder."),
         };
 
         // Ctrl+Alt+Y = JetBrains' "Synchronize" (F5 is already Rescan Repositories).
-        yield return new AppAction(GitActionIds.Refresh, "Refresh Repository", _refresh)
+        yield return new AppAction(GitActionIds.Refresh, L.T("Refresh Repository"), _refresh)
         {
             Category = "Git",
             Menu = "Git",
             MenuOrder = 401,
             IconKind = IconKind.Refresh,
             Gesture = "Ctrl+Alt+Y",
-            Description = "Re-read the active repository tab (branch, and later changes).",
+            Description = L.T("Re-read the active repository tab (branch, and later changes)."),
         };
     }
 

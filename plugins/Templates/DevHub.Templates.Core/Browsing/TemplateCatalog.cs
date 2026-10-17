@@ -1,3 +1,5 @@
+using DevHub.Sdk.Core.Localization;
+
 namespace DevHub.Templates.Core.Browsing;
 
 /// <summary>How the template browser groups the list (the user switches between them).</summary>

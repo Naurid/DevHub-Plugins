@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHub.Git.Core;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Git;
 
@@ -35,10 +36,10 @@ public partial class CommitDetailsViewModel : ViewModelBase
     public RepositoryTabLayout Layout { get; }
 
     /// <summary>The empty state when nothing is selected.</summary>
-    public string EmptyTitle => _isStash ? "No stash selected" : "No commit selected";
+    public string EmptyTitle => _isStash ? L.T("No stash selected") : L.T("No commit selected");
     public string EmptyText => _isStash
-        ? "Select a stash to see its message, files and changes."
-        : "Select a commit to see its message, files and changes.";
+        ? L.T("Select a stash to see its message, files and changes.")
+        : L.T("Select a commit to see its message, files and changes.");
 
     /// <summary>The selected file's diff.</summary>
     public DiffViewModel Diff { get; }
@@ -51,7 +52,7 @@ public partial class CommitDetailsViewModel : ViewModelBase
 
     public string AuthorText => Commit is null ? ""
         : Commit.CommitterName.Length > 0 && Commit.CommitterName != Commit.AuthorName
-            ? $"{Commit.AuthorName} <{Commit.AuthorEmail}>, committed by {Commit.CommitterName}"
+            ? L.T($"{Commit.AuthorName} <{Commit.AuthorEmail}>, committed by {Commit.CommitterName}")
             : $"{Commit.AuthorName} <{Commit.AuthorEmail}>";
 
     public string DateText => Commit is null ? "" : $"{Commit.AuthorDate.ToLocalTime():yyyy-MM-dd HH:mm}";
@@ -61,10 +62,10 @@ public partial class CommitDetailsViewModel : ViewModelBase
     public string ParentsText => Commit switch
     {
         null => "",
-        { ParentIds.Count: > 0 } c when _isStash => "Made on " + Short(c.ParentIds[0]) + (c.ParentIds.Count >= 3 ? " · includes untracked files" : ""),
-        { ParentIds.Count: 0 } => "Root commit",
+        { ParentIds.Count: > 0 } c when _isStash => L.T("Made on ") + Short(c.ParentIds[0]) + (c.ParentIds.Count >= 3 ? L.T(" · includes untracked files") : ""),
+        { ParentIds.Count: 0 } => L.T("Root commit"),
         { ParentIds.Count: 1 } c => "Parent: " + Short(c.ParentIds[0]),
-        var c => "Merge of " + string.Join(", ", c.ParentIds.Select(Short)) + " (files: changes brought in, vs. the first parent)",
+        var c => L.T("Merge of ") + string.Join(", ", c.ParentIds.Select(Short)) + L.T(" (files: changes brought in, vs. the first parent)"),
     };
 
     /// <summary>Full commit message; empty while loading.</summary>
@@ -75,7 +76,7 @@ public partial class CommitDetailsViewModel : ViewModelBase
     private IReadOnlyList<FileChangeViewModel> _files = [];
 
     /// <summary>"3 files changed".</summary>
-    public string FilesText => Files.Count == 1 ? "1 file changed" : $"{Files.Count:N0} files changed";
+    public string FilesText => Files.Count == 1 ? L.T("1 file changed") : L.T($"{Files.Count:N0} files changed");
 
     [ObservableProperty] private FileChangeViewModel? _selectedFile;
 
@@ -201,7 +202,7 @@ public partial class CommitDetailsViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            Error = (_isStash ? "Couldn't load the stash: " : "Couldn't load the commit: ") + ex.Message;
+            Error = (_isStash ? L.T("Couldn't load the stash: ") : L.T("Couldn't load the commit: ")) + ex.Message;
         }
     }
 

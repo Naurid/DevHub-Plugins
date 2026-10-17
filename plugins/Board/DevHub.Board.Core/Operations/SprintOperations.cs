@@ -1,5 +1,6 @@
 using DevHub.Board.Core.Model;
 using DevHub.Board.Core.Storage;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Board.Core;
 
@@ -10,7 +11,7 @@ namespace DevHub.Board.Core;
 internal static class Sprints
 {
     public static Sprint Require(BoardSnapshot board, string id) =>
-        board.Sprints.GetValueOrDefault(id) ?? throw new BoardRuleException("That sprint doesn't exist any more.");
+        board.Sprints.GetValueOrDefault(id) ?? throw new BoardRuleException(L.T("That sprint doesn't exist any more."));
 
     public static IEnumerable<Issue> IssuesIn(BoardSnapshot board, string sprintId) =>
         board.Issues.Values.Where(i => i.Sprint == sprintId);
@@ -24,7 +25,7 @@ internal static class Sprints
     public static void CheckDates(DateTimeOffset? start, DateTimeOffset? end)
     {
         if (start is { } s && end is { } e && e <= s)
-            throw new BoardRuleException("A sprint ends after it starts.");
+            throw new BoardRuleException(L.T("A sprint ends after it starts."));
     }
 }
 
@@ -39,9 +40,9 @@ public sealed record CreateSprint : IBoardOperation
     {
         var change = new ChangeBuilder(board, context);
         var number = board.Sprints.Count + 1;
-        var name = string.IsNullOrWhiteSpace(Name) ? $"{board.Project.Key} Sprint {number}" : Name.Trim();
+        var name = string.IsNullOrWhiteSpace(Name) ? L.T($"{board.Project.Key} Sprint {number}") : Name.Trim();
         while (string.IsNullOrWhiteSpace(Name) && board.Sprints.Values.Any(s => s.Name == name))
-            name = $"{board.Project.Key} Sprint {++number}";
+            name = L.T($"{board.Project.Key} Sprint {++number}");
         Definitions.RequireUnique(board.Sprints.Values, s => s.Name, name, "sprint");
         var sprint = new Sprint
         {
@@ -51,7 +52,7 @@ public sealed record CreateSprint : IBoardOperation
             Sequence = board.Sprints.Values.Select(s => s.Sequence).DefaultIfEmpty(0).Max() + 1,
         };
         change.Write(BoardPaths.Sprint(sprint.Id), sprint);
-        return change.Build($"Sprint {name} created");
+        return change.Build(L.T($"Sprint {name} created"));
     }
 }
 
@@ -71,13 +72,13 @@ public sealed record EditSprint(string SprintId, string Name, string Goal, DateT
         Definitions.RequireUnique(board.Sprints.Values, s => s.Name, name, "sprint", s => s.Id == SprintId);
         Sprints.CheckDates(Start, End);
         if (Capacity is < 0)
-            throw new BoardRuleException("Capacity can't be negative.");
+            throw new BoardRuleException(L.T("Capacity can't be negative."));
         var edited = sprint with { Name = name, Goal = Goal.Trim(), Start = Start, End = End, Capacity = Capacity };
         if (Availability is not null)
             edited = edited with { Availability = SprintCapacity.Check(board, Availability), FocusFactor = SprintCapacity.CheckFocus(FocusFactor) };
         var change = new ChangeBuilder(board, context);
         change.Write(BoardPaths.Sprint(sprint.Id), edited);
-        return change.Build($"Sprint {sprint.Name} changed");
+        return change.Build(L.T($"Sprint {sprint.Name} changed"));
     }
 }
 
@@ -125,17 +126,17 @@ public static class SprintCapacity
         foreach (var a in availability)
         {
             if (board.Project.Person(a.Person) is null)
-                throw new BoardRuleException("Someone in the availability isn't on the board.");
+                throw new BoardRuleException(L.T("Someone in the availability isn't on the board."));
             if (a.Days is < 0 or > 366 || !double.IsFinite(a.Days))
-                throw new BoardRuleException("Available days are a number from 0.");
+                throw new BoardRuleException(L.T("Available days are a number from 0."));
         }
         if (availability.Select(a => a.Person).Distinct().Count() != availability.Count)
-            throw new BoardRuleException("Someone is in the availability twice.");
+            throw new BoardRuleException(L.T("Someone is in the availability twice."));
         return availability.Where(a => a.Days > 0).ToList();
     }
 
     internal static double? CheckFocus(double? focus) =>
-        focus is null ? null : focus is > 0 and <= 1 ? focus : throw new BoardRuleException("The focus factor is between 1% and 100%.");
+        focus is null ? null : focus is > 0 and <= 1 ? focus : throw new BoardRuleException(L.T("The focus factor is between 1% and 100%."));
 }
 
 /// <summary>Starts a future sprint: dates and goal, and a record of what was committed (its issues and points).</summary>
@@ -148,14 +149,14 @@ public sealed record StartSprint(string SprintId, DateTimeOffset Start, DateTime
     {
         var sprint = Sprints.Require(board, SprintId);
         if (sprint.State != SprintState.Future)
-            throw new BoardRuleException($"{sprint.Name} has already started.");
+            throw new BoardRuleException(L.T($"{sprint.Name} has already started."));
         if (board.Sprints.Values.FirstOrDefault(s => s.State == SprintState.Active) is { } running)
-            throw new BoardRuleException($"{running.Name} is still running: complete it first.");
+            throw new BoardRuleException(L.T($"{running.Name} is still running: complete it first."));
         Sprints.CheckDates(Start, End);
         var name = Name is null ? sprint.Name : Definitions.RequireName(Name, "sprint");
         var issues = Sprints.IssuesIn(board, sprint.Id).ToList();
         if (issues.Count == 0)
-            throw new BoardRuleException($"{sprint.Name} has no issues yet: plan some first.");
+            throw new BoardRuleException(L.T($"{sprint.Name} has no issues yet: plan some first."));
         var change = new ChangeBuilder(board, context);
         change.Write(BoardPaths.Sprint(sprint.Id), sprint with
         {
@@ -166,7 +167,7 @@ public sealed record StartSprint(string SprintId, DateTimeOffset Start, DateTime
             End = End,
             Committed = Sprints.PointsOf(board, issues),
         });
-        return change.Build($"Sprint {name} started");
+        return change.Build(L.T($"Sprint {name} started"));
     }
 }
 
@@ -206,7 +207,7 @@ public sealed record CompleteSprint(string SprintId, OpenIssuesGoTo MoveTo = Ope
             case OpenIssuesGoTo.NextSprint:
                 var next = NextSprint is null ? null : board.Sprints.GetValueOrDefault(NextSprint);
                 if (next is null || next.State != SprintState.Future)
-                    throw new BoardRuleException("Choose a sprint that hasn't started for the unfinished issues.");
+                    throw new BoardRuleException(L.T("Choose a sprint that hasn't started for the unfinished issues."));
                 target = next.Id;
                 break;
             case OpenIssuesGoTo.NewSprint:
@@ -230,10 +231,10 @@ public sealed record CompleteSprint(string SprintId, OpenIssuesGoTo MoveTo = Ope
             CompletedIssues = Sprints.PointsOf(board, done),
             NotCompleted = Sprints.PointsOf(board, open),
         });
-        var where = target is null ? "the backlog" : board.Sprints.GetValueOrDefault(target)?.Name ?? "a new sprint";
+        var where = target is null ? L.T("the backlog") : board.Sprints.GetValueOrDefault(target)?.Name ?? L.T("a new sprint");
         return change.Build(open.Count == 0
-            ? $"Sprint {sprint.Name} completed"
-            : $"Sprint {sprint.Name} completed, {open.Count} unfinished issues moved to {where}");
+            ? L.T($"Sprint {sprint.Name} completed")
+            : L.T($"Sprint {sprint.Name} completed, {open.Count} unfinished issues moved to {where}"));
     }
 }
 
@@ -245,13 +246,13 @@ public sealed record DeleteSprint(string SprintId) : IBoardOperation
         var sprint = Sprints.Require(board, SprintId);
         if (sprint.State != SprintState.Future)
             throw new BoardRuleException(sprint.State == SprintState.Active
-                ? $"{sprint.Name} is running: complete it instead."
-                : $"{sprint.Name} is finished: it stays for the reports.");
+                ? L.T($"{sprint.Name} is running: complete it instead.")
+                : L.T($"{sprint.Name} is finished: it stays for the reports."));
         var change = new ChangeBuilder(board, context);
         foreach (var issue in Sprints.IssuesIn(board, sprint.Id))
             change.WriteIssue(issue, issue with { Sprint = null });
         change.Delete(BoardPaths.Sprint(sprint.Id));
-        return change.Build($"Sprint {sprint.Name} deleted");
+        return change.Build(L.T($"Sprint {sprint.Name} deleted"));
     }
 }
 
@@ -265,11 +266,11 @@ public sealed record MoveSprint(string SprintId, int Step) : IBoardOperation
         var index = future.FindIndex(s => s.Id == SprintId);
         var other = index + Step;
         if (index < 0 || other < 0 || other >= future.Count || Step == 0)
-            return new BoardChange("No change", new Dictionary<string, byte[]?>());
+            return new BoardChange(L.T("No change"), new Dictionary<string, byte[]?>());
         var change = new ChangeBuilder(board, context);
         change.Write(BoardPaths.Sprint(sprint.Id), sprint with { Sequence = future[other].Sequence });
         change.Write(BoardPaths.Sprint(future[other].Id), future[other] with { Sequence = sprint.Sequence });
-        return change.Build("Sprints reordered");
+        return change.Build(L.T("Sprints reordered"));
     }
 }
 
@@ -281,9 +282,9 @@ public sealed record PlanIssue(string IssueId, string? Sprint, string? Above, st
 {
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
-        var issue = board.Issue(IssueId) ?? throw new BoardRuleException("The issue doesn't exist any more.");
+        var issue = board.Issue(IssueId) ?? throw new BoardRuleException(L.T("The issue doesn't exist any more."));
         if (Sprint is not null && Sprints.Require(board, Sprint).State == SprintState.Closed)
-            throw new BoardRuleException("That sprint is finished.");
+            throw new BoardRuleException(L.T("That sprint is finished."));
         var files = new Dictionary<string, byte[]?>(StringComparer.Ordinal);
         var messages = new List<string>();
         var current = board;
@@ -291,7 +292,7 @@ public sealed record PlanIssue(string IssueId, string? Sprint, string? Above, st
             Merge(new EditIssue(IssueId, Fields.IssueFields.Sprint, new Fields.FieldValue.Text(Sprint)).Apply(current, context));
         if (Above is not null || Below is not null)
             Merge(new RankIssue(IssueId, Above, Below).Apply(current, context));
-        return new BoardChange(messages.Count == 0 ? "No change" : string.Join("; ", messages), files);
+        return new BoardChange(messages.Count == 0 ? L.T("No change") : string.Join("; ", messages), files);
 
         void Merge(BoardChange step)
         {

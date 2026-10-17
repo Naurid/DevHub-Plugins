@@ -1,3 +1,5 @@
+using DevHub.Sdk.Core.Localization;
+
 namespace DevHub.GitHub.Core;
 
 /// <summary>
@@ -33,13 +35,13 @@ public sealed class GitHubService(GitCredentialManager credentials, GitHubApi ap
         string? ifNoneMatch = null, string? accept = null, CancellationToken ct = default)
     {
         account ??= (await ListAccountsAsync(ct)).FirstOrDefault()
-                    ?? throw new GitHubException("Nobody is signed in to GitHub. Sign in in Settings → GitHub.");
+                    ?? throw new GitHubException(L.T("Nobody is signed in to GitHub. Sign in in Settings → GitHub."));
         return await api.SendRawAsync(await TokenAsync(account, ct), method, pathOrUrl, json, ifNoneMatch, accept, ct);
     }
 
     private async Task<string> TokenAsync(string account, CancellationToken ct) =>
         await Credentials.GetTokenAsync(account, ct)
-        ?? throw new GitHubException($"Git Credential Manager has no stored sign-in for {account}. Sign in again in Settings → GitHub.");
+        ?? throw new GitHubException(L.T($"Git Credential Manager has no stored sign-in for {account}. Sign in again in Settings → GitHub."));
 
     /// <summary>
     /// Whether <paramref name="name"/> is a repository name GitHub accepts: letters, digits,

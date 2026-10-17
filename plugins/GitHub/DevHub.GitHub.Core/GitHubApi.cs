@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.GitHub.Core;
 
@@ -112,7 +113,7 @@ public sealed class GitHubApi(HttpClient http)
             ["auto_init"] = false,
         });
         using var response = await SendAsync(HttpMethod.Post, "user/repos", token, body, ct,
-            unprocessable: $"GitHub refused the name \"{name}\": a repository with that name probably exists on your account already.");
+            unprocessable: L.T($"GitHub refused the name \"{name}\": a repository with that name probably exists on your account already."));
         using var doc = await ReadJsonAsync(response, ct);
         return ParseRepository(doc.RootElement);
     }
@@ -151,8 +152,8 @@ public sealed class GitHubApi(HttpClient http)
     {
         var verb = method.ToUpperInvariant();
         if (!AllowedMethods.Contains(verb))
-            throw new GitHubException($"\"{method}\" isn't a method DevHub sends to GitHub.");
-        var uri = ApiUri(pathOrUrl) ?? throw new GitHubException($"\"{pathOrUrl}\" isn't on api.github.com; DevHub sends your GitHub sign-in nowhere else.");
+            throw new GitHubException(L.T($"\"{method}\" isn't a method DevHub sends to GitHub."));
+        var uri = ApiUri(pathOrUrl) ?? throw new GitHubException(L.T($"\"{pathOrUrl}\" isn't on api.github.com; DevHub sends your GitHub sign-in nowhere else."));
 
         using var request = new HttpRequestMessage(new HttpMethod(verb), uri);
         request.Headers.UserAgent.Add(new ProductInfoHeaderValue("DevHub", "1.0"));
@@ -176,7 +177,7 @@ public sealed class GitHubApi(HttpClient http)
         }
         catch (HttpRequestException ex)
         {
-            throw new GitHubException("Couldn't reach GitHub. Check your internet connection.", null, ex);
+            throw new GitHubException(L.T("Couldn't reach GitHub. Check your internet connection."), null, ex);
         }
     }
 
@@ -201,7 +202,7 @@ public sealed class GitHubApi(HttpClient http)
         }
         catch (HttpRequestException ex)
         {
-            throw new GitHubException("Couldn't reach GitHub. Check your internet connection.", null, ex);
+            throw new GitHubException(L.T("Couldn't reach GitHub. Check your internet connection."), null, ex);
         }
 
         if (response.IsSuccessStatusCode)
@@ -212,11 +213,11 @@ public sealed class GitHubApi(HttpClient http)
         throw status switch
         {
             HttpStatusCode.Unauthorized => new GitHubException(
-                "GitHub didn't accept the sign-in (it expired or was revoked). Sign in again in Settings → GitHub.", status),
+                L.T("GitHub didn't accept the sign-in (it expired or was revoked). Sign in again in Settings → GitHub."), status),
             HttpStatusCode.Forbidden => new GitHubException(
-                "GitHub refused the request: the sign-in lacks the permission, or the API rate limit was hit. Try again later or sign in again.", status),
+                L.T("GitHub refused the request: the sign-in lacks the permission, or the API rate limit was hit. Try again later or sign in again."), status),
             HttpStatusCode.UnprocessableEntity when unprocessable is not null => new GitHubException(unprocessable, status),
-            _ => new GitHubException($"GitHub answered {(int)status} {status}.", status),
+            _ => new GitHubException(L.T($"GitHub answered {(int)status} {status}."), status),
         };
     }
 

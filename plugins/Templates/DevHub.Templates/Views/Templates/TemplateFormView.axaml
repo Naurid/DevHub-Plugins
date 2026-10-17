@@ -4,6 +4,7 @@
 -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:t="using:DevHub.ViewModels.Templates"
              xmlns:c="using:DevHub.Controls"
              x:Class="DevHub.Views.Templates.TemplateFormView"
@@ -22,14 +23,14 @@
                 <TextBlock Classes="secondary" Text="{Binding Description}" TextWrapping="Wrap" IsVisible="{Binding HasDescription}" />
                 <WrapPanel Orientation="Horizontal">
                     <c:Badge Classes="accent" Content="{Binding Language}" Margin="{DynamicResource Margin.RowEnd}"
-                             ToolTip.Tip="Language" IsVisible="{Binding !IsBroken}" />
+                             ToolTip.Tip="{l:T 'Language'}" IsVisible="{Binding !IsBroken}" />
                     <ItemsControl ItemsSource="{Binding Categories}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="x:String">
-                                <c:Badge Content="{Binding}" Margin="{DynamicResource Margin.RowEnd}" ToolTip.Tip="Category" />
+                                <c:Badge Content="{Binding}" Margin="{DynamicResource Margin.RowEnd}" ToolTip.Tip="{l:T 'Category'}" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
@@ -42,7 +43,7 @@
             <Border IsVisible="{Binding IsBroken}" Background="{DynamicResource Brush.Status.Error.Subtle}"
                     CornerRadius="{DynamicResource Radius.Control}" Padding="{DynamicResource Padding.Banner}">
                 <StackPanel Spacing="{DynamicResource Spacing.Small}">
-                    <TextBlock Text="This template can't be used until its template.json is fixed:" FontWeight="SemiBold" TextWrapping="Wrap" />
+                    <TextBlock Text="{l:T 'This template can\'t be used until its template.json is fixed:'}" FontWeight="SemiBold" TextWrapping="Wrap" />
                     <ItemsControl ItemsSource="{Binding Problems}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="x:String">
@@ -88,7 +89,7 @@
                 <c:SettingsRow Label="{Binding LocationLabel}" Description="{Binding LocationDescription}">
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}">
                         <TextBox Text="{Binding Location}" AutomationProperties.Name="{Binding LocationLabel}" />
-                        <Button Grid.Column="1" Content="Browse…" Command="{Binding BrowseCommand}" />
+                        <Button Grid.Column="1" Content="{l:T 'Browse…'}" Command="{Binding BrowseCommand}" />
                     </Grid>
                 </c:SettingsRow>
 
@@ -103,7 +104,7 @@
                         <TextBlock Text="{Binding TargetText}" TextWrapping="Wrap"
                                    Foreground="{DynamicResource Brush.Status.Error}" IsVisible="{Binding TargetIsError}" />
                     </Panel>
-                    <Button Grid.Column="1" Classes="accent" Content="Next" Command="{Binding NextCommand}" IsDefault="True" />
+                    <Button Grid.Column="1" Classes="accent" Content="{l:T 'Next'}" Command="{Binding NextCommand}" IsDefault="True" />
                 </Grid>
             </StackPanel>
         </StackPanel>

@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHub.Board.Core;
 using DevHub.Board.Core.Model;
 using DevHub.Services.Board;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Board;
 
@@ -105,7 +106,7 @@ public sealed partial class IssueChecksViewModel(BoardContext context, string is
 
         var missing = DoneReadiness.Missing(project, issue).Count;
         IsReady = missing == 0 && (issue.Criteria.Count > 0 || ShowDefinitionOfDone);
-        ReadyText = missing == 0 ? "Ready for Done" : $"{missing} left before Done";
+        ReadyText = missing == 0 ? L.T("Ready for Done") : L.T($"{missing} left before Done");
     }
 
     private bool CanAddCriterion() => !string.IsNullOrWhiteSpace(NewCriterion);

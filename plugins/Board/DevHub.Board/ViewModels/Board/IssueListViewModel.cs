@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DevHub.Board.Core;
 using DevHub.Board.Core.Model;
 using DevHub.Services.Board;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Board;
 
@@ -19,7 +20,7 @@ public sealed partial class IssueListViewModel(string id, string title) : Observ
     [ObservableProperty] private string _subtitle = "";
     [ObservableProperty] private string _summary = "";
     [ObservableProperty] private bool _isExpanded = true;
-    [ObservableProperty] private string? _emptyText = "Nothing here.";
+    [ObservableProperty] private string? _emptyText = L.T("Nothing here.");
 
     /// <summary>Anything the page wants to keep with the list (Board.Scrum: the sprint).</summary>
     public object? Tag { get; set; }
@@ -43,9 +44,9 @@ public sealed partial class IssueListViewModel(string id, string title) : Observ
             Selected.Add(item);
         var points = Items.Sum(i => i.Issue.StoryPoints ?? 0);
         var estimated = Items.Count(i => i.Issue.StoryPoints is not null);
-        Summary = Items.Count == 0 ? "no issues"
-            : $"{Items.Count} issue{(Items.Count == 1 ? "" : "s")} · {points.ToString("0.##", CultureInfo.CurrentCulture)} points"
-              + (estimated < Items.Count ? $" · {Items.Count - estimated} not estimated" : "");
+        Summary = Items.Count == 0 ? L.T("no issues")
+            : (Items.Count == 1 ? L.T($"1 issue · {points:0.##} points") : L.T($"{Items.Count} issues · {points:0.##} points"))
+              + (estimated < Items.Count ? L.T($" · {Items.Count - estimated} not estimated") : "");
         OnPropertyChanged(nameof(IsEmpty));
     }
 

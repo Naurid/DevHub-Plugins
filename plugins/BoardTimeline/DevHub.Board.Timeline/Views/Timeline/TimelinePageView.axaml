@@ -1,6 +1,7 @@
 <!-- The roadmap: a row per epic (and its issues, when chosen): key and summary on the left, its bar on the right. -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:vm="using:DevHub.ViewModels.Timeline"
              xmlns:c="using:DevHub.Controls"
              x:Class="DevHub.Views.Timeline.TimelinePageView"
@@ -15,19 +16,19 @@
     <DockPanel>
         <Border DockPanel.Dock="Top" Classes="pageHeader">
             <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing}">
-                <CheckBox Content="Show each epic's issues" IsChecked="{Binding WithIssues}" />
-                <CheckBox Grid.Column="1" Content="Show done epics" IsChecked="{Binding ShowDone}" />
+                <CheckBox Content="{l:T 'Show each epic\'s issues'}" IsChecked="{Binding WithIssues}" />
+                <CheckBox Grid.Column="1" Content="{l:T 'Show done epics'}" IsChecked="{Binding ShowDone}" />
                 <TextBlock Grid.Column="2" Classes="secondary" Text="{Binding Summary}" VerticalAlignment="Center" HorizontalAlignment="Right"
                            TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Summary}" />
-                <Button Grid.Column="3" Content="Create Epic…" Command="{Binding CreateEpicCommand}" />
+                <Button Grid.Column="3" Content="{l:T 'Create Epic…'}" Command="{Binding CreateEpicCommand}" />
             </Grid>
         </Border>
         <Panel>
-            <c:EmptyState IconKind="info" Title="No epics yet" IsVisible="{Binding IsEmpty}"
-                          Description="The timeline shows epics from their start date to their due date. Create an epic, then set its dates in the issue panel." />
+            <c:EmptyState IconKind="info" Title="{l:T 'No epics yet'}" IsVisible="{Binding IsEmpty}"
+                          Description="{l:T 'The timeline shows epics from their start date to their due date. Create an epic, then set its dates in the issue panel.'}" />
             <ScrollViewer IsVisible="{Binding !IsEmpty}" HorizontalScrollBarVisibility="Disabled">
                 <Grid ColumnDefinitions="Auto,*" Margin="{DynamicResource Padding.Board}">
-                    <TextBlock Classes="small secondary" Text="Epic" VerticalAlignment="Center" Width="{DynamicResource Size.TimelineLabels}" />
+                    <TextBlock Classes="small secondary" Text="{l:T 'Epic'}" VerticalAlignment="Center" Width="{DynamicResource Size.TimelineLabels}" />
                     <c:TimelineScale Grid.Column="1" From="{Binding From}" Days="{Binding Days}" Today="{Binding Today}" />
                     <ItemsControl Grid.Row="1" Grid.ColumnSpan="2" ItemsSource="{Binding Rows}" Margin="{DynamicResource Margin.BlockBelow}">
                         <ItemsControl.ItemTemplate>
@@ -37,9 +38,9 @@
                                       AutomationProperties.Name="{Binding}">
                                     <Grid.ContextMenu>
                                         <ContextMenu>
-                                            <MenuItem Header="Open in Tab" Command="{Binding OpenCommand}" />
-                                            <MenuItem Header="Edit in Issue Panel" Command="{Binding SelectCommand}" />
-                                            <MenuItem Header="Create Issue in Epic…" Command="{Binding CreateInCommand}" IsVisible="{Binding !IsChild}" />
+                                            <MenuItem Header="{l:T 'Open in Tab'}" Command="{Binding OpenCommand}" />
+                                            <MenuItem Header="{l:T 'Edit in Issue Panel'}" Command="{Binding SelectCommand}" />
+                                            <MenuItem Header="{l:T 'Create Issue in Epic…'}" Command="{Binding CreateInCommand}" IsVisible="{Binding !IsChild}" />
                                         </ContextMenu>
                                     </Grid.ContextMenu>
                                     <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}" Width="{DynamicResource Size.TimelineLabels}">

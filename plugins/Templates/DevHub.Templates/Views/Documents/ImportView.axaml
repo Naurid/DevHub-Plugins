@@ -5,6 +5,7 @@
 -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:docs="using:DevHub.ViewModels.Documents"
              xmlns:c="using:DevHub.Controls"
              x:Class="DevHub.Views.Documents.ImportView"
@@ -16,7 +17,7 @@
                 <StackPanel DockPanel.Dock="Bottom" Spacing="{DynamicResource Spacing}" Margin="{DynamicResource Padding.SidebarHeader}">
                     <Border IsVisible="{Binding HasProblems}" Background="{DynamicResource Brush.Status.Error.Subtle}"
                             CornerRadius="{DynamicResource Radius.Control}" Padding="{DynamicResource Padding.Banner}">
-                        <ItemsControl ItemsSource="{Binding Problems}" AutomationProperties.Name="Problems">
+                        <ItemsControl ItemsSource="{Binding Problems}" AutomationProperties.Name="{l:T 'Problems'}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="x:String">
                                     <SelectableTextBlock Text="{Binding}" TextWrapping="Wrap" />
@@ -25,64 +26,64 @@
                         </ItemsControl>
                     </Border>
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing}">
-                        <Button Content="Preview" Command="{Binding PreviewCommand}" HorizontalAlignment="Stretch" />
-                        <Button Grid.Column="1" Classes="accent" Content="Create Template" Command="{Binding CreateCommand}" />
+                        <Button Content="{l:T 'Preview'}" Command="{Binding PreviewCommand}" HorizontalAlignment="Stretch" />
+                        <Button Grid.Column="1" Classes="accent" Content="{l:T 'Create Template'}" Command="{Binding CreateCommand}" />
                     </Grid>
                 </StackPanel>
 
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled">
                     <StackPanel Margin="{DynamicResource Padding.SidebarHeader}" Spacing="{DynamicResource Spacing}">
-                        <TextBlock Classes="header" Text="Import Folder as Template" />
-                        <TextBlock Classes="secondary" Text="Folder" />
+                        <TextBlock Classes="header" Text="{l:T 'Import Folder as Template'}" />
+                        <TextBlock Classes="secondary" Text="{l:T 'Folder'}" />
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}">
-                            <TextBox Text="{Binding Folder}" AutomationProperties.Name="Folder" />
-                            <Button Grid.Column="1" Content="Browse…" Command="{Binding BrowseCommand}" />
+                            <TextBox Text="{Binding Folder}" AutomationProperties.Name="{l:T 'Folder'}" />
+                            <Button Grid.Column="1" Content="{l:T 'Browse…'}" Command="{Binding BrowseCommand}" />
                         </Grid>
 
-                        <TextBlock Classes="secondary" Text="Becomes a variable" Margin="{DynamicResource Margin.BlockAbove}" />
+                        <TextBlock Classes="secondary" Text="{l:T 'Becomes a variable'}" Margin="{DynamicResource Margin.BlockAbove}" />
                         <TextBlock Classes="small secondary" TextWrapping="Wrap"
-                                   Text="Text in names and files that changes per project. A name of several words is also found in its other spellings (my-game, my_game…)." />
-                        <ItemsControl ItemsSource="{Binding Replacements}" AutomationProperties.Name="Replacements">
+                                   Text="{l:T 'Text in names and files that changes per project. A name of several words is also found in its other spellings (my-game, my_game…).'}" />
+                        <ItemsControl ItemsSource="{Binding Replacements}" AutomationProperties.Name="{l:T 'Replacements'}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="docs:ReplacementRowViewModel">
                                     <Grid ColumnDefinitions="*,Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}"
                                           Margin="{DynamicResource Margin.ListGap}">
-                                        <TextBox Classes="code" Text="{Binding Literal}" PlaceholderText="LumberjackHollow"
-                                                 AutomationProperties.Name="Literal" />
+                                        <TextBox Classes="code" Text="{Binding Literal}" PlaceholderText="{l:T 'LumberjackHollow'}"
+                                                 AutomationProperties.Name="{l:T 'Literal'}" />
                                         <TextBlock Grid.Column="1" Text="→" VerticalAlignment="Center" />
-                                        <TextBox Grid.Column="2" Classes="code" Text="{Binding Variable}" PlaceholderText="Name"
-                                                 AutomationProperties.Name="Variable" />
-                                        <c:ActionButton Grid.Column="3" IconKind="close" ToolTip.Tip="Remove" AutomationProperties.Name="Remove"
+                                        <TextBox Grid.Column="2" Classes="code" Text="{Binding Variable}" PlaceholderText="{l:T 'Name'}"
+                                                 AutomationProperties.Name="{l:T 'Variable'}" />
+                                        <c:ActionButton Grid.Column="3" IconKind="close" ToolTip.Tip="{l:T 'Remove'}" AutomationProperties.Name="{l:T 'Remove'}"
                                                         Command="{Binding RemoveCommand}" />
                                     </Grid>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <Button Classes="flat" Content="Add Replacement" Command="{Binding AddReplacementRowCommand}" HorizontalAlignment="Left" />
+                        <Button Classes="flat" Content="{l:T 'Add Replacement'}" Command="{Binding AddReplacementRowCommand}" HorizontalAlignment="Left" />
 
-                        <TextBlock Classes="secondary" Text="Leave out" Margin="{DynamicResource Margin.BlockAbove}" />
+                        <TextBlock Classes="secondary" Text="{l:T 'Leave out'}" Margin="{DynamicResource Margin.BlockAbove}" />
                         <TextBlock Classes="small secondary" TextWrapping="Wrap"
-                                   Text="One pattern per line, like .gitignore: name (anywhere), name/ (folders), /path (from the top), *, **, ?" />
+                                   Text="{l:T 'One pattern per line, like .gitignore: name (anywhere), name/ (folders), /path (from the top), *, **, ?'}" />
                         <TextBox Classes="code" Text="{Binding Ignores}" AcceptsReturn="True" MinHeight="{DynamicResource Size.TemplateArgs}"
-                                 AutomationProperties.Name="Leave out" />
+                                 AutomationProperties.Name="{l:T 'Leave out'}" />
 
-                        <TextBlock Classes="secondary" Text="Template name" Margin="{DynamicResource Margin.BlockAbove}" />
-                        <TextBox Text="{Binding Name}" AutomationProperties.Name="Template name" />
-                        <TextBlock Classes="secondary" Text="Id" />
-                        <TextBox Classes="code" Text="{Binding Id}" AutomationProperties.Name="Id" />
+                        <TextBlock Classes="secondary" Text="{l:T 'Template name'}" Margin="{DynamicResource Margin.BlockAbove}" />
+                        <TextBox Text="{Binding Name}" AutomationProperties.Name="{l:T 'Template name'}" />
+                        <TextBlock Classes="secondary" Text="{l:T 'Id'}" />
+                        <TextBox Classes="code" Text="{Binding Id}" AutomationProperties.Name="{l:T 'Id'}" />
                         <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing.Large}">
-                            <RadioButton Content="Project" IsChecked="{Binding IsProject}" />
-                            <RadioButton Content="Item" IsChecked="{Binding IsItem}" />
+                            <RadioButton Content="{l:T 'Project'}" IsChecked="{Binding IsProject}" />
+                            <RadioButton Content="{l:T 'Item'}" IsChecked="{Binding IsItem}" />
                         </StackPanel>
-                        <TextBlock Classes="secondary" Text="Language" />
+                        <TextBlock Classes="secondary" Text="{l:T 'Language'}" />
                         <AutoCompleteBox Text="{Binding Language, Mode=TwoWay}" ItemsSource="{Binding Languages}"
-                                         FilterMode="StartsWith" MinimumPrefixLength="0" AutomationProperties.Name="Language" />
-                        <TextBlock Classes="secondary" Text="Categories (comma-separated)" />
-                        <TextBox Text="{Binding Categories}" AutomationProperties.Name="Categories" />
+                                         FilterMode="StartsWith" MinimumPrefixLength="0" AutomationProperties.Name="{l:T 'Language'}" />
+                        <TextBlock Classes="secondary" Text="{l:T 'Categories (comma-separated)'}" />
+                        <TextBox Text="{Binding Categories}" AutomationProperties.Name="{l:T 'Categories'}" />
                         <StackPanel Spacing="{DynamicResource Spacing}" IsVisible="{Binding HasSeveralLibraries}">
-                            <TextBlock Classes="secondary" Text="Library" />
+                            <TextBlock Classes="secondary" Text="{l:T 'Library'}" />
                             <ComboBox ItemsSource="{Binding Libraries}" SelectedItem="{Binding Library}" HorizontalAlignment="Stretch"
-                                      AutomationProperties.Name="Library" />
+                                      AutomationProperties.Name="{l:T 'Library'}" />
                         </StackPanel>
                     </StackPanel>
                 </ScrollViewer>
@@ -91,12 +92,12 @@
 
         <DockPanel Margin="{DynamicResource Padding.Document}">
             <StackPanel DockPanel.Dock="Top" Spacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.BlockBelow}">
-                <TextBlock Classes="header" Text="Preview" />
+                <TextBlock Classes="header" Text="{l:T 'Preview'}" />
                 <TextBlock Classes="secondary" Text="{Binding Summary}" TextWrapping="Wrap" />
             </StackPanel>
             <ProgressBar DockPanel.Dock="Top" IsIndeterminate="True" Height="2" MinHeight="2" IsVisible="{Binding IsBusy}" />
             <Border BorderBrush="{DynamicResource Brush.Border.Control}" BorderThickness="1" CornerRadius="{DynamicResource Radius.Control}">
-                <TreeView ItemsSource="{Binding Nodes}" Background="Transparent" AutomationProperties.Name="Import preview">
+                <TreeView ItemsSource="{Binding Nodes}" Background="Transparent" AutomationProperties.Name="{l:T 'Import preview'}">
                     <TreeView.Styles>
                         <Style Selector="TreeViewItem" x:DataType="docs:ImportNodeViewModel">
                             <Setter Property="AutomationProperties.Name" Value="{Binding Name}" />
@@ -119,7 +120,7 @@
                                     <TextBlock Classes="small code" Text="{Binding TargetName}" IsVisible="{Binding HasTargetName}"
                                                Foreground="{DynamicResource Brush.Accent}" VerticalAlignment="Center" />
                                     <c:Badge Classes="accent" Content="{Binding HitsText}" IsVisible="{Binding HasHits}" VerticalAlignment="Center" />
-                                    <TextBlock Classes="small secondary" Text="left out" IsVisible="{Binding IsIgnored}" VerticalAlignment="Center" />
+                                    <TextBlock Classes="small secondary" Text="{l:T 'left out'}" IsVisible="{Binding IsIgnored}" VerticalAlignment="Center" />
                                 </StackPanel>
                             </Grid>
                         </TreeDataTemplate>

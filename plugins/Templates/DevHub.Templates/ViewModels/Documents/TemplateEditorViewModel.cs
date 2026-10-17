@@ -8,6 +8,7 @@ using DevHub.Templates.Core;
 using DevHub.Templates.Core.Editing;
 using DevHub.ViewModels.Dialogs;
 using DevHub.ViewModels.Templates.Editor;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Documents;
 
@@ -149,10 +150,10 @@ public sealed partial class TemplateEditorViewModel : DocumentViewModelBase
                 _command = new CommandPartViewModel(manifest.BaseCommand, MarkModified);
                 _steps = new StepsPartViewModel(manifest, MarkModified);
                 _postCreate = new PostCreatePartViewModel(manifest, () => _variables?.BoolNames ?? [], MarkModified);
-                Sections.Add(new EditorSectionViewModel("General", IconKind.Settings, _general));
-                Sections.Add(new EditorSectionViewModel("Variables", IconKind.Edit, _variables));
-                Sections.Add(new EditorSectionViewModel("Base Command", IconKind.Terminal, _command));
-                Sections.Add(new EditorSectionViewModel("Steps", IconKind.Folder, _steps));
+                Sections.Add(new EditorSectionViewModel(L.T("General"), IconKind.Settings, _general));
+                Sections.Add(new EditorSectionViewModel(L.T("Variables"), IconKind.Edit, _variables));
+                Sections.Add(new EditorSectionViewModel(L.T("Base Command"), IconKind.Terminal, _command));
+                Sections.Add(new EditorSectionViewModel(L.T("Steps"), IconKind.Folder, _steps));
                 Sections.Add(new EditorSectionViewModel("Post-create", IconKind.Run, _postCreate));
             }
             else
@@ -164,7 +165,7 @@ public sealed partial class TemplateEditorViewModel : DocumentViewModelBase
                 _postCreate = null;
             }
             _files ??= new FilesPartViewModel(() => Entry, () => _variables?.Names ?? [], _templates, _dialogs, _status, _editor);
-            Sections.Add(new EditorSectionViewModel("Files", IconKind.Folder, _files));
+            Sections.Add(new EditorSectionViewModel(L.T("Files"), IconKind.Folder, _files));
             Sections.Add(new EditorSectionViewModel("template.json", IconKind.Template, _json));
             _json.Show(json);
             _files.Refresh();
@@ -206,7 +207,7 @@ public sealed partial class TemplateEditorViewModel : DocumentViewModelBase
         if (manifest is null)
         {
             json.Error = problems[0];
-            Problems = ["template.json: " + problems[0] + " (your text is kept in the template.json section)"];
+            Problems = ["template.json: " + problems[0] + L.T(" (your text is kept in the template.json section)")];
             return false;
         }
         var text = json.Text;
@@ -241,7 +242,7 @@ public sealed partial class TemplateEditorViewModel : DocumentViewModelBase
         if (!ApplyJson() || BuildManifest() is not { } manifest)
         {
             if (!HasProblems)
-                Problems = ["template.json can't be read; fix it in the template.json section first."];
+                Problems = [L.T("template.json can't be read; fix it in the template.json section first.")];
             return;
         }
 
@@ -252,13 +253,13 @@ public sealed partial class TemplateEditorViewModel : DocumentViewModelBase
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            Problems = ["Couldn't save: " + ex.Message];
+            Problems = [L.T("Couldn't save: ") + ex.Message];
             return;
         }
         if (result.Entry is not { } saved)
         {
             Problems = result.Errors;
-            _status.Show($"{Title} wasn't saved: fix the problems shown at the top.");
+            _status.Show(L.T($"{Title} wasn't saved: fix the problems shown at the top."));
             return;
         }
 
@@ -266,14 +267,14 @@ public sealed partial class TemplateEditorViewModel : DocumentViewModelBase
         OnPropertyChanged(nameof(FolderText));
         await LoadAsync(SelectedSection?.Name);
         _templates.NotifyChanged();
-        _status.Show($"Saved {Title}.");
+        _status.Show(L.T($"Saved {Title}."));
     }
 
     [RelayCommand(CanExecute = nameof(IsModified))]
     private async Task RevertAsync()
     {
-        var discard = await _dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Revert",
-            $"Throw away your changes to {Title} and read template.json again?", "Revert", []));
+        var discard = await _dialogs.ShowDialogAsync(new ConfirmDialogViewModel(L.T("Revert"),
+            L.T($"Throw away your changes to {Title} and read template.json again?"), L.T("Revert"), []));
         if (discard)
             await LoadAsync(SelectedSection?.Name);
     }
@@ -289,7 +290,7 @@ public sealed partial class TemplateEditorViewModel : DocumentViewModelBase
             return;
         }
         _templates.NotifyChanged();
-        _status.Show($"Copied {Title} to {copied.Reference}.");
+        _status.Show(L.T($"Copied {Title} to {copied.Reference}."));
         OpenDocument?.Invoke(IdFor(copied.Folder));
     }
 
@@ -303,8 +304,8 @@ public sealed partial class TemplateEditorViewModel : DocumentViewModelBase
     private void CloseGone() => CloseCommand?.Execute(null);
 
     public override async Task<bool> ConfirmCloseAsync() =>
-        !IsModified || await _dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Unsaved Changes",
-            $"{Title} has changes that aren't saved. Close it and lose them?", "Discard", []));
+        !IsModified || await _dialogs.ShowDialogAsync(new ConfirmDialogViewModel(L.T("Unsaved Changes"),
+            L.T($"{Title} has changes that aren't saved. Close it and lose them?"), L.T("Discard"), []));
 }
 
 /// <summary>A section of the editor (left list): its name, icon and the part shown on the right.</summary>

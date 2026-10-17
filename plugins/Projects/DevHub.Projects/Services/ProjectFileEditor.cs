@@ -1,5 +1,6 @@
 using DevHub.Integration;
 using DevHub.Projects.Core;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Services;
 
@@ -19,11 +20,11 @@ public sealed class ProjectFileEditor(IProjectLauncher launcher, IProjectLanguag
         try
         {
             launcher.OpenFile(project, filePath, line);
-            status.Show($"Opened {shown}.");
+            status.Show(L.T($"Opened {shown}."));
         }
         catch (Exception ex)
         {
-            status.Show($"Couldn't open {shown}: {ex.Message}");
+            status.Show(L.T($"Couldn't open {shown}: {ex.Message}"));
         }
     }
 }

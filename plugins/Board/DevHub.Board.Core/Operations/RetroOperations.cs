@@ -1,6 +1,7 @@
 using System.Text;
 using DevHub.Board.Core.Model;
 using DevHub.Board.Core.Storage;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Board.Core;
 
@@ -48,23 +49,23 @@ public static class Retrospectives
         var text = new StringBuilder();
         text.Append("# Retrospective: ").AppendLine(sprint?.Name ?? retro.Sprint);
         if (sprint?.Goal is { Length: > 0 } goal)
-            text.Append("Sprint goal: ").AppendLine(goal);
+            text.Append(L.T("Sprint goal: ")).AppendLine(goal);
         if (sprint is { State: SprintState.Closed })
-            text.AppendLine($"Committed {sprint.CommittedPoints:0.##} points, completed {sprint.CompletedPoints:0.##}.");
+            text.AppendLine(L.T($"Committed {sprint.CommittedPoints:0.##} points, completed {sprint.CompletedPoints:0.##}."));
         void Notes(string title, IReadOnlyList<RetroNote> notes)
         {
             text.AppendLine().Append("## ").AppendLine(title);
             if (notes.Count == 0)
-                text.AppendLine("_Nothing noted._");
+                text.AppendLine(L.T("_Nothing noted._"));
             foreach (var note in notes)
                 text.Append("- ").AppendLine(note.Text);
         }
-        Notes("What went well", retro.WentWell);
-        Notes("What to improve", retro.ToImprove);
-        Notes("Problems", retro.Problems);
+        Notes(L.T("What went well"), retro.WentWell);
+        Notes(L.T("What to improve"), retro.ToImprove);
+        Notes(L.T("Problems"), retro.Problems);
         text.AppendLine().AppendLine("## Improvement actions");
         if (retro.Actions.Count == 0)
-            text.AppendLine("_None decided._");
+            text.AppendLine(L.T("_None decided._"));
         foreach (var action in retro.Actions)
         {
             text.Append(action.Done ? "- [x] " : "- [ ] ").Append(action.Text);
@@ -74,7 +75,7 @@ public static class Retrospectives
                 text.Append(" → ").Append(issue.Key);
             text.AppendLine();
         }
-        text.AppendLine().AppendLine("## Follow-up").AppendLine(retro.FollowUp.Trim().Length > 0 ? retro.FollowUp.Trim() : "_Not written yet._");
+        text.AppendLine().AppendLine("## Follow-up").AppendLine(retro.FollowUp.Trim().Length > 0 ? retro.FollowUp.Trim() : L.T("_Not written yet._"));
         return text.ToString();
     }
 
@@ -99,7 +100,7 @@ public sealed record SaveRetrospective(Retrospective Retro) : IBoardOperation
 {
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
-        var sprint = board.Sprints.GetValueOrDefault(Retro.Sprint) ?? throw new BoardRuleException("The sprint doesn't exist any more.");
+        var sprint = board.Sprints.GetValueOrDefault(Retro.Sprint) ?? throw new BoardRuleException(L.T("The sprint doesn't exist any more."));
         var change = new ChangeBuilder(board, context);
         IReadOnlyList<RetroNote> Clean(IReadOnlyList<RetroNote> notes) => notes
             .Where(n => !string.IsNullOrWhiteSpace(n.Text))
@@ -108,7 +109,7 @@ public sealed record SaveRetrospective(Retrospective Retro) : IBoardOperation
         var actions = Retro.Actions.Where(a => !string.IsNullOrWhiteSpace(a.Text)).Select(a =>
         {
             if (a.Owner is not null && board.Project.Person(a.Owner) is null)
-                throw new BoardRuleException($"The owner of \"{a.Text.Trim()}\" isn't on the board.");
+                throw new BoardRuleException(L.T($"The owner of \"{a.Text.Trim()}\" isn't on the board."));
             return a with
             {
                 Id = string.IsNullOrEmpty(a.Id) ? change.NewId() : a.Id,
@@ -126,7 +127,7 @@ public sealed record SaveRetrospective(Retrospective Retro) : IBoardOperation
             FollowUp = Retro.FollowUp.Trim(),
             Updated = context.Now,
         });
-        return change.Build($"Retrospective of {sprint.Name} saved");
+        return change.Build(L.T($"Retrospective of {sprint.Name} saved"));
     }
 }
 
@@ -136,13 +137,13 @@ public sealed record SetRetroActionDone(string SprintId, string ActionId, bool D
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
         var retro = Retrospectives.Of(board, SprintId);
-        var action = retro.Actions.FirstOrDefault(a => a.Id == ActionId) ?? throw new BoardRuleException("That action doesn't exist any more.");
+        var action = retro.Actions.FirstOrDefault(a => a.Id == ActionId) ?? throw new BoardRuleException(L.T("That action doesn't exist any more."));
         var change = new ChangeBuilder(board, context);
         change.Write(Retrospectives.PathOf(SprintId), retro with
         {
             Actions = retro.Actions.Select(a => a.Id == ActionId ? a with { Done = Done } : a).ToList(),
             Updated = context.Now,
         });
-        return change.Build($"\"{action.Text}\" {(Done ? "done" : "not done")}");
+        return change.Build($"\"{action.Text}\" {(Done ? L.T("done") : L.T("not done"))}");
     }
 }

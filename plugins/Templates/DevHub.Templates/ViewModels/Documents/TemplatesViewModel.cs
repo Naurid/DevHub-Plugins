@@ -7,6 +7,7 @@ using DevHub.Templates.Core.Browsing;
 using DevHub.Templates.Core.Editing;
 using DevHub.ViewModels.Dialogs;
 using DevHub.ViewModels.Templates;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Documents;
 
@@ -34,11 +35,11 @@ public sealed partial class TemplatesViewModel : DocumentViewModelBase
         Browser = new TemplateBrowserViewModel(templates, OnSelected, Edit, TemplateBrowserViewModel.AllKinds);
     }
 
-    public override string Title => "Templates";
+    public override string Title => L.T("Templates");
     public override string Icon => IconKind.Template;
     public override bool FillsEditorArea => true;
     // Not on Welcome: the Templates tool window (Alt+2) is there already, under the same name.
-    public override DocumentNavigation Navigation => new() { Text = "Manage Templates", Menu = "File", MenuOrder = 100 };
+    public override DocumentNavigation Navigation => new() { Text = L.T("Manage Templates"), Menu = "File", MenuOrder = 100 };
 
     public TemplateBrowserViewModel Browser { get; }
 
@@ -85,7 +86,7 @@ public sealed partial class TemplatesViewModel : DocumentViewModelBase
 
     /// <summary>Opens Import Folder as Template.</summary>
     [RelayCommand]
-    private void ImportFolder() => OpenDocument?.Invoke("Import");
+    private void ImportFolder() => OpenDocument?.Invoke(L.T("Import"));
 
     [RelayCommand]
     private async Task NewTemplateAsync()
@@ -107,7 +108,7 @@ public sealed partial class TemplatesViewModel : DocumentViewModelBase
         }
         if (created.Entry is not { } entry)
         {
-            _status.Show("Couldn't create the template: " + string.Join(" ", created.Errors));
+            _status.Show(L.T("Couldn't create the template: ") + string.Join(" ", created.Errors));
             return;
         }
         _templates.NotifyChanged();
@@ -123,12 +124,12 @@ public sealed partial class TemplatesViewModel : DocumentViewModelBase
         var copy = await TemplateStore.DuplicateAsync(summary.Template, _templates.PersonalLibrary);
         if (copy.Entry is not { } copied)
         {
-            _status.Show("Couldn't duplicate: " + string.Join(" ", copy.Errors));
+            _status.Show(L.T("Couldn't duplicate: ") + string.Join(" ", copy.Errors));
             return;
         }
         _templates.NotifyChanged();
         await Browser.ReloadAsync(select: copied.Reference);
-        _status.Show($"Copied to {copied.Reference}.");
+        _status.Show(L.T($"Copied to {copied.Reference}."));
     }
 
     [RelayCommand(CanExecute = nameof(HasSelection))]
@@ -139,24 +140,24 @@ public sealed partial class TemplatesViewModel : DocumentViewModelBase
         var template = summary.Template;
         if (template.Library.IsReadOnly)
         {
-            _status.Show($"{summary.Name} is built in and can't be deleted.");
+            _status.Show(L.T($"{summary.Name} is built in and can't be deleted."));
             return;
         }
         var files = Directory.Exists(template.Folder) ? Directory.EnumerateFiles(template.Folder, "*", SearchOption.AllDirectories).Count() : 0;
-        var ok = await _dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Delete Template",
-            $"Delete {summary.Name}? Its folder and everything in it ({files} files, template.json included) are deleted permanently.",
-            "Delete", [template.Folder]));
+        var ok = await _dialogs.ShowDialogAsync(new ConfirmDialogViewModel(L.T("Delete Template"),
+            L.T($"Delete {summary.Name}? Its folder and everything in it ({files} files, template.json included) are deleted permanently."),
+            L.T("Delete"), [template.Folder]));
         if (!ok)
             return;
         var result = TemplateStore.Delete(template);
         if (!result.Succeeded)
         {
-            _status.Show("Couldn't delete: " + string.Join(" ", result.Errors));
+            _status.Show(L.T("Couldn't delete: ") + string.Join(" ", result.Errors));
             return;
         }
         _templates.NotifyChanged();
         await Browser.ReloadAsync();
-        _status.Show($"Deleted {summary.Name}.");
+        _status.Show(L.T($"Deleted {summary.Name}."));
     }
 
     /// <summary>The selected template as one .zip, to share it.</summary>
@@ -165,16 +166,16 @@ public sealed partial class TemplatesViewModel : DocumentViewModelBase
     {
         if (Selected is not { } summary)
             return;
-        if (await _dialogs.PickSaveFileAsync("Export Template", summary.Template.Id + ".zip", "Template", "zip") is not { } zip)
+        if (await _dialogs.PickSaveFileAsync(L.T("Export Template"), summary.Template.Id + ".zip", L.T("Template"), "zip") is not { } zip)
             return;
         try
         {
             await TemplatePackage.ExportAsync(summary.Template, zip);
-            _status.Show($"Exported {summary.Name} to {zip}.");
+            _status.Show(L.T($"Exported {summary.Name} to {zip}."));
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            _status.Show("Couldn't export: " + ex.Message);
+            _status.Show(L.T("Couldn't export: ") + ex.Message);
         }
     }
 
@@ -182,7 +183,7 @@ public sealed partial class TemplatesViewModel : DocumentViewModelBase
     [RelayCommand]
     private async Task ImportZipAsync()
     {
-        if (await _dialogs.PickFileAsync("Import Template", "Template", ["*.zip"]) is not { } zip)
+        if (await _dialogs.PickFileAsync(L.T("Import Template"), L.T("Template"), ["*.zip"]) is not { } zip)
             return;
         TemplateStoreResult result;
         try
@@ -195,13 +196,13 @@ public sealed partial class TemplatesViewModel : DocumentViewModelBase
         }
         if (result.Entry is not { } entry)
         {
-            await _dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Can't Import the Template",
-                "Nothing was added to your library.", "OK", result.Errors, destructive: false, showCancel: false));
+            await _dialogs.ShowDialogAsync(new ConfirmDialogViewModel(L.T("Can't Import the Template"),
+                L.T("Nothing was added to your library."), "OK", result.Errors, destructive: false, showCancel: false));
             return;
         }
         _templates.NotifyChanged();
         await Browser.ReloadAsync(select: entry.Reference);
-        _status.Show($"Imported {entry.Reference}.");
+        _status.Show(L.T($"Imported {entry.Reference}."));
     }
 
     [RelayCommand(CanExecute = nameof(HasSelection))]
@@ -223,7 +224,7 @@ public sealed class TemplateSummaryViewModel(TemplateEntry template) : ViewModel
     public bool HasDescription => !string.IsNullOrWhiteSpace(Description);
     public string Language => Manifest?.Language ?? "";
     public IReadOnlyList<string> Categories => Manifest?.Categories ?? [];
-    public string KindText => Manifest?.Kind == TemplateKind.Item ? "Item template: adds files to a folder" : "Project template: creates a project folder";
+    public string KindText => Manifest?.Kind == TemplateKind.Item ? L.T("Item template: adds files to a folder") : L.T("Project template: creates a project folder");
     public string LibraryText => Template.Library.IsReadOnly ? $"{Template.Library.Name} (read-only)" : Template.Library.Name;
     public string Folder => Template.Folder;
     public bool IsReadOnly => Template.Library.IsReadOnly;
@@ -233,15 +234,15 @@ public sealed class TemplateSummaryViewModel(TemplateEntry template) : ViewModel
     public bool IsItem => Manifest?.Kind == TemplateKind.Item;
 
     /// <summary>The "use it" button: New Project for a project template, Add Files for an item template.</summary>
-    public string UseText => IsItem ? "Add to a Folder…" : "Use in New Project";
+    public string UseText => IsItem ? L.T("Add to a Folder…") : L.T("Use in New Project");
 
     public string CommandText => Manifest?.BaseCommand is { } command
         ? string.Join(' ', new[] { command.Command }.Concat(command.Args))
-        : "none (the template's files make the project)";
+        : L.T("none (the template's files make the project)");
 
     public string CountsText => Manifest is not { } m ? ""
-        : $"{Count(m.Variables.Count, "variable")} · {Count(m.Steps.Count, "step")} · {Count(m.PostCreate.Count, "post-create command")}"
-          + $" · {Count(Template.HasContent ? Directory.EnumerateFiles(Template.ContentFolder, "*", SearchOption.AllDirectories).Count() : 0, "file")}";
+        : $"{Count(m.Variables.Count, L.T("variable"))} · {Count(m.Steps.Count, L.T("step"))} · {Count(m.PostCreate.Count, L.T("post-create command"))}"
+          + $" · {Count(Template.HasContent ? Directory.EnumerateFiles(Template.ContentFolder, "*", SearchOption.AllDirectories).Count() : 0, L.T("file"))}";
 
     private static string Count(int n, string what) => n == 1 ? $"1 {what}" : $"{n} {what}s";
 
@@ -260,8 +261,8 @@ public sealed partial class NewTemplateDialogViewModel : DialogViewModelBase
         _library = libraries.FirstOrDefault();
     }
 
-    public override string Title => "New Template";
-    public override string OkText => "Create";
+    public override string Title => L.T("New Template");
+    public override string OkText => L.T("Create");
     public override bool FitsContent => true;
     public override double Width => 480;
     public override double MinHeight => 0;
@@ -307,14 +308,14 @@ public sealed partial class NewTemplateDialogViewModel : DialogViewModelBase
     protected override Task<bool> ApplyChangesAsync()
     {
         if (Library is null)
-            Error = "There's no writable library.";
+            Error = L.T("There's no writable library.");
         else if (string.IsNullOrWhiteSpace(Name))
-            Error = "Enter a name.";
+            Error = L.T("Enter a name.");
         else if (ManifestValidator.Validate(NewTemplate.Create(Name, Id.Trim(), TemplateKind.Project, Language))
                      .FirstOrDefault(i => i.Field == "id") is { } idIssue)
             Error = idIssue.Message;
         else if (Directory.Exists(Path.Combine(Library.Root, Id.Trim())))
-            Error = $"{Library.Name} already has a template \"{Id.Trim()}\".";
+            Error = L.T($"{Library.Name} already has a template \"{Id.Trim()}\".");
         else
             Error = null;
         return Task.FromResult(Error is null);

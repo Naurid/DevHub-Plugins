@@ -1,4 +1,5 @@
 using DevHub.Board.Core.Storage;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Board.Core;
 
@@ -11,7 +12,7 @@ public sealed record Batch(IReadOnlyList<IBoardOperation> Operations, string Mes
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
         if (Operations.Count == 0)
-            throw new BoardRuleException("Nothing to change.");
+            throw new BoardRuleException(L.T("Nothing to change."));
         var files = new Dictionary<string, byte[]?>(StringComparer.Ordinal);
         var current = board;
         foreach (var operation in Operations)
@@ -21,6 +22,6 @@ public sealed record Batch(IReadOnlyList<IBoardOperation> Operations, string Mes
                 files[path] = bytes;
             current = current.Apply(step, board.Version);
         }
-        return new BoardChange(files.Count == 0 ? "No change" : Message, files);
+        return new BoardChange(files.Count == 0 ? L.T("No change") : Message, files);
     }
 }

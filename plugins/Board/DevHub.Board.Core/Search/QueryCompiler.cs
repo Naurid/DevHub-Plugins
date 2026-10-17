@@ -1,5 +1,6 @@
 using System.Globalization;
 using DevHub.Board.Core.Model;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Board.Core.Search;
 
@@ -105,7 +106,7 @@ public static class QueryCompiler
             case QueryNode.Compare compare:
                 return BuildCompare(compare, context);
             default:
-                throw new QueryException("Unknown condition.", 0);
+                throw new QueryException(L.T("Unknown condition."), 0);
         }
     }
 
@@ -124,7 +125,7 @@ public static class QueryCompiler
             case "~" or "!~":
             {
                 if (field.Kind != FieldKind.Text)
-                    throw new QueryException($"~ (contains) only works on text fields like summary, not {field.Name}.", compare.Position);
+                    throw new QueryException(L.T($"~ (contains) only works on text fields like summary, not {field.Name}."), compare.Position);
                 var words = LiteralText(compare.Value, compare.Position)
                     .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                 bool Contains(Issue i)
@@ -191,7 +192,7 @@ public static class QueryCompiler
                 return i => field.Date!(i) is { } d && d >= from && d < to;
             }
             default:
-                throw new QueryException($"{field.Name} can't be compared that way.", position);
+                throw new QueryException(L.T($"{field.Name} can't be compared that way."), position);
         }
     }
 
@@ -204,7 +205,7 @@ public static class QueryCompiler
             ">=" => c => c >= 0,
             "<" => c => c < 0,
             "<=" => c => c <= 0,
-            _ => throw new QueryException($"Unknown operator {op}.", compare.Position),
+            _ => throw new QueryException(L.T($"Unknown operator {op}."), compare.Position),
         };
         switch (field.Kind)
         {
@@ -221,7 +222,7 @@ public static class QueryCompiler
             case FieldKind.Key:
             {
                 if (!IssueKey.TryParse(LiteralText(compare.Value, compare.Position).ToUpperInvariant(), out _, out var number))
-                    throw new QueryException("Compare keys with a key like DEV-12.", compare.Position);
+                    throw new QueryException(L.T("Compare keys with a key like DEV-12."), compare.Position);
                 return i => IssueKey.TryParse(i.Key, out _, out var n) && accept(n.CompareTo(number));
             }
             case FieldKind.Ref when field.Name == "priority":
@@ -237,7 +238,7 @@ public static class QueryCompiler
                 };
             }
             default:
-                throw new QueryException($"{field.Name} can't be compared with {op}.", compare.Position);
+                throw new QueryException(L.T($"{field.Name} can't be compared with {op}."), compare.Position);
         }
     }
 
@@ -268,7 +269,7 @@ public static class QueryCompiler
                 return new Field("project", FieldKind.Project);
             case "type" or "issuetype":
                 return new Field("type", FieldKind.Ref, One: i => i.Type,
-                    Resolve: (v, c) => ById(project.IssueTypes, t => t.Id, t => t.Name, v, "issue type", position));
+                    Resolve: (v, c) => ById(project.IssueTypes, t => t.Id, t => t.Name, v, L.T("issue type"), position));
             case "status":
                 return new Field("status", FieldKind.Ref, One: i => i.Status,
                     Resolve: (v, c) => ById(project.Statuses, s => s.Id, s => s.Name, v, "status", position));
@@ -338,7 +339,7 @@ public static class QueryCompiler
                      ?? project.CustomFields.FirstOrDefault(f => f.Id == name);
         if (custom is not null)
             return CustomField(custom, context, position);
-        throw new QueryException($"There's no field \"{name}\".", position);
+        throw new QueryException(L.T($"There's no field \"{name}\"."), position);
     }
 
     private static Field CustomField(FieldDefinition custom, QueryContext context, int position)
@@ -353,7 +354,7 @@ public static class QueryCompiler
             FieldType.Person => new Field(custom.Name, FieldKind.Ref, One: Raw, Custom: custom, Resolve: (v, c) => People(v, c, position)),
             FieldType.Select => new Field(custom.Name, FieldKind.Ref, One: Raw, Custom: custom,
                 Resolve: (v, _) => custom.Options.Where(o => string.Equals(o, v, StringComparison.OrdinalIgnoreCase)).DefaultIfEmpty()
-                    .Select(o => o ?? throw new QueryException($"\"{v}\" isn't one of {custom.Name}'s choices.", position)).ToList()),
+                    .Select(o => o ?? throw new QueryException(L.T($"\"{v}\" isn't one of {custom.Name}'s choices."), position)).ToList()),
             _ => new Field(custom.Name, FieldKind.Text, Custom: custom, Texts: i => Raw(i) is { } t ? [t] : []),
         };
     }
@@ -364,7 +365,7 @@ public static class QueryCompiler
         var found = list.Where(i => string.Equals(id(i), value, StringComparison.Ordinal)
                                     || string.Equals(name(i), value, StringComparison.OrdinalIgnoreCase)).Select(id).ToList();
         if (found.Count == 0)
-            throw new QueryException($"There's no {what} \"{value}\".", position);
+            throw new QueryException(L.T($"There's no {what} \"{value}\"."), position);
         return found;
     }
 
@@ -391,7 +392,7 @@ public static class QueryCompiler
     private static IEnumerable<string> Issues(string value, QueryContext context, int position) =>
         (context.Board.IssueByKey(value) ?? context.Board.Issue(value)) is { } issue
             ? [issue.Id]
-            : throw new QueryException($"There's no issue \"{value}\".", position);
+            : throw new QueryException(L.T($"There's no issue \"{value}\"."), position);
 
     // ---- Values -------------------------------------------------------------------------------------------
 
@@ -413,17 +414,17 @@ public static class QueryCompiler
                 "opensprints" when field.Name == "sprint" => OpenSprintsMarker,
                 "closedsprints" when field.Name == "sprint" => ClosedSprintsMarker,
                 "futuresprints" when field.Name == "sprint" => FutureSprintsMarker,
-                _ => throw new QueryException($"{f.Name}() can't be used with {field.Name}.", position),
+                _ => throw new QueryException(L.T($"{f.Name}() can't be used with {field.Name}."), position),
             },
-            _ => throw new QueryException("Expected a value.", position),
+            _ => throw new QueryException(L.T("Expected a value."), position),
         };
     }
 
     private static string LiteralText(QueryValue value, int position) => value switch
     {
         QueryValue.Literal l => l.Text,
-        QueryValue.Function f => throw new QueryException($"{f.Name}() can't be used here.", position),
-        _ => throw new QueryException("Expected a value.", position),
+        QueryValue.Function f => throw new QueryException(L.T($"{f.Name}() can't be used here."), position),
+        _ => throw new QueryException(L.T("Expected a value."), position),
     };
 
     private static double ParseNumber(Field field, QueryValue value, QueryContext context, int position)
@@ -434,7 +435,7 @@ public static class QueryCompiler
         if (field.Durations && WorkDuration.TryParse(text, context.Board.Project.Settings, out var minutes))
             return minutes;
         throw new QueryException(field.Durations
-            ? $"{field.Name} takes a duration like 2h or 1d 4h."
+            ? L.T($"{field.Name} takes a duration like 2h or 1d 4h.")
             : $"{field.Name} takes a number, not \"{text}\".", position);
     }
 
@@ -443,7 +444,7 @@ public static class QueryCompiler
         "todo" or "new" or "open" => StatusCategory.ToDo,
         "inprogress" or "indeterminate" => StatusCategory.InProgress,
         "done" or "complete" or "closed" => StatusCategory.Done,
-        _ => throw new QueryException($"A status category is \"To Do\", \"In Progress\" or \"Done\", not \"{text}\".", position),
+        _ => throw new QueryException(L.T($"A status category is \"To Do\", \"In Progress\" or \"Done\", not \"{text}\"."), position),
     };
 
     private static DateTimeOffset ParseDate(QueryValue value, QueryContext context, int position)
@@ -462,7 +463,7 @@ public static class QueryCompiler
                 "endofweek" => StartOfDay(WeekStart(today, context).AddDays(7 * (offset + 1)), context).AddTicks(-1),
                 "startofmonth" => StartOfDay(new DateOnly(today.Year, today.Month, 1).AddMonths(offset), context),
                 "endofmonth" => StartOfDay(new DateOnly(today.Year, today.Month, 1).AddMonths(offset + 1), context).AddTicks(-1),
-                _ => throw new QueryException($"{f.Name}() isn't a date function.", position),
+                _ => throw new QueryException(L.T($"{f.Name}() isn't a date function."), position),
             };
         }
 
@@ -483,7 +484,7 @@ public static class QueryCompiler
             };
             return context.Now + sign * span;
         }
-        throw new QueryException($"\"{text}\" isn't a date: use 2026-10-31, -1d, or a function like startOfWeek().", position);
+        throw new QueryException(L.T($"\"{text}\" isn't a date: use 2026-10-31, -1d, or a function like startOfWeek()."), position);
     }
 
     private static DateOnly WeekStart(DateOnly day, QueryContext context)
@@ -569,7 +570,7 @@ public static class QueryCompiler
             case "remainingestimate":
                 return (a, b) => Nullable.Compare(a.Time.RemainingMinutes, b.Time.RemainingMinutes);
             default:
-                throw new QueryException($"Results can't be ordered by \"{field}\".", 0);
+                throw new QueryException(L.T($"Results can't be ordered by \"{field}\"."), 0);
         }
     }
 

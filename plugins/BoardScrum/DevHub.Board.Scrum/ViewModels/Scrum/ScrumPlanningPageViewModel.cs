@@ -6,6 +6,7 @@ using DevHub.Board.Core.Fields;
 using DevHub.Board.Core.Model;
 using DevHub.ViewModels.Board;
 using DevHub.ViewModels.Dialogs;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Scrum;
 
@@ -13,7 +14,7 @@ namespace DevHub.ViewModels.Scrum;
 public sealed class ScrumPlanningPageProvider : IBoardPageProvider
 {
     public string Id => "scrum-planning";
-    public string Title => "Backlog";
+    public string Title => L.T("Backlog");
     public int Order => 200;
     public string? Replaces => BacklogPageProvider.PageId;
     public bool AppliesTo(BoardDefinition definition) => definition.Kind == BoardKind.Scrum;
@@ -26,16 +27,16 @@ public sealed class ScrumPlanningPageProvider : IBoardPageProvider
 /// </summary>
 public sealed class ScrumPlanningPageViewModel : PlanningPageViewModel
 {
-    private readonly IssueListViewModel _backlog = new("backlog", "Backlog") { EmptyText = "Nothing left in the backlog." };
+    private readonly IssueListViewModel _backlog = new("backlog", L.T("Backlog")) { EmptyText = L.T("Nothing left in the backlog.") };
 
     public ScrumPlanningPageViewModel(BoardPageHost host) : base(host)
     {
-        PageActions.Add(new ListAction("Create Sprint", new AsyncRelayCommand(CreateSprintAsync)) { ToolTip = "Plan another sprint" });
+        PageActions.Add(new ListAction(L.T("Create Sprint"), new AsyncRelayCommand(CreateSprintAsync)) { ToolTip = L.T("Plan another sprint") });
         AddList(_backlog);
         Rebuild();
     }
 
-    public override string Title => "Backlog";
+    public override string Title => L.T("Backlog");
 
     protected override void FillLists(IReadOnlyList<Issue> issues, BoardSnapshot board)
     {
@@ -51,7 +52,7 @@ public sealed class ScrumPlanningPageViewModel : PlanningPageViewModel
             var list = Lists.FirstOrDefault(l => l.Id == sprint.Id);
             if (list is null)
             {
-                list = new IssueListViewModel(sprint.Id, sprint.Name) { EmptyText = "Drag issues here to plan them for this sprint." };
+                list = new IssueListViewModel(sprint.Id, sprint.Name) { EmptyText = L.T("Drag issues here to plan them for this sprint.") };
                 AddList(list);
             }
             list.Tag = sprint;
@@ -69,25 +70,25 @@ public sealed class ScrumPlanningPageViewModel : PlanningPageViewModel
         list.Title = sprint.Name;
         var dates = sprint.Start is { } start && sprint.End is { } end
             ? $"{start.LocalDateTime:d MMM} – {end.LocalDateTime:d MMM}"
-            : "not started";
+            : L.T("not started");
         list.Subtitle = sprint.State == SprintState.Active
-            ? $"Active · {dates}{(sprint.Goal.Length > 0 ? " · " + sprint.Goal : "")}"
+            ? L.T($"Active · {dates}{(sprint.Goal.Length > 0 ? " · " + sprint.Goal : "")}")
             : sprint.Goal.Length > 0 ? sprint.Goal : "";
         list.Actions.Clear();
         if (sprint.State == SprintState.Active)
         {
-            list.Actions.Add(new ListAction("Complete Sprint…", new AsyncRelayCommand(() => CompleteAsync(sprint.Id))) { IsAccent = true });
+            list.Actions.Add(new ListAction(L.T("Complete Sprint…"), new AsyncRelayCommand(() => CompleteAsync(sprint.Id))) { IsAccent = true });
         }
         else
         {
             var isNext = board.Sprints.Values.Where(s => s.State == SprintState.Future).OrderBy(s => s.Sequence).FirstOrDefault()?.Id == sprint.Id;
             if (isNext && board.Sprints.Values.All(s => s.State != SprintState.Active))
-                list.Actions.Add(new ListAction("Start Sprint…", new AsyncRelayCommand(() => StartAsync(sprint.Id))) { IsAccent = true });
-            list.Actions.Add(new ListAction("Up", new AsyncRelayCommand(() => Context.RunAsync(new MoveSprint(sprint.Id, -1)))) { ToolTip = "Plan it earlier" });
-            list.Actions.Add(new ListAction("Down", new AsyncRelayCommand(() => Context.RunAsync(new MoveSprint(sprint.Id, 1)))) { ToolTip = "Plan it later" });
-            list.Actions.Add(new ListAction("Delete…", new AsyncRelayCommand(() => DeleteAsync(sprint.Id))));
+                list.Actions.Add(new ListAction(L.T("Start Sprint…"), new AsyncRelayCommand(() => StartAsync(sprint.Id))) { IsAccent = true });
+            list.Actions.Add(new ListAction(L.T("Up"), new AsyncRelayCommand(() => Context.RunAsync(new MoveSprint(sprint.Id, -1)))) { ToolTip = L.T("Plan it earlier") });
+            list.Actions.Add(new ListAction(L.T("Down"), new AsyncRelayCommand(() => Context.RunAsync(new MoveSprint(sprint.Id, 1)))) { ToolTip = L.T("Plan it later") });
+            list.Actions.Add(new ListAction(L.T("Delete…"), new AsyncRelayCommand(() => DeleteAsync(sprint.Id))));
         }
-        list.Actions.Add(new ListAction("Edit…", new AsyncRelayCommand(() => EditAsync(sprint.Id))));
+        list.Actions.Add(new ListAction(L.T("Edit…"), new AsyncRelayCommand(() => EditAsync(sprint.Id))));
     }
 
     // "5 issues · 13 of 20 points" — the capacity next to the planned points, warning when it's over.
@@ -96,7 +97,7 @@ public sealed class ScrumPlanningPageViewModel : PlanningPageViewModel
         var points = list.Items.Where(i => i.Issue.Sprint == sprint.Id).Sum(i => i.Issue.StoryPoints ?? 0);
         if (sprint.Capacity is { } capacity)
         {
-            var over = points > capacity ? " · over capacity" : "";
+            var over = points > capacity ? L.T(" · over capacity") : "";
             list.Summary = $"{list.Items.Count} issues · {points.ToString("0.##", CultureInfo.CurrentCulture)} of {capacity.ToString("0.##", CultureInfo.CurrentCulture)} points{over}";
         }
     }
@@ -111,8 +112,8 @@ public sealed class ScrumPlanningPageViewModel : PlanningPageViewModel
         var joining = moving.Where(i => i.Sprint != active.Id).ToList();
         if (joining.Count > 0)
             Context.Status.Show(joining.Count == 1
-                ? $"{joining[0].Key} joins the running sprint: its scope grows."
-                : $"{joining.Count} issues join the running sprint: its scope grows.");
+                ? L.T($"{joining[0].Key} joins the running sprint: its scope grows.")
+                : L.T($"{joining.Count} issues join the running sprint: its scope grows."));
     }
 
     protected override IReadOnlyList<(string Field, FieldValue Value)> FieldsForNewIssue() => [];
@@ -135,9 +136,9 @@ public sealed class ScrumPlanningPageViewModel : PlanningPageViewModel
         if (await Context.Dialogs.ShowDialogAsync(dialog))
         {
             if (await Context.RunAsync(new CompleteSprint(sprintId, dialog.MoveTo) { NextSprint = dialog.NextSprintId })
-                && await Context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Sprint Retrospective",
-                    "The sprint is closed. Hold its retrospective now: what went well, what to improve, and the actions the team takes?",
-                    "Open Retrospective", [], destructive: false)))
+                && await Context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel(L.T("Sprint Retrospective"),
+                    L.T("The sprint is closed. Hold its retrospective now: what went well, what to improve, and the actions the team takes?"),
+                    L.T("Open Retrospective"), [], destructive: false)))
                 Host.ShowPage(RetrospectivePageProvider.PageId);
         }
     }
@@ -162,8 +163,8 @@ public sealed class ScrumPlanningPageViewModel : PlanningPageViewModel
         if (sprint is null)
             return;
         var count = Context.Snapshot.Issues.Values.Count(i => i.Sprint == sprintId);
-        var ok = await Context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Delete Sprint",
-            count == 0 ? $"Delete {sprint.Name}?" : $"Delete {sprint.Name}? Its {count} issue(s) go back to the backlog.", "Delete", [sprint.Name]));
+        var ok = await Context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel(L.T("Delete Sprint"),
+            count == 0 ? L.T($"Delete {sprint.Name}?") : L.T($"Delete {sprint.Name}? Its {count} issue(s) go back to the backlog."), L.T("Delete"), [sprint.Name]));
         if (ok)
             await Context.RunAsync(new DeleteSprint(sprintId));
     }

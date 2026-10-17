@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHub.Board.Core;
 using DevHub.Board.Core.Model;
 using DevHub.Services.Board;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Board;
 
@@ -49,7 +50,7 @@ public sealed class IssueItemViewModel : ViewModelBase
         ShowRemaining = fields.Contains("remainingEstimate") && Remaining is not null;
         var subtasks = board.ChildrenOf(issue.Id).Where(c => board.LevelOf(c) == IssueTypeLevel.Subtask).ToList();
         SubtaskText = subtasks.Count == 0 ? null : $"{subtasks.Count(board.IsDone)}/{subtasks.Count}";
-        CriteriaText = issue.Criteria.Count == 0 ? null : $"AC {issue.Criteria.Count(c => c.Done)}/{issue.Criteria.Count}";
+        CriteriaText = issue.Criteria.Count == 0 ? null : L.T($"AC {issue.Criteria.Count(c => c.Done)}/{issue.Criteria.Count}");
         IsEpic = type?.Level == IssueTypeLevel.Epic;
         Updated = issue.Updated;
     }

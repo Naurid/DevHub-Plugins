@@ -1,35 +1,36 @@
 <!-- Edit Sprint: name, goal, dates; capacity from the team's availability (days per person, focus factor, a suggestion). -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:vm="using:DevHub.ViewModels.Scrum"
              x:Class="DevHub.Views.Scrum.EditSprintDialogView"
              x:DataType="vm:EditSprintDialogViewModel">
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" MaxHeight="{DynamicResource Size.DialogContentMax}">
         <StackPanel Margin="{DynamicResource Padding.Dialog}" Spacing="{DynamicResource Spacing}">
             <StackPanel Spacing="{DynamicResource Spacing.Small}">
-                <TextBlock Classes="secondary" Text="Name" />
-                <TextBox Text="{Binding Name}" AutomationProperties.Name="Sprint name" />
+                <TextBlock Classes="secondary" Text="{l:T 'Name'}" />
+                <TextBox Text="{Binding Name}" AutomationProperties.Name="{l:T 'Sprint name'}" />
             </StackPanel>
             <StackPanel Spacing="{DynamicResource Spacing.Small}">
-                <TextBlock Classes="secondary" Text="Goal" />
-                <TextBox Text="{Binding Goal}" AutomationProperties.Name="Sprint goal" />
+                <TextBlock Classes="secondary" Text="{l:T 'Goal'}" />
+                <TextBox Text="{Binding Goal}" AutomationProperties.Name="{l:T 'Sprint goal'}" />
             </StackPanel>
             <Grid ColumnDefinitions="*,*" ColumnSpacing="{DynamicResource Spacing}">
                 <StackPanel Spacing="{DynamicResource Spacing.Small}">
-                    <TextBlock Classes="secondary" Text="Starts" />
-                    <CalendarDatePicker SelectedDate="{Binding StartDate}" HorizontalAlignment="Stretch" AutomationProperties.Name="Start date" />
+                    <TextBlock Classes="secondary" Text="{l:T 'Starts'}" />
+                    <CalendarDatePicker SelectedDate="{Binding StartDate}" HorizontalAlignment="Stretch" AutomationProperties.Name="{l:T 'Start date'}" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" Spacing="{DynamicResource Spacing.Small}">
-                    <TextBlock Classes="secondary" Text="Ends" />
-                    <CalendarDatePicker SelectedDate="{Binding EndDate}" HorizontalAlignment="Stretch" AutomationProperties.Name="End date" />
+                    <TextBlock Classes="secondary" Text="{l:T 'Ends'}" />
+                    <CalendarDatePicker SelectedDate="{Binding EndDate}" HorizontalAlignment="Stretch" AutomationProperties.Name="{l:T 'End date'}" />
                 </StackPanel>
             </Grid>
 
             <!-- Team availability. -->
             <Grid ColumnDefinitions="*,Auto">
-                <TextBlock Classes="section" Text="Team availability" VerticalAlignment="Center" />
-                <Button Grid.Column="1" Classes="flat" Content="Everyone full time" Command="{Binding FullTimeCommand}"
-                        ToolTip.Tip="Every person: all working days of the sprint" />
+                <TextBlock Classes="section" Text="{l:T 'Team availability'}" VerticalAlignment="Center" />
+                <Button Grid.Column="1" Classes="flat" Content="{l:T 'Everyone full time'}" Command="{Binding FullTimeCommand}"
+                        ToolTip.Tip="{l:T 'Every person: all working days of the sprint'}" />
             </Grid>
             <ItemsControl ItemsSource="{Binding Team}">
                 <ItemsControl.ItemTemplate>
@@ -38,24 +39,24 @@
                             <TextBlock Text="{Binding Name}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
                             <TextBox Grid.Column="1" Text="{Binding Days}" MinWidth="{DynamicResource Size.NumberBox}"
                                      AutomationProperties.Name="{Binding Name, StringFormat='Days available for {0}'}" />
-                            <TextBlock Grid.Column="2" Classes="secondary" Text="days" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="2" Classes="secondary" Text="{l:T 'days'}" VerticalAlignment="Center" />
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
             <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="{DynamicResource Spacing}">
-                <TextBlock Text="Focus factor" VerticalAlignment="Center"
-                           ToolTip.Tip="The share of an available day spent on sprint work; meetings, support and the rest take the remainder" />
-                <TextBox Grid.Column="1" Text="{Binding Focus}" MinWidth="{DynamicResource Size.NumberBox}" AutomationProperties.Name="Focus factor (percent)" />
+                <TextBlock Text="{l:T 'Focus factor'}" VerticalAlignment="Center"
+                           ToolTip.Tip="{l:T 'The share of an available day spent on sprint work; meetings, support and the rest take the remainder'}" />
+                <TextBox Grid.Column="1" Text="{Binding Focus}" MinWidth="{DynamicResource Size.NumberBox}" AutomationProperties.Name="{l:T 'Focus factor (percent)'}" />
                 <TextBlock Grid.Column="2" Classes="secondary" Text="%" VerticalAlignment="Center" />
             </Grid>
             <TextBlock Classes="secondary" Text="{Binding PlanText}" TextWrapping="Wrap" />
 
             <!-- Capacity and its suggestion. -->
             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing}">
-                <TextBlock Text="Capacity (points)" VerticalAlignment="Center" />
-                <TextBox Grid.Column="1" Text="{Binding Capacity}" PlaceholderText="e.g. 20" AutomationProperties.Name="Capacity" />
-                <Button Grid.Column="2" Content="Use Suggestion" Command="{Binding UseSuggestionCommand}"
+                <TextBlock Text="{l:T 'Capacity (points)'}" VerticalAlignment="Center" />
+                <TextBox Grid.Column="1" Text="{Binding Capacity}" PlaceholderText="{l:T 'e.g. 20'}" AutomationProperties.Name="{l:T 'Capacity'}" />
+                <Button Grid.Column="2" Content="{l:T 'Use Suggestion'}" Command="{Binding UseSuggestionCommand}"
                         IsEnabled="{Binding Suggested, Converter={x:Static ObjectConverters.IsNotNull}}" />
             </Grid>
             <TextBlock Classes="small secondary" Text="{Binding SuggestionText}" TextWrapping="Wrap" />

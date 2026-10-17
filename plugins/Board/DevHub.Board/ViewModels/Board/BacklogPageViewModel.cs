@@ -10,6 +10,7 @@ using DevHub.Board.Core.Search;
 using DevHub.Controls;
 using DevHub.Services.Board;
 using DevHub.ViewModels.Dialogs;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Board;
 
@@ -18,7 +19,7 @@ public sealed class BacklogPageProvider : IBoardPageProvider
 {
     public const string PageId = "backlog";
     public string Id => PageId;
-    public string Title => "Backlog";
+    public string Title => L.T("Backlog");
     public int Order => 200;
     public BoardPageViewModel Create(BoardPageHost host) => new BacklogPageViewModel(host);
 }
@@ -135,8 +136,8 @@ public abstract partial class PlanningPageViewModel : BoardPageViewModel, IItems
             var epicId = SelectedEpic?.Id;
             var epicSpecial = SelectedEpic?.IsSpecial == true ? SelectedEpic.Key : null;
             Epics.Clear();
-            Epics.Add(new EpicRow(null, "all", "All issues", "", 0, true));
-            Epics.Add(new EpicRow(null, "none", "Issues without an epic", "", 0, true));
+            Epics.Add(new EpicRow(null, "all", L.T("All issues"), "", 0, true));
+            Epics.Add(new EpicRow(null, "none", L.T("Issues without an epic"), "", 0, true));
             foreach (var epic in board.Issues.Values.Where(i => board.LevelOf(i) == IssueTypeLevel.Epic && (!board.IsDone(i) || ShowDone))
                          .OrderBy(i => i.Rank, StringComparer.Ordinal))
             {
@@ -144,7 +145,7 @@ public abstract partial class PlanningPageViewModel : BoardPageViewModel, IItems
                 var done = children.Count(board.IsDone);
                 var points = children.Sum(c => c.StoryPoints ?? 0);
                 Epics.Add(new EpicRow(epic.Id, epic.Key, epic.Summary,
-                    children.Count == 0 ? "no issues" : $"{done}/{children.Count} done · {points.ToString("0.##", CultureInfo.CurrentCulture)} pts",
+                    children.Count == 0 ? L.T("no issues") : $"{done}/{children.Count} done · {points.ToString("0.##", CultureInfo.CurrentCulture)} pts",
                     children.Count == 0 ? 0 : (double)done / children.Count, false, this));
             }
             _suppress = true;
@@ -152,8 +153,8 @@ public abstract partial class PlanningPageViewModel : BoardPageViewModel, IItems
 
             var versionId = VersionFilter?.Id;
             VersionFilters.Clear();
-            VersionFilters.Add(new NamedItem("", "All versions"));
-            VersionFilters.Add(new NamedItem("-", "No version"));
+            VersionFilters.Add(new NamedItem("", L.T("All versions")));
+            VersionFilters.Add(new NamedItem("-", L.T("No version")));
             foreach (var v in board.Versions.Values.Where(v => !v.Archived).OrderBy(v => v.Release ?? DateOnly.MaxValue))
                 VersionFilters.Add(new NamedItem(v.Id, v.Name));
             VersionFilter = VersionFilters.FirstOrDefault(v => v.Id == versionId) ?? VersionFilters[0];
@@ -189,7 +190,7 @@ public abstract partial class PlanningPageViewModel : BoardPageViewModel, IItems
         catch (QueryException e)
         {
             filter = _ => true;
-            Problem = "The board's filter has a problem: " + e.Message;
+            Problem = L.T("The board's filter has a problem: ") + e.Message;
         }
         var words = _search.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         bool Shows(Issue i)
@@ -264,7 +265,7 @@ public abstract partial class PlanningPageViewModel : BoardPageViewModel, IItems
             steps.Add(MoveOperation(drop, id, above, drop.Below));
             above = id;
         }
-        await Context.RunAsync(new Batch(steps, $"{ids.Count} issues moved to {drop.Target.Title}"));
+        await Context.RunAsync(new Batch(steps, L.T($"{ids.Count} issues moved to {drop.Target.Title}")));
     }
 
     [RelayCommand]
@@ -297,7 +298,7 @@ public abstract partial class PlanningPageViewModel : BoardPageViewModel, IItems
             .OrderBy(f => f.Name.Contains("value", StringComparison.OrdinalIgnoreCase) ? 0 : 1).FirstOrDefault();
 
     public bool CanRankByValue => ValueField is not null;
-    public string RankByValueText => $"Rank by {ValueField?.Name}";
+    public string RankByValueText => L.T($"Rank by {ValueField?.Name}");
 
     /// <summary>Orders every list on the page by the value field, highest first (each list among its own places).</summary>
     [RelayCommand]
@@ -318,7 +319,7 @@ public abstract partial class PlanningPageViewModel : BoardPageViewModel, IItems
         var ids = SelectedIssues.Select(i => i.Id).ToList();
         if (ids.Count == 0)
         {
-            Context.Status.Show("Select issues first (Ctrl+click, Shift+click).");
+            Context.Status.Show(L.T("Select issues first (Ctrl+click, Shift+click)."));
             return;
         }
         await Context.Dialogs.ShowDialogAsync(new BulkEditDialogViewModel(Context, ids));
@@ -386,7 +387,7 @@ public abstract partial class PlanningPageViewModel : BoardPageViewModel, IItems
 
 public sealed class BacklogPageViewModel : PlanningPageViewModel
 {
-    private readonly IssueListViewModel _backlog = new("backlog", "Backlog") { EmptyText = "No open issues. Create one below." };
+    private readonly IssueListViewModel _backlog = new("backlog", L.T("Backlog")) { EmptyText = L.T("No open issues. Create one below.") };
 
     public BacklogPageViewModel(BoardPageHost host) : base(host)
     {
@@ -394,7 +395,7 @@ public sealed class BacklogPageViewModel : PlanningPageViewModel
         Rebuild();
     }
 
-    public override string Title => "Backlog";
+    public override string Title => L.T("Backlog");
 
     protected override void FillLists(IReadOnlyList<Issue> issues, BoardSnapshot board) =>
         _backlog.Fill(issues, board, Context, Host.Definition.CardFields, this);

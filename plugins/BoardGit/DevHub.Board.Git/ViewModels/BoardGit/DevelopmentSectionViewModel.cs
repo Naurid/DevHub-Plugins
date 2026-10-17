@@ -12,6 +12,7 @@ using DevHub.Services.Board;
 using DevHub.Services.BoardGit;
 using DevHub.ViewModels.Dialogs;
 using DevHub.ViewModels.Documents;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.BoardGit;
 
@@ -62,7 +63,7 @@ public sealed partial class DevelopmentSectionViewModel : IssueSectionViewModel
         _documents = documents;
     }
 
-    public override string Title => "Development";
+    public override string Title => L.T("Development");
 
     public ObservableCollection<BranchRow> Branches { get; } = [];
     public ObservableCollection<CommitRow> Commits { get; } = [];
@@ -94,7 +95,7 @@ public sealed partial class DevelopmentSectionViewModel : IssueSectionViewModel
         {
             _repository = await _services.RepositoryForAsync(Context.Location, cts.Token);
             HasRepository = _repository is not null;
-            RepositoryText = _repository is null ? "No repository: this board's folder isn't in one. Link one to see branches and commits." : _repository;
+            RepositoryText = _repository is null ? L.T("No repository: this board's folder isn't in one. Link one to see branches and commits.") : _repository;
             Branches.Clear();
             Commits.Clear();
             PullRequests.Clear();
@@ -112,7 +113,7 @@ public sealed partial class DevelopmentSectionViewModel : IssueSectionViewModel
             foreach (var commit in info.Commits.Take(20))
                 Commits.Add(new CommitRow(commit.ShortSha, commit.Subject, commit.Author, DevHub.ViewModels.Board.IssueDetailViewModel.RelativeOrDate(commit.Date)));
             Summary = info.Branches.Count == 0 && info.Commits.Count == 0
-                ? $"No branch or commit mentions {_key} yet."
+                ? L.T($"No branch or commit mentions {_key} yet.")
                 : $"{info.Branches.Count} branch(es), {info.Commits.Count} commit(s)";
             await LoadPullRequestsAsync(info.Branches, cts.Token);
         }
@@ -121,7 +122,7 @@ public sealed partial class DevelopmentSectionViewModel : IssueSectionViewModel
         }
         catch (GitException e)
         {
-            Summary = "git couldn't read the repository: " + e.StandardError.Trim();
+            Summary = L.T("git couldn't read the repository: ") + e.StandardError.Trim();
         }
         finally
         {
@@ -190,13 +191,13 @@ public sealed partial class DevelopmentSectionViewModel : IssueSectionViewModel
     [RelayCommand]
     private async Task LinkRepositoryAsync()
     {
-        var folder = await _services.Dialogs.PickFolderAsync("Repository this board's issues are developed in");
+        var folder = await _services.Dialogs.PickFolderAsync(L.T("Repository this board's issues are developed in"));
         if (folder is null)
             return;
         var top = await _services.Queries.RepositoryOfAsync(folder);
         if (top is null)
         {
-            _services.Status.Show($"{folder} isn't a git repository.");
+            _services.Status.Show(L.T($"{folder} isn't a git repository."));
             return;
         }
         _services.LinkRepository(Context.Location, top);
@@ -221,7 +222,7 @@ public sealed partial class DevelopmentSectionViewModel : IssueSectionViewModel
         }
         catch (System.ComponentModel.Win32Exception)
         {
-            _services.Status.Show("The browser couldn't be opened.");
+            _services.Status.Show(L.T("The browser couldn't be opened."));
         }
     }
 
@@ -241,14 +242,14 @@ public sealed partial class CreateBranchDialogViewModel : DialogViewModelBase
     {
         _client = client;
         _name = suggestedName;
-        BaseText = baseBranch is null ? "From the current commit (detached HEAD)." : $"From {baseBranch}.";
+        BaseText = baseBranch is null ? L.T("From the current commit (detached HEAD).") : L.T($"From {baseBranch}.");
         CanStart = canStart;
-        StartText = $"Move the issue to {startTo}";
+        StartText = L.T($"Move the issue to {startTo}");
         _startIssue = canStart;
     }
 
-    public override string Title => "Create Branch";
-    public override string OkText => "Create";
+    public override string Title => L.T("Create Branch");
+    public override string OkText => L.T("Create");
     public override bool FitsContent => true;
     public override double Width => 520;
     public override double MinHeight => 0;
@@ -266,12 +267,12 @@ public sealed partial class CreateBranchDialogViewModel : DialogViewModelBase
         Name = Name.Trim();
         if (Name.Length == 0 || !await _client.IsValidBranchNameAsync(Name))
         {
-            Error = "git doesn't allow that branch name.";
+            Error = L.T("git doesn't allow that branch name.");
             return false;
         }
         if ((await _client.GetBranchesAsync()).Any(b => !b.IsRemote && string.Equals(b.Name, Name, StringComparison.OrdinalIgnoreCase)))
         {
-            Error = $"A branch named {Name} already exists.";
+            Error = L.T($"A branch named {Name} already exists.");
             return false;
         }
         return true;
@@ -286,7 +287,7 @@ public static class BranchCommands
         var repository = await services.RepositoryForAsync(context.Location);
         if (repository is null)
         {
-            services.Status.Show("This board isn't linked to a repository: use Link Repository… in the issue's Development section.");
+            services.Status.Show(L.T("This board isn't linked to a repository: use Link Repository… in the issue's Development section."));
             return;
         }
         var client = new GitRepositoryClient(services.Runner, repository);
@@ -303,11 +304,11 @@ public static class BranchCommands
         try
         {
             await client.CreateBranchAsync(dialog.Name, startPoint: null, checkout: dialog.Checkout);
-            services.Status.Show(dialog.Checkout ? $"Created and switched to {dialog.Name}" : $"Created {dialog.Name}");
+            services.Status.Show(dialog.Checkout ? L.T($"Created and switched to {dialog.Name}") : L.T($"Created {dialog.Name}"));
         }
         catch (GitException e)
         {
-            await services.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Create Branch", "git couldn't create the branch.", "OK",
+            await services.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel(L.T("Create Branch"), L.T("git couldn't create the branch."), "OK",
                 [e.StandardError.Trim()], destructive: false, showCancel: false));
             return;
         }
@@ -323,6 +324,6 @@ public sealed class CreateBranchActionProvider(BoardGitServices services) : IIss
     {
         if (context.Snapshot.LevelOf(issue) == IssueTypeLevel.Epic)
             yield break;
-        yield return new IssueAction("Create Branch…", () => BranchCommands.CreateBranchAsync(context, issue, services));
+        yield return new IssueAction(L.T("Create Branch…"), () => BranchCommands.CreateBranchAsync(context, issue, services));
     }
 }

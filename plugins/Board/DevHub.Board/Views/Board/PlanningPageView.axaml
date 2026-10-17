@@ -5,6 +5,7 @@
 -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:vm="using:DevHub.ViewModels.Board"
              xmlns:dlg="using:DevHub.ViewModels.Dialogs"
              xmlns:c="using:DevHub.Controls"
@@ -32,14 +33,14 @@
                 BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,1,0">
             <DockPanel>
                 <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" Margin="{DynamicResource Padding.BoardHeader}">
-                    <TextBlock Classes="section" Text="Epics" VerticalAlignment="Center" />
-                    <Button Grid.Column="1" Classes="flat" ToolTip.Tip="Create an epic" AutomationProperties.Name="Create epic"
+                    <TextBlock Classes="section" Text="{l:T 'Epics'}" VerticalAlignment="Center" />
+                    <Button Grid.Column="1" Classes="flat" ToolTip.Tip="{l:T 'Create an epic'}" AutomationProperties.Name="{l:T 'Create epic'}"
                             Command="{Binding CreateEpicCommand}">
                         <c:Icon Kind="add" />
                     </Button>
                 </Grid>
                 <ListBox ItemsSource="{Binding Epics}" SelectedItem="{Binding SelectedEpic}" Background="Transparent"
-                         AutomationProperties.Name="Epics" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                         AutomationProperties.Name="{l:T 'Epics'}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                     <ListBox.ItemTemplate>
                         <DataTemplate x:DataType="vm:EpicRow">
                             <StackPanel Spacing="{DynamicResource Spacing.Small}" Background="Transparent"
@@ -50,11 +51,11 @@
                                             c:DoubleTap.Command="{Binding OpenInTabCommand}">
                                     <StackPanel.ContextMenu>
                                         <ContextMenu>
-                                            <MenuItem Header="Open in Tab" Command="{Binding OpenInTabCommand}" />
-                                            <MenuItem Header="Edit in Issue Panel" Command="{Binding EditCommand}" />
-                                            <MenuItem Header="Create Issue in Epic…" Command="{Binding CreateInCommand}" />
+                                            <MenuItem Header="{l:T 'Open in Tab'}" Command="{Binding OpenInTabCommand}" />
+                                            <MenuItem Header="{l:T 'Edit in Issue Panel'}" Command="{Binding EditCommand}" />
+                                            <MenuItem Header="{l:T 'Create Issue in Epic…'}" Command="{Binding CreateInCommand}" />
                                             <Separator />
-                                            <MenuItem Header="Delete…" Command="{Binding DeleteCommand}" />
+                                            <MenuItem Header="{l:T 'Delete…'}" Command="{Binding DeleteCommand}" />
                                         </ContextMenu>
                                     </StackPanel.ContextMenu>
                                     <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}">
@@ -75,11 +76,11 @@
         <!-- Filters, page actions, bulk edit and ranking; wraps onto a second line when the issue panel leaves little room. -->
         <Border DockPanel.Dock="Top" Classes="pageHeader">
             <WrapPanel Orientation="Horizontal">
-                <ToggleButton Classes="chip" Content="Epics" IsChecked="{Binding ShowEpics}" ToolTip.Tip="Show the epics panel"
+                <ToggleButton Classes="chip" Content="{l:T 'Epics'}" IsChecked="{Binding ShowEpics}" ToolTip.Tip="{l:T 'Show the epics panel'}"
                               Margin="{DynamicResource Margin.RowEnd}" VerticalAlignment="Center" />
                 <ComboBox ItemsSource="{Binding VersionFilters}" SelectedItem="{Binding VersionFilter}" Margin="{DynamicResource Margin.RowEnd}"
-                          AutomationProperties.Name="Version filter" ToolTip.Tip="Only issues planned for a version" VerticalAlignment="Center" />
-                <CheckBox Content="Show done" IsChecked="{Binding ShowDone}" Margin="{DynamicResource Margin.RowEnd}" VerticalAlignment="Center" />
+                          AutomationProperties.Name="{l:T 'Version filter'}" ToolTip.Tip="{l:T 'Only issues planned for a version'}" VerticalAlignment="Center" />
+                <CheckBox Content="{l:T 'Show done'}" IsChecked="{Binding ShowDone}" Margin="{DynamicResource Margin.RowEnd}" VerticalAlignment="Center" />
                 <ItemsControl ItemsSource="{Binding PageActions}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -93,17 +94,17 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-                <Button Content="Edit Selected…" Command="{Binding BulkEditCommand}" Margin="{DynamicResource Margin.RowEnd}"
-                        ToolTip.Tip="Change a field of every selected issue (Ctrl+click, Shift+click to select)" />
+                <Button Content="{l:T 'Edit Selected…'}" Command="{Binding BulkEditCommand}" Margin="{DynamicResource Margin.RowEnd}"
+                        ToolTip.Tip="{l:T 'Change a field of every selected issue (Ctrl+click, Shift+click to select)'}" />
                 <Button Content="{Binding RankByValueText}" Command="{Binding RankByValueCommand}" IsVisible="{Binding CanRankByValue}"
-                        ToolTip.Tip="Order each list by this field, highest first (Undo in the board menu takes it back)" />
+                        ToolTip.Tip="{l:T 'Order each list by this field, highest first (Undo in the board menu takes it back)'}" />
             </WrapPanel>
         </Border>
 
         <!-- Quick create. -->
         <Border DockPanel.Dock="Bottom" Classes="pageHeader" BorderThickness="0,1,0,0">
             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing}">
-                <ComboBox ItemsSource="{Binding NewTypes}" SelectedItem="{Binding NewType}" AutomationProperties.Name="Type of the new issue">
+                <ComboBox ItemsSource="{Binding NewTypes}" SelectedItem="{Binding NewType}" AutomationProperties.Name="{l:T 'Type of the new issue'}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate x:DataType="dlg:NamedItem">
                             <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}">
@@ -113,13 +114,13 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
-                <TextBox Grid.Column="1" Text="{Binding NewSummary}" PlaceholderText="What needs to be done? (Enter creates it at the bottom)"
-                         AutomationProperties.Name="New issue summary">
+                <TextBox Grid.Column="1" Text="{Binding NewSummary}" PlaceholderText="{l:T 'What needs to be done? (Enter creates it at the bottom)'}"
+                         AutomationProperties.Name="{l:T 'New issue summary'}">
                     <TextBox.KeyBindings>
                         <KeyBinding Gesture="Enter" Command="{Binding QuickCreateCommand}" />
                     </TextBox.KeyBindings>
                 </TextBox>
-                <Button Grid.Column="2" Content="Create" Command="{Binding QuickCreateCommand}" />
+                <Button Grid.Column="2" Content="{l:T 'Create'}" Command="{Binding QuickCreateCommand}" />
             </Grid>
         </Border>
 

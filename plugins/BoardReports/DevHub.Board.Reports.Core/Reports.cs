@@ -3,6 +3,7 @@ using DevHub.Board.Core;
 using DevHub.Board.Core.Fields;
 using DevHub.Board.Core.Model;
 using DevHub.Sdk.Core.Charts;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Board.Reports.Core;
 
@@ -133,8 +134,8 @@ public static class BoardReports
             done.Add(finished);
             scope.Add(total);
         }
-        var burndown = new ChartData(labels, [new ChartSeries("Remaining", remaining), new ChartSeries("Ideal", ideal)]);
-        var burnup = new ChartData(labels, [new ChartSeries("Done", done), new ChartSeries("Scope", scope)]);
+        var burndown = new ChartData(labels, [new ChartSeries(L.T("Remaining"), remaining), new ChartSeries(L.T("Ideal"), ideal)]);
+        var burnup = new ChartData(labels, [new ChartSeries(L.T("Done"), done), new ChartSeries(L.T("Scope"), scope)]);
         return new SprintChart(burndown, burnup, committed, done.LastOrDefault(d => d is not null) ?? 0, scope.LastOrDefault(s => s is not null) ?? 0);
     }
 
@@ -143,8 +144,8 @@ public static class BoardReports
     {
         var sprints = board.Sprints.Values.Where(s => s.State == SprintState.Closed).OrderBy(s => s.Completed ?? s.End).TakeLast(count).ToList();
         return new ChartData(sprints.Select(s => s.Name).ToList(),
-            [new ChartSeries("Committed", sprints.Select(s => (double?)s.CommittedPoints).ToList()),
-             new ChartSeries("Completed", sprints.Select(s => (double?)s.CompletedPoints).ToList())]);
+            [new ChartSeries(L.T("Committed"), sprints.Select(s => (double?)s.CommittedPoints).ToList()),
+             new ChartSeries(L.T("Completed"), sprints.Select(s => (double?)s.CompletedPoints).ToList())]);
     }
 
     /// <summary>Average completed points of the last three closed sprints (null: none yet).</summary>
@@ -167,9 +168,9 @@ public static class BoardReports
         IReadOnlyList<(string Name, Func<string?, bool> Match)> groups = byStatus
             ? (board.DefaultWorkflow?.Statuses ?? project.Statuses.Select(s => s.Id).ToList())
                 .Select(id => (project.Status(id)?.Name ?? id, (Func<string?, bool>)(s => s == id))).ToList()
-            : [("Done", s => project.Status(s)?.Category == StatusCategory.Done),
-               ("In Progress", s => project.Status(s)?.Category == StatusCategory.InProgress),
-               ("To Do", s => project.Status(s)?.Category is StatusCategory.ToDo or null)];
+            : [(L.T("Done"), s => project.Status(s)?.Category == StatusCategory.Done),
+               (L.T("In Progress"), s => project.Status(s)?.Category == StatusCategory.InProgress),
+               (L.T("To Do"), s => project.Status(s)?.Category is StatusCategory.ToDo or null)];
         var series = groups.Select(g => new ChartSeries(g.Name,
             dayEnds.Select(d => (double?)timelines.Count(t => t.ExistedAt(d) && g.Match(t.StatusAt(d)))).ToList())).ToList();
         return new ChartData(labels, series);
@@ -197,7 +198,7 @@ public static class BoardReports
             sum += cycles[i].Days;
             average.Add(Math.Round(sum / (i + 1), 1));
         }
-        return new ChartData(labels, [new ChartSeries("Cycle time (days)", values), new ChartSeries("Average", average)]);
+        return new ChartData(labels, [new ChartSeries(L.T("Cycle time (days)"), values), new ChartSeries(L.T("Average"), average)]);
     }
 
     /// <summary>A sprint's outcome: done, not done, added after it started, removed during it.</summary>
@@ -238,15 +239,15 @@ public static class BoardReports
         {
             IssueFields.Status => [project.Status(i.Status)?.Name ?? i.Status],
             IssueFields.Type => [project.IssueType(i.Type)?.Name ?? i.Type],
-            IssueFields.Priority => [project.Priority(i.Priority)?.Name ?? "None"],
-            IssueFields.Assignee => [project.Person(i.Assignee)?.Name ?? "Unassigned"],
-            IssueFields.Labels => i.Labels.Count == 0 ? ["No label"] : i.Labels,
-            IssueFields.Components => i.Components.Count == 0 ? ["No component"] : i.Components.Select(c => project.Component(c)?.Name ?? c),
-            "epic" => [board.EpicOf(i)?.Summary ?? "No epic"],
+            IssueFields.Priority => [project.Priority(i.Priority)?.Name ?? L.T("None")],
+            IssueFields.Assignee => [project.Person(i.Assignee)?.Name ?? L.T("Unassigned")],
+            IssueFields.Labels => i.Labels.Count == 0 ? [L.T("No label")] : i.Labels,
+            IssueFields.Components => i.Components.Count == 0 ? [L.T("No component")] : i.Components.Select(c => project.Component(c)?.Name ?? c),
+            "epic" => [board.EpicOf(i)?.Summary ?? L.T("No epic")],
             _ => ["?"],
         };
         var counts = issues.SelectMany(Values).GroupBy(v => v).OrderByDescending(g => g.Count()).ThenBy(g => g.Key, StringComparer.CurrentCulture)
             .Select(g => (g.Key, (double)g.Count()));
-        return ChartData.Of("Issues", counts);
+        return ChartData.Of(L.T("Issues"), counts);
     }
 }

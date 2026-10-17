@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Git.Core;
 
@@ -103,58 +104,50 @@ public static class RemoteErrorExplainer
 
         // Order matters: a rejected push also mentions the URL, etc.
         if (Has("CONFLICT (") || Has("could not apply") || Has("Automatic merge failed") || Has("Resolve all conflicts manually"))
-            return new(RemoteErrorKind.Conflicts, "Stopped on conflicts",
-                "Some of your changes conflict with the remote ones. The conflicting files are marked in " +
-                "Local Changes; resolve them and continue, or abort to go back to how things were " +
-                "(\"git rebase --abort\" / \"git merge --abort\" in a terminal for now; DevHub gets buttons for this in G7).");
+            return new(RemoteErrorKind.Conflicts, L.T("Stopped on conflicts"),
+                L.T("Some of your changes conflict with the remote ones. The conflicting files are marked in Local Changes; resolve them and continue, or abort to go back to how things were (\"git rebase --abort\" / \"git merge --abort\" in a terminal for now; DevHub gets buttons for this in G7)."));
 
         if (Has("[rejected]") || Has("non-fast-forward") || Has("fetch first") || Has("stale info"))
-            return new(RemoteErrorKind.Rejected, "Push rejected",
-                "The remote branch has commits that you don't have yet. Update (pull) first, then push again.");
+            return new(RemoteErrorKind.Rejected, L.T("Push rejected"),
+                L.T("The remote branch has commits that you don't have yet. Update (pull) first, then push again."));
 
         if (Has("has no upstream branch") || Has("no tracking information") || Has("There is no tracking information"))
-            return new(RemoteErrorKind.NoUpstream, "No upstream branch",
-                "This branch isn't connected to a remote branch yet. Push it once to create and track it.");
+            return new(RemoteErrorKind.NoUpstream, L.T("No upstream branch"),
+                L.T("This branch isn't connected to a remote branch yet. Push it once to create and track it."));
 
         if (Has("Not possible to fast-forward") || Has("Diverging branches can't be fast-forwarded")
             || Has("have diverged") || Has("Need to specify how to reconcile divergent branches"))
-            return new(RemoteErrorKind.Diverged, "Branches have diverged",
-                "Both your branch and the remote branch have new commits, so it can't simply move forward. " +
-                "Rebase puts your commits on top of the remote ones.");
+            return new(RemoteErrorKind.Diverged, L.T("Branches have diverged"),
+                L.T("Both your branch and the remote branch have new commits, so it can't simply move forward. Rebase puts your commits on top of the remote ones."));
 
         if (Has("would be overwritten by merge") || Has("cannot pull with rebase") || Has("Your local changes to the following files would be overwritten"))
-            return new(RemoteErrorKind.LocalChangesInTheWay, "Local changes in the way",
-                "Updating would overwrite files you've changed. Commit or stash your changes, then update again.");
+            return new(RemoteErrorKind.LocalChangesInTheWay, L.T("Local changes in the way"),
+                L.T("Updating would overwrite files you've changed. Commit or stash your changes, then update again."));
 
         if (Has("Host key verification failed") || Has("REMOTE HOST IDENTIFICATION HAS CHANGED"))
-            return new(RemoteErrorKind.HostKey, "Unknown or changed SSH host key",
-                "SSH doesn't trust this server yet (or its key changed). Connect once from a terminal " +
-                "(for example \"ssh -T git@github.com\") to check and accept the key, then try again.");
+            return new(RemoteErrorKind.HostKey, L.T("Unknown or changed SSH host key"),
+                L.T("SSH doesn't trust this server yet (or its key changed). Connect once from a terminal (for example \"ssh -T git@github.com\") to check and accept the key, then try again."));
 
         if (Has("Permission denied (publickey") || Has("Authentication failed") || Has("could not read Username")
             || Has("could not read Password") || Has("terminal prompts disabled") || Has("HTTP Basic: Access denied")
             || Has("returned error: 401") || Has("returned error: 403") || Has("The requested URL returned error: 403")
             || Has("Invalid username or password") || Has("Permission to") && Has("denied"))
-            return new(RemoteErrorKind.Authentication, "Authentication failed",
-                "The remote didn't accept your credentials, or you don't have access. For HTTPS, sign in through " +
-                "Git Credential Manager (run a fetch from a terminal once) or use a personal access token; " +
-                "for SSH, check that your key is loaded (ssh-agent) and added to your account.");
+            return new(RemoteErrorKind.Authentication, L.T("Authentication failed"),
+                L.T("The remote didn't accept your credentials, or you don't have access. For HTTPS, sign in through Git Credential Manager (run a fetch from a terminal once) or use a personal access token; for SSH, check that your key is loaded (ssh-agent) and added to your account."));
 
         if (Has("Repository not found") || Has("does not appear to be a git repository") || Has("not found") && Has("repository"))
-            return new(RemoteErrorKind.RepositoryNotFound, "Repository not found",
-                "The remote address doesn't point to a repository you can reach. Check the remote URL, " +
-                "and that your account has access if it's private.");
+            return new(RemoteErrorKind.RepositoryNotFound, L.T("Repository not found"),
+                L.T("The remote address doesn't point to a repository you can reach. Check the remote URL, and that your account has access if it's private."));
 
         if (Has("Could not resolve host") || Has("Failed to connect") || Has("Connection timed out")
             || Has("Connection refused") || Has("Could not read from remote repository") || Has("unable to access")
             || Has("SSL certificate problem") || Has("Operation timed out") || Has("Network is unreachable"))
-            return new(RemoteErrorKind.Network, "Can't reach the remote",
-                "The connection to the server failed (no network, the host name is wrong, a proxy or firewall, " +
-                "or a certificate problem). Check your connection and try again.");
+            return new(RemoteErrorKind.Network, L.T("Can't reach the remote"),
+                L.T("The connection to the server failed (no network, the host name is wrong, a proxy or firewall, or a certificate problem). Check your connection and try again."));
 
         var first = stderr.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .FirstOrDefault(l => l.StartsWith("fatal:", StringComparison.Ordinal) || l.StartsWith("error:", StringComparison.Ordinal))
             ?? stderr.Trim();
-        return new(RemoteErrorKind.Other, "Git reported an error", first);
+        return new(RemoteErrorKind.Other, L.T("Git reported an error"), first);
     }
 }

@@ -5,6 +5,7 @@ using DevHub.Sdk.Core.Settings;
 using DevHub.Services;
 using DevHub.Templates.Core;
 using DevHub.Templates.Core.Editing;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Dialogs.Settings;
 
@@ -33,9 +34,9 @@ public sealed partial class TemplatesSettingsPageViewModel : SettingsPageViewMod
             ExtraLibraries.Add(new LibraryRowViewModel(folder, RemoveLibrary));
     }
 
-    public override string Title => "Templates";
+    public override string Title => L.T("Templates");
     public override int Order => 300;
-    public override string Keywords => "templates author project folder location language category library new project";
+    public override string Keywords => L.T("templates author project folder location language category library new project");
 
     public string AuthorPlaceholder => Environment.UserName;
     public string PersonalLibraryPlaceholder => TemplateLibraries.DefaultPersonalRoot(
@@ -56,14 +57,14 @@ public sealed partial class TemplatesSettingsPageViewModel : SettingsPageViewMod
     [RelayCommand]
     private async Task BrowseDefaultFolderAsync()
     {
-        if (await _dialogs.PickFolderAsync("New projects go to") is { } folder)
+        if (await _dialogs.PickFolderAsync(L.T("New projects go to")) is { } folder)
             DefaultProjectFolder = folder;
     }
 
     [RelayCommand]
     private async Task BrowsePersonalLibraryAsync()
     {
-        if (await _dialogs.PickFolderAsync("Your template library") is { } folder)
+        if (await _dialogs.PickFolderAsync(L.T("Your template library")) is { } folder)
             PersonalLibrary = folder;
     }
 
@@ -77,7 +78,7 @@ public sealed partial class TemplatesSettingsPageViewModel : SettingsPageViewMod
     [RelayCommand]
     private async Task AddLibraryAsync()
     {
-        if (await _dialogs.PickFolderAsync("A folder of templates") is not { } folder)
+        if (await _dialogs.PickFolderAsync(L.T("A folder of templates")) is not { } folder)
             return;
         ExtraLibraries.Add(new LibraryRowViewModel(folder, RemoveLibrary));
         MarkModified();
@@ -148,7 +149,7 @@ public sealed partial class FolderRuleRowViewModel : ViewModelBase
     [RelayCommand]
     private async Task BrowseAsync()
     {
-        if (await _dialogs.PickFolderAsync("Projects of this kind go to") is { } folder)
+        if (await _dialogs.PickFolderAsync(L.T("Projects of this kind go to")) is { } folder)
             Folder = folder;
     }
 

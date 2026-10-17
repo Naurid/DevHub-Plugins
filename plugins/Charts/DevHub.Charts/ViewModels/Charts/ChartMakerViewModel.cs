@@ -7,6 +7,7 @@ using DevHub.Integration;
 using DevHub.Sdk.Core.Charts;
 using DevHub.Services;
 using DevHub.ViewModels.Documents;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Charts;
 
@@ -36,7 +37,7 @@ public sealed partial class SeriesStyleRow : ObservableObject
 
     public static IReadOnlyList<LineDash> Dashes { get; } = Enum.GetValues<LineDash>();
     public static IReadOnlyList<SeriesKind> Kinds { get; } = Enum.GetValues<SeriesKind>();
-    public static IReadOnlyList<string> Colors { get; } = ["Automatic", "Color 1", "Color 2", "Color 3", "Color 4", "Color 5", "Color 6"];
+    public static IReadOnlyList<string> Colors { get; } = [L.T("Automatic"), L.T("Color 1"), L.T("Color 2"), L.T("Color 3"), L.T("Color 4"), L.T("Color 5"), L.T("Color 6")];
 
     [ObservableProperty] private LineDash _dash;
     [ObservableProperty] private bool _markers;
@@ -82,10 +83,10 @@ public sealed partial class ChartMakerViewModel : DocumentViewModelBase
         Load(ChartSpec.Sample, null);
     }
 
-    public override string Title => _path is null ? "Chart Maker" : $"Chart: {Path.GetFileName(_path)}";
+    public override string Title => _path is null ? L.T("Chart Maker") : $"Chart: {Path.GetFileName(_path)}";
     public override string Icon => IconKind.Palette;
     public override bool FillsEditorArea => true;
-    public override DocumentNavigation Navigation => new() { Text = "Chart Maker", Menu = "File", MenuOrder = 60, WelcomeOrder = 70 };
+    public override DocumentNavigation Navigation => new() { Text = L.T("Chart Maker"), Menu = "File", MenuOrder = 60, WelcomeOrder = 70 };
     public override bool HasUnsavedChanges => _dirty && _path is not null;
 
     private string? _path;
@@ -189,7 +190,7 @@ public sealed partial class ChartMakerViewModel : DocumentViewModelBase
     }
 
     [RelayCommand]
-    private void New() => Load(new ChartSpec { Table = "Label\tValue\nA\t3\nB\t5\nC\t2\n" }, null);
+    private void New() => Load(new ChartSpec { Table = L.T("Label\tValue\nA\t3\nB\t5\nC\t2\n") }, null);
 
     [RelayCommand]
     private void Sample() => Load(ChartSpec.Sample, null);
@@ -197,7 +198,7 @@ public sealed partial class ChartMakerViewModel : DocumentViewModelBase
     [RelayCommand]
     private async Task OpenAsync()
     {
-        var path = await _dialogs.PickFileAsync("Open Chart or Table", "Charts and tables", ["*." + ChartSpec.Extension, "*.csv", "*.tsv", "*.txt"]);
+        var path = await _dialogs.PickFileAsync(L.T("Open Chart or Table"), L.T("Charts and tables"), ["*." + ChartSpec.Extension, "*.csv", "*.tsv", "*.txt"]);
         if (path is null)
             return;
         try
@@ -210,15 +211,15 @@ public sealed partial class ChartMakerViewModel : DocumentViewModelBase
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException or System.Text.Json.JsonException)
         {
-            _status.Show($"Couldn't open {Path.GetFileName(path)}: {e.Message}");
+            _status.Show(L.T($"Couldn't open {Path.GetFileName(path)}: {e.Message}"));
         }
     }
 
     [RelayCommand]
     private async Task SaveAsync()
     {
-        var path = _path ?? await _dialogs.PickSaveFileAsync("Save Chart", (ChartTitle.Trim().Length > 0 ? ChartTitle.Trim() : "chart") + "." + ChartSpec.Extension,
-            "DevHub chart", ChartSpec.Extension);
+        var path = _path ?? await _dialogs.PickSaveFileAsync(L.T("Save Chart"), (ChartTitle.Trim().Length > 0 ? ChartTitle.Trim() : "chart") + "." + ChartSpec.Extension,
+            L.T("DevHub chart"), ChartSpec.Extension);
         if (path is null)
             return;
         try
@@ -227,11 +228,11 @@ public sealed partial class ChartMakerViewModel : DocumentViewModelBase
             _path = path;
             _dirty = false;
             OnPropertyChanged(nameof(Title));
-            _status.Show($"Saved {Path.GetFileName(path)}");
+            _status.Show(L.T($"Saved {Path.GetFileName(path)}"));
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException)
         {
-            _status.Show($"Couldn't save: {e.Message}");
+            _status.Show(L.T($"Couldn't save: {e.Message}"));
         }
     }
 

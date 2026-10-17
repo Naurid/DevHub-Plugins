@@ -5,6 +5,7 @@ using DevHub.Services;
 using DevHub.Templates.Core;
 using DevHub.ViewModels.Documents;
 using DevHub.ViewModels.Templates;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.ToolWindows;
 
@@ -32,7 +33,7 @@ public sealed partial class TemplatesToolWindowViewModel : ToolWindowViewModelBa
     }
 
     public override string Id => "templates";
-    public override string Title => "Templates";
+    public override string Title => L.T("Templates");
     public override string IconKind => Controls.IconKind.Template;
     public override ToolWindowSlot Slot => ToolWindowSlot.Left;
     public override int Order => 10; // after Projects (0): Alt+2
@@ -46,7 +47,7 @@ public sealed partial class TemplatesToolWindowViewModel : ToolWindowViewModelBa
     private TemplateEntry? _selected;
 
     /// <summary>"New Project" or "Add Files", by the selected template's kind.</summary>
-    public string UseText => Selected?.Manifest?.Kind == TemplateKind.Item ? "Add Files…" : "New Project…";
+    public string UseText => Selected?.Manifest?.Kind == TemplateKind.Item ? L.T("Add Files…") : L.T("New Project…");
 
     /// <summary>Reloads when the panel opens (templates may have changed in the editor meanwhile).</summary>
     protected override void OnPropertyChanged(PropertyChangedEventArgs e)

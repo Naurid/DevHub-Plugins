@@ -1,6 +1,7 @@
 using DevHub.Board.Core.Fields;
 using DevHub.Board.Core.Model;
 using DevHub.Board.Core.Storage;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Board.Core;
 
@@ -100,7 +101,7 @@ public sealed class ChangeBuilder(BoardSnapshot board, OperationContext context)
             var project = Project;
             if (project.Settings.DoneCheck == DoneCheck.Block && DoneReadiness.GoesDone(project, before, after)
                 && DoneReadiness.Missing(project, after) is { Count: > 0 } missing)
-                throw new BoardRuleException($"{after.Key} isn't done yet: {string.Join("; ", missing)}.");
+                throw new BoardRuleException(L.T($"{after.Key} isn't done yet: {string.Join("; ", missing)}."));
             foreach (var field in IssueFields.Tracked)
                 AddFieldChange(after.Id, field, IssueFields.Get(before, field).Raw, IssueFields.Get(after, field).Raw);
             foreach (var id in before.Custom.Keys.Union(after.Custom.Keys).Distinct())

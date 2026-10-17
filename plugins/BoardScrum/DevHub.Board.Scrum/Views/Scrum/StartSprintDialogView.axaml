@@ -1,6 +1,7 @@
 <!-- Start Sprint: what's in it, name, goal, length and dates. -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:vm="using:DevHub.ViewModels.Scrum"
              xmlns:c="using:DevHub.Controls"
              x:Class="DevHub.Views.Scrum.StartSprintDialogView"
@@ -8,25 +9,25 @@
     <StackPanel Margin="{DynamicResource Padding.Dialog}" Spacing="{DynamicResource Spacing}">
         <TextBlock Classes="secondary" Text="{Binding Summary}" TextWrapping="Wrap" />
         <StackPanel Spacing="{DynamicResource Spacing.Small}">
-            <TextBlock Classes="secondary" Text="Name" />
-            <TextBox Text="{Binding Name}" AutomationProperties.Name="Sprint name" />
+            <TextBlock Classes="secondary" Text="{l:T 'Name'}" />
+            <TextBox Text="{Binding Name}" AutomationProperties.Name="{l:T 'Sprint name'}" />
         </StackPanel>
         <StackPanel Spacing="{DynamicResource Spacing.Small}">
-            <TextBlock Classes="secondary" Text="Goal (optional)" />
-            <TextBox Text="{Binding Goal}" PlaceholderText="What this sprint is for" AutomationProperties.Name="Sprint goal" c:FocusOnLoad.IsEnabled="True" />
+            <TextBlock Classes="secondary" Text="{l:T 'Goal (optional)'}" />
+            <TextBox Text="{Binding Goal}" PlaceholderText="{l:T 'What this sprint is for'}" AutomationProperties.Name="{l:T 'Sprint goal'}" c:FocusOnLoad.IsEnabled="True" />
         </StackPanel>
         <Grid ColumnDefinitions="*,*,*" ColumnSpacing="{DynamicResource Spacing}">
             <StackPanel Spacing="{DynamicResource Spacing.Small}">
-                <TextBlock Classes="secondary" Text="Length" />
-                <ComboBox ItemsSource="{Binding Lengths}" SelectedItem="{Binding Length}" HorizontalAlignment="Stretch" AutomationProperties.Name="Length" />
+                <TextBlock Classes="secondary" Text="{l:T 'Length'}" />
+                <ComboBox ItemsSource="{Binding Lengths}" SelectedItem="{Binding Length}" HorizontalAlignment="Stretch" AutomationProperties.Name="{l:T 'Length'}" />
             </StackPanel>
             <StackPanel Grid.Column="1" Spacing="{DynamicResource Spacing.Small}">
-                <TextBlock Classes="secondary" Text="Starts" />
-                <CalendarDatePicker SelectedDate="{Binding StartDate}" HorizontalAlignment="Stretch" AutomationProperties.Name="Start date" />
+                <TextBlock Classes="secondary" Text="{l:T 'Starts'}" />
+                <CalendarDatePicker SelectedDate="{Binding StartDate}" HorizontalAlignment="Stretch" AutomationProperties.Name="{l:T 'Start date'}" />
             </StackPanel>
             <StackPanel Grid.Column="2" Spacing="{DynamicResource Spacing.Small}">
-                <TextBlock Classes="secondary" Text="Ends" />
-                <CalendarDatePicker SelectedDate="{Binding EndDate}" HorizontalAlignment="Stretch" AutomationProperties.Name="End date" />
+                <TextBlock Classes="secondary" Text="{l:T 'Ends'}" />
+                <CalendarDatePicker SelectedDate="{Binding EndDate}" HorizontalAlignment="Stretch" AutomationProperties.Name="{l:T 'End date'}" />
             </StackPanel>
         </Grid>
         <TextBlock Text="{Binding Error}" Foreground="{DynamicResource Brush.Status.Error}" TextWrapping="Wrap"

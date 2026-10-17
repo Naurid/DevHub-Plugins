@@ -6,6 +6,7 @@ using DevHub.Services;
 using DevHub.Templates.Core;
 using DevHub.Templates.Core.Editing;
 using DevHub.ViewModels.Dialogs;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Templates.Editor;
 
@@ -53,10 +54,10 @@ public sealed partial class FilesPartViewModel : ViewModelBase
 
     /// <summary>"Placeholders: {{Name}} {{Git}} · built-in: {{Year}} …"</summary>
     public string PlaceholderHint =>
-        "Placeholders you can use in file contents and names: "
+        L.T("Placeholders you can use in file contents and names: ")
         + string.Join(" ", _variables().Select(v => "{{" + v + "}}"))
         + "  ·  built-in: {{Year}} {{Date}} {{Author}} {{Guid1}}…{{Guid9}}"
-        + "  ·  transforms: {{Name:kebab}} in files, {{Name.kebab}} in file names (pascal, camel, kebab, snake, upper, lower).";
+        + L.T("  ·  transforms: {{Name:kebab}} in files, {{Name.kebab}} in file names (pascal, camel, kebab, snake, upper, lower).");
 
     public bool CanOpenInVsCode => _templates.VsCodePath is not null;
 
@@ -93,7 +94,7 @@ public sealed partial class FilesPartViewModel : ViewModelBase
     private async Task NewFileAsync()
     {
         var folder = SelectedFolder;
-        var dialog = new NameDialogViewModel("New File", "File name (placeholders allowed: {{Name}}.cs)", "", "Create", Where(folder));
+        var dialog = new NameDialogViewModel(L.T("New File"), L.T("File name (placeholders allowed: {{Name}}.cs)"), "", L.T("Create"), Where(folder));
         if (await _dialogs.ShowDialogAsync(dialog))
             Do(TemplateContent.CreateFile(_template(), folder, dialog.Name), Join(folder, dialog.Name.Trim()));
     }
@@ -102,7 +103,7 @@ public sealed partial class FilesPartViewModel : ViewModelBase
     private async Task NewFolderAsync()
     {
         var folder = SelectedFolder;
-        var dialog = new NameDialogViewModel("New Folder", "Folder name", "", "Create", Where(folder));
+        var dialog = new NameDialogViewModel(L.T("New Folder"), L.T("Folder name"), "", L.T("Create"), Where(folder));
         if (await _dialogs.ShowDialogAsync(dialog))
             Do(TemplateContent.CreateFolder(_template(), folder, dialog.Name), Join(folder, dialog.Name.Trim()));
     }
@@ -114,7 +115,7 @@ public sealed partial class FilesPartViewModel : ViewModelBase
     {
         if (SelectedNode is not { } node)
             return;
-        var dialog = new NameDialogViewModel("Rename", "New name", node.Name, "Rename", node.Path);
+        var dialog = new NameDialogViewModel(L.T("Rename"), L.T("New name"), node.Name, L.T("Rename"), node.Path);
         if (await _dialogs.ShowDialogAsync(dialog) && dialog.Name.Trim() != node.Name)
             Do(TemplateContent.Rename(_template(), node.Path, dialog.Name), Join(node.Item.Parent, dialog.Name.Trim()));
     }
@@ -124,9 +125,9 @@ public sealed partial class FilesPartViewModel : ViewModelBase
     {
         if (SelectedNode is not { } node)
             return;
-        var what = node.IsFolder ? $"the folder {node.Path} and everything in it" : node.Path;
-        var ok = await _dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Delete",
-            $"Delete {what} from the template? It's deleted from disk now (not on Save), permanently.", "Delete", [node.Path]));
+        var what = node.IsFolder ? L.T($"the folder {node.Path} and everything in it") : node.Path;
+        var ok = await _dialogs.ShowDialogAsync(new ConfirmDialogViewModel(L.T("Delete"),
+            L.T($"Delete {what} from the template? It's deleted from disk now (not on Save), permanently."), L.T("Delete"), [node.Path]));
         if (ok)
             Do(TemplateContent.Delete(_template(), node.Path), null);
     }
@@ -148,7 +149,7 @@ public sealed partial class FilesPartViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            _status.Show($"Couldn't open {node.Path}: {ex.Message}");
+            _status.Show(L.T($"Couldn't open {node.Path}: {ex.Message}"));
         }
     }
 
@@ -188,7 +189,7 @@ public sealed partial class FilesPartViewModel : ViewModelBase
             _collapsed.Add(node.Path);
     }
 
-    private static string Where(string folder) => folder.Length == 0 ? "In content/" : "In content/" + folder;
+    private static string Where(string folder) => folder.Length == 0 ? L.T("In content/") : L.T("In content/") + folder;
 
     private static string Join(string folder, string name) => folder.Length == 0 ? name : folder + "/" + name;
 }

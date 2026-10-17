@@ -1,4 +1,5 @@
 using System.Text;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Board.Core.Search;
 
@@ -143,7 +144,7 @@ public static class QueryParser
                 tokens.Add(new Token(Kind.Word, text[start..i], start));
                 continue;
             }
-            throw new QueryException($"Unexpected \"{c}\".", i);
+            throw new QueryException(L.T($"Unexpected \"{c}\"."), i);
         }
         tokens.Add(new Token(Kind.End, "", text.Length));
         return tokens;
@@ -164,7 +165,7 @@ public static class QueryParser
             i++;
         }
         if (i >= text.Length)
-            throw new QueryException("A quote isn't closed.", start);
+            throw new QueryException(L.T("A quote isn't closed."), start);
         i++;
         return value.ToString();
     }
@@ -206,7 +207,7 @@ public static class QueryParser
                 while (TryTake(Kind.Comma));
             }
             if (Peek.Kind != Kind.End)
-                throw new QueryException($"Expected AND, OR or ORDER BY, not \"{Peek.Value}\".", Peek.Position);
+                throw new QueryException(L.T($"Expected AND, OR or ORDER BY, not \"{Peek.Value}\"."), Peek.Position);
             return new Query(where, order);
         }
 
@@ -243,7 +244,7 @@ public static class QueryParser
             {
                 var inner = ParseOr();
                 if (!TryTake(Kind.Close))
-                    throw new QueryException("A \"(\" isn't closed.", Peek.Position);
+                    throw new QueryException(L.T("A \"(\" isn't closed."), Peek.Position);
                 return inner;
             }
             return ParseClause();
@@ -264,7 +265,7 @@ public static class QueryParser
                     negated = true;
                 }
                 if (!(Peek.IsKeyword("EMPTY") || Peek.IsKeyword("NULL")))
-                    throw new QueryException("Expected EMPTY after IS.", Peek.Position);
+                    throw new QueryException(L.T("Expected EMPTY after IS."), Peek.Position);
                 Next();
                 return new QueryNode.Empty(field, negated, position);
             }
@@ -279,12 +280,12 @@ public static class QueryParser
             }
 
             if (Peek.Kind != Kind.Op)
-                throw new QueryException($"Expected an operator (=, !=, ~, <, >, IN, IS) after \"{field}\".", Peek.Position);
+                throw new QueryException(L.T($"Expected an operator (=, !=, ~, <, >, IN, IS) after \"{field}\"."), Peek.Position);
             var op = Next().Value;
             if (Peek.IsKeyword("EMPTY") || Peek.IsKeyword("NULL"))
             {
                 if (op is not ("=" or "!="))
-                    throw new QueryException("EMPTY only goes with = or !=.", Peek.Position);
+                    throw new QueryException(L.T("EMPTY only goes with = or !=."), Peek.Position);
                 Next();
                 return new QueryNode.Empty(field, op == "!=", position);
             }
@@ -296,7 +297,7 @@ public static class QueryParser
             if (Peek.Kind == Kind.Word && Peek.Value.Length > 0 && tokens[_index + 1].Kind == Kind.Open)
                 return [ParseValue()];   // sprint in openSprints()
             if (!TryTake(Kind.Open))
-                throw new QueryException("Expected \"(\" after IN.", Peek.Position);
+                throw new QueryException(L.T("Expected \"(\" after IN."), Peek.Position);
             var values = new List<QueryValue>();
             if (Peek.Kind != Kind.Close)
             {
@@ -305,9 +306,9 @@ public static class QueryParser
                 while (TryTake(Kind.Comma));
             }
             if (!TryTake(Kind.Close))
-                throw new QueryException("Expected \",\" or \")\" in the list.", Peek.Position);
+                throw new QueryException(L.T("Expected \",\" or \")\" in the list."), Peek.Position);
             if (values.Count == 0)
-                throw new QueryException("The list is empty.", Peek.Position);
+                throw new QueryException(L.T("The list is empty."), Peek.Position);
             return values;
         }
 
@@ -320,7 +321,7 @@ public static class QueryParser
                 return new QueryValue.Literal(token.Value);
             }
             if (token.Kind != Kind.Word)
-                throw new QueryException(token.Kind == Kind.End ? "A value is missing at the end." : $"Expected a value, not \"{token.Value}\".", token.Position);
+                throw new QueryException(token.Kind == Kind.End ? L.T("A value is missing at the end.") : L.T($"Expected a value, not \"{token.Value}\"."), token.Position);
             Next();
             if (TryTake(Kind.Open))
             {
@@ -331,7 +332,7 @@ public static class QueryParser
                     {
                         var arg = Next();
                         if (arg.Kind is not (Kind.Word or Kind.Text))
-                            throw new QueryException("Expected an argument.", arg.Position);
+                            throw new QueryException(L.T("Expected an argument."), arg.Position);
                         args.Add(arg.Value);
                     }
                     while (TryTake(Kind.Comma));
@@ -348,14 +349,14 @@ public static class QueryParser
             var token = Next();
             if (token.Kind is Kind.Word or Kind.Text && !(token.Kind == Kind.Word && IsKeyword(token.Value)))
                 return token.Value;
-            throw new QueryException(token.Kind == Kind.End ? "A field name is missing at the end." : $"Expected a field name, not \"{token.Value}\".",
+            throw new QueryException(token.Kind == Kind.End ? L.T("A field name is missing at the end.") : L.T($"Expected a field name, not \"{token.Value}\"."),
                 token.Kind == Kind.End ? length : token.Position);
         }
 
         private void Expect(string keyword)
         {
             if (!Peek.IsKeyword(keyword))
-                throw new QueryException($"Expected {keyword}.", Peek.Position);
+                throw new QueryException(L.T($"Expected {keyword}."), Peek.Position);
             Next();
         }
 

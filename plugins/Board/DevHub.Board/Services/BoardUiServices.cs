@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using DevHub.Board;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Services.Board;
 
@@ -52,7 +53,7 @@ public sealed class BoardUiServices(
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException or System.ComponentModel.Win32Exception)
         {
-            Status.Show("The file couldn't be opened: " + e.Message);
+            Status.Show(L.T("The file couldn't be opened: ") + e.Message);
         }
     }
 }

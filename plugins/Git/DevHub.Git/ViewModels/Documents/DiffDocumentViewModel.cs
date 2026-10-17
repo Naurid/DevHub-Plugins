@@ -3,6 +3,7 @@ using DevHub.Controls;
 using DevHub.Git.Core;
 using DevHub.Services;
 using DevHub.ViewModels.Git;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Documents;
 
@@ -40,7 +41,7 @@ public sealed class DiffDocumentViewModel : DocumentViewModelBase, IDisposable
 
         if (client is null)
         {
-            Diff.ShowMessage("Git is not installed.");
+            Diff.ShowMessage(L.T("Git is not installed."));
             return;
         }
 
@@ -91,7 +92,7 @@ public sealed class DiffDocumentViewModel : DocumentViewModelBase, IDisposable
                 return;
 
             if (change is null)
-                Diff.ShowMessage($"No {(IsStaged ? "staged" : "unstaged")} changes in {FilePath} any more.");
+                Diff.ShowMessage(L.T($"No {(IsStaged ? L.T("staged") : L.T("unstaged"))} changes in {FilePath} any more."));
             else
                 await Diff.LoadAsync(new FileChangeViewModel(change, IsStaged));
         }
@@ -100,7 +101,7 @@ public sealed class DiffDocumentViewModel : DocumentViewModelBase, IDisposable
         }
         catch (Exception ex)
         {
-            Diff.ShowMessage("Couldn't read the repository: " + ex.Message);
+            Diff.ShowMessage(L.T("Couldn't read the repository: ") + ex.Message);
         }
     }
 

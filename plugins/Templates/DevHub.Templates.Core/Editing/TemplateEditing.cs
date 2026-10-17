@@ -1,5 +1,6 @@
 using DevHub.Templates.Core.Generation;
 using DevHub.Templates.Core.Rendering;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Templates.Core.Editing;
 
@@ -78,7 +79,7 @@ public static class NewTemplate
         Name = name.Trim(),
         Kind = kind,
         Language = string.IsNullOrWhiteSpace(language) ? "Any" : language.Trim(),
-        Variables = [new TemplateVariable { Name = "Name", Label = kind == TemplateKind.Project ? "Project name" : "Name", Required = true }],
+        Variables = [new TemplateVariable { Name = "Name", Label = kind == TemplateKind.Project ? L.T("Project name") : "Name", Required = true }],
     };
 }
 
@@ -145,7 +146,7 @@ public static class TemplateContent
         var to = Path.Combine(Path.GetDirectoryName(from)!, newName);
         var caseOnly = string.Equals(from, to, StringComparison.OrdinalIgnoreCase);
         if (!caseOnly && (File.Exists(to) || Directory.Exists(to)))
-            return $"\"{newName}\" already exists there.";
+            return L.T($"\"{newName}\" already exists there.");
 
         if (Directory.Exists(from))
         {
@@ -174,7 +175,7 @@ public static class TemplateContent
             return ReadOnly(template);
         var full = FullPath(template, path);
         if (full is null || path.Length == 0)
-            return $"\"{path}\" isn't inside the template's files.";
+            return L.T($"\"{path}\" isn't inside the template's files.");
         if (Directory.Exists(full))
             Directory.Delete(full, recursive: true);
         else if (File.Exists(full))
@@ -191,10 +192,10 @@ public static class TemplateContent
             return problem;
         var folder = FullPath(template, parent.Length == 0 ? "." : parent);
         if (folder is null)
-            return $"\"{parent}\" isn't inside the template's files.";
+            return L.T($"\"{parent}\" isn't inside the template's files.");
         var full = Path.Combine(folder, name);
         if (File.Exists(full) || Directory.Exists(full))
-            return $"\"{name}\" already exists there.";
+            return L.T($"\"{name}\" already exists there.");
         Directory.CreateDirectory(folder);
         create(full);
         return null;
@@ -206,12 +207,12 @@ public static class TemplateContent
             return ReadOnly(template);
         name = name.Trim();
         if (name.Length == 0)
-            return "Enter a name.";
+            return L.T("Enter a name.");
         if (name.Contains("{{", StringComparison.Ordinal) && name.Contains(':'))
-            return $"\"{name}\": Windows doesn't allow ':' in names; write a transform with a dot, like {{{{Name.kebab}}}}.";
+            return L.T($"\"{name}\": Windows doesn't allow ':' in names; write a transform with a dot, like {{{{Name.kebab}}}}.");
         return PathRenderer.NameProblem(name);
     }
 
     private static string ReadOnly(TemplateEntry template) =>
-        $"\"{template.Library.Name}\" is read-only: duplicate the template into your own library to change it.";
+        L.T($"\"{template.Library.Name}\" is read-only: duplicate the template into your own library to change it.");
 }

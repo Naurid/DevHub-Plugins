@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHub.Sdk.Core.Formatting;
 using DevHub.Git.Core;
 using DevHub.Sdk.Core.Search;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Git;
 
@@ -30,8 +31,8 @@ public sealed partial class TagListViewModel : ViewModelBase
 
     public int Count => _tags.Count;
 
-    public string EmptyText => !string.IsNullOrWhiteSpace(Filter) ? "No tag matches."
-        : "No tags yet. Tag a commit (usually a release) with New Tag, or right-click a commit in All Commits.";
+    public string EmptyText => !string.IsNullOrWhiteSpace(Filter) ? L.T("No tag matches.")
+        : L.T("No tags yet. Tag a commit (usually a release) with New Tag, or right-click a commit in All Commits.");
 
     [ObservableProperty] private string _filter = "";
 
@@ -105,7 +106,7 @@ public sealed class TagItemViewModel(GitTag tag, DateTimeOffset now)
     /// <summary>"annotated" badge: the tag has its own message (else it shows the commit's subject).</summary>
     public bool IsAnnotated => Tag.IsAnnotated;
 
-    public string ToolTip => (Tag.IsAnnotated ? $"Annotated tag {Tag.Name}" : $"Lightweight tag {Tag.Name}") +
+    public string ToolTip => (Tag.IsAnnotated ? L.T($"Annotated tag {Tag.Name}") : L.T($"Lightweight tag {Tag.Name}")) +
                              $" on {Tag.ShortId}\n{Tag.Subject}";
 
     public override string ToString() => Tag.IsAnnotated ? $"{Name} (annotated)" : Name;

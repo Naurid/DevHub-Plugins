@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHub.Templates.Core.Commands;
 using DevHub.Templates.Core.Rendering;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Templates;
 
@@ -15,13 +16,13 @@ public sealed class StepIndicatorViewModel(string number, string text, bool isCu
     public bool IsDone { get; } = isDone;
     public bool IsLast { get; } = isLast;
 
-    public override string ToString() => $"Step {Number}: {Text}{(IsCurrent ? " (current)" : IsDone ? " (done)" : "")}";
+    public override string ToString() => L.T($"Step {Number}: {Text}{(IsCurrent ? L.T(" (current)") : IsDone ? L.T(" (done)") : "")}");
 
     /// <summary>New Project's steps.</summary>
-    public static readonly string[] ProjectSteps = ["Details", "Commands", "Preview", "Done"];
+    public static readonly string[] ProjectSteps = [L.T("Details"), L.T("Commands"), L.T("Preview"), L.T("Done")];
 
     /// <summary>Add Files' steps (its commands are listed in the preview).</summary>
-    public static readonly string[] ItemSteps = ["Details", "Preview", "Done"];
+    public static readonly string[] ItemSteps = [L.T("Details"), L.T("Preview"), L.T("Done")];
 
     /// <summary>The steps with <paramref name="current"/> (0-based) highlighted.</summary>
     public static IReadOnlyList<StepIndicatorViewModel> For(int current, string[]? steps = null)
@@ -44,8 +45,8 @@ public sealed partial class CommandsPageViewModel(string templateName, string ta
     public IReadOnlyList<CommandRowViewModel> Commands { get; } = commands.Select(c => new CommandRowViewModel(c)).ToList();
 
     public string Intro => raw
-        ? "Raw project: only the base command runs. Nothing runs until you click Run."
-        : "These commands run on your computer, in this order. Only continue if you trust this template. Nothing runs until you click Run.";
+        ? L.T("Raw project: only the base command runs. Nothing runs until you click Run.")
+        : L.T("These commands run on your computer, in this order. Only continue if you trust this template. Nothing runs until you click Run.");
 
     [RelayCommand]
     private void Back() => back();
@@ -61,7 +62,7 @@ public sealed class CommandRowViewModel(RenderedCommand command) : ViewModelBase
     public string Text { get; } = command.DisplayText;
 
     /// <summary>"in the project folder", "in src", or "creates the project folder" for a base command run in the parent.</summary>
-    public string Where { get; } = command.WorkingDirectory is "." or "" ? "in the project folder" : "in " + command.WorkingDirectory;
+    public string Where { get; } = command.WorkingDirectory is "." or "" ? L.T("in the project folder") : "in " + command.WorkingDirectory;
 
     public bool ContinuesOnError { get; } = command.ContinueOnError;
 
@@ -133,17 +134,17 @@ public sealed partial class DonePageViewModel(string projectPath, IReadOnlyList<
     public bool AllSucceeded => !cancelled && results.All(r => r.Succeeded);
 
     public string Title => isItem
-        ? AllSucceeded ? $"Added to {ProjectName}" : $"Added to {ProjectName}, but not every command finished"
-        : AllSucceeded ? $"{ProjectName} is ready" : $"{ProjectName} was created, but not every command finished";
+        ? AllSucceeded ? L.T($"Added to {ProjectName}") : L.T($"Added to {ProjectName}, but not every command finished")
+        : AllSucceeded ? L.T($"{ProjectName} is ready") : L.T($"{ProjectName} was created, but not every command finished");
 
-    public string NewText => isItem ? "Add More" : "New Project";
-    public string NewToolTip => isItem ? "More files from the same template" : "Another project from the same template";
+    public string NewText => isItem ? L.T("Add More") : L.T("New Project");
+    public string NewToolTip => isItem ? L.T("More files from the same template") : L.T("Another project from the same template");
 
-    private string Files => isItem ? "The files" : "The project's files";
+    private string Files => isItem ? L.T("The files") : L.T("The project's files");
 
-    public string Summary => cancelled ? $"You cancelled the post-create commands; {Files.ToLowerInvariant()} are in place."
-        : AllSucceeded ? $"{Files} are in place" + (HasResults ? " and every command ran." : ".")
-        : $"{Files} are in place. A command failed (see below); you can run it yourself in the folder.";
+    public string Summary => cancelled ? L.T($"You cancelled the post-create commands; {Files.ToLowerInvariant()} are in place.")
+        : AllSucceeded ? L.T($"{Files} are in place") + (HasResults ? L.T(" and every command ran.") : ".")
+        : L.T($"{Files} are in place. A command failed (see below); you can run it yourself in the folder.");
 
     public OutputLogViewModel Log { get; } = log;
     public bool HasLog => Log.Lines.Count > 0;

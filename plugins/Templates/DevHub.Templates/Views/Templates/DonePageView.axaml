@@ -4,6 +4,7 @@
 -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:t="using:DevHub.ViewModels.Templates"
              xmlns:c="using:DevHub.Controls"
              x:Class="DevHub.Views.Templates.DonePageView"
@@ -21,7 +22,7 @@
             <TextBlock Text="{Binding Summary}" TextWrapping="Wrap" />
             <SelectableTextBlock Classes="secondary" Text="{Binding ProjectPath}" TextWrapping="Wrap" />
 
-            <ItemsControl ItemsSource="{Binding Results}" IsVisible="{Binding HasResults}" AutomationProperties.Name="Commands">
+            <ItemsControl ItemsSource="{Binding Results}" IsVisible="{Binding HasResults}" AutomationProperties.Name="{l:T 'Commands'}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="t:CommandResultRowViewModel">
                         <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="{DynamicResource Spacing}"
@@ -37,9 +38,9 @@
             </ItemsControl>
 
             <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.BlockAbove}">
-                <Button Classes="accent" Content="Open in DevHub" Command="{Binding OpenInDevHubCommand}"
+                <Button Classes="accent" Content="{l:T 'Open in DevHub'}" Command="{Binding OpenInDevHubCommand}"
                         IsVisible="{Binding CanOpenInDevHub}" />
-                <Button Content="Show in Explorer" Command="{Binding ShowInExplorerCommand}" />
+                <Button Content="{l:T 'Show in Explorer'}" Command="{Binding ShowInExplorerCommand}" />
                 <Button Content="{Binding NewText}" Command="{Binding NewProjectCommand}"
                         ToolTip.Tip="{Binding NewToolTip}" />
             </StackPanel>

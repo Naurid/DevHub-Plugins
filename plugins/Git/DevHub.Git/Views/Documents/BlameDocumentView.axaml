@@ -7,6 +7,7 @@
 -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:docs="using:DevHub.ViewModels.Documents"
              xmlns:c="using:DevHub.Controls"
              x:Class="DevHub.Views.Documents.BlameDocumentView"
@@ -48,26 +49,26 @@
                            TextTrimming="CharacterEllipsis" VerticalAlignment="Center" ToolTip.Tip="{Binding Subtitle}" />
                 <TextBlock Grid.Column="2" Classes="small secondary" Text="{Binding Summary}" VerticalAlignment="Center" />
                 <c:Toolbar Grid.Column="3">
-                    <c:ActionButton IconKind="refresh" AutomationProperties.Name="Refresh"
-                                    ToolTip.Tip="Read the blame again" Command="{Binding LoadCommand}" />
-                    <c:ActionButton IconKind="edit" AutomationProperties.Name="Open in Editor"
-                                    ToolTip.Tip="Open in Editor (F4) at the selected line (double-click a line does the same). Opens the file as it is now."
+                    <c:ActionButton IconKind="refresh" AutomationProperties.Name="{l:T 'Refresh'}"
+                                    ToolTip.Tip="{l:T 'Read the blame again'}" Command="{Binding LoadCommand}" />
+                    <c:ActionButton IconKind="edit" AutomationProperties.Name="{l:T 'Open in Editor'}"
+                                    ToolTip.Tip="{l:T 'Open in Editor (F4) at the selected line (double-click a line does the same). Opens the file as it is now.'}"
                                     Command="{Binding OpenInEditorCommand}" />
                 </c:Toolbar>
             </Grid>
         </Border>
 
         <Panel>
-            <c:EmptyState IconKind="commit" Title="Blame" Description="{Binding PlaceholderText}"
+            <c:EmptyState IconKind="commit" Title="{l:T 'Blame'}" Description="{Binding PlaceholderText}"
                           IsVisible="{Binding PlaceholderText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
             <ListBox Classes="blame" IsVisible="{Binding HasRows}" Background="Transparent"
-                     AutomationProperties.Name="Blamed lines"
+                     AutomationProperties.Name="{l:T 'Blamed lines'}"
                      ItemsSource="{Binding Rows}" SelectedItem="{Binding Selected}"
                      ScrollViewer.HorizontalScrollBarVisibility="Auto">
                 <ListBox.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Open in Editor at This Line" InputGesture="F4" Command="{Binding OpenInEditorCommand}" />
+                        <MenuItem Header="{l:T 'Open in Editor at This Line'}" InputGesture="F4" Command="{Binding OpenInEditorCommand}" />
                     </ContextMenu>
                 </ListBox.ContextMenu>
                 <ListBox.ItemTemplate>

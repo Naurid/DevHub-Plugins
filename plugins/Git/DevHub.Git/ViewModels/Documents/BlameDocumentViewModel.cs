@@ -4,6 +4,7 @@ using DevHub.Controls;
 using DevHub.Sdk.Core.Formatting;
 using DevHub.Git.Core;
 using DevHub.Services;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Documents;
 
@@ -33,7 +34,7 @@ public sealed partial class BlameDocumentViewModel : DocumentViewModelBase
         _editor = editor;
         var name = filePath[(filePath.LastIndexOf('/') + 1)..];
         Title = commitId is null ? $"{name} (blame)" : $"{name} @ {commitId[..Math.Min(8, commitId.Length)]}";
-        Subtitle = commitId is null ? $"{filePath} · as on disk now" : $"{filePath} · in commit {commitId[..Math.Min(8, commitId.Length)]}";
+        Subtitle = commitId is null ? L.T($"{filePath} · as on disk now") : L.T($"{filePath} · in commit {commitId[..Math.Min(8, commitId.Length)]}");
         _ = LoadAsync();
     }
 
@@ -74,7 +75,7 @@ public sealed partial class BlameDocumentViewModel : DocumentViewModelBase
     {
         if (_client is null)
         {
-            Error = "Git is not installed.";
+            Error = L.T("Git is not installed.");
             return;
         }
 
@@ -105,9 +106,9 @@ public sealed partial class BlameDocumentViewModel : DocumentViewModelBase
             var committed = lines.Where(l => !l.Commit.IsUncommitted).ToList();
             var commits = committed.Select(l => l.Commit.Id).Distinct().Count();
             var authors = committed.Select(l => l.Commit.Author).Distinct().Count();
-            Summary = lines.Count == 0 ? "Empty file"
+            Summary = lines.Count == 0 ? L.T("Empty file")
                 : $"{lines.Count:N0} line{(lines.Count == 1 ? "" : "s")} · {commits:N0} commit{(commits == 1 ? "" : "s")} · {authors:N0} author{(authors == 1 ? "" : "s")}";
-            Error = lines.Count == 0 ? "The file is empty." : null;
+            Error = lines.Count == 0 ? L.T("The file is empty.") : null;
         }
         catch (OperationCanceledException)
         {
@@ -118,8 +119,8 @@ public sealed partial class BlameDocumentViewModel : DocumentViewModelBase
             Summary = "";
             // git: "no such path 'x' in HEAD" for a file that was never committed.
             Error = ex is GitException { StandardError: var e } && e.Contains("no such path", StringComparison.Ordinal)
-                ? $"{FilePath} has no history yet: commit it first."
-                : "Couldn't blame the file: " + (ex is GitException g ? g.StandardError.Trim() : ex.Message);
+                ? L.T($"{FilePath} has no history yet: commit it first.")
+                : L.T("Couldn't blame the file: ") + (ex is GitException g ? g.StandardError.Trim() : ex.Message);
         }
     }
 
@@ -150,10 +151,10 @@ public sealed class BlameRowViewModel
         var c = line.Commit;
         IsUncommitted = c.IsUncommitted;
         ShortId = isBlockStart ? (c.IsUncommitted ? "" : c.ShortId) : "";
-        Author = isBlockStart ? (c.IsUncommitted ? "Not committed yet" : c.Author) : "";
+        Author = isBlockStart ? (c.IsUncommitted ? L.T("Not committed yet") : c.Author) : "";
         Date = isBlockStart && !c.IsUncommitted ? RelativeTime.Format(c.AuthorDate, now) : "";
         ToolTip = c.IsUncommitted
-            ? "Changed since the last commit"
+            ? L.T("Changed since the last commit")
             : $"{c.ShortId} · {c.Author} <{c.AuthorEmail}> · {c.AuthorDate.ToLocalTime():yyyy-MM-dd HH:mm}\n{c.Summary}";
     }
 
@@ -174,5 +175,5 @@ public sealed class BlameRowViewModel
     /// <summary>The commit in full (every line, not only the block's first).</summary>
     public string ToolTip { get; }
 
-    public override string ToString() => $"Line {LineNumber}: {Text}";
+    public override string ToString() => L.T($"Line {LineNumber}: {Text}");
 }

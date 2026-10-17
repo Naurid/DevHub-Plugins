@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHub.ViewModels.Dialogs;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Git;
 
@@ -9,8 +10,8 @@ namespace DevHub.ViewModels.Git;
 /// </summary>
 public sealed partial class StashDialogViewModel : DialogViewModelBase
 {
-    public override string Title => "Stash Changes";
-    public override string OkText => "Stash";
+    public override string Title => L.T("Stash Changes");
+    public override string OkText => L.T("Stash");
     public override bool FitsContent => true;
     public override double Width => 440;
     public override double MinWidth => 360;

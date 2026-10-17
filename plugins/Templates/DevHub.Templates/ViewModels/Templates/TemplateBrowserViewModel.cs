@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHub.Services;
 using DevHub.Templates.Core;
 using DevHub.Templates.Core.Browsing;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Templates;
 
@@ -99,7 +100,7 @@ public sealed partial class TemplateBrowserViewModel : ViewModelBase
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
             _all = [];
-            LoadError = "Couldn't read the templates: " + ex.Message;
+            LoadError = L.T("Couldn't read the templates: ") + ex.Message;
         }
         finally
         {

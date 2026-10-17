@@ -6,6 +6,7 @@ using DevHub.Board.Core.Model;
 using DevHub.Board.Core.Storage;
 using DevHub.Sdk.Core.Charts;
 using DevHub.Sdk.Core.Tables;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Board.Risks.Core;
 
@@ -72,16 +73,16 @@ public static class RiskRegister
     public static string PathOf(string id) => Folder + id + ".json";
 
     /// <summary>The scale's words, 1 to 5.</summary>
-    public static readonly IReadOnlyList<string> Scale = ["Very low", "Low", "Medium", "High", "Very high"];
+    public static readonly IReadOnlyList<string> Scale = [L.T("Very low"), L.T("Low"), L.T("Medium"), L.T("High"), L.T("Very high")];
 
-    public static readonly IReadOnlyList<string> Categories = ["Team", "Technical", "Schedule", "Scope", "External", "Budget", "Quality"];
+    public static readonly IReadOnlyList<string> Categories = [L.T("Team"), L.T("Technical"), L.T("Schedule"), L.T("Scope"), L.T("External"), L.T("Budget"), L.T("Quality")];
 
     public static string LevelOf(int score) => score switch
     {
-        >= 16 => "Critical",
-        >= 10 => "High",
-        >= 5 => "Medium",
-        _ => "Low",
+        >= 16 => L.T("Critical"),
+        >= 10 => L.T("High"),
+        >= 5 => L.T("Medium"),
+        _ => L.T("Low"),
     };
 
     /// <summary>Every risk, highest score first, then by number.</summary>
@@ -117,9 +118,9 @@ public static class RiskRegister
         }
         return new ChartData(Enumerable.Range(1, 5).Select(i => $"{i} · {Scale[i - 1]}").ToList(), rows)
         {
-            Title = "Probability × impact",
-            XTitle = "Impact",
-            YTitle = "Probability",
+            Title = L.T("Probability × impact"),
+            XTitle = L.T("Impact"),
+            YTitle = L.T("Probability"),
             CellText = texts,
             TrafficColors = true,
         };
@@ -127,14 +128,14 @@ public static class RiskRegister
 
     /// <summary>The register as a table (annex): every risk with its scores, owner and plans.</summary>
     public static TableData Table(BoardSnapshot board, IReadOnlyList<Risk> risks) =>
-        new(["Risk", "Title", "Category", "Probability", "Impact", "Score", "Level", "Status", "Owner", "Mitigation", "Contingency", "Review", "Issues"],
+        new([L.T("Risk"), L.T("Title"), L.T("Category"), L.T("Probability"), L.T("Impact"), L.T("Score"), L.T("Level"), L.T("Status"), L.T("Owner"), L.T("Mitigation"), L.T("Contingency"), L.T("Review"), L.T("Issues")],
             risks.Select(r => (IReadOnlyList<string>)
             [
                 r.Key, r.Title, r.Category, r.Probability.ToString(CultureInfo.InvariantCulture), r.Impact.ToString(CultureInfo.InvariantCulture),
                 r.Score.ToString(CultureInfo.InvariantCulture), r.Level, r.Status.ToString(), board.Project.Person(r.Owner)?.Name ?? "",
                 r.Mitigation, r.Contingency, r.Review?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? "",
                 string.Join("; ", r.Issues.Select(i => board.Issue(i)?.Key).OfType<string>()),
-            ]).ToList()) { Title = "Risk register" };
+            ]).ToList()) { Title = L.T("Risk register") };
 
     private static Risk? TryRead(byte[] bytes)
     {
@@ -175,7 +176,7 @@ public sealed record AddRisk(string Title) : IBoardOperation
             Updated = context.Now,
         });
         if (all.Any(r => r.Id == risk.Id))
-            throw new BoardRuleException("That risk id is taken.");
+            throw new BoardRuleException(L.T("That risk id is taken."));
         change.Write(RiskRegister.PathOf(risk.Id), risk);
         return change.Build($"{risk.Key} raised: {risk.Title}");
     }
@@ -186,7 +187,7 @@ public sealed record EditRisk(Risk Risk) : IBoardOperation
 {
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
-        var before = RiskRegister.Get(board, Risk.Id) ?? throw new BoardRuleException("That risk doesn't exist any more.");
+        var before = RiskRegister.Get(board, Risk.Id) ?? throw new BoardRuleException(L.T("That risk doesn't exist any more."));
         var risk = RiskRules.Check(board, Risk with { Number = before.Number, Created = before.Created, Updated = context.Now });
         var change = new ChangeBuilder(board, context);
         change.Write(RiskRegister.PathOf(risk.Id), risk);
@@ -198,7 +199,7 @@ public sealed record DeleteRisk(string RiskId) : IBoardOperation
 {
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
-        var risk = RiskRegister.Get(board, RiskId) ?? throw new BoardRuleException("That risk doesn't exist any more.");
+        var risk = RiskRegister.Get(board, RiskId) ?? throw new BoardRuleException(L.T("That risk doesn't exist any more."));
         var change = new ChangeBuilder(board, context);
         change.Delete(RiskRegister.PathOf(RiskId));
         return change.Build($"{risk.Key} deleted");
@@ -211,11 +212,11 @@ internal static class RiskRules
     {
         var title = risk.Title.Trim();
         if (title.Length == 0)
-            throw new BoardRuleException("Give the risk a title.");
+            throw new BoardRuleException(L.T("Give the risk a title."));
         if (risk.Probability is < 1 or > 5 || risk.Impact is < 1 or > 5)
-            throw new BoardRuleException("Probability and impact go from 1 to 5.");
+            throw new BoardRuleException(L.T("Probability and impact go from 1 to 5."));
         if (risk.Owner is not null && board.Project.Person(risk.Owner) is null)
-            throw new BoardRuleException("The owner isn't on the board.");
+            throw new BoardRuleException(L.T("The owner isn't on the board."));
         return risk with
         {
             Title = title,

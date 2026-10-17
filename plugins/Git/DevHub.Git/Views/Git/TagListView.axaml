@@ -4,6 +4,7 @@
 -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:vm="using:DevHub.ViewModels.Git"
              xmlns:c="using:DevHub.Controls"
              x:Class="DevHub.Views.Git.TagListView"
@@ -20,31 +21,31 @@
     <DockPanel>
         <Border DockPanel.Dock="Top" Classes="paneHeader">
             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing}">
-                <c:SearchField Text="{Binding Filter}" PlaceholderText="Filter tags"
+                <c:SearchField Text="{Binding Filter}" PlaceholderText="{l:T 'Filter tags'}"
                                MaxWidth="{DynamicResource Size.BranchFilter}" HorizontalAlignment="Stretch" />
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
-                    <Button Classes="flat" Content="New Tag…" Command="{Binding NewTagCommand}"
-                            ToolTip.Tip="Tag the current commit (another commit: right-click it in All Commits)" />
-                    <Button Classes="flat" Content="Push Tag" Command="{Binding PushCommand}"
-                            ToolTip.Tip="Send the selected tag to the remote (Push doesn't send tags)" />
-                    <Button Classes="flat" Content="Delete…" Command="{Binding DeleteCommand}"
-                            ToolTip.Tip="Delete the selected tag here (asks first; the remote keeps its copy)" />
+                    <Button Classes="flat" Content="{l:T 'New Tag…'}" Command="{Binding NewTagCommand}"
+                            ToolTip.Tip="{l:T 'Tag the current commit (another commit: right-click it in All Commits)'}" />
+                    <Button Classes="flat" Content="{l:T 'Push Tag'}" Command="{Binding PushCommand}"
+                            ToolTip.Tip="{l:T 'Send the selected tag to the remote (Push doesn\'t send tags)'}" />
+                    <Button Classes="flat" Content="{l:T 'Delete…'}" Command="{Binding DeleteCommand}"
+                            ToolTip.Tip="{l:T 'Delete the selected tag here (asks first; the remote keeps its copy)'}" />
                 </StackPanel>
             </Grid>
         </Border>
 
         <Panel>
-            <c:EmptyState IconKind="template" Title="Tags" Description="{Binding EmptyText}" IsVisible="{Binding !HasItems}" />
+            <c:EmptyState IconKind="template" Title="{l:T 'Tags'}" Description="{Binding EmptyText}" IsVisible="{Binding !HasItems}" />
 
             <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding Selected}" Background="Transparent"
-                     AutomationProperties.Name="Tags" IsVisible="{Binding HasItems}">
+                     AutomationProperties.Name="{l:T 'Tags'}" IsVisible="{Binding HasItems}">
                 <ListBox.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Push Tag" Command="{Binding PushCommand}" />
-                        <MenuItem Header="New Branch from Here…" Command="{Binding NewBranchFromCommand}" />
+                        <MenuItem Header="{l:T 'Push Tag'}" Command="{Binding PushCommand}" />
+                        <MenuItem Header="{l:T 'New Branch from Here…'}" Command="{Binding NewBranchFromCommand}" />
                         <Separator />
-                        <MenuItem Header="Delete…" Command="{Binding DeleteCommand}" />
-                        <MenuItem Header="Delete from Remote…" Command="{Binding DeleteFromRemoteCommand}" />
+                        <MenuItem Header="{l:T 'Delete…'}" Command="{Binding DeleteCommand}" />
+                        <MenuItem Header="{l:T 'Delete from Remote…'}" Command="{Binding DeleteFromRemoteCommand}" />
                     </ContextMenu>
                 </ListBox.ContextMenu>
                 <ListBox.ItemTemplate>
@@ -54,7 +55,7 @@
                             <c:Icon Kind="template" VerticalAlignment="Center" />
                             <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center"
                                        MaxWidth="{DynamicResource Size.RefName}" TextTrimming="CharacterEllipsis" />
-                            <c:Badge Grid.Column="2" Classes="warning" Content="annotated" IsVisible="{Binding IsAnnotated}" />
+                            <c:Badge Grid.Column="2" Classes="warning" Content="{l:T 'annotated'}" IsVisible="{Binding IsAnnotated}" />
                             <TextBlock Grid.Column="3" Classes="code small secondary" Text="{Binding ShortId}" VerticalAlignment="Center" />
                             <TextBlock Grid.Column="4" Classes="secondary" Text="{Binding Subject}"
                                        TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />

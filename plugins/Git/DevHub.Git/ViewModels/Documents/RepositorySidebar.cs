@@ -6,6 +6,7 @@ using DevHub.Controls;
 using DevHub.Sdk.Core.Formatting;
 using DevHub.Git.Core;
 using DevHub.ViewModels.Git;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Documents;
 
@@ -82,7 +83,7 @@ public sealed class SidebarRemoteNode(GitRemote remote, ICommand manageRemotes, 
     public override string Key => "remote:" + Remote.Name;
     public override string? ToolTip => Remote.FetchUrl == Remote.PushUrl
         ? Remote.FetchUrl
-        : $"Fetch: {Remote.FetchUrl}\nPush: {Remote.PushUrl}";
+        : L.T($"Fetch: {Remote.FetchUrl}\nPush: {Remote.PushUrl}");
 
     public ICommand ManageRemotesCommand { get; } = manageRemotes;
     public ICommand FetchCommand { get; } = fetch;
@@ -135,9 +136,9 @@ public sealed class SidebarBranchNode : SidebarNode
         };
 
     public override string? ToolTip =>
-        $"{Branch.ShortName}{(Branch.Upstream is { } up ? $" → {up}" : "")}{(IsCurrent ? " (checked out)" : "")}\n" +
+        $"{Branch.ShortName}{(Branch.Upstream is { } up ? $" → {up}" : "")}{(IsCurrent ? L.T(" (checked out)") : "")}\n" +
         $"{Branch.CommitId[..Math.Min(10, Branch.CommitId.Length)]} {Branch.Subject}\n" +
-        (IsCurrent ? "Select to show it in All Commits" : "Double-click to check out · select to show it in All Commits");
+        (IsCurrent ? L.T("Select to show it in All Commits") : L.T("Double-click to check out · select to show it in All Commits"));
 
     public IAsyncRelayCommand CheckoutCommand { get; }
     public IAsyncRelayCommand NewBranchFromCommand { get; }
@@ -186,7 +187,7 @@ public sealed class SidebarBranchTree(BranchOperations operations)
         var local = branches.Where(b => !b.IsRemote).ToList();
         Fill(branchesGroup, local, "local", b => b.Name);
         if (local.Count == 0)
-            branchesGroup.Children.Add(new SidebarHintNode("No branches yet: make the first commit.", "hint:branches"));
+            branchesGroup.Children.Add(new SidebarHintNode(L.T("No branches yet: make the first commit."), "hint:branches"));
         branchesGroup.Count = local.Count;
 
         remotesGroup.Children.Clear();
@@ -196,13 +197,13 @@ public sealed class SidebarBranchTree(BranchOperations operations)
             var ofRemote = branches.Where(b => b.IsRemote && b.Remote == remote.Name).ToList();
             Fill(node, ofRemote, "remote:" + remote.Name, b => b.Name);
             if (ofRemote.Count == 0)
-                node.Children.Add(new SidebarHintNode("No branches here: Fetch (double-click), or Push if the remote is new.", "hint:" + node.Key, fetch));
+                node.Children.Add(new SidebarHintNode(L.T("No branches here: Fetch (double-click), or Push if the remote is new."), "hint:" + node.Key, fetch));
             node.Count = ofRemote.Count;
             Open(node, defaultOpen: true);
             remotesGroup.Children.Add(node);
         }
         if (remotes.Count == 0)
-            remotesGroup.Children.Add(new SidebarHintNode("No remotes yet: Manage Remotes… (double-click)", "hint:remotes", manageRemotes));
+            remotesGroup.Children.Add(new SidebarHintNode(L.T("No remotes yet: Manage Remotes… (double-click)"), "hint:remotes", manageRemotes));
         remotesGroup.Count = remotes.Count;
 
         Open(branchesGroup, defaultOpen: true);

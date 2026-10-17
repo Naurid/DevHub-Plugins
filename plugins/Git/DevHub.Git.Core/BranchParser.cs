@@ -14,8 +14,7 @@ public static class BranchParser
     /// "origin/HEAD", which isn't a branch).
     /// </summary>
     public const string Format =
-        "%(refname)%00%(objectname)%00%(HEAD)%00%(upstream:short)%00%(upstream:track,nobracket)%00" +
-        "%(committerdate:unix)%00%(subject)%00%(symref)";
+        "%(refname)%00%(objectname)%00%(HEAD)%00%(upstream:short)%00%(upstream:track,nobracket)%00%(committerdate:unix)%00%(subject)%00%(symref)";
 
     private const string LocalPrefix = "refs/heads/";
     private const string RemotePrefix = "refs/remotes/";

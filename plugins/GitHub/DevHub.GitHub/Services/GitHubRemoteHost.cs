@@ -1,4 +1,5 @@
 using DevHub.ViewModels.Git;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Services;
 
@@ -17,7 +18,7 @@ public sealed class GitHubRemoteHost(GitHubSession session, IDialogService dialo
     {
         if (session.GitHub is not { } github)
             return null;
-        if (await session.RequireAccountsAsync("publish this repository on GitHub") is not { Count: > 0 } accounts)
+        if (await session.RequireAccountsAsync(L.T("publish this repository on GitHub")) is not { Count: > 0 } accounts)
             return null;
 
         var dialog = new PublishToGitHubDialogViewModel(github, accounts, suggestedName, existingRemotes);

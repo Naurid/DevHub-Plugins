@@ -1,5 +1,6 @@
 using DevHub.GitHub.Core;
 using DevHub.Integration;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Services;
 
@@ -28,7 +29,7 @@ public sealed class GitHubApiForPlugins(GitHubService? github = null) : IGitHubA
     public async Task<GitHubApiResponse> SendAsync(GitHubApiRequest request, CancellationToken ct = default)
     {
         if (github is null)
-            throw new GitHubApiUnavailableException("GitHub needs Git (Git Credential Manager keeps the sign-in). Install Git, then sign in in Settings → GitHub.");
+            throw new GitHubApiUnavailableException(L.T("GitHub needs Git (Git Credential Manager keeps the sign-in). Install Git, then sign in in Settings → GitHub."));
         try
         {
             var raw = await github.SendRawAsync(request.Account, request.Method, request.Path, request.Body, request.IfNoneMatch, request.Accept, ct);

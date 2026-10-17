@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHub.Git.Core;
 using DevHub.Services;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Git;
 
@@ -56,8 +57,8 @@ public sealed partial class SubmoduleListViewModel : ViewModelBase
     [RelayCommand(CanExecute = nameof(CanUpdate))]
     private async Task UpdateAsync()
     {
-        if (await _remote.RunNetworkAsync("Updating submodules", (p, ct) => _client!.UpdateSubmodulesAsync(p, ct)))
-            _status.Show("Submodules updated: each is checked out at the commit this repository records.");
+        if (await _remote.RunNetworkAsync(L.T("Updating submodules"), (p, ct) => _client!.UpdateSubmodulesAsync(p, ct)))
+            _status.Show(L.T("Submodules updated: each is checked out at the commit this repository records."));
     }
 
     private bool CanOpen() => Selected is { CanOpen: true };
@@ -72,7 +73,7 @@ public sealed partial class SubmoduleListViewModel : ViewModelBase
             return;
         if (!item.CanOpen)
         {
-            _status.Show($"{item.Path} isn't cloned yet: Update Submodules first.");
+            _status.Show(L.T($"{item.Path} isn't cloned yet: Update Submodules first."));
             return;
         }
         _openRepository(_client.SubmoduleFolder(item.Submodule));
@@ -98,10 +99,10 @@ public sealed class SubmoduleItemViewModel
 
     public string StateText => Submodule.State switch
     {
-        SubmoduleState.NotInitialized => "not cloned",
-        SubmoduleState.DifferentCommit => "other commit",
+        SubmoduleState.NotInitialized => L.T("not cloned"),
+        SubmoduleState.DifferentCommit => L.T("other commit"),
         SubmoduleState.Conflict => "conflict",
-        _ => "up to date",
+        _ => L.T("up to date"),
     };
 
     public bool IsUpToDate => Submodule.State == SubmoduleState.UpToDate;
@@ -110,11 +111,10 @@ public sealed class SubmoduleItemViewModel
 
     public string ToolTip => Submodule.State switch
     {
-        SubmoduleState.NotInitialized => "Not cloned yet: Update Submodules fetches it.",
-        SubmoduleState.DifferentCommit => $"Checked out at {Submodule.ShortId}, not at the commit this repository records. " +
-                                          "Update Submodules moves it back; or commit here to record the new commit.",
-        SubmoduleState.Conflict => "The recorded commit is in a merge conflict.",
-        _ => $"At {Submodule.ShortId}{(Describe is { } d ? $" ({d})" : "")}, as this repository records.",
+        SubmoduleState.NotInitialized => L.T("Not cloned yet: Update Submodules fetches it."),
+        SubmoduleState.DifferentCommit => L.T($"Checked out at {Submodule.ShortId}, not at the commit this repository records. Update Submodules moves it back; or commit here to record the new commit."),
+        SubmoduleState.Conflict => L.T("The recorded commit is in a merge conflict."),
+        _ => L.T($"At {Submodule.ShortId}{(Describe is { } d ? $" ({d})" : "")}, as this repository records."),
     };
 
     /// <summary>Double-click: open as a repository tab.</summary>

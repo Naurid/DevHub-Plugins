@@ -3,6 +3,7 @@ using System.Text;
 using DevHub.Board.Core;
 using DevHub.Board.Core.Storage;
 using DevHub.Git.Core;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Board.Git.Core;
 
@@ -99,7 +100,7 @@ public sealed class BranchBoardStore : IBoardStore
                 entries.Add((meta[2], record[(tab + 1)..]));
         }
         if (!entries.Any(e => e.Path == BoardPaths.Project))
-            throw new BoardStoreException($"The {BranchName} branch has no board.json: it isn't a board.");
+            throw new BoardStoreException(L.T($"The {BranchName} branch has no board.json: it isn't a board."));
 
         var request = Encoding.ASCII.GetBytes(string.Concat(entries.Select(e => e.Sha + "\n")));
         var batch = await _runner.RunBinaryAsync(Repository, ["cat-file", "--batch"], request, new GitRunOptions { ReadOnly = true }, ct);
@@ -112,7 +113,7 @@ public sealed class BranchBoardStore : IBoardStore
             var lineEnd = Array.IndexOf(output, (byte)'\n', position);
             var header = Encoding.ASCII.GetString(output, position, lineEnd - position).Split(' ');
             if (header.Length != 3 || header[0] != sha)
-                throw new BoardStoreException("git cat-file answered something unexpected.");
+                throw new BoardStoreException(L.T("git cat-file answered something unexpected."));
             var size = int.Parse(header[2], CultureInfo.InvariantCulture);
             files[path] = output.AsSpan(lineEnd + 1, size).ToArray();
             position = lineEnd + 1 + size + 1;
@@ -125,14 +126,14 @@ public sealed class BranchBoardStore : IBoardStore
         foreach (var path in change.Files.Keys)
         {
             if (!BoardPaths.IsSafe(path))
-                throw new BoardStoreException($"\"{path}\" isn't a path a board may write.");
+                throw new BoardStoreException(L.T($"\"{path}\" isn't a path a board may write."));
         }
 
         var current = await GetVersionAsync(ct);
         if ((current ?? BoardFiles.NoBoard) != expectedVersion)
             throw new BoardConflictException(expectedVersion == BoardFiles.NoBoard
-                ? $"The repository already has a {BranchName} branch."
-                : "The board was changed somewhere else.");
+                ? L.T($"The repository already has a {BranchName} branch.")
+                : L.T("The board was changed somewhere else."));
 
         var gitDir = await GitDirAsync(ct);
         var index = Path.Combine(gitDir, "devhub", "board-index-" + Guid.NewGuid().ToString("N")[..8]);
@@ -160,7 +161,7 @@ public sealed class BranchBoardStore : IBoardStore
                     new GitRunOptions { StandardInput = string.Join("\n", temp) + "\n" }, ct);
                 shas = hashed.StandardOutput.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
                 if (shas.Count != writes.Count)
-                    throw new BoardStoreException("git hash-object answered something unexpected.");
+                    throw new BoardStoreException(L.T("git hash-object answered something unexpected."));
             }
 
             // The changes, in one update-index: "<mode> <sha>\t<path>\0", mode 0 removes.
@@ -185,7 +186,7 @@ public sealed class BranchBoardStore : IBoardStore
             var swap = await _runner.RunAsync(Repository, ["update-ref", "-m", "board: " + change.Message, Ref, commit, current ?? ZeroId],
                 new GitRunOptions { AllowFailure = true }, ct);
             if (!swap.Succeeded)
-                throw new BoardConflictException("The board was changed somewhere else.");
+                throw new BoardConflictException(L.T("The board was changed somewhere else."));
 
             lock (_gate)
                 _lastKnown = commit;
@@ -332,7 +333,7 @@ public sealed class BranchBoardStoreProvider(GitRunner runner) : IBoardStoreProv
     public const string KindId = "git-branch";
 
     public string Kind => KindId;
-    public string DisplayName => "On the repository's devhub/board branch";
+    public string DisplayName => L.T("On the repository's devhub/board branch");
 
     public Task<bool> CanUseAsync(string location, CancellationToken ct = default) => BranchBoardStore.IsRepositoryAsync(runner, location, ct);
 

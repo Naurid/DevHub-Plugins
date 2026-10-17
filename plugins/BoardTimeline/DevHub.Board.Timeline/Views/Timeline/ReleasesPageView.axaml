@@ -1,6 +1,7 @@
 <!-- Releases: the versions on the left, the chosen one's issues and release notes on the right. -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:vm="using:DevHub.ViewModels.Timeline"
              xmlns:c="using:DevHub.Controls"
              x:Class="DevHub.Views.Timeline.ReleasesPageView"
@@ -19,10 +20,10 @@
     <DockPanel>
         <DockPanel DockPanel.Dock="Left" Width="{DynamicResource Size.EpicsPanel}">
             <StackPanel DockPanel.Dock="Top" Margin="{DynamicResource Padding.BoardHeader}" Spacing="{DynamicResource Spacing.Small}">
-                <Button Content="New Version…" Command="{Binding NewVersionCommand}" HorizontalAlignment="Stretch" />
-                <CheckBox Content="Show archived" IsChecked="{Binding ShowArchived}" />
+                <Button Content="{l:T 'New Version…'}" Command="{Binding NewVersionCommand}" HorizontalAlignment="Stretch" />
+                <CheckBox Content="{l:T 'Show archived'}" IsChecked="{Binding ShowArchived}" />
             </StackPanel>
-            <ListBox ItemsSource="{Binding Releases}" SelectedItem="{Binding Selected}" Background="Transparent" AutomationProperties.Name="Releases">
+            <ListBox ItemsSource="{Binding Releases}" SelectedItem="{Binding Selected}" Background="Transparent" AutomationProperties.Name="{l:T 'Releases'}">
                 <ListBox.ItemTemplate>
                     <DataTemplate x:DataType="vm:ReleaseRow">
                         <StackPanel Spacing="{DynamicResource Spacing.Small}">
@@ -36,19 +37,19 @@
         </DockPanel>
 
         <Panel>
-            <c:EmptyState IconKind="info" Title="No versions yet" IsVisible="{Binding !HasSelection}"
-                          Description="Versions are the releases issues are planned for (an issue's Fix versions). Create one to see its progress and release notes." />
+            <c:EmptyState IconKind="info" Title="{l:T 'No versions yet'}" IsVisible="{Binding !HasSelection}"
+                          Description="{l:T 'Versions are the releases issues are planned for (an issue\'s Fix versions). Create one to see its progress and release notes.'}" />
             <ScrollViewer IsVisible="{Binding HasSelection}" HorizontalScrollBarVisibility="Disabled">
                 <StackPanel Margin="{DynamicResource Padding.Board}" Spacing="{DynamicResource Spacing}">
                     <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
                         <TextBlock Classes="header" Text="{Binding Selected.Name}" VerticalAlignment="Center" />
-                        <Button Grid.Column="1" Content="Save Release Notes…" Command="{Binding SaveNotesCommand}" />
-                        <Button Grid.Column="2" Classes="accent" Content="Release…" Command="{Binding ReleaseCommand}" IsVisible="{Binding CanRelease}" />
+                        <Button Grid.Column="1" Content="{l:T 'Save Release Notes…'}" Command="{Binding SaveNotesCommand}" />
+                        <Button Grid.Column="2" Classes="accent" Content="{l:T 'Release…'}" Command="{Binding ReleaseCommand}" IsVisible="{Binding CanRelease}" />
                     </Grid>
                     <TextBlock Classes="secondary" Text="{Binding Selected.Detail}" />
-                    <TextBlock Classes="section" Text="Issues" />
+                    <TextBlock Classes="section" Text="{l:T 'Issues'}" />
                     <ItemsControl ItemsSource="{Binding Issues}" ItemTemplate="{StaticResource IssueRow}" />
-                    <TextBlock Classes="section" Text="Release notes" />
+                    <TextBlock Classes="section" Text="{l:T 'Release notes'}" />
                     <Border Classes="listPanel">
                         <c:MarkdownView Markdown="{Binding Notes}" />
                     </Border>

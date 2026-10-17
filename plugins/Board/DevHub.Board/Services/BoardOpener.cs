@@ -2,6 +2,7 @@ using DevHub.Board.Core;
 using DevHub.Board.Core.Storage;
 using DevHub.ViewModels.Dialogs;
 using DevHub.ViewModels.Documents;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Services.Board;
 
@@ -30,7 +31,7 @@ public sealed class BoardOpener(BoardService boards, IDialogService dialogs, ISe
     /// <summary>Asks for a folder and opens the board in it (any store that finds one there).</summary>
     public async Task OpenBoardAsync()
     {
-        var folder = await dialogs.PickFolderAsync("Folder with a board (or a repository with a devhub/board branch)");
+        var folder = await dialogs.PickFolderAsync(L.T("Folder with a board (or a repository with a devhub/board branch)"));
         if (folder is null)
             return;
         if (await FindAsync(folder) is { } location)
@@ -38,8 +39,8 @@ public sealed class BoardOpener(BoardService boards, IDialogService dialogs, ISe
             Documents.OpenById(BoardDocumentFactory.IdFor(location));
             return;
         }
-        var create = await dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Open Board",
-            $"There's no board in {folder}. Create one there?", "Create Board…", [folder], destructive: false));
+        var create = await dialogs.ShowDialogAsync(new ConfirmDialogViewModel(L.T("Open Board"),
+            L.T($"There's no board in {folder}. Create one there?"), L.T("Create Board…"), [folder], destructive: false));
         if (create)
             await NewBoardAsync(new BoardLocation(FolderBoardStoreProvider.KindId, folder));
     }
@@ -49,12 +50,12 @@ public sealed class BoardOpener(BoardService boards, IDialogService dialogs, ISe
     {
         if (boards.Provider(recent.StoreKind) is null)
         {
-            status.Show($"{recent.Name} needs a plugin that's switched off.");
+            status.Show(L.T($"{recent.Name} needs a plugin that's switched off."));
             return;
         }
         if (recent.StoreKind == FolderBoardStoreProvider.KindId && !FolderBoardStore.HasBoard(recent.Location))
         {
-            status.Show($"{recent.Name} isn't in {recent.Location} any more; removed from the list.");
+            status.Show(L.T($"{recent.Name} isn't in {recent.Location} any more; removed from the list."));
             boards.Forget(recent);
             return;
         }
@@ -70,7 +71,7 @@ public sealed class BoardOpener(BoardService boards, IDialogService dialogs, ISe
         var folder = Documents.Active?.ContextPath;
         if (folder is null || !Directory.Exists(folder))
         {
-            status.Show("Open a project or repository tab first (its folder is where the board goes).");
+            status.Show(L.T("Open a project or repository tab first (its folder is where the board goes)."));
             return;
         }
         if (Documents.Active is BoardDocumentViewModel)
@@ -106,28 +107,28 @@ public sealed class BoardOpener(BoardService boards, IDialogService dialogs, ISe
     public async Task CopyBoardAsync(BoardContext context)
     {
         var kinds = boards.Providers.ToList();
-        var dialog = new TextInputDialogViewModel("Copy Board To…", "", "", "Choose Folder…")
+        var dialog = new TextInputDialogViewModel(L.T("Copy Board To…"), "", "", L.T("Choose Folder…"))
         {
             ShowText = false,
-            Explanation = $"Copies {context.Project.Key} with everything in it (issues, history, attachments) to another place and opens the copy. "
-                          + $"The board stays in {context.Session.Store.DisplayLocation} too.",
-            Choice = new ChoiceInput("Keep the copy", kinds.Select(k => k.DisplayName).ToList(), kinds.FirstOrDefault(k => k.Kind != context.Location.StoreKind)?.DisplayName ?? kinds[0].DisplayName),
+            Explanation = L.T($"Copies {context.Project.Key} with everything in it (issues, history, attachments) to another place and opens the copy. ")
+                          + L.T($"The board stays in {context.Session.Store.DisplayLocation} too."),
+            Choice = new ChoiceInput(L.T("Keep the copy"), kinds.Select(k => k.DisplayName).ToList(), kinds.FirstOrDefault(k => k.Kind != context.Location.StoreKind)?.DisplayName ?? kinds[0].DisplayName),
         };
         if (!await dialogs.ShowDialogAsync(dialog))
             return;
         var provider = kinds.First(k => k.DisplayName == dialog.Choice!.Selected);
-        var folder = await dialogs.PickFolderAsync(provider.Kind == FolderBoardStoreProvider.KindId ? "Folder for the copy" : "Repository folder");
+        var folder = await dialogs.PickFolderAsync(provider.Kind == FolderBoardStoreProvider.KindId ? L.T("Folder for the copy") : L.T("Repository folder"));
         if (folder is null)
             return;
         if (!await provider.CanUseAsync(folder))
         {
-            status.Show(provider.Kind == FolderBoardStoreProvider.KindId ? "That folder can't hold a board." : "That folder isn't a git repository.");
+            status.Show(provider.Kind == FolderBoardStoreProvider.KindId ? L.T("That folder can't hold a board.") : L.T("That folder isn't a git repository."));
             return;
         }
         var target = new BoardLocation(provider.Kind, Path.GetFullPath(folder));
         if (target.Key.Equals(context.Location.Key, StringComparison.OrdinalIgnoreCase))
         {
-            status.Show("That's where the board already is.");
+            status.Show(L.T("That's where the board already is."));
             return;
         }
         try
@@ -135,19 +136,19 @@ public sealed class BoardOpener(BoardService boards, IDialogService dialogs, ISe
             using var store = provider.Open(target.Location);
             if (await store.LoadAsync() is not null)
             {
-                status.Show("There's already a board there.");
+                status.Show(L.T("There's already a board there."));
                 return;
             }
             var files = context.Snapshot.Files.ToDictionary(f => f.Key, f => (byte[]?)f.Value, StringComparer.Ordinal);
-            await store.WriteAsync(new BoardChange($"Board {context.Project.Key} copied from {context.Session.Store.DisplayLocation}", files), BoardFiles.NoBoard);
+            await store.WriteAsync(new BoardChange(L.T($"Board {context.Project.Key} copied from {context.Session.Store.DisplayLocation}"), files), BoardFiles.NoBoard);
         }
         catch (Exception e) when (e is BoardStoreException or BoardConflictException or IOException or UnauthorizedAccessException)
         {
-            await dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Copy Board", "The board couldn't be copied.", "OK", [e.Message], destructive: false, showCancel: false));
+            await dialogs.ShowDialogAsync(new ConfirmDialogViewModel(L.T("Copy Board"), L.T("The board couldn't be copied."), "OK", [e.Message], destructive: false, showCancel: false));
             return;
         }
         Documents.OpenById(BoardDocumentFactory.IdFor(target));
-        status.Show($"Board copied. The original is still in {context.Session.Store.DisplayLocation}: delete it there when you no longer need it.");
+        status.Show(L.T($"Board copied. The original is still in {context.Session.Store.DisplayLocation}: delete it there when you no longer need it."));
     }
     /// <summary>The board in a folder: a folder store's board.json, or what another store finds there.</summary>
     public async Task<BoardLocation?> FindAsync(string folder)

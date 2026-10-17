@@ -3,6 +3,7 @@ using DevHub.Board.Core.Storage;
 using DevHub.Controls;
 using DevHub.Services.Board;
 using DevHub.ViewModels.Board;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Documents;
 
@@ -22,7 +23,7 @@ public sealed partial class IssueDocumentViewModel : DocumentViewModelBase, IDis
         Location = location;
         IssueId = issueId;
         _services = services;
-        _title = "Issue";
+        _title = L.T("Issue");
     }
 
     public BoardLocation Location { get; }
@@ -56,7 +57,7 @@ public sealed partial class IssueDocumentViewModel : DocumentViewModelBase, IDis
             }
             if (_context?.Snapshot.Issue(IssueId) is null)
             {
-                Message = _context is null ? "The board isn't there any more." : "This issue was deleted.";
+                Message = _context is null ? L.T("The board isn't there any more.") : L.T("This issue was deleted.");
                 return;
             }
             _context.Changed += OnBoardChanged;
@@ -70,7 +71,7 @@ public sealed partial class IssueDocumentViewModel : DocumentViewModelBase, IDis
         }
         catch (Exception e) when (e is BoardStoreException or IOException or UnauthorizedAccessException)
         {
-            Message = "The board can't be opened: " + e.Message;
+            Message = L.T("The board can't be opened: ") + e.Message;
         }
         finally
         {
@@ -84,7 +85,7 @@ public sealed partial class IssueDocumentViewModel : DocumentViewModelBase, IDis
         {
             Detail?.Dispose();
             Detail = null;
-            Message = "This issue was deleted.";
+            Message = L.T("This issue was deleted.");
             return;
         }
         Detail?.Refresh();
@@ -93,7 +94,7 @@ public sealed partial class IssueDocumentViewModel : DocumentViewModelBase, IDis
 
     private void UpdateTitle()
     {
-        var key = _context?.Snapshot.Issue(IssueId)?.Key ?? "Issue";
+        var key = _context?.Snapshot.Issue(IssueId)?.Key ?? L.T("Issue");
         if (key == _title)
             return;
         _title = key;

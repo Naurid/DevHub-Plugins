@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using DevHub.Board.Core;
 using DevHub.Board.Core.Model;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Board.Git.Core;
 
@@ -95,7 +96,7 @@ public abstract record SmartCommand(Issue Issue)
     /// <summary>For the confirmation: "DEV-12: move to Done".</summary>
     public string Describe(ProjectSettings settings) => this switch
     {
-        Transition t => $"{Issue.Key}: move to {t.Status.Name}",
+        Transition t => L.T($"{Issue.Key}: move to {t.Status.Name}"),
         Comment c => $"{Issue.Key}: comment \"{(c.Text.Length > 60 ? c.Text[..60] + "…" : c.Text)}\"",
         Time w => $"{Issue.Key}: log {WorkDuration.Format(w.Minutes, settings)}",
         _ => Issue.Key,

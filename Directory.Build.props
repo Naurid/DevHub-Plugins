@@ -59,4 +59,9 @@
     <ItemGroup Condition="'$(DevHubProjectKind)' == 'test'">
         <PackageReference Include="DevHub.Sdk.Core" Version="$(DevHubSdkVersion)" />
     </ItemGroup>
+
+    <!-- Translations (L in DevHub.Sdk.Core): i18n/fr.json, English → French, embedded where DevHub looks for them. -->
+    <ItemGroup>
+        <EmbeddedResource Include="i18n\*.json" />
+    </ItemGroup>
 </Project>

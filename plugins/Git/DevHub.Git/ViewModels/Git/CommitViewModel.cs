@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHub.Git.Core;
 using DevHub.Integration;
 using DevHub.Services;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Git;
 
@@ -110,7 +111,7 @@ public partial class CommitViewModel : ViewModelBase
     /// <summary>Incremented to put the cursor in the message box (Ctrl+K); see Controls/FocusRequest.</summary>
     [ObservableProperty] private int _focusRequest;
 
-    public string CommitButtonText => IsAmend ? "Amend Commit" : "Commit";
+    public string CommitButtonText => IsAmend ? L.T("Amend Commit") : L.T("Commit");
 
     /// <summary>Puts the cursor in the message box.</summary>
     public void RequestFocus() => FocusRequest++;
@@ -150,7 +151,7 @@ public partial class CommitViewModel : ViewModelBase
         {
             var id = await _client!.CommitAsync(Message, IsAmend);
             var subject = Message.Split('\n')[0].Trim();
-            _status.Show($"{(IsAmend ? "Amended" : "Committed")} {id[..7]}: {subject}");
+            _status.Show($"{(IsAmend ? L.T("Amended") : L.T("Committed"))} {id[..7]}: {subject}");
             _amendMessage = null;
             Message = "";
             IsAmend = false;
@@ -160,7 +161,7 @@ public partial class CommitViewModel : ViewModelBase
         {
             // Hooks, signing, "nothing to commit"…: git's own words, where the user is looking.
             Error = ex is GitException git && git.StandardError.Trim() is { Length: > 0 } stderr ? stderr : ex.Message;
-            _status.Show("Commit failed.");
+            _status.Show(L.T("Commit failed."));
         }
         finally
         {
@@ -189,7 +190,7 @@ public partial class CommitViewModel : ViewModelBase
         var last = await _client.GetLastCommitMessageAsync();
         if (last is null)
         {
-            _status.Show("Nothing to amend: there are no commits yet.");
+            _status.Show(L.T("Nothing to amend: there are no commits yet."));
             IsAmend = false;
             return;
         }

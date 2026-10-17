@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHub.Git.Core;
 using DevHub.ViewModels.Dialogs;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Git;
 
@@ -51,9 +52,9 @@ public sealed partial class BranchNameDialogViewModel : DialogViewModelBase
     {
         var name = Name.Trim();
         Error = name.Length == 0 ? null // nothing typed yet: no red text, but OK won't accept it
-            : name.Any(char.IsWhiteSpace) ? "Branch names can't contain spaces."
+            : name.Any(char.IsWhiteSpace) ? L.T("Branch names can't contain spaces.")
             : _existing.Any(b => !b.IsRemote && string.Equals(b.Name, name, StringComparison.OrdinalIgnoreCase))
-                ? $"A branch named {name} already exists."
+                ? L.T($"A branch named {name} already exists.")
             : null;
     }
 
@@ -63,14 +64,14 @@ public sealed partial class BranchNameDialogViewModel : DialogViewModelBase
         Validate();
         if (Name.Length == 0)
         {
-            Error = "Enter a name.";
+            Error = L.T("Enter a name.");
             return false;
         }
         if (Error is not null)
             return false;
         if (!await _client.IsValidBranchNameAsync(Name))
         {
-            Error = "git doesn't allow that name (no \"..\", \"~\", \"^\", \":\", \"?\", \"*\", \"[\", \"\\\", a leading \"-\" or a trailing \".lock\").";
+            Error = L.T("git doesn't allow that name (no \"..\", \"~\", \"^\", \":\", \"?\", \"*\", \"[\", \"\\\", a leading \"-\" or a trailing \".lock\").");
             return false;
         }
         return true;

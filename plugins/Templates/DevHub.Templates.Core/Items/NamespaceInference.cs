@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using System.Xml.Linq;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Templates.Core.Items;
 
@@ -47,7 +48,7 @@ public static class NamespaceInference
                 var inside = below.Count > 0 && below[0].Equals("Assets", StringComparison.OrdinalIgnoreCase) ? below.Skip(1).ToList() : below;
                 if (inside.Count > 0 && inside[0].Equals("Scripts", StringComparison.OrdinalIgnoreCase))
                     inside = inside.Skip(1).ToList();
-                return Guess(Identifier(dir.Name), inside, "from the Unity project's name");
+                return Guess(Identifier(dir.Name), inside, L.T("from the Unity project's name"));
             }
             if (Directory.Exists(Path.Combine(dir.FullName, ".git")))
                 return null; // the repository's root: no project above it counts

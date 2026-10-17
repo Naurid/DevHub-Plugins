@@ -9,6 +9,7 @@ using DevHub.Board.Core.Model;
 using DevHub.Board.Core.Storage;
 using DevHub.Services;
 using DevHub.Services.Board;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Dialogs;
 
@@ -41,13 +42,13 @@ public sealed partial class NewBoardDialogViewModel : DialogViewModelBase
     {
         _boards = boards;
         _dialogs = dialogs;
-        Stores.Add(new StoreChoice("devhub", "In DevHub", "Kept in DevHub's own folder; nothing else needed.", false));
+        Stores.Add(new StoreChoice("devhub", L.T("In DevHub"), L.T("Kept in DevHub's own folder; nothing else needed."), false));
         foreach (var provider in boards.Providers)
         {
             if (provider.Kind == FolderBoardStoreProvider.KindId)
-                Stores.Add(new StoreChoice(provider.Kind, "In a folder", "Plain files in a folder you choose (inside a repository, they're committed with your code).", true));
+                Stores.Add(new StoreChoice(provider.Kind, L.T("In a folder"), L.T("Plain files in a folder you choose (inside a repository, they're committed with your code)."), true));
             else
-                Stores.Add(new StoreChoice(provider.Kind, provider.DisplayName, "Choose the repository's folder.", true));
+                Stores.Add(new StoreChoice(provider.Kind, provider.DisplayName, L.T("Choose the repository's folder."), true));
         }
         _store = Stores[0];
         if (suggested is not null)
@@ -63,8 +64,8 @@ public sealed partial class NewBoardDialogViewModel : DialogViewModelBase
 
     private readonly IDialogService? _dialogs;
 
-    public override string Title => "New Board";
-    public override string OkText => "Create";
+    public override string Title => L.T("New Board");
+    public override string OkText => L.T("Create");
     public override bool FitsContent => true;
     public override double Width => 560;
     public override double MinHeight => 0;
@@ -83,10 +84,10 @@ public sealed partial class NewBoardDialogViewModel : DialogViewModelBase
 
     public string PresetDescription => Preset switch
     {
-        BoardPreset.Scrum => "To Do, In Progress, In Review, Done; sprints with Board.Scrum.",
-        BoardPreset.Kanban => "Backlog, Selected for Development, In Progress, Done; a continuous flow.",
-        BoardPreset.BugTriage => "New, Triaged, In Progress, Fixed, Won't Fix; a board of bugs.",
-        _ => "No columns: add your own on the board.",
+        BoardPreset.Scrum => L.T("To Do, In Progress, In Review, Done; sprints with Board.Scrum."),
+        BoardPreset.Kanban => L.T("Backlog, Selected for Development, In Progress, Done; a continuous flow."),
+        BoardPreset.BugTriage => L.T("New, Triaged, In Progress, Fixed, Won't Fix; a board of bugs."),
+        _ => L.T("No columns: add your own on the board."),
     };
 
     /// <summary>The board, created and opened (the caller releases it when done).</summary>
@@ -134,7 +135,7 @@ public sealed partial class NewBoardDialogViewModel : DialogViewModelBase
     {
         if (_dialogs is null)
             return;
-        if (await _dialogs.PickFolderAsync(Store.Kind == FolderBoardStoreProvider.KindId ? "Folder for the board" : "Repository folder") is { } folder)
+        if (await _dialogs.PickFolderAsync(Store.Kind == FolderBoardStoreProvider.KindId ? L.T("Folder for the board") : L.T("Repository folder")) is { } folder)
             Folder = folder;
     }
 
@@ -143,13 +144,13 @@ public sealed partial class NewBoardDialogViewModel : DialogViewModelBase
         Error = null;
         if (string.IsNullOrWhiteSpace(Name))
         {
-            Error = "Give the board a name.";
+            Error = L.T("Give the board a name.");
             return false;
         }
         var key = Key.Trim().ToUpperInvariant();
         if (!IssueKey.IsValidProjectKey(key))
         {
-            Error = "The key is 1–10 capital letters or digits, starting with a letter (like DEV).";
+            Error = L.T("The key is 1–10 capital letters or digits, starting with a letter (like DEV).");
             return false;
         }
 
@@ -165,13 +166,13 @@ public sealed partial class NewBoardDialogViewModel : DialogViewModelBase
         {
             if (string.IsNullOrWhiteSpace(Folder))
             {
-                Error = "Choose a folder.";
+                Error = L.T("Choose a folder.");
                 return false;
             }
             var provider = _boards.Provider(Store.Kind)!;
             if (!await provider.CanUseAsync(Folder))
             {
-                Error = Store.Kind == FolderBoardStoreProvider.KindId ? "That folder can't hold a board." : "That folder isn't a git repository.";
+                Error = Store.Kind == FolderBoardStoreProvider.KindId ? L.T("That folder can't hold a board.") : L.T("That folder isn't a git repository.");
                 return false;
             }
             location = new BoardLocation(Store.Kind, Path.GetFullPath(Folder));
@@ -188,11 +189,11 @@ public sealed partial class NewBoardDialogViewModel : DialogViewModelBase
         }
         catch (BoardConflictException)
         {
-            Error = "There's already a board there: use Open Board instead.";
+            Error = L.T("There's already a board there: use Open Board instead.");
         }
         catch (Exception e) when (e is BoardStoreException or IOException or UnauthorizedAccessException)
         {
-            Error = "The board couldn't be created: " + e.Message;
+            Error = L.T("The board couldn't be created: ") + e.Message;
         }
         return false;
     }
@@ -219,9 +220,9 @@ public sealed partial class CreateIssueDialogViewModel : DialogViewModelBase
                 ?? Types.FirstOrDefault(t => project.IssueType(t.Id)?.Level == IssueTypeLevel.Standard) ?? Types[0];
         Priorities = project.Priorities.Select(p => new NamedItem(p.Id, p.Name, p.Icon)).ToList();
         _priority = Priorities.FirstOrDefault(p => p.Id == project.DefaultPriorityId) ?? Priorities.FirstOrDefault();
-        People = [new NamedItem(null, "Unassigned"), .. project.People.Select(NamedItem.Person)];
+        People = [new NamedItem(null, L.T("Unassigned")), .. project.People.Select(NamedItem.Person)];
         _assignee = People.FirstOrDefault(p => p.Id == defaults.Assignee) ?? People[0];
-        Sprints = [new NamedItem(null, "Backlog"), .. snapshot.Sprints.Values.Where(s => s.State != SprintState.Closed)
+        Sprints = [new NamedItem(null, L.T("Backlog")), .. snapshot.Sprints.Values.Where(s => s.State != SprintState.Closed)
             .OrderBy(s => s.Sequence).Select(s => new NamedItem(s.Id, s.Name))];
         _sprint = Sprints.FirstOrDefault(s => s.Id == defaults.Sprint) ?? Sprints[0];
         UpdateParents();
@@ -231,8 +232,8 @@ public sealed partial class CreateIssueDialogViewModel : DialogViewModelBase
         ApplyEpicDefaults();
     }
 
-    public override string Title => "Create Issue";
-    public override string OkText => "Create";
+    public override string Title => L.T("Create Issue");
+    public override string OkText => L.T("Create");
     public override double Width => 620;
     public override double Height => 640;
 
@@ -265,7 +266,7 @@ public sealed partial class CreateIssueDialogViewModel : DialogViewModelBase
     public bool HasSprints => Sprints.Count > 1;
     public bool ShowSprint => HasSprints && Level == IssueTypeLevel.Standard;
     public bool ShowParent => Level != IssueTypeLevel.Epic;
-    public string ParentLabel => Level == IssueTypeLevel.Subtask ? "Parent" : "Epic";
+    public string ParentLabel => Level == IssueTypeLevel.Subtask ? L.T("Parent") : L.T("Epic");
     public bool ShowPoints => Level != IssueTypeLevel.Subtask;
     public bool ShowCriteria => Level != IssueTypeLevel.Epic;
 
@@ -285,12 +286,12 @@ public sealed partial class CreateIssueDialogViewModel : DialogViewModelBase
     public string TasksText => TaskItems.Count switch
     {
         0 => "",
-        1 => $"Create 1 {_taskType!.Name.ToLowerInvariant()} in this epic from the - [ ] line (same labels and dates; the line leaves the description)",
-        var n => $"Create {n} {Plural(_taskType!.Name)} in this epic from the - [ ] lines (same labels and dates; the lines leave the description)",
+        1 => L.T($"Create 1 {_taskType!.Name.ToLowerInvariant()} in this epic from the - [ ] line (same labels and dates; the line leaves the description)"),
+        var n => L.T($"Create {n} {Plural(_taskType!.Name)} in this epic from the - [ ] lines (same labels and dates; the lines leave the description)"),
     };
     public string DescriptionHint => Level == IssueTypeLevel.Epic
-        ? "Markdown: **bold**, - lists. Each - [ ] line becomes an issue in this epic"
-        : "Markdown: **bold**, - lists, - [ ] tasks";
+        ? L.T("Markdown: **bold**, - lists. Each - [ ] line becomes an issue in this epic")
+        : L.T("Markdown: **bold**, - lists, - [ ] tasks");
 
     private static string Plural(string name) => name.ToLowerInvariant() is var n && n.EndsWith('s') ? n : n + "s";
 
@@ -353,7 +354,7 @@ public sealed partial class CreateIssueDialogViewModel : DialogViewModelBase
             return;
         var wanted = level == IssueTypeLevel.Subtask ? IssueTypeLevel.Standard : IssueTypeLevel.Epic;
         if (level == IssueTypeLevel.Standard)
-            Parents.Add(new NamedItem(null, "No epic"));
+            Parents.Add(new NamedItem(null, L.T("No epic")));
         foreach (var issue in snapshot.Issues.Values.Where(i => snapshot.LevelOf(i) == wanted && (!snapshot.IsDone(i) || i.Id == _defaults.Parent))
                      .OrderBy(i => i.Rank, StringComparer.Ordinal))
             Parents.Add(new NamedItem(issue.Id, $"{issue.Key} {issue.Summary}"));
@@ -373,7 +374,7 @@ public sealed partial class CreateIssueDialogViewModel : DialogViewModelBase
         {
             if (!double.TryParse(Points.Trim().Replace(',', '.'), NumberStyles.Float, CultureInfo.InvariantCulture, out var points))
             {
-                Error = "Story points must be a number.";
+                Error = L.T("Story points must be a number.");
                 return false;
             }
             fields.Add((IssueFields.StoryPoints, new FieldValue.Number(points)));
@@ -382,7 +383,7 @@ public sealed partial class CreateIssueDialogViewModel : DialogViewModelBase
         {
             if (!WorkDuration.TryParse(Estimate, _context.Project.Settings, out var minutes))
             {
-                Error = "An estimate looks like 2h, 1d 4h or 30m.";
+                Error = L.T("An estimate looks like 2h, 1d 4h or 30m.");
                 return false;
             }
             fields.Add((IssueFields.OriginalEstimate, new FieldValue.Minutes(minutes)));
@@ -424,15 +425,15 @@ public sealed partial class CreateIssueDialogViewModel : DialogViewModelBase
         }
         if (!await _context.RunAsync(operation))
         {
-            Error = "The issue couldn't be created (see the status bar).";
+            Error = L.T("The issue couldn't be created (see the status bar).");
             return false;
         }
         CreatedId = id;
         if (!CreateAnother)
             return true;
         LastCreated = tasks.Count == 0
-            ? $"Created {_context.Snapshot.Issue(id)?.Key}."
-            : $"Created {_context.Snapshot.Issue(id)?.Key} with {tasks.Count} issue(s).";
+            ? L.T($"Created {_context.Snapshot.Issue(id)?.Key}.")
+            : L.T($"Created {_context.Snapshot.Issue(id)?.Key} with {tasks.Count} issue(s).");
         Summary = "";
         Description = "";
         Points = "";
@@ -446,8 +447,8 @@ public sealed partial class CreateIssueDialogViewModel : DialogViewModelBase
 /// <summary>Log Work: time spent, when, a note, and what happens to the remaining estimate.</summary>
 public sealed partial class LogWorkDialogViewModel(BoardContext context, Issue issue) : DialogViewModelBase
 {
-    public override string Title => $"Log Work on {issue.Key}";
-    public override string OkText => "Log";
+    public override string Title => L.T($"Log Work on {issue.Key}");
+    public override string OkText => L.T("Log");
     public override bool FitsContent => true;
     public override double Width => 480;
     public override double MinHeight => 0;
@@ -461,14 +462,14 @@ public sealed partial class LogWorkDialogViewModel(BoardContext context, Issue i
     [ObservableProperty] private string _newRemaining = "";
     [ObservableProperty] private string? _error;
 
-    public string RemainingNow => issue.Time.RemainingMinutes is { } r ? context.Duration(r) : "not estimated";
+    public string RemainingNow => issue.Time.RemainingMinutes is { } r ? context.Duration(r) : L.T("not estimated");
 
     protected override async Task<bool> ApplyChangesAsync()
     {
         var settings = context.Project.Settings;
         if (!WorkDuration.TryParse(Spent, settings, out var minutes))
         {
-            Error = "Time spent looks like 2h, 1d 4h or 30m.";
+            Error = L.T("Time spent looks like 2h, 1d 4h or 30m.");
             return false;
         }
         int? remaining = null;
@@ -480,7 +481,7 @@ public sealed partial class LogWorkDialogViewModel(BoardContext context, Issue i
                 remaining = r;
             else
             {
-                Error = "The remaining estimate looks like 2h, 1d 4h or 0.";
+                Error = L.T("The remaining estimate looks like 2h, 1d 4h or 0.");
                 return false;
             }
         }
@@ -513,23 +514,23 @@ public sealed partial class BulkEditDialogViewModel : DialogViewModelBase
         var project = context.Project;
         Fields =
         [
-            new NamedItem(StatusField, "Status"), new NamedItem(IssueFields.Type, "Type"),
-            new NamedItem(IssueFields.Priority, "Priority"), new NamedItem(IssueFields.Assignee, "Assignee"),
-            new NamedItem(IssueFields.StoryPoints, "Story points"),
-            new NamedItem(AddCriteriaField, "Acceptance criteria (add)"),
-            .. (project.DefinitionOfDone.Count > 0 ? [new NamedItem(DoneField, "Definition of Done")] : Array.Empty<NamedItem>()),
-            new NamedItem(AddLabelsField, "Labels (add)"), new NamedItem(IssueFields.Labels, "Labels (replace)"),
-            new NamedItem(IssueFields.Parent, "Epic"),
-            .. (context.Snapshot.Sprints.Count > 0 ? [new NamedItem(IssueFields.Sprint, "Sprint")] : Array.Empty<NamedItem>()),
-            new NamedItem(IssueFields.FixVersions, "Fix versions"), new NamedItem(IssueFields.Components, "Components"),
-            new NamedItem(IssueFields.Start, "Start date"), new NamedItem(IssueFields.Due, "Due date"),
+            new NamedItem(StatusField, L.T("Status")), new NamedItem(IssueFields.Type, L.T("Type")),
+            new NamedItem(IssueFields.Priority, L.T("Priority")), new NamedItem(IssueFields.Assignee, L.T("Assignee")),
+            new NamedItem(IssueFields.StoryPoints, L.T("Story points")),
+            new NamedItem(AddCriteriaField, L.T("Acceptance criteria (add)")),
+            .. (project.DefinitionOfDone.Count > 0 ? [new NamedItem(DoneField, L.T("Definition of Done"))] : Array.Empty<NamedItem>()),
+            new NamedItem(AddLabelsField, L.T("Labels (add)")), new NamedItem(IssueFields.Labels, L.T("Labels (replace)")),
+            new NamedItem(IssueFields.Parent, L.T("Epic")),
+            .. (context.Snapshot.Sprints.Count > 0 ? [new NamedItem(IssueFields.Sprint, L.T("Sprint"))] : Array.Empty<NamedItem>()),
+            new NamedItem(IssueFields.FixVersions, L.T("Fix versions")), new NamedItem(IssueFields.Components, L.T("Components")),
+            new NamedItem(IssueFields.Start, L.T("Start date")), new NamedItem(IssueFields.Due, L.T("Due date")),
         ];
         _field = Fields[0];
         UpdateChoices();
     }
 
-    public override string Title => $"Edit {_issueIds.Count} Issues";
-    public override string OkText => "Apply";
+    public override string Title => L.T($"Edit {_issueIds.Count} Issues");
+    public override string OkText => L.T("Apply");
     public override bool FitsContent => true;
     public override double Width => 480;
     public override double MinHeight => 0;
@@ -555,13 +556,13 @@ public sealed partial class BulkEditDialogViewModel : DialogViewModelBase
         {
             StatusField => project.Statuses.Select(s => new NamedItem(s.Id, s.Name)),
             IssueFields.Type => project.IssueTypes.Select(t => new NamedItem(t.Id, t.Name)),
-            IssueFields.Assignee => [new NamedItem(null, "Unassigned"), .. project.People.Select(NamedItem.Person)],
+            IssueFields.Assignee => [new NamedItem(null, L.T("Unassigned")), .. project.People.Select(NamedItem.Person)],
             IssueFields.Priority => project.Priorities.Select(p => new NamedItem(p.Id, p.Name)),
-            IssueFields.Parent => [new NamedItem(null, "No epic"), .. snapshot.Issues.Values.Where(i => snapshot.LevelOf(i) == IssueTypeLevel.Epic)
+            IssueFields.Parent => [new NamedItem(null, L.T("No epic")), .. snapshot.Issues.Values.Where(i => snapshot.LevelOf(i) == IssueTypeLevel.Epic)
                 .OrderBy(i => i.Rank, StringComparer.Ordinal).Select(i => new NamedItem(i.Id, $"{i.Key} {i.Summary}"))],
-            IssueFields.Sprint => [new NamedItem(null, "Backlog"), .. snapshot.Sprints.Values.Where(s => s.State != SprintState.Closed)
+            IssueFields.Sprint => [new NamedItem(null, L.T("Backlog")), .. snapshot.Sprints.Values.Where(s => s.State != SprintState.Closed)
                 .OrderBy(s => s.Sequence).Select(s => new NamedItem(s.Id, s.Name))],
-            DoneField => [new NamedItem("tick", "Tick every item"), new NamedItem("clear", "Clear every tick")],
+            DoneField => [new NamedItem("tick", L.T("Tick every item")), new NamedItem("clear", L.T("Clear every tick"))],
             _ => [],
         };
         foreach (var item in items)
@@ -571,16 +572,16 @@ public sealed partial class BulkEditDialogViewModel : DialogViewModelBase
         Choice = Choices.FirstOrDefault();
         Hint = Field.Id switch
         {
-            StatusField => "Issues whose workflow doesn't allow the move stay where they are.",
-            IssueFields.Type => "A type of the same level (story, task, bug…); an epic stays an epic.",
-            IssueFields.StoryPoints => "A number; empty clears it.",
-            AddCriteriaField => "One criterion per line; added to every selected issue, after the ones it has.",
-            DoneField => "Ticks or clears the Definition of Done items on every selected issue (not epics or sub-tasks).",
-            AddLabelsField => "Labels separated by spaces, added to the ones each issue has.",
-            IssueFields.Labels => "Labels separated by spaces, replacing the ones each issue has; empty clears them.",
-            IssueFields.FixVersions => "Version names separated by commas; empty clears them.",
-            IssueFields.Components => "Component names separated by commas; empty clears them.",
-            IssueFields.Start or IssueFields.Due => "A date like 2026-10-31; empty clears it.",
+            StatusField => L.T("Issues whose workflow doesn't allow the move stay where they are."),
+            IssueFields.Type => L.T("A type of the same level (story, task, bug…); an epic stays an epic."),
+            IssueFields.StoryPoints => L.T("A number; empty clears it."),
+            AddCriteriaField => L.T("One criterion per line; added to every selected issue, after the ones it has."),
+            DoneField => L.T("Ticks or clears the Definition of Done items on every selected issue (not epics or sub-tasks)."),
+            AddLabelsField => L.T("Labels separated by spaces, added to the ones each issue has."),
+            IssueFields.Labels => L.T("Labels separated by spaces, replacing the ones each issue has; empty clears them."),
+            IssueFields.FixVersions => L.T("Version names separated by commas; empty clears them."),
+            IssueFields.Components => L.T("Component names separated by commas; empty clears them."),
+            IssueFields.Start or IssueFields.Due => L.T("A date like 2026-10-31; empty clears it."),
             _ => "",
         };
     }
@@ -601,12 +602,12 @@ public sealed partial class BulkEditDialogViewModel : DialogViewModelBase
                 var stuck = issues.Count(i => i.Status != status) - moving.Count;
                 if (moving.Count == 0)
                 {
-                    Error = stuck > 0 ? $"None of them can move to {name}: their workflow doesn't allow it." : $"They're all in {name} already.";
+                    Error = stuck > 0 ? L.T($"None of them can move to {name}: their workflow doesn't allow it.") : L.T($"They're all in {name} already.");
                     return false;
                 }
-                var ok = await _context.RunAsync(new Batch([.. moving.Select(i => new TransitionIssue(i.Id, status))], $"{moving.Count} issues moved to {name}"));
+                var ok = await _context.RunAsync(new Batch([.. moving.Select(i => new TransitionIssue(i.Id, status))], L.T($"{moving.Count} issues moved to {name}")));
                 if (ok && stuck > 0)
-                    _context.Status.Show($"{moving.Count} issues moved to {name}; {stuck} couldn't (their workflow doesn't allow it).");
+                    _context.Status.Show(L.T($"{moving.Count} issues moved to {name}; {stuck} couldn't (their workflow doesn't allow it)."));
                 return ok;
             }
             case AddCriteriaField:
@@ -618,7 +619,7 @@ public sealed partial class BulkEditDialogViewModel : DialogViewModelBase
                 if (targets.Count == 0)
                     return Fail("Epics have no acceptance criteria; select stories, tasks or bugs.");
                 return await _context.RunAsync(new Batch([.. targets.SelectMany(i => lines.Select(l => new AddCriterion(i.Id, l)))],
-                    $"{targets.Count} issues: {lines.Count} acceptance criteria added"));
+                    L.T($"{targets.Count} issues: {lines.Count} acceptance criteria added")));
             }
             case DoneField:
             {
@@ -628,8 +629,8 @@ public sealed partial class BulkEditDialogViewModel : DialogViewModelBase
                     .SelectMany(i => items.Where(d => i.DoneChecks.Contains(d.Id) != tick).Select(d => new CheckDoneItem(i.Id, d.Id, tick)))
                     .ToList<IBoardOperation>();
                 if (steps.Count == 0)
-                    return Fail(tick ? "Every item is ticked already." : "Nothing is ticked.");
-                return await _context.RunAsync(new Batch(steps, $"{label}: Definition of Done {(tick ? "ticked" : "cleared")}"));
+                    return Fail(tick ? L.T("Every item is ticked already.") : L.T("Nothing is ticked."));
+                return await _context.RunAsync(new Batch(steps, L.T($"{label}: Definition of Done {(tick ? L.T("ticked") : L.T("cleared"))}")));
             }
             case AddLabelsField:
             {
@@ -677,7 +678,7 @@ public sealed partial class BulkEditDialogViewModel : DialogViewModelBase
                     return new FieldValue.Number(null);
                 if (double.TryParse(text.Replace(',', '.'), NumberStyles.Float, CultureInfo.InvariantCulture, out var n))
                     return new FieldValue.Number(n);
-                Error = "Story points must be a number.";
+                Error = L.T("Story points must be a number.");
                 return null;
             case IssueFields.Labels:
                 return new FieldValue.Items(text.Split([' ', ','], StringSplitOptions.RemoveEmptyEntries));
@@ -692,7 +693,7 @@ public sealed partial class BulkEditDialogViewModel : DialogViewModelBase
                         : _context.Project.Components.FirstOrDefault(c => string.Equals(c.Name, name, StringComparison.OrdinalIgnoreCase))?.Id;
                     if (id is null)
                     {
-                        Error = $"There's no {(Field.Id == IssueFields.FixVersions ? "version" : "component")} \"{name}\".";
+                        Error = L.T($"There's no {(Field.Id == IssueFields.FixVersions ? L.T("version") : L.T("component"))} \"{name}\".");
                         return null;
                     }
                     ids.Add(id);
@@ -706,7 +707,7 @@ public sealed partial class BulkEditDialogViewModel : DialogViewModelBase
                 if (DateOnly.TryParse(text, CultureInfo.CurrentCulture, out var date)
                     || DateOnly.TryParseExact(text, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
                     return new FieldValue.Date(date);
-                Error = "A date looks like 2026-10-31.";
+                Error = L.T("A date looks like 2026-10-31.");
                 return null;
             default:
                 return new FieldValue.Text(Choice?.Id);

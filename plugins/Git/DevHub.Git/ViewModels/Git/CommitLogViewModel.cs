@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHub.Sdk.Core.Formatting;
 using DevHub.Git.Core;
 using DevHub.Services;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Git;
 
@@ -185,11 +186,11 @@ public partial class CommitLogViewModel : ViewModelBase
     /// <summary>What the list area says when there are no rows (empty repository, no matches, error).</summary>
     public string? PlaceholderText =>
         HasRows ? null
-        : Error is not null ? "Couldn't read the history: " + Error
+        : Error is not null ? L.T("Couldn't read the history: ") + Error
         : IsLoading ? null
-        : IsFiltering ? "No commits match the search."
+        : IsFiltering ? L.T("No commits match the search.")
         : _loadedSignature is null ? null
-        : "No commits yet.";
+        : L.T("No commits yet.");
 
     /// <summary>The section was shown: load the history if it hasn't been yet (<paramref name="signature"/>: see <see cref="RefreshIfChangedAsync"/>).</summary>
     public Task EnsureLoadedAsync(string signature) =>
@@ -387,10 +388,10 @@ public sealed class RefBadgeViewModel(GitRefLabel label)
 
     public string ToolTip => label.Kind switch
     {
-        GitRefKind.Head => "HEAD (detached): the checked-out commit",
-        GitRefKind.Tag => $"Tag {Name}",
-        GitRefKind.RemoteBranch => $"Remote branch {Name}",
-        _ => label.IsHead ? $"Branch {Name} (checked out)" : $"Branch {Name}",
+        GitRefKind.Head => L.T("HEAD (detached): the checked-out commit"),
+        GitRefKind.Tag => L.T($"Tag {Name}"),
+        GitRefKind.RemoteBranch => L.T($"Remote branch {Name}"),
+        _ => label.IsHead ? L.T($"Branch {Name} (checked out)") : L.T($"Branch {Name}"),
     };
 
     public override string ToString() => Name;

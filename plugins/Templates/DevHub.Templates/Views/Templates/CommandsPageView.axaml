@@ -4,6 +4,7 @@
 -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:t="using:DevHub.ViewModels.Templates"
              xmlns:c="using:DevHub.Controls"
              x:Class="DevHub.Views.Templates.CommandsPageView"
@@ -17,12 +18,12 @@
 
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="{DynamicResource Spacing}"
                     Margin="{DynamicResource Margin.BlockAbove}">
-            <Button Content="Back" Command="{Binding BackCommand}" IsCancel="True" />
-            <Button Classes="accent" Content="Run" Command="{Binding RunCommand}" IsDefault="True" />
+            <Button Content="{l:T 'Back'}" Command="{Binding BackCommand}" IsCancel="True" />
+            <Button Classes="accent" Content="{l:T 'Run'}" Command="{Binding RunCommand}" IsDefault="True" />
         </StackPanel>
 
         <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-            <ItemsControl ItemsSource="{Binding Commands}" AutomationProperties.Name="Commands">
+            <ItemsControl ItemsSource="{Binding Commands}" AutomationProperties.Name="{l:T 'Commands'}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="t:CommandRowViewModel">
                         <Border Background="{DynamicResource Brush.Bg.Panel}" CornerRadius="{DynamicResource Radius.Control}"
@@ -32,7 +33,7 @@
                                     <c:Icon Kind="run" VerticalAlignment="Center" />
                                     <TextBlock Grid.Column="1" Text="{Binding Name}" FontWeight="SemiBold"
                                                TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
-                                    <c:Badge Grid.Column="2" Content="continues if it fails" IsVisible="{Binding ContinuesOnError}" />
+                                    <c:Badge Grid.Column="2" Content="{l:T 'continues if it fails'}" IsVisible="{Binding ContinuesOnError}" />
                                 </Grid>
                                 <SelectableTextBlock Classes="code" Text="{Binding Text}" TextWrapping="Wrap" />
                                 <TextBlock Classes="small secondary" Text="{Binding Where}" />

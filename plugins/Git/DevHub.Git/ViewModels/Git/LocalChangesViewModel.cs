@@ -6,6 +6,7 @@ using DevHub.Git.Core;
 using DevHub.Integration;
 using DevHub.Services;
 using DevHub.ViewModels.Dialogs;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Git;
 
@@ -353,13 +354,13 @@ public partial class LocalChangesViewModel : ViewModelBase
         if (targets.Count == 0)
         {
             _status.Show(SelectedStaged is not null
-                ? "Discard works on unstaged changes. Unstage the file first (Space), then discard it."
-                : "Select a file in Unstaged to discard its changes.");
+                ? L.T("Discard works on unstaged changes. Unstage the file first (Space), then discard it.")
+                : L.T("Select a file in Unstaged to discard its changes."));
             return Task.CompletedTask;
         }
         if (targets.All(f => f.IsConflicted))
         {
-            _status.Show("A conflicted file isn't discarded: resolve it (Accept Yours / Accept Theirs) instead.");
+            _status.Show(L.T("A conflicted file isn't discarded: resolve it (Accept Yours / Accept Theirs) instead."));
             return Task.CompletedTask;
         }
         return DiscardAsync(targets.Where(f => !f.IsConflicted).ToList());
@@ -401,7 +402,7 @@ public partial class LocalChangesViewModel : ViewModelBase
         var items = files.Count == 1
             ? null
             : files.Select(f => f.IsUntracked ? f.Change.Path + "  (deleted)" : f.Change.Path).ToList();
-        var confirm = new ConfirmDialogViewModel("Discard Changes", DiscardMessage(files), "Discard", items);
+        var confirm = new ConfirmDialogViewModel(L.T("Discard Changes"), DiscardMessage(files), L.T("Discard"), items);
         if (!await _dialogs.ShowDialogAsync(confirm))
             return;
 
@@ -422,18 +423,17 @@ public partial class LocalChangesViewModel : ViewModelBase
                 for (var i = 0; i < diff.Hunks[h].Lines.Count; i++)
                     if (diff.Hunks[h].Lines[i].Kind != DiffLineKind.Context && isSelected(h, i))
                         count++;
-            var confirm = new ConfirmDialogViewModel("Discard Selected Changes",
-                $"Discard {count} changed line{(count == 1 ? "" : "s")} in {diff.Path}? They go back to their staged or " +
-                "last committed version in the file on disk. This can't be undone.", "Discard");
+            var confirm = new ConfirmDialogViewModel(L.T("Discard Selected Changes"),
+                L.T($"Discard {count} changed line{(count == 1 ? "" : "s")} in {diff.Path}? They go back to their staged or last committed version in the file on disk. This can't be undone."), L.T("Discard"));
             if (!await _dialogs.ShowDialogAsync(confirm))
                 return;
         }
 
         var (what, list) = action switch
         {
-            PartialAction.Stage => ("Stage lines", UnstagedRows),
-            PartialAction.Unstage => ("Unstage lines", StagedRows),
-            _ => ("Discard lines", UnstagedRows),
+            PartialAction.Stage => (L.T("Stage lines"), UnstagedRows),
+            PartialAction.Unstage => (L.T("Unstage lines"), StagedRows),
+            _ => (L.T("Discard lines"), UnstagedRows),
         };
         await RunAsync(what, client => client.ApplyPartialAsync(diff, isSelected, action), list, -1);
     }
@@ -449,17 +449,17 @@ public partial class LocalChangesViewModel : ViewModelBase
         {
             var path = files[0].Change.Path;
             return files[0].IsUntracked
-                ? $"Delete {path}? It isn't tracked by git, so it is {permanent}."
-                : $"Discard your unstaged changes to {path}? It goes back to its staged or last committed version. This can't be undone.";
+                ? L.T($"Delete {path}? It isn't tracked by git, so it is {permanent}.")
+                : L.T($"Discard your unstaged changes to {path}? It goes back to its staged or last committed version. This can't be undone.");
         }
 
         var untracked = files.Count(f => f.IsUntracked);
-        var message = $"Discard the unstaged changes to {files.Count} files?";
+        var message = L.T($"Discard the unstaged changes to {files.Count} files?");
         if (untracked < files.Count)
-            message += " Tracked files go back to their staged or last committed version; staged changes are kept.";
+            message += L.T(" Tracked files go back to their staged or last committed version; staged changes are kept.");
         if (untracked > 0)
-            message += untracked == 1 ? $" 1 untracked file is {permanent}." : $" {untracked} untracked files are {permanent}.";
-        return message + " This can't be undone.";
+            message += untracked == 1 ? L.T($" 1 untracked file is {permanent}.") : L.T($" {untracked} untracked files are {permanent}.");
+        return message + L.T(" This can't be undone.");
     }
 
     /// <summary>
@@ -639,9 +639,9 @@ public sealed partial class ChangeFolderRowViewModel : ChangeRowViewModel
 
     public override string Key => "D:" + Path;
 
-    public string ToolTip => $"{Path} ({Count} changed file{(Count == 1 ? "" : "s")})";
+    public string ToolTip => L.T($"{Path} ({Count} changed file{(Count == 1 ? "" : "s")})");
 
-    public override string ToString() => $"Folder {Path}, {Count} files";
+    public override string ToString() => L.T($"Folder {Path}, {Count} files");
 }
 
 /// <summary>A file row in Local Changes. In the Staged list it shows the staged status letter, in Unstaged the unstaged one.</summary>
@@ -672,12 +672,12 @@ public sealed partial class FileChangeViewModel : ChangeRowViewModel
         };
         StatusText = Color switch
         {
-            ChangeColor.Untracked => "Untracked",
-            ChangeColor.Conflicted => "Conflict",
-            ChangeColor.Added => "Added",
-            ChangeColor.Deleted => "Deleted",
-            ChangeColor.Renamed => "Renamed",
-            _ => "Modified",
+            ChangeColor.Untracked => L.T("Untracked"),
+            ChangeColor.Conflicted => L.T("Conflict"),
+            ChangeColor.Added => L.T("Added"),
+            ChangeColor.Deleted => L.T("Deleted"),
+            ChangeColor.Renamed => L.T("Renamed"),
+            _ => L.T("Modified"),
         };
     }
 

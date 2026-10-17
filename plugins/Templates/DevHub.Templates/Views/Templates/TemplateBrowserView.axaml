@@ -5,6 +5,7 @@
 -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:t="using:DevHub.ViewModels.Templates"
              xmlns:c="using:DevHub.Controls"
              xmlns:a="using:DevHub.Actions"
@@ -14,25 +15,25 @@
         <StackPanel DockPanel.Dock="Top" Margin="{DynamicResource Padding.SidebarHeader}"
                     Spacing="{DynamicResource Spacing}">
             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing}">
-                <TextBlock Classes="header" Text="Templates" VerticalAlignment="Center" />
+                <TextBlock Classes="header" Text="{l:T 'Templates'}" VerticalAlignment="Center" />
                 <c:Toolbar Grid.Column="1">
                     <c:ActionButton Action="{a:Action Templates.OpenLibraryFolder}" />
                     <c:ActionButton Action="{a:Action Templates.Reload}" />
                 </c:Toolbar>
             </Grid>
-            <c:SearchField Text="{Binding Search}" PlaceholderText="Search templates" />
+            <c:SearchField Text="{Binding Search}" PlaceholderText="{l:T 'Search templates'}" />
             <Grid ColumnDefinitions="*,*" ColumnSpacing="{DynamicResource Spacing.Small}">
                 <ComboBox ItemsSource="{Binding Libraries}" SelectedItem="{Binding Library}"
-                          HorizontalAlignment="Stretch" AutomationProperties.Name="Library" />
+                          HorizontalAlignment="Stretch" AutomationProperties.Name="{l:T 'Library'}" />
                 <ComboBox Grid.Column="1" ItemsSource="{Binding Kinds}" SelectedItem="{Binding Kind}"
-                          HorizontalAlignment="Stretch" AutomationProperties.Name="Kind" />
+                          HorizontalAlignment="Stretch" AutomationProperties.Name="{l:T 'Kind'}" />
             </Grid>
             <!-- No GroupName: radio buttons in the same panel form a group; a name would join them
                  with the other browser's (New Project and Templates both have one). -->
             <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing.Large}">
-                <TextBlock Classes="small secondary" Text="Group by" VerticalAlignment="Center" />
-                <RadioButton Content="Category" IsChecked="{Binding GroupByCategory}" />
-                <RadioButton Content="Language" IsChecked="{Binding GroupByLanguage}" />
+                <TextBlock Classes="small secondary" Text="{l:T 'Group by'}" VerticalAlignment="Center" />
+                <RadioButton Content="{l:T 'Category'}" IsChecked="{Binding GroupByCategory}" />
+                <RadioButton Content="{l:T 'Language'}" IsChecked="{Binding GroupByLanguage}" />
             </StackPanel>
             <TextBlock Text="{Binding LoadError}" TextWrapping="Wrap" Foreground="{DynamicResource Brush.Status.Error}"
                        IsVisible="{Binding LoadError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
@@ -41,18 +42,18 @@
                      IsVisible="{Binding IsLoading}" />
 
         <Panel>
-            <c:EmptyState IconKind="template" Title="No templates yet"
-                          Description="Templates are folders with a template.json. Your own go in the templates folder."
+            <c:EmptyState IconKind="template" Title="{l:T 'No templates yet'}"
+                          Description="{l:T 'Templates are folders with a template.json. Your own go in the templates folder.'}"
                           IsVisible="{Binding ShowEmpty}">
-                <Button Content="Open Templates Folder" Command="{Binding OpenLibraryFolderCommand}" />
+                <Button Content="{l:T 'Open Templates Folder'}" Command="{Binding OpenLibraryFolderCommand}" />
             </c:EmptyState>
-            <c:EmptyState IconKind="search" Title="Nothing matches"
-                          Description="Try other words, or another library or kind."
+            <c:EmptyState IconKind="search" Title="{l:T 'Nothing matches'}"
+                          Description="{l:T 'Try other words, or another library or kind.'}"
                           IsVisible="{Binding NothingMatches}" />
 
             <TreeView ItemsSource="{Binding Groups}" SelectedItem="{Binding SelectedNode}"
                       Background="Transparent" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                      AutomationProperties.Name="Templates">
+                      AutomationProperties.Name="{l:T 'Templates'}">
                 <TreeView.KeyBindings>
                     <KeyBinding Gesture="Enter" Command="{Binding ActivateSelectedCommand}" />
                 </TreeView.KeyBindings>
@@ -84,7 +85,7 @@
                             <TextBlock Grid.Column="1" Text="{Binding Name}"
                                        TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
                             <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}">
-                                <c:Badge Content="item" IsVisible="{Binding IsItem}" VerticalAlignment="Center" />
+                                <c:Badge Content="{l:T 'item'}" IsVisible="{Binding IsItem}" VerticalAlignment="Center" />
                                 <TextBlock Classes="small secondary" Text="{Binding Detail}" VerticalAlignment="Center" />
                             </StackPanel>
                         </Grid>

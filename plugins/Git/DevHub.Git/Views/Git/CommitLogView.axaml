@@ -7,6 +7,7 @@
 -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:vm="using:DevHub.ViewModels.Git"
              xmlns:c="using:DevHub.Controls"
              x:Class="DevHub.Views.Git.CommitLogView"
@@ -41,12 +42,12 @@
         <Border DockPanel.Dock="Top" Classes="listGroupHeader"
                 Background="{DynamicResource Brush.Bg.Panel}" BorderBrush="{DynamicResource Brush.Separator}">
             <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
-                <c:SearchField Text="{Binding Filter}" PlaceholderText="Search: message, author, id, branch"
+                <c:SearchField Text="{Binding Filter}" PlaceholderText="{l:T 'Search: message, author, id, branch'}"
                                MaxWidth="{DynamicResource Size.CommitFilter}" HorizontalAlignment="Stretch" />
                 <TextBlock Grid.Column="1" Classes="small secondary" Text="{Binding CountText}" VerticalAlignment="Center" />
-                <Button Grid.Column="2" Classes="flat" Content="Load more" Command="{Binding LoadMoreCommand}"
+                <Button Grid.Column="2" Classes="flat" Content="{l:T 'Load more'}" Command="{Binding LoadMoreCommand}"
                         IsVisible="{Binding HasMore}"
-                        ToolTip.Tip="Load the next 1,000 older commits" />
+                        ToolTip.Tip="{l:T 'Load the next 1,000 older commits'}" />
             </Grid>
         </Border>
 
@@ -64,25 +65,25 @@
 
         <!-- The commit list. -->
         <Panel>
-            <c:EmptyState IconKind="commit" Title="All Commits" Description="{Binding PlaceholderText}"
+            <c:EmptyState IconKind="commit" Title="{l:T 'All Commits'}" Description="{Binding PlaceholderText}"
                           IsVisible="{Binding PlaceholderText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
             <!-- No horizontal scrolling: rows get the list's width, so the subject column (*) can
                  take what the fixed columns leave and trim with "…". -->
             <ListBox Classes="commits" Classes.filtering="{Binding IsFiltering}" Background="Transparent"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                     AutomationProperties.Name="Commits" IsVisible="{Binding HasRows}"
+                     AutomationProperties.Name="{l:T 'Commits'}" IsVisible="{Binding HasRows}"
                      ItemsSource="{Binding Rows}" SelectedItem="{Binding Selected}">
                 <!-- JetBrains' Log menu (G8). Right-click selects the row first. -->
                 <ListBox.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Cherry-Pick" Command="{Binding CherryPickCommand}"
-                                  ToolTip.Tip="Copy this commit's changes onto the current branch as a new commit" />
-                        <MenuItem Header="Revert Commit" Command="{Binding RevertCommand}"
-                                  ToolTip.Tip="Add a new commit that undoes this one (history isn't rewritten)" />
+                        <MenuItem Header="{l:T 'Cherry-Pick'}" Command="{Binding CherryPickCommand}"
+                                  ToolTip.Tip="{l:T 'Copy this commit\'s changes onto the current branch as a new commit'}" />
+                        <MenuItem Header="{l:T 'Revert Commit'}" Command="{Binding RevertCommand}"
+                                  ToolTip.Tip="{l:T 'Add a new commit that undoes this one (history isn\'t rewritten)'}" />
                         <Separator />
-                        <MenuItem Header="New Branch from Here…" Command="{Binding NewBranchHereCommand}" />
-                        <MenuItem Header="New Tag Here…" Command="{Binding NewTagHereCommand}" />
+                        <MenuItem Header="{l:T 'New Branch from Here…'}" Command="{Binding NewBranchHereCommand}" />
+                        <MenuItem Header="{l:T 'New Tag Here…'}" Command="{Binding NewTagHereCommand}" />
                     </ContextMenu>
                 </ListBox.ContextMenu>
                 <ListBox.ItemTemplate>

@@ -1,4 +1,5 @@
 using System.Globalization;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Board.Core.Storage;
 
@@ -81,7 +82,7 @@ public sealed class FolderBoardStore : IBoardStore
         foreach (var path in change.Files.Keys)
         {
             if (!BoardPaths.IsSafe(path) || IsStoreFile(path))
-                throw new BoardStoreException($"\"{path}\" isn't a path a board may write.");
+                throw new BoardStoreException(L.T($"\"{path}\" isn't a path a board may write."));
         }
 
         Directory.CreateDirectory(Folder);
@@ -90,8 +91,8 @@ public sealed class FolderBoardStore : IBoardStore
         var current = HasBoard(Folder) ? ReadVersion() : BoardFiles.NoBoard;
         if (current != expectedVersion)
             throw new BoardConflictException(expectedVersion == BoardFiles.NoBoard
-                ? $"There's already a board in {Folder}."
-                : "The board was changed somewhere else.");
+                ? L.T($"There's already a board in {Folder}.")
+                : L.T("The board was changed somewhere else."));
 
         var next = (long.TryParse(current, NumberStyles.None, CultureInfo.InvariantCulture, out var n) ? n : 0) + 1;
         var nextVersion = next.ToString(CultureInfo.InvariantCulture);
@@ -142,7 +143,7 @@ public sealed class FolderBoardStore : IBoardStore
         var full = Path.GetFullPath(Path.Combine(Folder, relative.Replace('/', Path.DirectorySeparatorChar)));
         var root = Folder.EndsWith(Path.DirectorySeparatorChar) ? Folder : Folder + Path.DirectorySeparatorChar;
         if (!full.StartsWith(root, StringComparison.OrdinalIgnoreCase))
-            throw new BoardStoreException($"\"{relative}\" is outside the board folder.");
+            throw new BoardStoreException(L.T($"\"{relative}\" is outside the board folder."));
         return full;
     }
 
@@ -208,7 +209,7 @@ public sealed class FolderBoardStore : IBoardStore
             }
             catch (IOException e)
             {
-                throw new BoardStoreException($"The board in {Folder} is locked by another program.", e);
+                throw new BoardStoreException(L.T($"The board in {Folder} is locked by another program."), e);
             }
         }
     }
@@ -275,7 +276,7 @@ public sealed class FolderBoardStoreProvider : IBoardStoreProvider
     public const string KindId = "folder";
 
     public string Kind => KindId;
-    public string DisplayName => "Folder";
+    public string DisplayName => L.T("Folder");
 
     public Task<bool> CanUseAsync(string location, CancellationToken ct = default) =>
         Task.FromResult(!string.IsNullOrWhiteSpace(location) && !File.Exists(location));

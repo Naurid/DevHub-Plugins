@@ -7,6 +7,7 @@
 -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:docs="using:DevHub.ViewModels.Documents"
              xmlns:c="using:DevHub.Controls"
              xmlns:conv="using:DevHub.Converters"
@@ -20,8 +21,8 @@
 
     <Panel>
         <!-- Git not installed: nothing else can work. -->
-        <c:EmptyState IconKind="warning" Title="Git is not installed"
-                      Description="DevHub runs the git command-line tool. Install Git for Windows (git-scm.com), then restart DevHub."
+        <c:EmptyState IconKind="warning" Title="{l:T 'Git is not installed'}"
+                      Description="{l:T 'DevHub runs the git command-line tool. Install Git for Windows (git-scm.com), then restart DevHub.'}"
                       IsVisible="{Binding !IsGitAvailable}" />
 
         <DockPanel IsVisible="{Binding IsGitAvailable}">
@@ -40,20 +41,20 @@
                             <!-- Fork's Fetch / Pull / Push buttons (also Git menu, Ctrl+T, Ctrl+Shift+K).
                                  Disabled while one runs; progress and Cancel are in the status bar. -->
                             <c:Toolbar Grid.Column="2">
-                                <c:ActionButton IconKind="fetch" AutomationProperties.Name="Fetch"
-                                                ToolTip.Tip="Fetch: download what's new on the remotes (changes nothing locally)"
+                                <c:ActionButton IconKind="fetch" AutomationProperties.Name="{l:T 'Fetch'}"
+                                                ToolTip.Tip="{l:T 'Fetch: download what\'s new on the remotes (changes nothing locally)'}"
                                                 Command="{Binding Remote.FetchCommand}" />
-                                <c:ActionButton IconKind="update" AutomationProperties.Name="Update"
-                                                ToolTip.Tip="Update (Ctrl+T): pull the current branch's new commits"
+                                <c:ActionButton IconKind="update" AutomationProperties.Name="{l:T 'Update'}"
+                                                ToolTip.Tip="{l:T 'Update (Ctrl+T): pull the current branch\'s new commits'}"
                                                 Command="{Binding Remote.PullCommand}" />
-                                <c:ActionButton IconKind="push" AutomationProperties.Name="Push"
-                                                ToolTip.Tip="Push… (Ctrl+Shift+K): send your commits to the remote"
+                                <c:ActionButton IconKind="push" AutomationProperties.Name="{l:T 'Push'}"
+                                                ToolTip.Tip="{l:T 'Push… (Ctrl+Shift+K): send your commits to the remote'}"
                                                 Command="{Binding Remote.PushCommand}" />
-                                <c:ActionButton IconKind="template" AutomationProperties.Name="Add Files from Template"
-                                                ToolTip.Tip="Add Files from Template: new files (a class, a script…) in this repository"
+                                <c:ActionButton IconKind="template" AutomationProperties.Name="{l:T 'Add Files from Template'}"
+                                                ToolTip.Tip="{l:T 'Add Files from Template: new files (a class, a script…) in this repository'}"
                                                 Command="{Binding AddFilesCommand}" IsVisible="{Binding CanAddFiles}" />
-                                <c:ActionButton IconKind="terminal" AutomationProperties.Name="Open Terminal"
-                                                ToolTip.Tip="Open Terminal (Alt+F12): Git Bash in this repository, for any git command"
+                                <c:ActionButton IconKind="terminal" AutomationProperties.Name="{l:T 'Open Terminal'}"
+                                                ToolTip.Tip="{l:T 'Open Terminal (Alt+F12): Git Bash in this repository, for any git command'}"
                                                 Command="{Binding OpenTerminalCommand}" />
                             </c:Toolbar>
                         </Grid>
@@ -81,7 +82,7 @@
                          right (SidebarItem theme). A branch: select = show it in All Commits,
                          double-click / Enter = check out, right-click = its menu. Left / Right fold. -->
                     <TreeView ItemsSource="{Binding Sidebar}" SelectedItem="{Binding SelectedNode}"
-                              Background="Transparent" AutomationProperties.Name="Repository sidebar">
+                              Background="Transparent" AutomationProperties.Name="{l:T 'Repository sidebar'}">
                         <TreeView.Resources>
                             <!-- Rows indent by depth (Level × Size.TreeIndent). -->
                             <conv:IndentConverter x:Key="SidebarIndent" Step="{StaticResource Size.TreeIndent}" />
@@ -155,10 +156,10 @@
                                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing}" Background="Transparent">
                                     <Grid.ContextMenu>
                                         <ContextMenu>
-                                            <MenuItem Header="New Branch…" Command="{Binding NewBranchCommand}" IsVisible="{Binding IsBranches}" />
-                                            <MenuItem Header="Manage Remotes…" Command="{Binding ManageRemotesCommand}" IsVisible="{Binding IsRemotes}" />
+                                            <MenuItem Header="{l:T 'New Branch…'}" Command="{Binding NewBranchCommand}" IsVisible="{Binding IsBranches}" />
+                                            <MenuItem Header="{l:T 'Manage Remotes…'}" Command="{Binding ManageRemotesCommand}" IsVisible="{Binding IsRemotes}" />
                                             <MenuItem Header="{Binding PublishText}" Command="{Binding PublishCommand}" IsVisible="{Binding CanPublish}" />
-                                            <MenuItem Header="Fetch All" Command="{Binding FetchCommand}" IsVisible="{Binding IsRemotes}" />
+                                            <MenuItem Header="{l:T 'Fetch All'}" Command="{Binding FetchCommand}" IsVisible="{Binding IsRemotes}" />
                                         </ContextMenu>
                                     </Grid.ContextMenu>
                                     <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
@@ -172,8 +173,8 @@
                                            Background="Transparent" ToolTip.Tip="{Binding ToolTip}">
                                     <TextBlock.ContextMenu>
                                         <ContextMenu>
-                                            <MenuItem Header="Fetch" Command="{Binding FetchCommand}" />
-                                            <MenuItem Header="Edit / Remove Remote…" Command="{Binding ManageRemotesCommand}" />
+                                            <MenuItem Header="{l:T 'Fetch'}" Command="{Binding FetchCommand}" />
+                                            <MenuItem Header="{l:T 'Edit / Remove Remote…'}" Command="{Binding ManageRemotesCommand}" />
                                         </ContextMenu>
                                     </TextBlock.ContextMenu>
                                 </TextBlock>
@@ -194,14 +195,14 @@
                                       ToolTip.Tip="{Binding ToolTip}" c:DoubleTap.Command="{Binding CheckoutCommand}">
                                     <Grid.ContextMenu>
                                         <ContextMenu>
-                                            <MenuItem Header="Checkout" InputGesture="Enter" Command="{Binding CheckoutCommand}" />
-                                            <MenuItem Header="New Branch from Here…" Command="{Binding NewBranchFromCommand}" />
+                                            <MenuItem Header="{l:T 'Checkout'}" InputGesture="Enter" Command="{Binding CheckoutCommand}" />
+                                            <MenuItem Header="{l:T 'New Branch from Here…'}" Command="{Binding NewBranchFromCommand}" />
                                             <Separator />
-                                            <MenuItem Header="Merge into Current Branch…" Command="{Binding MergeIntoCurrentCommand}" />
-                                            <MenuItem Header="Rebase Current Branch onto This…" Command="{Binding RebaseCurrentOntoCommand}" />
+                                            <MenuItem Header="{l:T 'Merge into Current Branch…'}" Command="{Binding MergeIntoCurrentCommand}" />
+                                            <MenuItem Header="{l:T 'Rebase Current Branch onto This…'}" Command="{Binding RebaseCurrentOntoCommand}" />
                                             <Separator IsVisible="{Binding IsLocal}" />
-                                            <MenuItem Header="Rename…" Command="{Binding RenameCommand}" IsVisible="{Binding IsLocal}" />
-                                            <MenuItem Header="Delete…" Command="{Binding DeleteCommand}" IsVisible="{Binding IsLocal}" />
+                                            <MenuItem Header="{l:T 'Rename…'}" Command="{Binding RenameCommand}" IsVisible="{Binding IsLocal}" />
+                                            <MenuItem Header="{l:T 'Delete…'}" Command="{Binding DeleteCommand}" IsVisible="{Binding IsLocal}" />
                                         </ContextMenu>
                                     </Grid.ContextMenu>
                                     <!-- The name, then other plugins' marks right after it (CI: the branch's latest run): next
@@ -259,13 +260,13 @@
                         </StackPanel>
                         <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="{DynamicResource Spacing}"
                                     VerticalAlignment="Center">
-                            <Button Classes="accent" Content="Continue" Command="{Binding Conflicts.ContinueCommand}"
-                                    ToolTip.Tip="Finish: commit the merge, or go on with the rebase (all conflicts must be resolved)" />
-                            <Button Content="Skip Commit…" Command="{Binding Conflicts.SkipCommand}"
+                            <Button Classes="accent" Content="{l:T 'Continue'}" Command="{Binding Conflicts.ContinueCommand}"
+                                    ToolTip.Tip="{l:T 'Finish: commit the merge, or go on with the rebase (all conflicts must be resolved)'}" />
+                            <Button Content="{l:T 'Skip Commit…'}" Command="{Binding Conflicts.SkipCommand}"
                                     IsVisible="{Binding Conflicts.CanSkip}"
-                                    ToolTip.Tip="Leave out the commit that stopped the rebase (asks first)" />
-                            <Button Content="Abort…" Command="{Binding Conflicts.AbortCommand}"
-                                    ToolTip.Tip="Cancel and put everything back as before (asks first)" />
+                                    ToolTip.Tip="{l:T 'Leave out the commit that stopped the rebase (asks first)'}" />
+                            <Button Content="{l:T 'Abort…'}" Command="{Binding Conflicts.AbortCommand}"
+                                    ToolTip.Tip="{l:T 'Cancel and put everything back as before (asks first)'}" />
                         </StackPanel>
                     </Grid>
                 </Border>

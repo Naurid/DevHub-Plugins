@@ -1,6 +1,7 @@
 using DevHub.Board.Core.Model;
 using DevHub.Board.Core.Search;
 using DevHub.Board.Core.Storage;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Board.Core;
 
@@ -8,10 +9,10 @@ namespace DevHub.Board.Core;
 internal static class BoardViews
 {
     public static BoardDefinition Require(BoardSnapshot board, string boardId) =>
-        board.Boards.GetValueOrDefault(boardId) ?? throw new BoardRuleException("That board doesn't exist any more.");
+        board.Boards.GetValueOrDefault(boardId) ?? throw new BoardRuleException(L.T("That board doesn't exist any more."));
 
     public static BoardColumn RequireColumn(BoardDefinition definition, string columnId) =>
-        definition.Columns.FirstOrDefault(c => c.Id == columnId) ?? throw new BoardRuleException("That column doesn't exist any more.");
+        definition.Columns.FirstOrDefault(c => c.Id == columnId) ?? throw new BoardRuleException(L.T("That column doesn't exist any more."));
 
     public static void Write(ChangeBuilder change, BoardDefinition definition) => change.Write(BoardPaths.Board(definition.Id), definition);
 
@@ -27,7 +28,7 @@ internal static class BoardViews
         }
         catch (QueryException e)
         {
-            throw new BoardRuleException("The query has a problem: " + e.Message);
+            throw new BoardRuleException(L.T("The query has a problem: ") + e.Message);
         }
     }
 }
@@ -66,12 +67,12 @@ public sealed record CreateBoardView(string Name, BoardKind Kind) : IBoardOperat
             Filter = Filter.Trim(),
             QuickFilters =
             [
-                new QuickFilter { Id = change.NewId(), Name = "Only my issues", Query = "assignee = currentUser()" },
-                new QuickFilter { Id = change.NewId(), Name = "Recently updated", Query = "updated >= -1d" },
+                new QuickFilter { Id = change.NewId(), Name = L.T("Only my issues"), Query = "assignee = currentUser()" },
+                new QuickFilter { Id = change.NewId(), Name = L.T("Recently updated"), Query = "updated >= -1d" },
             ],
         };
         BoardViews.Write(change, definition);
-        return change.Build($"Board {name} created");
+        return change.Build(L.T($"Board {name} created"));
     }
 }
 
@@ -97,7 +98,7 @@ public sealed record EditBoardView(string BoardId) : IBoardOperation
         if (Filter is not null)
             BoardViews.CheckQuery(board, Filter);
         if (HideDoneAfterDays is < 0)
-            throw new BoardRuleException("Days can't be negative.");
+            throw new BoardRuleException(L.T("Days can't be negative."));
         var change = new ChangeBuilder(board, context);
         BoardViews.Write(change, definition with
         {
@@ -110,7 +111,7 @@ public sealed record EditBoardView(string BoardId) : IBoardOperation
             HideDoneAfterDays = KeepDoneForever ? null : HideDoneAfterDays ?? definition.HideDoneAfterDays,
             CardFields = CardFields ?? definition.CardFields,
         });
-        return change.Build($"Board {name} changed");
+        return change.Build(L.T($"Board {name} changed"));
     }
 }
 
@@ -121,10 +122,10 @@ public sealed record DeleteBoardView(string BoardId) : IBoardOperation
     {
         var definition = BoardViews.Require(board, BoardId);
         if (board.Boards.Count == 1)
-            throw new BoardRuleException("A project needs at least one board.");
+            throw new BoardRuleException(L.T("A project needs at least one board."));
         var change = new ChangeBuilder(board, context);
         change.Delete(BoardPaths.Board(definition.Id));
-        return change.Build($"Board {definition.Name} deleted");
+        return change.Build(L.T($"Board {definition.Name} deleted"));
     }
 }
 
@@ -151,7 +152,7 @@ public sealed record AddColumn(string BoardId, string Name, StatusCategory Categ
         if (existing is not null)
         {
             if (definition.ColumnOf(existing.Id) is { } holder)
-                throw new BoardRuleException($"The status {existing.Name} is already in the column {holder.Name}.");
+                throw new BoardRuleException(L.T($"The status {existing.Name} is already in the column {holder.Name}."));
             statusId = existing.Id;
         }
         else
@@ -168,7 +169,7 @@ public sealed record AddColumn(string BoardId, string Name, StatusCategory Categ
         var columns = definition.Columns.ToList();
         columns.Insert(Math.Clamp(Index ?? columns.Count, 0, columns.Count), column);
         BoardViews.Write(change, definition with { Columns = columns });
-        return change.Build($"Board {definition.Name}: column {name} added");
+        return change.Build(L.T($"Board {definition.Name}: column {name} added"));
     }
 }
 
@@ -195,7 +196,7 @@ public sealed record RenameColumn(string BoardId, string ColumnId, string Name) 
                 Statuses = Definitions.Replace(change.Project.Statuses, s => s.Id == status.Id, s => s with { Name = name }),
             });
         }
-        return change.Build($"Board {definition.Name}: column {column.Name} renamed to {name}");
+        return change.Build(L.T($"Board {definition.Name}: column {column.Name} renamed to {name}"));
     }
 }
 
@@ -207,7 +208,7 @@ public sealed record MoveColumn(string BoardId, string ColumnId, int Index) : IB
         var definition = BoardViews.Require(board, BoardId);
         var change = new ChangeBuilder(board, context);
         BoardViews.Write(change, definition with { Columns = Definitions.Move(definition.Columns, c => c.Id == ColumnId, Index) });
-        return change.Build($"Board {definition.Name}: columns reordered");
+        return change.Build(L.T($"Board {definition.Name}: columns reordered"));
     }
 }
 
@@ -220,14 +221,14 @@ public sealed record MergeColumns(string BoardId, string ColumnId, string IntoCo
         var column = BoardViews.RequireColumn(definition, ColumnId);
         var into = BoardViews.RequireColumn(definition, IntoColumnId);
         if (column.Id == into.Id)
-            throw new BoardRuleException("A column can't be merged into itself.");
+            throw new BoardRuleException(L.T("A column can't be merged into itself."));
         var change = new ChangeBuilder(board, context);
         BoardViews.Write(change, definition with
         {
             Columns = definition.Columns.Where(c => c.Id != ColumnId)
                 .Select(c => c.Id == IntoColumnId ? c with { Statuses = [.. c.Statuses, .. column.Statuses] } : c).ToList(),
         });
-        return change.Build($"Board {definition.Name}: {column.Name} merged into {into.Name}");
+        return change.Build(L.T($"Board {definition.Name}: {column.Name} merged into {into.Name}"));
     }
 }
 
@@ -248,11 +249,11 @@ public sealed record DeleteColumn(string BoardId, string ColumnId) : IBoardOpera
         {
             var change = new ChangeBuilder(board, context);
             BoardViews.Write(change, definition with { Columns = definition.Columns.Where(c => c.Id != ColumnId).ToList() });
-            return change.Build($"Board {definition.Name}: column {column.Name} deleted");
+            return change.Build(L.T($"Board {definition.Name}: column {column.Name} deleted"));
         }
 
         if (MoveIssuesTo is not null && column.Statuses.Contains(MoveIssuesTo))
-            throw new BoardRuleException("The issues can't move to a status that's being deleted.");
+            throw new BoardRuleException(L.T("The issues can't move to a status that's being deleted."));
         // Delete each status in turn (one combined change), then the column.
         var current = board;
         var files = new Dictionary<string, byte[]?>(StringComparer.Ordinal);
@@ -268,7 +269,7 @@ public sealed record DeleteColumn(string BoardId, string ColumnId) : IBoardOpera
         BoardViews.Write(final, after with { Columns = after.Columns.Where(c => c.Id != ColumnId).ToList() });
         foreach (var (path, bytes) in final.Build("").Files)
             files[path] = bytes;
-        return new BoardChange($"Board {definition.Name}: column {column.Name} and its statuses deleted", files);
+        return new BoardChange(L.T($"Board {definition.Name}: column {column.Name} and its statuses deleted"), files);
     }
 }
 
@@ -280,7 +281,7 @@ public sealed record SetColumnStatuses(string BoardId, string ColumnId, IReadOnl
         var definition = BoardViews.Require(board, BoardId);
         var column = BoardViews.RequireColumn(definition, ColumnId);
         foreach (var id in Statuses.Where(id => board.Project.Status(id) is null))
-            throw new BoardRuleException($"There's no status \"{id}\".");
+            throw new BoardRuleException(L.T($"There's no status \"{id}\"."));
         var wanted = Statuses.Distinct().ToList();
         var change = new ChangeBuilder(board, context);
         BoardViews.Write(change, definition with
@@ -289,7 +290,7 @@ public sealed record SetColumnStatuses(string BoardId, string ColumnId, IReadOnl
                 ? c with { Statuses = wanted }
                 : c with { Statuses = c.Statuses.Where(s => !wanted.Contains(s)).ToList() }).ToList(),
         });
-        return change.Build($"Board {definition.Name}: statuses of {column.Name} changed");
+        return change.Build(L.T($"Board {definition.Name}: statuses of {column.Name} changed"));
     }
 }
 
@@ -301,13 +302,13 @@ public sealed record SetWipLimits(string BoardId, string ColumnId, int? Minimum,
         var definition = BoardViews.Require(board, BoardId);
         var column = BoardViews.RequireColumn(definition, ColumnId);
         if (Minimum is < 0 || Maximum is < 1 || (Minimum is { } min && Maximum is { } max && min > max))
-            throw new BoardRuleException("The maximum must be at least 1 and not below the minimum.");
+            throw new BoardRuleException(L.T("The maximum must be at least 1 and not below the minimum."));
         var change = new ChangeBuilder(board, context);
         BoardViews.Write(change, definition with
         {
             Columns = Definitions.Replace(definition.Columns, c => c.Id == ColumnId, c => c with { WipMinimum = Minimum, WipLimit = Maximum }),
         });
-        return change.Build($"Board {definition.Name}: WIP limits of {column.Name} changed");
+        return change.Build(L.T($"Board {definition.Name}: WIP limits of {column.Name} changed"));
     }
 }
 
@@ -320,15 +321,15 @@ public sealed record SetQuickFilter(string BoardId, string? QuickFilterId, strin
         var change = new ChangeBuilder(board, context);
         if (Query is null)
         {
-            var removed = definition.QuickFilters.FirstOrDefault(q => q.Id == QuickFilterId) ?? throw new BoardRuleException("That quick filter doesn't exist any more.");
+            var removed = definition.QuickFilters.FirstOrDefault(q => q.Id == QuickFilterId) ?? throw new BoardRuleException(L.T("That quick filter doesn't exist any more."));
             BoardViews.Write(change, definition with { QuickFilters = definition.QuickFilters.Where(q => q.Id != QuickFilterId).ToList() });
-            return change.Build($"Board {definition.Name}: quick filter {removed.Name} removed");
+            return change.Build(L.T($"Board {definition.Name}: quick filter {removed.Name} removed"));
         }
-        var name = Definitions.RequireName(Name, "quick filter");
-        Definitions.RequireUnique(definition.QuickFilters, q => q.Name, name, "quick filter", q => q.Id == QuickFilterId);
+        var name = Definitions.RequireName(Name, L.T("quick filter"));
+        Definitions.RequireUnique(definition.QuickFilters, q => q.Name, name, L.T("quick filter"), q => q.Id == QuickFilterId);
         BoardViews.CheckQuery(board, Query);
         if (QuickFilterId is not null && definition.QuickFilters.All(q => q.Id != QuickFilterId))
-            throw new BoardRuleException("That quick filter doesn't exist any more.");
+            throw new BoardRuleException(L.T("That quick filter doesn't exist any more."));
         var filter = new QuickFilter
         {
             Id = QuickFilterId ?? Definitions.NewIdFor(change, null, definition.QuickFilters.Select(q => q.Id)),
@@ -341,7 +342,7 @@ public sealed record SetQuickFilter(string BoardId, string? QuickFilterId, strin
                 ? [.. definition.QuickFilters, filter]
                 : Definitions.Replace(definition.QuickFilters, q => q.Id == QuickFilterId, _ => filter),
         });
-        return change.Build($"Board {definition.Name}: quick filter {name} saved");
+        return change.Build(L.T($"Board {definition.Name}: quick filter {name} saved"));
     }
 }
 
@@ -354,7 +355,7 @@ public sealed record MoveCard(string BoardId, string IssueId, string? ToColumnId
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
         var definition = BoardViews.Require(board, BoardId);
-        var issue = board.Issue(IssueId) ?? throw new BoardRuleException("The issue doesn't exist any more.");
+        var issue = board.Issue(IssueId) ?? throw new BoardRuleException(L.T("The issue doesn't exist any more."));
         var files = new Dictionary<string, byte[]?>(StringComparer.Ordinal);
         var messages = new List<string>();
         var current = board;
@@ -366,8 +367,8 @@ public sealed record MoveCard(string BoardId, string IssueId, string? ToColumnId
             {
                 var target = TargetStatus(board, issue, column)
                              ?? throw new BoardRuleException(column.Statuses.Count == 0
-                                 ? $"The column {column.Name} has no status yet: give it one first."
-                                 : $"{issue.Key} can't move to {column.Name}: its workflow doesn't allow it.");
+                                 ? L.T($"The column {column.Name} has no status yet: give it one first.")
+                                 : L.T($"{issue.Key} can't move to {column.Name}: its workflow doesn't allow it."));
                 var step = new TransitionIssue(issue.Id, target).Apply(current, context);
                 Merge(step);
             }
@@ -377,7 +378,7 @@ public sealed record MoveCard(string BoardId, string IssueId, string? ToColumnId
             var step = new RankIssue(issue.Id, Above, Below).Apply(current, context);
             Merge(step);
         }
-        return new BoardChange(messages.Count == 0 ? "No change" : string.Join("; ", messages), files);
+        return new BoardChange(messages.Count == 0 ? L.T("No change") : string.Join("; ", messages), files);
 
         void Merge(BoardChange step)
         {

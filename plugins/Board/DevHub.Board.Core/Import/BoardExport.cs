@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using DevHub.Board.Core.Model;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Board.Core.Import;
 
@@ -10,10 +11,10 @@ public static class BoardExport
 {
     public static readonly IReadOnlyList<string> CsvColumns =
     [
-        "Key", "Type", "Summary", "Status", "Resolution", "Priority", "Assignee", "Reporter", "Parent", "Epic", "Sprint",
-        "Story points", "Original estimate (minutes)", "Remaining estimate (minutes)", "Time spent (minutes)",
-        "Labels", "Components", "Fix versions", "Start", "Due", "Created", "Updated", "Resolved", "Description",
-        "Acceptance criteria", "Definition of Done",
+        L.T("Key"), L.T("Type"), L.T("Summary"), L.T("Status"), L.T("Resolution"), L.T("Priority"), L.T("Assignee"), L.T("Reporter"), L.T("Parent"), L.T("Epic"), L.T("Sprint"),
+        L.T("Story points"), L.T("Original estimate (minutes)"), L.T("Remaining estimate (minutes)"), L.T("Time spent (minutes)"),
+        L.T("Labels"), L.T("Components"), L.T("Fix versions"), L.T("Start"), L.T("Due"), L.T("Created"), L.T("Updated"), L.T("Resolved"), L.T("Description"),
+        L.T("Acceptance criteria"), L.T("Definition of Done"),
     ];
 
     /// <summary>

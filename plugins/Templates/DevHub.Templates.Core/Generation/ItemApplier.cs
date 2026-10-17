@@ -1,4 +1,5 @@
 using DevHub.Templates.Core.Rendering;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Templates.Core.Generation;
 
@@ -19,9 +20,9 @@ public static class ItemApplier
         CancellationToken ct = default)
     {
         if (template is not { IsUsable: true, Manifest: { Kind: TemplateKind.Item } manifest })
-            return new StageResult<StagedItem>(null, template.Problems.Count > 0 ? [.. template.Problems] : ["This isn't an item template."]);
+            return new StageResult<StagedItem>(null, template.Problems.Count > 0 ? [.. template.Problems] : [L.T("This isn't an item template.")]);
         if (!Directory.Exists(targetFolder))
-            return new StageResult<StagedItem>(null, [$"The folder {targetFolder} doesn't exist."]);
+            return new StageResult<StagedItem>(null, [L.T($"The folder {targetFolder} doesn't exist.")]);
 
         var tree = FileTree.Scan(targetFolder, EntryOrigin.Existing, SkippedFolders);
         var staging = Staging.Create(targetFolder);

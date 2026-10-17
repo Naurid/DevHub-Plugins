@@ -1,4 +1,5 @@
 using DevHub.Templates.Core.Rendering;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Templates.Core.Generation;
 
@@ -144,9 +145,9 @@ public sealed class FileTree
         {
             case StepOp.CreateFolder:
                 if (Glob.HasWildcards(step.Path!))
-                    return $"Create folder \"{step.Path}\": a folder name can't contain * or ?.";
+                    return L.T($"Create folder \"{step.Path}\": a folder name can't contain * or ?.");
                 if (this[step.Path!] is { IsFolder: false })
-                    return $"Create folder \"{step.Path}\": there's a file with that name.";
+                    return L.T($"Create folder \"{step.Path}\": there's a file with that name.");
                 AddFolder(step.Path!, EntryOrigin.Template);
                 return null;
 
@@ -162,11 +163,11 @@ public sealed class FileTree
             case StepOp.Rename:
             {
                 if (Glob.HasWildcards(step.From!))
-                    return $"Rename \"{step.From}\": rename takes one path (use move for many).";
+                    return L.T($"Rename \"{step.From}\": rename takes one path (use move for many).");
                 if (this[step.From!] is not { } entry)
-                    return $"Rename: \"{step.From}\" doesn't exist.";
+                    return L.T($"Rename: \"{step.From}\" doesn't exist.");
                 var target = entry.Parent.Length == 0 ? step.To! : entry.Parent + "/" + step.To;
-                return MoveTo(entry, target, $"Rename \"{step.From}\"");
+                return MoveTo(entry, target, L.T($"Rename \"{step.From}\""));
             }
 
             case StepOp.Move:
@@ -178,13 +179,13 @@ public sealed class FileTree
                 return matches.Count switch
                 {
                     0 => null,
-                    1 => MoveTo(matches[0], step.To, $"Move \"{step.From}\""),
-                    _ => $"Move \"{step.From}\": it matches {matches.Count} items, so \"{step.To}\" must be a folder (end it with /).",
+                    1 => MoveTo(matches[0], step.To, L.T($"Move \"{step.From}\"")),
+                    _ => L.T($"Move \"{step.From}\": it matches {matches.Count} items, so \"{step.To}\" must be a folder (end it with /)."),
                 };
             }
 
             default:
-                return $"Unknown step {step.Op}.";
+                return L.T($"Unknown step {step.Op}.");
         }
     }
 
@@ -215,7 +216,7 @@ public sealed class FileTree
     private string? MoveInto(List<TreeEntry> entries, string folder, string from)
     {
         if (this[folder] is { IsFolder: false })
-            return $"Move \"{from}\": \"{folder}\" is a file, not a folder.";
+            return L.T($"Move \"{from}\": \"{folder}\" is a file, not a folder.");
 
         // Check everything first, so a failing step changes nothing.
         var moves = new List<(TreeEntry Entry, string Target)>();
@@ -225,9 +226,9 @@ public sealed class FileTree
             if (target.Equals(entry.Path, StringComparison.OrdinalIgnoreCase))
                 continue; // already there
             if (entry.IsFolder && (folder + "/").StartsWith(entry.Path + "/", StringComparison.OrdinalIgnoreCase))
-                return $"Move \"{from}\": can't move the folder \"{entry.Path}\" into itself.";
+                return L.T($"Move \"{from}\": can't move the folder \"{entry.Path}\" into itself.");
             if (this[target] is not null)
-                return $"Move \"{from}\": \"{target}\" already exists.";
+                return L.T($"Move \"{from}\": \"{target}\" already exists.");
             moves.Add((entry, target));
         }
 
@@ -244,10 +245,10 @@ public sealed class FileTree
         if (target.Equals(entry.Path, StringComparison.OrdinalIgnoreCase) && target == entry.Path)
             return null;
         if (entry.IsFolder && target.StartsWith(entry.Path + "/", StringComparison.OrdinalIgnoreCase))
-            return $"{what}: can't move a folder into itself.";
+            return L.T($"{what}: can't move a folder into itself.");
         // A case-only rename (readme.md → README.md) is allowed: it's the same entry.
         if (this[target] is { } existing && existing != entry)
-            return $"{what}: \"{target}\" already exists.";
+            return L.T($"{what}: \"{target}\" already exists.");
         if (target.LastIndexOf('/') is var slash and >= 0 && this[target[..slash]] is { IsFolder: false })
             return $"{what}: \"{target[..slash]}\" is a file, not a folder.";
 

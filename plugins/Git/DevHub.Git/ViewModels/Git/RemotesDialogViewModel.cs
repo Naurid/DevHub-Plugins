@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHub.Git.Core;
 using DevHub.Services;
 using DevHub.ViewModels.Dialogs;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Git;
 
@@ -24,8 +25,8 @@ public sealed partial class RemotesDialogViewModel : DialogViewModelBase
         _ = LoadAsync();
     }
 
-    public override string Title => "Remotes";
-    public override string OkText => "Close";
+    public override string Title => L.T("Remotes");
+    public override string OkText => L.T("Close");
     public override bool ShowCancel => false;
     public override double Width => 640;
     public override double Height => 380;
@@ -60,7 +61,7 @@ public sealed partial class RemotesDialogViewModel : DialogViewModelBase
         }
         catch (Exception ex)
         {
-            Error = "Couldn't read the remotes: " + Describe(ex);
+            Error = L.T("Couldn't read the remotes: ") + Describe(ex);
         }
     }
 
@@ -74,7 +75,7 @@ public sealed partial class RemotesDialogViewModel : DialogViewModelBase
         {
             await _client.AddRemoteAsync(dialog.Name, dialog.Url);
             AddedRemote = true;
-            _status.Show($"Added the remote {dialog.Name}.");
+            _status.Show(L.T($"Added the remote {dialog.Name}."));
         }, select: dialog.Name);
     }
 
@@ -93,7 +94,7 @@ public sealed partial class RemotesDialogViewModel : DialogViewModelBase
                 await _client.RenameRemoteAsync(remote.Name, dialog.Name);
             if (dialog.Url != remote.FetchUrl)
                 await _client.SetRemoteUrlAsync(dialog.Name, dialog.Url);
-            _status.Show($"Saved the remote {dialog.Name}.");
+            _status.Show(L.T($"Saved the remote {dialog.Name}."));
         }, select: dialog.Name);
     }
 
@@ -102,15 +103,14 @@ public sealed partial class RemotesDialogViewModel : DialogViewModelBase
     private async Task RemoveAsync()
     {
         var remote = Selected!;
-        var confirm = new ConfirmDialogViewModel("Remove Remote",
-            $"Remove the remote {remote.Name} ({remote.FetchUrl})? Its remote branches disappear from this repository " +
-            "and your branches stop tracking them. Nothing changes on the server; you can add it again later.", "Remove");
+        var confirm = new ConfirmDialogViewModel(L.T("Remove Remote"),
+            L.T($"Remove the remote {remote.Name} ({remote.FetchUrl})? Its remote branches disappear from this repository and your branches stop tracking them. Nothing changes on the server; you can add it again later."), L.T("Remove"));
         if (!await _dialogs.ShowDialogAsync(confirm))
             return;
         await RunAsync(async () =>
         {
             await _client.RemoveRemoteAsync(remote.Name);
-            _status.Show($"Removed the remote {remote.Name}.");
+            _status.Show(L.T($"Removed the remote {remote.Name}."));
         });
     }
 
@@ -153,8 +153,8 @@ public sealed partial class RemoteEditDialogViewModel : DialogViewModelBase
         _url = editing?.FetchUrl ?? "";
     }
 
-    public override string Title => _editing is null ? "Add Remote" : $"Edit Remote {_editing.Name}";
-    public override string OkText => _editing is null ? "Add" : "Save";
+    public override string Title => _editing is null ? L.T("Add Remote") : L.T($"Edit Remote {_editing.Name}");
+    public override string OkText => _editing is null ? L.T("Add") : L.T("Save");
     public override bool FitsContent => true;
     public override double Width => 520;
     public override double MinWidth => 400;
@@ -170,8 +170,8 @@ public sealed partial class RemoteEditDialogViewModel : DialogViewModelBase
     {
         var name = Name.Trim();
         Error = name.Length == 0 ? null
-            : name.Any(char.IsWhiteSpace) ? "Remote names can't contain spaces."
-            : _existing.Any(r => r.Name == name && r != _editing) ? $"A remote named {name} already exists."
+            : name.Any(char.IsWhiteSpace) ? L.T("Remote names can't contain spaces.")
+            : _existing.Any(r => r.Name == name && r != _editing) ? L.T($"A remote named {name} already exists.")
             : null;
     }
 
@@ -184,12 +184,12 @@ public sealed partial class RemoteEditDialogViewModel : DialogViewModelBase
             return false;
         if (Name.Length == 0 || Url.Length == 0)
         {
-            Error = Name.Length == 0 ? "Enter a name (usually \"origin\")." : "Enter the URL (from GitHub: Code → HTTPS).";
+            Error = Name.Length == 0 ? L.T("Enter a name (usually \"origin\").") : L.T("Enter the URL (from GitHub: Code → HTTPS).");
             return false;
         }
         if (!await _client.IsValidRemoteNameAsync(Name))
         {
-            Error = "git doesn't allow that name (letters, digits, \"-\" and \"_\" are safe).";
+            Error = L.T("git doesn't allow that name (letters, digits, \"-\" and \"_\" are safe).");
             return false;
         }
         return true;

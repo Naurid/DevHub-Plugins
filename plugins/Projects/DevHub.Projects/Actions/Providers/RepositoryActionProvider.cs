@@ -1,5 +1,6 @@
 using DevHub.Controls;
 using DevHub.ViewModels.ToolWindows;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Actions.Providers;
 
@@ -12,7 +13,7 @@ public sealed class RepositoryActionProvider(RepositoriesViewModel repositories)
 {
     public IEnumerable<AppAction> GetActions()
     {
-        yield return new AppAction(ProjectsActionIds.AddScanFolder, "Add Folder…", repositories.AddFolderCommand)
+        yield return new AppAction(ProjectsActionIds.AddScanFolder, L.T("Add Folder…"), repositories.AddFolderCommand)
         {
             Category = "Projects",
             IconKind = IconKind.Add,
@@ -20,10 +21,10 @@ public sealed class RepositoryActionProvider(RepositoriesViewModel repositories)
             MenuOrder = 0,
             ToolbarOrder = 100,
             WelcomeOrder = 40,
-            Description = "Choose a folder to scan for projects (git repositories).",
+            Description = L.T("Choose a folder to scan for projects (git repositories)."),
         };
 
-        yield return new AppAction(ProjectsActionIds.RescanRepositories, "Rescan", repositories.ScanCommand)
+        yield return new AppAction(ProjectsActionIds.RescanRepositories, L.T("Rescan"), repositories.ScanCommand)
         {
             Category = "Projects",
             IconKind = IconKind.Refresh,
@@ -31,7 +32,7 @@ public sealed class RepositoryActionProvider(RepositoriesViewModel repositories)
             Menu = "Projects",
             MenuOrder = 100,
             ToolbarOrder = 101,
-            Description = "Scan the project folders for git repositories again.",
+            Description = L.T("Scan the project folders for git repositories again."),
         };
     }
 }

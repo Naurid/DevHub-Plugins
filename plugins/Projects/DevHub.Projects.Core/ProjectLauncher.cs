@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using DevHub.Projects.Core;
 using DevHub.Sdk.Core.Settings;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Projects.Core;
 
@@ -46,7 +47,7 @@ public sealed class ProjectLauncher : IProjectLauncher
     public void OpenFile(GitRepository repo, string filePath, int? line = null)
     {
         if (!File.Exists(filePath))
-            throw new FileNotFoundException("The file doesn't exist (deleted?).", filePath);
+            throw new FileNotFoundException(L.T("The file doesn't exist (deleted?)."), filePath);
 
         var choice = EffectiveChoice(repo.Language.Id);
         Start(ResolveFile(repo, filePath, line, choice, BuildContext()));

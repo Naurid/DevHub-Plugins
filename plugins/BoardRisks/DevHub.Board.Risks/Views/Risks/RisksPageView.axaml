@@ -4,6 +4,7 @@
 -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:vm="using:DevHub.ViewModels.Risks"
              xmlns:dlg="using:DevHub.ViewModels.Dialogs"
              xmlns:c="using:DevHub.Controls"
@@ -32,21 +33,21 @@
             <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
                 <TextBlock Classes="secondary" Text="{Binding Summary}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
                            ToolTip.Tip="{Binding Summary}" />
-                <Button Grid.Column="1" Classes="flat" Content="Export CSV…" Command="{Binding ExportRegisterCommand}" IsVisible="{Binding HasRisks}"
-                        ToolTip.Tip="The register as a CSV file (Excel, Sheets)" />
-                <Button Grid.Column="2" Classes="flat" Content="Copy Table" Command="{Binding CopyRegisterCommand}" IsVisible="{Binding HasRisks}"
-                        ToolTip.Tip="Copy the register to paste into Word or a spreadsheet" />
-                <Button Grid.Column="3" Classes="accent" Content="Raise Risk…" Command="{Binding AddRiskCommand}" />
+                <Button Grid.Column="1" Classes="flat" Content="{l:T 'Export CSV…'}" Command="{Binding ExportRegisterCommand}" IsVisible="{Binding HasRisks}"
+                        ToolTip.Tip="{l:T 'The register as a CSV file (Excel, Sheets)'}" />
+                <Button Grid.Column="2" Classes="flat" Content="{l:T 'Copy Table'}" Command="{Binding CopyRegisterCommand}" IsVisible="{Binding HasRisks}"
+                        ToolTip.Tip="{l:T 'Copy the register to paste into Word or a spreadsheet'}" />
+                <Button Grid.Column="3" Classes="accent" Content="{l:T 'Raise Risk…'}" Command="{Binding AddRiskCommand}" />
             </Grid>
         </Border>
 
         <!-- The register. -->
         <Border DockPanel.Dock="Left" Width="{DynamicResource Size.IssuePanel}" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,1,0">
             <Panel>
-                <c:EmptyState IconKind="warning" Title="No risks yet" IsVisible="{Binding !HasRisks}"
-                              Description="Raise what could stop the project: a team that's new together, unknown technology, an outside supplier, a tight date." />
+                <c:EmptyState IconKind="warning" Title="{l:T 'No risks yet'}" IsVisible="{Binding !HasRisks}"
+                              Description="{l:T 'Raise what could stop the project: a team that\'s new together, unknown technology, an outside supplier, a tight date.'}" />
                 <ListBox ItemsSource="{Binding Risks}" SelectedItem="{Binding Selected}" Background="Transparent" IsVisible="{Binding HasRisks}"
-                         AutomationProperties.Name="Risks">
+                         AutomationProperties.Name="{l:T 'Risks'}">
                     <ListBox.ItemTemplate>
                         <DataTemplate x:DataType="vm:RiskRow">
                             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing}" Opacity="{Binding IsClosed, Converter={x:Static BoolConverters.Not}}">
@@ -69,9 +70,9 @@
             <StackPanel Margin="{DynamicResource Padding.Board}" Spacing="{DynamicResource Spacing}">
                 <!-- The matrix. -->
                 <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
-                    <TextBlock Classes="section" Text="Probability × impact" VerticalAlignment="Center" />
-                    <Button Grid.Column="1" Classes="flat" Content="Save Image…" Command="{Binding SaveMatrixCommand}" />
-                    <Button Grid.Column="2" Classes="flat" Content="Copy Image" Command="{Binding CopyMatrixCommand}" />
+                    <TextBlock Classes="section" Text="{l:T 'Probability × impact'}" VerticalAlignment="Center" />
+                    <Button Grid.Column="1" Classes="flat" Content="{l:T 'Save Image…'}" Command="{Binding SaveMatrixCommand}" />
+                    <Button Grid.Column="2" Classes="flat" Content="{l:T 'Copy Image'}" Command="{Binding CopyMatrixCommand}" />
                 </Grid>
                 <c:HeatmapChart Data="{Binding Matrix}" Colors="Traffic" Height="{DynamicResource Size.ReportChart}" />
 
@@ -79,49 +80,49 @@
                 <StackPanel Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding HasSelection}">
                     <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
                         <TextBlock Classes="section" Text="{Binding Selected.Key, StringFormat='Risk {0}'}" VerticalAlignment="Center" />
-                        <Button Grid.Column="1" Classes="flat" Content="Delete…" Command="{Binding DeleteCommand}" />
-                        <Button Grid.Column="2" Content="Revert" Command="{Binding RevertCommand}" IsEnabled="{Binding IsDirty}" />
-                        <Button Grid.Column="3" Classes="accent" Content="Save" Command="{Binding SaveCommand}" IsEnabled="{Binding IsDirty}" />
+                        <Button Grid.Column="1" Classes="flat" Content="{l:T 'Delete…'}" Command="{Binding DeleteCommand}" />
+                        <Button Grid.Column="2" Content="{l:T 'Revert'}" Command="{Binding RevertCommand}" IsEnabled="{Binding IsDirty}" />
+                        <Button Grid.Column="3" Classes="accent" Content="{l:T 'Save'}" Command="{Binding SaveCommand}" IsEnabled="{Binding IsDirty}" />
                     </Grid>
-                    <TextBlock Classes="label" Text="Title" />
-                    <TextBox Text="{Binding EditTitle}" AutomationProperties.Name="Title" />
-                    <TextBlock Classes="label" Text="Description" />
+                    <TextBlock Classes="label" Text="{l:T 'Title'}" />
+                    <TextBox Text="{Binding EditTitle}" AutomationProperties.Name="{l:T 'Title'}" />
+                    <TextBlock Classes="label" Text="{l:T 'Description'}" />
                     <TextBox Text="{Binding EditDescription}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="{DynamicResource Size.CommentEditor}"
-                             PlaceholderText="What could happen, why, and what it would do to the project" AutomationProperties.Name="Description" />
+                             PlaceholderText="{l:T 'What could happen, why, and what it would do to the project'}" AutomationProperties.Name="{l:T 'Description'}" />
                     <Grid ColumnDefinitions="*,*,*" ColumnSpacing="{DynamicResource Spacing}" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="{DynamicResource Spacing.Small}">
-                        <TextBlock Classes="label" Text="Probability" />
-                        <TextBlock Grid.Column="1" Classes="label" Text="Impact" />
+                        <TextBlock Classes="label" Text="{l:T 'Probability'}" />
+                        <TextBlock Grid.Column="1" Classes="label" Text="{l:T 'Impact'}" />
                         <TextBlock Grid.Column="2" Classes="label" Text="{Binding EditScore}" />
                         <ComboBox Grid.Row="1" ItemsSource="{Binding Levels}" SelectedItem="{Binding EditProbability}" HorizontalAlignment="Stretch"
-                                  AutomationProperties.Name="Probability" />
+                                  AutomationProperties.Name="{l:T 'Probability'}" />
                         <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Levels}" SelectedItem="{Binding EditImpact}" HorizontalAlignment="Stretch"
-                                  AutomationProperties.Name="Impact" />
+                                  AutomationProperties.Name="{l:T 'Impact'}" />
                         <ComboBox Grid.Row="1" Grid.Column="2" ItemsSource="{Binding Statuses}" SelectedItem="{Binding EditStatus}" HorizontalAlignment="Stretch"
-                                  AutomationProperties.Name="Status" />
-                        <TextBlock Grid.Row="2" Classes="label" Text="Category" />
-                        <TextBlock Grid.Row="2" Grid.Column="1" Classes="label" Text="Owner" />
-                        <TextBlock Grid.Row="2" Grid.Column="2" Classes="label" Text="Review on" />
+                                  AutomationProperties.Name="{l:T 'Status'}" />
+                        <TextBlock Grid.Row="2" Classes="label" Text="{l:T 'Category'}" />
+                        <TextBlock Grid.Row="2" Grid.Column="1" Classes="label" Text="{l:T 'Owner'}" />
+                        <TextBlock Grid.Row="2" Grid.Column="2" Classes="label" Text="{l:T 'Review on'}" />
                         <ComboBox Grid.Row="3" ItemsSource="{Binding Categories}" SelectedItem="{Binding EditCategory}" HorizontalAlignment="Stretch"
-                                  AutomationProperties.Name="Category" />
+                                  AutomationProperties.Name="{l:T 'Category'}" />
                         <ComboBox Grid.Row="3" Grid.Column="1" ItemsSource="{Binding People}" SelectedItem="{Binding EditOwner}" HorizontalAlignment="Stretch"
-                                  AutomationProperties.Name="Owner" />
+                                  AutomationProperties.Name="{l:T 'Owner'}" />
                         <CalendarDatePicker Grid.Row="3" Grid.Column="2" SelectedDate="{Binding EditReview}" HorizontalAlignment="Stretch"
-                                            AutomationProperties.Name="Review date" />
+                                            AutomationProperties.Name="{l:T 'Review date'}" />
                     </Grid>
-                    <TextBlock Classes="label" Text="Mitigation: what makes it less likely or less bad" />
+                    <TextBlock Classes="label" Text="{l:T 'Mitigation: what makes it less likely or less bad'}" />
                     <TextBox Text="{Binding EditMitigation}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="{DynamicResource Size.CommentEditor}"
-                             AutomationProperties.Name="Mitigation" />
-                    <TextBlock Classes="label" Text="Contingency: what the team does if it happens" />
+                             AutomationProperties.Name="{l:T 'Mitigation'}" />
+                    <TextBlock Classes="label" Text="{l:T 'Contingency: what the team does if it happens'}" />
                     <TextBox Text="{Binding EditContingency}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="{DynamicResource Size.CommentEditor}"
-                             AutomationProperties.Name="Contingency" />
-                    <TextBlock Classes="label" Text="Issues that carry the work" />
+                             AutomationProperties.Name="{l:T 'Contingency'}" />
+                    <TextBlock Classes="label" Text="{l:T 'Issues that carry the work'}" />
                     <ItemsControl ItemsSource="{Binding EditIssues}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="vm:RiskIssueRow">
                                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing}">
-                                    <Button Classes="flat" Content="{Binding Key}" Command="{Binding Open}" ToolTip.Tip="Show the issue" />
+                                    <Button Classes="flat" Content="{Binding Key}" Command="{Binding Open}" ToolTip.Tip="{l:T 'Show the issue'}" />
                                     <TextBlock Grid.Column="1" Text="{Binding Summary}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-                                    <Button Grid.Column="2" Classes="flat" Command="{Binding Remove}" ToolTip.Tip="Unlink" AutomationProperties.Name="Unlink issue">
+                                    <Button Grid.Column="2" Classes="flat" Command="{Binding Remove}" ToolTip.Tip="{l:T 'Unlink'}" AutomationProperties.Name="{l:T 'Unlink issue'}">
                                         <c:Icon Kind="close" />
                                     </Button>
                                 </Grid>
@@ -129,12 +130,12 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}">
-                        <TextBox Text="{Binding NewIssueKey}" PlaceholderText="Link an issue by key, e.g. SHOP-12 (Enter)" AutomationProperties.Name="Issue key">
+                        <TextBox Text="{Binding NewIssueKey}" PlaceholderText="{l:T 'Link an issue by key, e.g. SHOP-12 (Enter)'}" AutomationProperties.Name="{l:T 'Issue key'}">
                             <TextBox.KeyBindings>
                                 <KeyBinding Gesture="Enter" Command="{Binding AddIssueCommand}" />
                             </TextBox.KeyBindings>
                         </TextBox>
-                        <Button Grid.Column="1" Content="Link" Command="{Binding AddIssueCommand}" />
+                        <Button Grid.Column="1" Content="{l:T 'Link'}" Command="{Binding AddIssueCommand}" />
                     </Grid>
                 </StackPanel>
             </StackPanel>

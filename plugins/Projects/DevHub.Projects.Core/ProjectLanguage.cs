@@ -1,3 +1,5 @@
+using DevHub.Sdk.Core.Localization;
+
 namespace DevHub.Projects.Core;
 
 /// <summary>
@@ -8,5 +10,5 @@ namespace DevHub.Projects.Core;
 public sealed record ProjectLanguage(string Id, string DisplayName)
 {
     /// <summary>Used when no marker file matches.</summary>
-    public static readonly ProjectLanguage Unknown = new("unknown", "Unknown");
+    public static readonly ProjectLanguage Unknown = new("unknown", L.T("Unknown"));
 }

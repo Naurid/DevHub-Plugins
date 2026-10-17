@@ -1,3 +1,5 @@
+using DevHub.Sdk.Core.Localization;
+
 namespace DevHub.Templates.Core.Rendering;
 
 /// <summary>A command with placeholders filled in, ready to show in the confirmation and to run.</summary>
@@ -34,7 +36,7 @@ public static class TemplateRendering
     /// <summary>The base command, or null when the template has none.</summary>
     public static RenderedCommand? BaseCommand(TemplateManifest manifest, RenderContext context) =>
         manifest.BaseCommand is { } command
-            ? new RenderedCommand("Base command", PlaceholderRenderer.Render(command.Command, context),
+            ? new RenderedCommand(L.T("Base command"), PlaceholderRenderer.Render(command.Command, context),
                 command.Args.Select(a => PlaceholderRenderer.Render(a, context)).ToList(), ".")
             : null;
 

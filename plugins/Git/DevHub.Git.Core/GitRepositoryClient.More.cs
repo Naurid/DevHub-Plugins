@@ -28,8 +28,7 @@ public sealed partial class GitRepositoryClient
         // git's own answer is "could not write index / needs merge", which doesn't say what to do.
         if ((await GetStatusAsync(ct)).Changes.FirstOrDefault(c => c.IsConflicted) is { } conflict)
             throw new InvalidOperationException(
-                $"{conflict.Path} has unresolved conflicts, and git can't stash a conflicted file. Resolve it in Local Changes " +
-                "(Accept Yours / Theirs, or fix it and Mark as Resolved) first.");
+                $"{conflict.Path} has unresolved conflicts, and git can't stash a conflicted file. Resolve it in Local Changes (Accept Yours / Theirs, or fix it and Mark as Resolved) first.");
 
         var before = await StashTopAsync(ct);
         List<string> args = ["stash", "push"];

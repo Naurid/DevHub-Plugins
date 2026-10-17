@@ -1,16 +1,17 @@
 <!-- Branch name for New Branch / Rename: the field, git's objection (if any), and "check out". -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:vm="using:DevHub.ViewModels.Git"
              xmlns:c="using:DevHub.Controls"
              x:Class="DevHub.Views.Git.BranchNameDialogView"
              x:DataType="vm:BranchNameDialogViewModel">
     <StackPanel Margin="{DynamicResource Padding.Dialog}" Spacing="{DynamicResource Spacing}">
-        <TextBlock Classes="secondary" Text="Branch name" />
-        <TextBox Text="{Binding Name}" PlaceholderText="feature/my-change"
-                 AutomationProperties.Name="Branch name" c:FocusOnLoad.IsEnabled="True" />
+        <TextBlock Classes="secondary" Text="{l:T 'Branch name'}" />
+        <TextBox Text="{Binding Name}" PlaceholderText="{l:T 'feature/my-change'}"
+                 AutomationProperties.Name="{l:T 'Branch name'}" c:FocusOnLoad.IsEnabled="True" />
         <TextBlock Text="{Binding Error}" TextWrapping="Wrap" Foreground="{DynamicResource Brush.Status.Error}"
                    IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-        <CheckBox Content="Check out the new branch" IsChecked="{Binding Checkout}" IsVisible="{Binding ShowCheckout}" />
+        <CheckBox Content="{l:T 'Check out the new branch'}" IsChecked="{Binding Checkout}" IsVisible="{Binding ShowCheckout}" />
     </StackPanel>
 </UserControl>

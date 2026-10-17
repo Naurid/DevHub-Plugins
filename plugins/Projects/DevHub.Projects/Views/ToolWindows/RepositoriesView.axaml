@@ -4,6 +4,7 @@
 -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:vm="using:DevHub.ViewModels.ToolWindows"
              xmlns:c="using:DevHub.Controls"
              xmlns:a="using:DevHub.Actions"
@@ -17,7 +18,7 @@
                 <c:ActionButton Action="{a:Action Git.Clone}" />
                 <c:ActionButton Action="{a:Action Repositories.Rescan}" />
                 <c:ToolbarSeparator />
-                <c:ActionButton IconKind="close" ToolTip.Tip="Hide" Command="{Binding ToggleCommand}" />
+                <c:ActionButton IconKind="close" ToolTip.Tip="{l:T 'Hide'}" Command="{Binding ToggleCommand}" />
             </c:Toolbar>
         </c:ToolWindowFrame.HeaderActions>
 
@@ -29,10 +30,10 @@
                          IsVisible="{Binding IsScanning}" />
 
             <Panel>
-                <c:EmptyState IconKind="folder" Title="No folders yet"
-                              Description="Add a folder and DevHub finds the projects (git repositories) inside it."
+                <c:EmptyState IconKind="folder" Title="{l:T 'No folders yet'}"
+                              Description="{l:T 'Add a folder and DevHub finds the projects (git repositories) inside it.'}"
                               IsVisible="{Binding !HasFolders}">
-                    <Button Classes="accent" Content="Add Folder…" Command="{Binding AddFolderCommand}" />
+                    <Button Classes="accent" Content="{l:T 'Add Folder…'}" Command="{Binding AddFolderCommand}" />
                 </c:EmptyState>
 
                 <TreeView ItemsSource="{Binding Roots}" Background="Transparent"
@@ -60,7 +61,7 @@
                                   Background="Transparent" ToolTip.Tip="{Binding Path}">
                                 <Grid.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="Remove Folder" Command="{Binding RemoveCommand}" />
+                                        <MenuItem Header="{l:T 'Remove Folder'}" Command="{Binding RemoveCommand}" />
                                     </ContextMenu>
                                 </Grid.ContextMenu>
                                 <c:Icon Kind="folder" VerticalAlignment="Center" />
@@ -77,17 +78,17 @@
                                   c:DoubleTap.Command="{Binding OpenInDevHubCommand}">
                                 <Grid.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="Open in DevHub" Command="{Binding OpenInDevHubCommand}"
+                                        <MenuItem Header="{l:T 'Open in DevHub'}" Command="{Binding OpenInDevHubCommand}"
                                                   FontWeight="SemiBold">
                                             <MenuItem.Icon><c:Icon Kind="vcs" /></MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="Open in External Tool" Command="{Binding OpenCommand}">
+                                        <MenuItem Header="{l:T 'Open in External Tool'}" Command="{Binding OpenCommand}">
                                             <MenuItem.Icon><c:Icon Kind="externalTools" /></MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="Open in Explorer" Command="{Binding RevealCommand}">
+                                        <MenuItem Header="{l:T 'Open in Explorer'}" Command="{Binding RevealCommand}">
                                             <MenuItem.Icon><c:Icon Kind="folder" /></MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="Add Files from Template…" Command="{Binding AddFilesCommand}"
+                                        <MenuItem Header="{l:T 'Add Files from Template…'}" Command="{Binding AddFilesCommand}"
                                                   IsVisible="{Binding CanAddFiles}">
                                             <MenuItem.Icon><c:Icon Kind="template" /></MenuItem.Icon>
                                         </MenuItem>

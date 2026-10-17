@@ -6,6 +6,7 @@ using DevHub.Services;
 using DevHub.Templates.Core;
 using DevHub.Templates.Core.Editing;
 using DevHub.Templates.Core.Importing;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Documents;
 
@@ -33,10 +34,10 @@ public sealed partial class ImportViewModel : DocumentViewModelBase
         _library = Libraries.FirstOrDefault();
     }
 
-    public override string Title => "Import";
+    public override string Title => L.T("Import");
     public override string Icon => IconKind.Import;
     public override bool FillsEditorArea => true;
-    public override DocumentNavigation Navigation => new() { Text = "Import Folder as Template…", Menu = "File", MenuOrder = 2, WelcomeOrder = 20 };
+    public override DocumentNavigation Navigation => new() { Text = L.T("Import Folder as Template…"), Menu = "File", MenuOrder = 2, WelcomeOrder = 20 };
 
     [ObservableProperty] private string _folder = "";
     [ObservableProperty] private string _ignores = string.Join(Environment.NewLine, IgnoreRules.Defaults);
@@ -65,7 +66,7 @@ public sealed partial class ImportViewModel : DocumentViewModelBase
     [ObservableProperty] private TemplateLibrary? _library;
 
     public ObservableCollection<ImportNodeViewModel> Nodes { get; } = [];
-    [ObservableProperty] private string _summary = "Choose a folder, then Preview.";
+    [ObservableProperty] private string _summary = L.T("Choose a folder, then Preview.");
     [ObservableProperty] private IReadOnlyList<string> _problems = [];
     public bool HasProblems => Problems.Count > 0;
 
@@ -105,7 +106,7 @@ public sealed partial class ImportViewModel : DocumentViewModelBase
     [RelayCommand]
     private async Task BrowseAsync()
     {
-        if (await _dialogs.PickFolderAsync("Folder to make a template from") is { } folder)
+        if (await _dialogs.PickFolderAsync(L.T("Folder to make a template from")) is { } folder)
             Folder = folder;
     }
 
@@ -131,7 +132,7 @@ public sealed partial class ImportViewModel : DocumentViewModelBase
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            Problems = ["Couldn't read the folder: " + ex.Message];
+            Problems = [L.T("Couldn't read the folder: ") + ex.Message];
         }
         finally
         {
@@ -146,7 +147,7 @@ public sealed partial class ImportViewModel : DocumentViewModelBase
             return;
         if (Library is null)
         {
-            Problems = ["There's no writable library to put the template in."];
+            Problems = [L.T("There's no writable library to put the template in.")];
             return;
         }
         var manifest = BuildManifest();
@@ -169,12 +170,12 @@ public sealed partial class ImportViewModel : DocumentViewModelBase
             }
             Problems = [];
             _templates.NotifyChanged();
-            _status.Show($"Created the template {entry.Reference} from {folder}.");
+            _status.Show(L.T($"Created the template {entry.Reference} from {folder}."));
             OpenDocument?.Invoke(TemplateEditorViewModel.IdFor(entry.Folder));
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            Problems = ["Couldn't create the template: " + ex.Message];
+            Problems = [L.T("Couldn't create the template: ") + ex.Message];
         }
         finally
         {
@@ -206,7 +207,7 @@ public sealed partial class ImportViewModel : DocumentViewModelBase
         folder = Folder.Trim();
         if (Path.IsPathFullyQualified(folder) && Directory.Exists(folder))
             return true;
-        Problems = ["Choose an existing folder to import."];
+        Problems = [L.T("Choose an existing folder to import.")];
         return false;
     }
 
@@ -226,7 +227,7 @@ public sealed partial class ImportViewModel : DocumentViewModelBase
         Nodes.Clear();
         foreach (var root in roots)
             Nodes.Add(root);
-        Summary = $"{preview.FileCount} files go into the template, {preview.IgnoredCount} items left out, {preview.Hits} placeholders put in.";
+        Summary = L.T($"{preview.FileCount} files go into the template, {preview.IgnoredCount} items left out, {preview.Hits} placeholders put in.");
         Problems = preview.Problems;
     }
 }
@@ -265,5 +266,5 @@ public sealed class ImportNodeViewModel(ImportEntry entry) : ViewModelBase
 
     public System.Collections.ObjectModel.ObservableCollection<ImportNodeViewModel> Children { get; } = [];
 
-    public override string ToString() => IsIgnored ? $"{Name} (left out)" : Name;
+    public override string ToString() => IsIgnored ? L.T($"{Name} (left out)") : Name;
 }

@@ -4,6 +4,7 @@ using DevHub.Sdk.Core.Formatting;
 using DevHub.Git.Core;
 using DevHub.Services;
 using DevHub.ViewModels.Dialogs;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Git;
 
@@ -92,8 +93,8 @@ public sealed partial class StashListViewModel : ViewModelBase
 
         await RunAsync("Stash", async client =>
             _status.Show(await client.StashAsync(dialog.Message, dialog.IncludeUntracked, dialog.KeepIndex)
-                ? "Stashed your changes; the files are back at the last commit. Apply or Pop the stash to get them back."
-                : dialog.IncludeUntracked ? "No local changes to stash." : "No changes to tracked files to stash (new files aren't included)."));
+                ? L.T("Stashed your changes; the files are back at the last commit. Apply or Pop the stash to get them back.")
+                : dialog.IncludeUntracked ? L.T("No local changes to stash.") : L.T("No changes to tracked files to stash (new files aren't included).")));
     }
 
     /// <summary>Puts the changes back and keeps the stash (to apply it elsewhere too).</summary>
@@ -105,16 +106,16 @@ public sealed partial class StashListViewModel : ViewModelBase
     private Task PopAsync() => ApplyCoreAsync(Selected!.Stash, pop: true);
 
     private Task ApplyCoreAsync(GitStash stash, bool pop) =>
-        RunAsync(pop ? "Pop" : "Apply", async client =>
+        RunAsync(pop ? L.T("Pop") : L.T("Apply"), async client =>
         {
             if (await client.ApplyStashAsync(stash, pop) == StashApplyResult.Applied)
             {
-                _status.Show(pop ? $"Popped \"{stash.Message}\": the changes are back and the stash is gone."
-                                 : $"Applied \"{stash.Message}\"; the stash is kept.");
+                _status.Show(pop ? L.T($"Popped \"{stash.Message}\": the changes are back and the stash is gone.")
+                                 : L.T($"Applied \"{stash.Message}\"; the stash is kept."));
                 return;
             }
-            _status.Show($"\"{stash.Message}\" clashed with your files: resolve the conflicts in Changes. The stash is kept" +
-                         (pop ? "; drop it once you're done." : "."));
+            _status.Show(L.T($"\"{stash.Message}\" clashed with your files: resolve the conflicts in Changes. The stash is kept") +
+                         (pop ? L.T("; drop it once you're done.") : "."));
             _showConflicts();
         });
 
@@ -123,14 +124,13 @@ public sealed partial class StashListViewModel : ViewModelBase
     private async Task DropAsync()
     {
         var stash = Selected!.Stash;
-        var confirm = new ConfirmDialogViewModel("Drop Stash",
-            $"Delete the stash \"{stash.Message}\"? Its changes are gone unless you applied them somewhere " +
-            "(git can only find a dropped stash through hard-to-use recovery commands).", "Drop");
+        var confirm = new ConfirmDialogViewModel(L.T("Drop Stash"),
+            L.T($"Delete the stash \"{stash.Message}\"? Its changes are gone unless you applied them somewhere (git can only find a dropped stash through hard-to-use recovery commands)."), L.T("Drop"));
         if (await _dialogs.ShowDialogAsync(confirm))
             await RunAsync("Drop", async client =>
             {
                 await client.DropStashAsync(stash);
-                _status.Show($"Dropped \"{stash.Message}\".");
+                _status.Show(L.T($"Dropped \"{stash.Message}\"."));
             });
     }
 
@@ -165,8 +165,8 @@ public sealed class StashItemViewModel(GitStash stash, DateTimeOffset now)
     public string When { get; } = RelativeTime.Format(stash.Date, now);
     public bool HasUntracked => Stash.HasUntracked;
     public string ToolTip => $"{Stash.Ref} · {Stash.Date.ToLocalTime():yyyy-MM-dd HH:mm}" +
-                             (Stash.Branch is { } b ? $" · made on {b}" : "") +
-                             (Stash.HasUntracked ? " · includes untracked files" : "");
+                             (Stash.Branch is { } b ? L.T($" · made on {b}") : "") +
+                             (Stash.HasUntracked ? L.T(" · includes untracked files") : "");
 
     public override string ToString() => Branch is null ? Message : $"{Message}, on {Branch}";
 }

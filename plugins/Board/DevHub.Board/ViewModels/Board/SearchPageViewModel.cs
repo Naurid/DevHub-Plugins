@@ -6,6 +6,7 @@ using DevHub.Board.Core;
 using DevHub.Board.Core.Model;
 using DevHub.Board.Core.Search;
 using DevHub.ViewModels.Dialogs;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Board;
 
@@ -14,7 +15,7 @@ public sealed class SearchPageProvider : IBoardPageProvider
 {
     public const string PageId = "search";
     public string Id => PageId;
-    public string Title => "Search";
+    public string Title => L.T("Search");
     public int Order => 900;
     public BoardPageViewModel Create(BoardPageHost host) => new SearchPageViewModel(host);
 }
@@ -40,7 +41,7 @@ public sealed partial class SearchPageViewModel : BoardPageViewModel, ICardHost
         Run();
     }
 
-    public override string Title => "Search";
+    public override string Title => L.T("Search");
 
     System.Windows.Input.ICommand ICardHost.SelectCommand => SelectCommand;
     System.Windows.Input.ICommand ICardHost.OpenCommand => OpenCommand;
@@ -56,10 +57,10 @@ public sealed partial class SearchPageViewModel : BoardPageViewModel, ICardHost
     [ObservableProperty] private SavedFilter? _selectedFilter;
 
     public string Help =>
-        "Fields: type, status, statusCategory, priority, assignee, reporter, labels, component, fixVersion, sprint, epic, parent, " +
-        "summary, description, comment, text, points, originalEstimate, remainingEstimate, created, updated, resolved, due, and custom fields by name.\n" +
-        "Operators: = != > >= < <= ~ (contains) !~ IN (…) NOT IN (…) IS EMPTY IS NOT EMPTY, joined with AND / OR / NOT and ( ).\n" +
-        "Values: names or \"quoted names\"; currentUser(), openSprints(), startOfWeek(), -1d, -2w, 2026-10-31. Then ORDER BY a field [DESC].";
+        L.T("Fields: type, status, statusCategory, priority, assignee, reporter, labels, component, fixVersion, sprint, epic, parent, ") +
+        L.T("summary, description, comment, text, points, originalEstimate, remainingEstimate, created, updated, resolved, due, and custom fields by name.\n") +
+        L.T("Operators: = != > >= < <= ~ (contains) !~ IN (…) NOT IN (…) IS EMPTY IS NOT EMPTY, joined with AND / OR / NOT and ( ).\n") +
+        L.T("Values: names or \"quoted names\"; currentUser(), openSprints(), startOfWeek(), -1d, -2w, 2026-10-31. Then ORDER BY a field [DESC].");
 
     public IReadOnlyList<string> Examples { get; } =
     [
@@ -137,7 +138,7 @@ public sealed partial class SearchPageViewModel : BoardPageViewModel, ICardHost
         }
         var rest = results.Where(i => !used.Contains(i.Id)).Select(i => new IssueItemViewModel(i, board, Context, definition.CardFields) { Host = this }).ToList();
         if (rest.Count > 0)
-            Columns.Add(new SearchColumn("Not on this board", rest));
+            Columns.Add(new SearchColumn(L.T("Not on this board"), rest));
     }
 
     [RelayCommand]
@@ -163,9 +164,9 @@ public sealed partial class SearchPageViewModel : BoardPageViewModel, ICardHost
     [RelayCommand]
     private async Task SaveFilterAsync()
     {
-        var dialog = new TextInputDialogViewModel("Save Filter", "Name", SelectedFilter?.Name ?? "", "Save")
+        var dialog = new TextInputDialogViewModel(L.T("Save Filter"), L.T("Name"), SelectedFilter?.Name ?? "", L.T("Save"))
         {
-            Explanation = "Saved filters are part of the board: everyone using it sees them.",
+            Explanation = L.T("Saved filters are part of the board: everyone using it sees them."),
         };
         if (!await Context.Dialogs.ShowDialogAsync(dialog))
             return;
@@ -178,7 +179,7 @@ public sealed partial class SearchPageViewModel : BoardPageViewModel, ICardHost
     {
         if (SelectedFilter is not { } filter)
             return;
-        if (await Context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Delete Filter", $"Delete the saved filter \"{filter.Name}\"?", "Delete", [filter.Name])))
+        if (await Context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel(L.T("Delete Filter"), L.T($"Delete the saved filter \"{filter.Name}\"?"), L.T("Delete"), [filter.Name])))
             await Context.RunAsync(new DeleteFilter(filter.Id));
     }
 

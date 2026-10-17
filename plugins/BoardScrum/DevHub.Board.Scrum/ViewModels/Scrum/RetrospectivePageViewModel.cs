@@ -8,6 +8,7 @@ using DevHub.Board.Core.Model;
 using DevHub.Services;
 using DevHub.ViewModels.Board;
 using DevHub.ViewModels.Dialogs;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Scrum;
 
@@ -17,7 +18,7 @@ public sealed class RetrospectivePageProvider(IExportService export) : IBoardPag
     public const string PageId = "retrospectives";
 
     public string Id => PageId;
-    public string Title => "Retrospectives";
+    public string Title => L.T("Retrospectives");
     public int Order => 650;
     public bool AppliesTo(BoardDefinition definition) => definition.Kind == BoardKind.Scrum;
     public BoardPageViewModel Create(BoardPageHost host) => new RetrospectivePageViewModel(host, export);
@@ -177,14 +178,14 @@ public sealed partial class RetrospectivePageViewModel : BoardPageViewModel
     public RetrospectivePageViewModel(BoardPageHost host, IExportService export) : base(host)
     {
         _export = export;
-        WentWell = new RetroColumnViewModel("What went well", "Add: what helped (Enter)", SaveAsync);
-        ToImprove = new RetroColumnViewModel("What to improve", "Add: what slowed us down (Enter)", SaveAsync);
-        Problems = new RetroColumnViewModel("Problems", "Add: a problem behind it (Enter)", SaveAsync);
+        WentWell = new RetroColumnViewModel(L.T("What went well"), L.T("Add: what helped (Enter)"), SaveAsync);
+        ToImprove = new RetroColumnViewModel(L.T("What to improve"), L.T("Add: what slowed us down (Enter)"), SaveAsync);
+        Problems = new RetroColumnViewModel(L.T("Problems"), L.T("Add: a problem behind it (Enter)"), SaveAsync);
         Columns = [WentWell, ToImprove, Problems];
         LoadSprints();
     }
 
-    public override string Title => "Retrospectives";
+    public override string Title => L.T("Retrospectives");
 
     public ObservableCollection<NamedItem> Sprints { get; } = [];
     [ObservableProperty] private NamedItem? _sprint;
@@ -265,14 +266,14 @@ public sealed partial class RetrospectivePageViewModel : BoardPageViewModel
                 ToImprove.Load([]);
                 Problems.Load([]);
                 FollowUp = _savedFollowUp = "";
-                SprintSummary = "No sprint has started yet: a retrospective follows a sprint.";
+                SprintSummary = L.T("No sprint has started yet: a retrospective follows a sprint.");
                 return;
             }
             var retro = Retrospectives.Of(board, id);
             WentWell.Load(retro.WentWell);
             ToImprove.Load(retro.ToImprove);
             Problems.Load(retro.Problems);
-            IReadOnlyList<NamedItem> people = [new NamedItem(null, "No owner"), .. board.Project.People.Select(NamedItem.Person)];
+            IReadOnlyList<NamedItem> people = [new NamedItem(null, L.T("No owner")), .. board.Project.People.Select(NamedItem.Person)];
             foreach (var action in retro.Actions)
                 Actions.Add(ActionRow(action, people, board));
             FollowUp = _savedFollowUp = retro.FollowUp;
@@ -288,8 +289,8 @@ public sealed partial class RetrospectivePageViewModel : BoardPageViewModel
             SprintSummary = string.Join(" · ", new[]
             {
                 sprint.Goal.Length > 0 ? "Goal: " + sprint.Goal : null,
-                sprint.State == SprintState.Closed ? $"committed {sprint.CommittedPoints:0.##} points, completed {sprint.CompletedPoints:0.##}" : "still running",
-                retro.Updated == default ? "not held yet" : null,
+                sprint.State == SprintState.Closed ? $"committed {sprint.CommittedPoints:0.##} points, completed {sprint.CompletedPoints:0.##}" : L.T("still running"),
+                retro.Updated == default ? L.T("not held yet") : null,
             }.OfType<string>());
         }
         finally
@@ -320,7 +321,7 @@ public sealed partial class RetrospectivePageViewModel : BoardPageViewModel
     [RelayCommand(CanExecute = nameof(CanAddAction))]
     private async Task AddActionAsync()
     {
-        IReadOnlyList<NamedItem> people = [new NamedItem(null, "No owner"), .. Context.Project.People.Select(NamedItem.Person)];
+        IReadOnlyList<NamedItem> people = [new NamedItem(null, L.T("No owner")), .. Context.Project.People.Select(NamedItem.Person)];
         Actions.Add(ActionRow(new RetroAction { Text = NewAction.Trim() }, people, Context.Snapshot));
         NewAction = "";
         await SaveAsync();
@@ -341,7 +342,7 @@ public sealed partial class RetrospectivePageViewModel : BoardPageViewModel
         if (!await Context.RunAsync(new CreateIssue(type.Id, row.Text.Trim())
             {
                 Id = id,
-                Description = $"Improvement action from the retrospective of {Sprint?.Name}.",
+                Description = L.T($"Improvement action from the retrospective of {Sprint?.Name}."),
                 Fields = fields,
             }))
             return;
@@ -372,11 +373,11 @@ public sealed partial class RetrospectivePageViewModel : BoardPageViewModel
     {
         if (Markdown() is not { } markdown)
             return;
-        var path = await Context.Dialogs.PickSaveFileAsync("Save Retrospective", $"Retrospective {Context.Snapshot.Sprints[Sprint!.Id!].Name}.md", "Markdown", "md");
+        var path = await Context.Dialogs.PickSaveFileAsync(L.T("Save Retrospective"), L.T($"Retrospective {Context.Snapshot.Sprints[Sprint!.Id!].Name}.md"), L.T("Markdown"), "md");
         if (path is null)
             return;
         await File.WriteAllTextAsync(path, markdown);
-        Context.Status.Show($"Saved {Path.GetFileName(path)}");
+        Context.Status.Show(L.T($"Saved {Path.GetFileName(path)}"));
     }
 
     [RelayCommand]
@@ -385,7 +386,7 @@ public sealed partial class RetrospectivePageViewModel : BoardPageViewModel
         if (Markdown() is { } markdown)
         {
             await _export.CopyTextAsync(markdown);
-            Context.Status.Show("Retrospective copied as Markdown");
+            Context.Status.Show(L.T("Retrospective copied as Markdown"));
         }
     }
 }

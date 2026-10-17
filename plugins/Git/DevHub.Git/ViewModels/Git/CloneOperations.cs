@@ -3,6 +3,7 @@ using DevHub.Integration;
 using DevHub.Services;
 using DevHub.ViewModels.Dialogs;
 using DevHub.ViewModels.Documents;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Git;
 
@@ -24,12 +25,12 @@ public sealed class CloneOperations(IDialogService dialogs, IStatusService statu
     {
         if (runner is null)
         {
-            status.Show("Git is not installed, so DevHub can't clone.");
+            status.Show(L.T("Git is not installed, so DevHub can't clone."));
             return;
         }
         if (_busy)
         {
-            status.Show("A clone is already running.");
+            status.Show(L.T("A clone is already running."));
             return;
         }
 
@@ -45,19 +46,19 @@ public sealed class CloneOperations(IDialogService dialogs, IStatusService statu
         var name = Path.GetFileName(target);
         _busy = true;
         using var cts = new CancellationTokenSource();
-        var task = status.StartTask($"Cloning {name}…", cts.Cancel);
+        var task = status.StartTask(L.T($"Cloning {name}…"), cts.Cancel);
         try
         {
             await GitCloner.CloneAsync(runner, dialog.CloneUrl, target, new StatusProgress(task), cts.Token);
         }
         catch (OperationCanceledException)
         {
-            status.Show($"Clone of {name} cancelled; nothing was left behind.");
+            status.Show(L.T($"Clone of {name} cancelled; nothing was left behind."));
             return;
         }
         catch (RemoteOperationException ex)
         {
-            status.Show($"Clone of {name}: {ex.Error.Title}.");
+            status.Show(L.T($"Clone of {name}: {ex.Error.Title}."));
             await dialogs.ShowDialogAsync(new ConfirmDialogViewModel(ex.Error.Title, ex.Error.Explanation, "OK",
                 ex.GitOutput.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                     .Where(l => ProgressParser.Parse(l) is null).ToList(),
@@ -66,7 +67,7 @@ public sealed class CloneOperations(IDialogService dialogs, IStatusService statu
         }
         catch (Exception ex)
         {
-            status.Show($"Clone of {name} failed: {ex.Message}");
+            status.Show(L.T($"Clone of {name} failed: {ex.Message}"));
             return;
         }
         finally
@@ -80,8 +81,8 @@ public sealed class CloneOperations(IDialogService dialogs, IStatusService statu
         if (inScanFolder)
             await projects!.RescanAsync();
         status.Show(projects is null || inScanFolder
-            ? $"Cloned {name} into {target}."
-            : $"Cloned {name} into {target}. (Not in a Projects folder: add {Path.GetDirectoryName(target)} there to list it.)");
+            ? L.T($"Cloned {name} into {target}.")
+            : L.T($"Cloned {name} into {target}. (Not in a Projects folder: add {Path.GetDirectoryName(target)} there to list it.)"));
     }
 
     private static bool IsInside(string path, string folder)

@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:vm="using:DevHub.ViewModels.Dialogs.Settings"
              xmlns:c="using:DevHub.Controls"
              xmlns:proj="clr-namespace:DevHub.Projects.Core;assembly=DevHub.Projects.Core"
@@ -8,7 +9,7 @@
 
     <StackPanel Spacing="{DynamicResource Spacing}">
         <TextBlock Classes="secondary" TextWrapping="Wrap"
-                   Text="Which tool opens a repository, by its language. Unchanged languages use a sensible default." />
+                   Text="{l:T 'Which tool opens a repository, by its language. Unchanged languages use a sensible default.'}" />
 
         <ItemsControl ItemsSource="{Binding LanguageTools}">
             <ItemsControl.ItemTemplate>
@@ -31,8 +32,8 @@
                             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}"
                                   IsVisible="{Binding IsCustom}">
                                 <TextBox Text="{Binding CustomExe}" IsReadOnly="True"
-                                         PlaceholderText="No executable chosen" />
-                                <Button Grid.Column="1" Content="Browse…" Command="{Binding BrowseExeCommand}" />
+                                         PlaceholderText="{l:T 'No executable chosen'}" />
+                                <Button Grid.Column="1" Content="{l:T 'Browse…'}" Command="{Binding BrowseExeCommand}" />
                             </Grid>
                         </StackPanel>
                     </c:SettingsRow>

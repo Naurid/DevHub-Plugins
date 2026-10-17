@@ -6,6 +6,7 @@ using DevHub.Board.Core;
 using DevHub.Board.Core.Model;
 using DevHub.Board.Core.Search;
 using DevHub.Services.Board;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Dialogs;
 
@@ -48,12 +49,12 @@ public sealed partial class BoardSettingsDialogViewModel : DialogViewModelBase
 
     private static readonly (string Id, string Name)[] CardFieldNames =
     [
-        ("epic", "Epic"), ("storyPoints", "Story points"), ("priority", "Priority"), ("assignee", "Assignee"),
-        ("labels", "Labels"), ("due", "Due date"), ("remainingEstimate", "Remaining estimate"),
+        ("epic", L.T("Epic")), ("storyPoints", L.T("Story points")), ("priority", L.T("Priority")), ("assignee", L.T("Assignee")),
+        ("labels", L.T("Labels")), ("due", L.T("Due date")), ("remainingEstimate", L.T("Remaining estimate")),
     ];
 
-    public override string Title => "Board Settings";
-    public override string OkText => "Save";
+    public override string Title => L.T("Board Settings");
+    public override string OkText => L.T("Save");
     public override double Width => 680;
     public override double Height => 640;
 
@@ -73,7 +74,7 @@ public sealed partial class BoardSettingsDialogViewModel : DialogViewModelBase
     public ObservableCollection<ChecklistItem> CardFields { get; } = [];
     public ObservableCollection<QuickFilterRow> QuickFilters { get; } = [];
 
-    public string FilterHelp => "Examples: type = bug · component = UI · labels in (web, api) · assignee = currentUser(). Empty shows every issue.";
+    public string FilterHelp => L.T("Examples: type = bug · component = UI · labels in (web, api) · assignee = currentUser(). Empty shows every issue.");
 
     partial void OnFilterChanged(string value) => ValidateFilter();
 
@@ -84,7 +85,7 @@ public sealed partial class BoardSettingsDialogViewModel : DialogViewModelBase
             var query = QueryCompiler.Compile(Filter, _context.QueryContext());
             FilterError = null;
             var count = _context.Snapshot.Issues.Values.Count(query.Matches);
-            FilterCount = count == 1 ? "1 issue matches" : $"{count} issues match";
+            FilterCount = count == 1 ? L.T("1 issue matches") : L.T($"{count} issues match");
         }
         catch (QueryException e)
         {
@@ -94,7 +95,7 @@ public sealed partial class BoardSettingsDialogViewModel : DialogViewModelBase
     }
 
     [RelayCommand]
-    private void AddQuickFilter() => QuickFilters.Add(new QuickFilterRow(null, "New filter", "assignee = currentUser()"));
+    private void AddQuickFilter() => QuickFilters.Add(new QuickFilterRow(null, L.T("New filter"), "assignee = currentUser()"));
 
     [RelayCommand]
     private void RemoveQuickFilter(QuickFilterRow? row)
@@ -108,7 +109,7 @@ public sealed partial class BoardSettingsDialogViewModel : DialogViewModelBase
         Error = null;
         if (FilterError is not null)
         {
-            Error = "Fix the filter first.";
+            Error = L.T("Fix the filter first.");
             return false;
         }
         int? days = null;
@@ -116,7 +117,7 @@ public sealed partial class BoardSettingsDialogViewModel : DialogViewModelBase
         {
             if (!int.TryParse(DoneDays.Trim(), NumberStyles.None, CultureInfo.CurrentCulture, out var d))
             {
-                Error = "Days must be a whole number.";
+                Error = L.T("Days must be a whole number.");
                 return false;
             }
             days = d;
@@ -131,7 +132,7 @@ public sealed partial class BoardSettingsDialogViewModel : DialogViewModelBase
             catch (QueryException e)
             {
                 row.Error = e.Message;
-                Error = $"The quick filter \"{row.Name}\" has a problem.";
+                Error = L.T($"The quick filter \"{row.Name}\" has a problem.");
                 return false;
             }
         }

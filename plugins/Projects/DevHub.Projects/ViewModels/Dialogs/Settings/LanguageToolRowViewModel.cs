@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHub.Projects.Core;
 using DevHub.Sdk.Core.Settings;
 using DevHub.Services;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Dialogs.Settings;
 
@@ -59,7 +60,7 @@ public partial class LanguageToolRowViewModel : ObservableObject
     [RelayCommand]
     private async Task BrowseExeAsync()
     {
-        var exe = await _dialogs.PickFileAsync("Choose an executable", "Programs", new[] { "*.exe" });
+        var exe = await _dialogs.PickFileAsync(L.T("Choose an executable"), L.T("Programs"), new[] { "*.exe" });
         if (!string.IsNullOrEmpty(exe))
             CustomExe = exe; // triggers OnCustomExeChanged → page modified
     }

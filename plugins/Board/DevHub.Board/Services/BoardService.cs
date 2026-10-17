@@ -1,6 +1,7 @@
 using DevHub.Board.Core;
 using DevHub.Board.Core.Storage;
 using DevHub.Sdk.Core.Settings;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Services.Board;
 
@@ -62,7 +63,7 @@ public sealed class BoardService(IEnumerable<IBoardStoreProvider> providers, ISe
                 return open.Context;
             }
             var provider = Provider(location.StoreKind)
-                           ?? throw new BoardStoreException($"Boards kept as \"{location.StoreKind}\" need a plugin that's switched off.");
+                           ?? throw new BoardStoreException(L.T($"Boards kept as \"{location.StoreKind}\" need a plugin that's switched off."));
             var store = provider.Open(location.Location);
             BoardSession? session;
             try
@@ -96,7 +97,7 @@ public sealed class BoardService(IEnumerable<IBoardStoreProvider> providers, ISe
         await _gate.WaitAsync();
         try
         {
-            var provider = Provider(location.StoreKind) ?? throw new BoardStoreException("That kind of board store isn't available.");
+            var provider = Provider(location.StoreKind) ?? throw new BoardStoreException(L.T("That kind of board store isn't available."));
             var store = provider.Open(location.Location);
             BoardSession session;
             try

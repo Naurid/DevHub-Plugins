@@ -4,6 +4,7 @@
 -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:t="using:DevHub.ViewModels.Templates"
              x:Class="DevHub.Views.Templates.RunPageView"
              x:DataType="t:RunPageViewModel">
@@ -15,14 +16,14 @@
                     <TextBlock Classes="secondary" Text="{Binding Step}" TextTrimming="CharacterEllipsis" />
                     <ProgressBar IsIndeterminate="True" />
                 </StackPanel>
-                <Button Grid.Column="1" Content="Cancel" Command="{Binding CancelCommand}" IsCancel="True" />
+                <Button Grid.Column="1" Content="{l:T 'Cancel'}" Command="{Binding CancelCommand}" IsCancel="True" />
             </Grid>
             <Border IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                     Background="{DynamicResource Brush.Status.Error.Subtle}" CornerRadius="{DynamicResource Radius.Control}"
                     Padding="{DynamicResource Padding.Banner}">
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing}">
                     <SelectableTextBlock Text="{Binding Error}" TextWrapping="Wrap" VerticalAlignment="Center" />
-                    <Button Grid.Column="1" Content="Back" Command="{Binding BackCommand}" VerticalAlignment="Center" />
+                    <Button Grid.Column="1" Content="{l:T 'Back'}" Command="{Binding BackCommand}" VerticalAlignment="Center" />
                 </Grid>
             </Border>
         </StackPanel>

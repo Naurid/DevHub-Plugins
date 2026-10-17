@@ -3,6 +3,7 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
 using DevHub.Controls;
 using DevHub.Git.Core;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.ToolWindows;
 
@@ -17,7 +18,7 @@ public sealed partial class GitConsoleViewModel : ToolWindowViewModelBase, IDisp
     private readonly IGitCommandLog _log;
 
     public override string Id => "gitConsole";
-    public override string Title => "Git Console";
+    public override string Title => L.T("Git Console");
     public override string IconKind => Controls.IconKind.Vcs;
     public override ToolWindowSlot Slot => ToolWindowSlot.Bottom;
 
@@ -78,7 +79,7 @@ public sealed class GitConsoleRow(GitCommandEntry entry)
     };
 
     /// <summary>Output (stderr first), shown as a tooltip.</summary>
-    public string Output { get; } = string.IsNullOrWhiteSpace(entry.Output) ? "(no output)" : entry.Output.Trim();
+    public string Output { get; } = string.IsNullOrWhiteSpace(entry.Output) ? L.T("(no output)") : entry.Output.Trim();
 
     public override string ToString() => $"{Repository}: {CommandLine}";
 }

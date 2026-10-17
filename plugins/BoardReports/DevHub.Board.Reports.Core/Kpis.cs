@@ -4,6 +4,7 @@ using DevHub.Board.Core.Fields;
 using DevHub.Board.Core.Model;
 using DevHub.Sdk.Core.Charts;
 using DevHub.Sdk.Core.Tables;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Board.Reports.Core;
 
@@ -25,13 +26,13 @@ public static class Kpis
     {
         var sprints = Closed(board);
         return new ChartData(sprints.Select(s => s.Name).ToList(),
-            [new ChartSeries("Completed / committed", sprints.Select(s => s.CommittedPoints > 0 ? (double?)Math.Round(100 * s.CompletedPoints / s.CommittedPoints) : null).ToList())
+            [new ChartSeries(L.T("Completed / committed"), sprints.Select(s => s.CommittedPoints > 0 ? (double?)Math.Round(100 * s.CompletedPoints / s.CommittedPoints) : null).ToList())
                 { Style = new SeriesStyle { ValueLabels = true } }])
         {
-            Title = "Commitment reliability",
+            Title = L.T("Commitment reliability"),
             YTitle = "%",
             ValueSuffix = "%",
-            References = [new ChartReference("Commitment", 100)],
+            References = [new ChartReference(L.T("Commitment"), 100)],
         };
     }
 
@@ -41,9 +42,9 @@ public static class Kpis
         var sprints = Closed(board);
         return new ChartData(sprints.Select(s => s.Name).ToList(),
         [
-            new ChartSeries("Issues done", sprints.Select(s => (double?)s.CompletedIssues.Count).ToList()) { Style = new SeriesStyle { Kind = SeriesKind.Bar, ValueLabels = true } },
-            new ChartSeries("Points done", sprints.Select(s => (double?)s.CompletedPoints).ToList()) { Style = new SeriesStyle { Markers = true } },
-        ]) { Title = "Throughput", XTitle = "Sprint" };
+            new ChartSeries(L.T("Issues done"), sprints.Select(s => (double?)s.CompletedIssues.Count).ToList()) { Style = new SeriesStyle { Kind = SeriesKind.Bar, ValueLabels = true } },
+            new ChartSeries(L.T("Points done"), sprints.Select(s => (double?)s.CompletedPoints).ToList()) { Style = new SeriesStyle { Markers = true } },
+        ]) { Title = L.T("Throughput"), XTitle = L.T("Sprint") };
     }
 
     /// <summary>Lead time (created to resolved, days) of issues resolved in the last <paramref name="days"/> days, oldest first.</summary>
@@ -58,12 +59,12 @@ public static class Kpis
     {
         var average = leads.Count == 0 ? 0 : leads.Average(l => l.Days);
         return new ChartData(leads.Select(l => l.Issue.Key).ToList(),
-            [new ChartSeries("Lead time", leads.Select(l => (double?)l.Days).ToList()) { Style = new SeriesStyle { Markers = true } }])
+            [new ChartSeries(L.T("Lead time"), leads.Select(l => (double?)l.Days).ToList()) { Style = new SeriesStyle { Markers = true } }])
         {
-            Title = "Lead time (created → done)",
-            YTitle = "Days",
+            Title = L.T("Lead time (created → done)"),
+            YTitle = L.T("Days"),
             ValueSuffix = " d",
-            References = leads.Count == 0 ? [] : [new ChartReference("Average", Math.Round(average, 1))],
+            References = leads.Count == 0 ? [] : [new ChartReference(L.T("Average"), Math.Round(average, 1))],
         };
     }
 
@@ -75,21 +76,21 @@ public static class Kpis
         bool In(Sprint s, DateTimeOffset at) => at >= s.Start && at <= (s.Completed ?? s.End ?? DateTimeOffset.MaxValue);
         return new ChartData(sprints.Select(s => s.Name).ToList(),
         [
-            new ChartSeries("Bugs found", sprints.Select(s => (double?)bugs.Count(b => In(s, b.Created))).ToList()) { Style = new SeriesStyle { Kind = SeriesKind.Bar, Color = 3 } },
-            new ChartSeries("Bugs fixed", sprints.Select(s => (double?)bugs.Count(b => b.Resolved is { } r && In(s, r))).ToList()) { Style = new SeriesStyle { Kind = SeriesKind.Bar, Color = 1 } },
-        ]) { Title = "Defects per sprint", XTitle = "Sprint" };
+            new ChartSeries(L.T("Bugs found"), sprints.Select(s => (double?)bugs.Count(b => In(s, b.Created))).ToList()) { Style = new SeriesStyle { Kind = SeriesKind.Bar, Color = 3 } },
+            new ChartSeries(L.T("Bugs fixed"), sprints.Select(s => (double?)bugs.Count(b => b.Resolved is { } r && In(s, r))).ToList()) { Style = new SeriesStyle { Kind = SeriesKind.Bar, Color = 1 } },
+        ]) { Title = L.T("Defects per sprint"), XTitle = L.T("Sprint") };
     }
 
     /// <summary>Issues in progress at the end of each of the last <paramref name="days"/> days.</summary>
     public static ChartData WorkInProgress(BoardSnapshot board, DateTimeOffset now, int days = 30)
     {
         var flow = BoardReports.CumulativeFlow(board, now, days);
-        var wip = flow.Series.FirstOrDefault(s => s.Name == "In Progress");
-        return wip is null ? ChartData.Empty : new ChartData(flow.Labels, [wip with { Name = "In progress" }])
+        var wip = flow.Series.FirstOrDefault(s => s.Name == L.T("In Progress"));
+        return wip is null ? ChartData.Empty : new ChartData(flow.Labels, [wip with { Name = L.T("In progress") }])
         {
-            Title = "Work in progress",
-            YTitle = "Issues",
-            References = wip.Values.Any(v => v is not null) ? [new ChartReference("Average", Math.Round(wip.Values.Average(v => v ?? 0), 1))] : [],
+            Title = L.T("Work in progress"),
+            YTitle = L.T("Issues"),
+            References = wip.Values.Any(v => v is not null) ? [new ChartReference(L.T("Average"), Math.Round(wip.Values.Average(v => v ?? 0), 1))] : [],
         };
     }
 
@@ -99,12 +100,12 @@ public static class Kpis
         var sprints = Ordered(board);
         return new ChartData(sprints.Select(s => s.Name).ToList(),
         [
-            new ChartSeries("Capacity", sprints.Select(s => s.Capacity).ToList()) { Style = new SeriesStyle { Kind = SeriesKind.Bar, Color = 0 } },
-            new ChartSeries("Planned / committed", sprints.Select(s => (double?)(s.State == SprintState.Future ? Planned(board, s) : s.CommittedPoints)).ToList())
+            new ChartSeries(L.T("Capacity"), sprints.Select(s => s.Capacity).ToList()) { Style = new SeriesStyle { Kind = SeriesKind.Bar, Color = 0 } },
+            new ChartSeries(L.T("Planned / committed"), sprints.Select(s => (double?)(s.State == SprintState.Future ? Planned(board, s) : s.CommittedPoints)).ToList())
                 { Style = new SeriesStyle { Markers = true, Color = 2 } },
-            new ChartSeries("Completed", sprints.Select(s => s.State == SprintState.Closed ? (double?)s.CompletedPoints : null).ToList())
+            new ChartSeries(L.T("Completed"), sprints.Select(s => s.State == SprintState.Closed ? (double?)s.CompletedPoints : null).ToList())
                 { Style = new SeriesStyle { Markers = true, Color = 1 } },
-        ]) { Title = "Capacity, load and completed", XTitle = "Sprint", YTitle = "Story points" };
+        ]) { Title = L.T("Capacity, load and completed"), XTitle = L.T("Sprint"), YTitle = L.T("Story points") };
     }
 
     /// <summary>Sprints in time: closed, the running one, then the planned ones in their order.</summary>
@@ -139,8 +140,8 @@ public static class Kpis
                 string.Join("; ", issues.Select(i => $"{i.Key} {i.Summary} ({N(i.StoryPoints)})")),
             ];
         }).ToList();
-        return new TableData(["Sprint", "State", "Start", "End", "Goal", "Capacity", "Person-days", "Focused days",
-            "Planned / committed", "Completed", "Stories"], rows) { Title = "Sprint plans" };
+        return new TableData([L.T("Sprint"), L.T("State"), L.T("Start"), L.T("End"), L.T("Goal"), L.T("Capacity"), "Person-days", L.T("Focused days"),
+            L.T("Planned / committed"), L.T("Completed"), L.T("Stories")], rows) { Title = L.T("Sprint plans") };
     }
 
     /// <summary>
@@ -174,30 +175,30 @@ public static class Kpis
     /// <summary>Points added and removed per epic (and "No epic"), for the scope change chart.</summary>
     public static ChartData ScopeChangeChart(BoardSnapshot board, IReadOnlyList<ScopeChange> changes)
     {
-        var groups = changes.GroupBy(c => board.EpicOf(c.Issue)?.Summary ?? "No epic").OrderBy(g => g.Key).ToList();
+        var groups = changes.GroupBy(c => board.EpicOf(c.Issue)?.Summary ?? L.T("No epic")).OrderBy(g => g.Key).ToList();
         return new ChartData(groups.Select(g => g.Key).ToList(),
         [
-            new ChartSeries("Points added", groups.Select(g => (double?)g.Where(c => c.Points > 0).Sum(c => c.Points)).ToList()) { Style = new SeriesStyle { Color = 3 } },
-            new ChartSeries("Points removed", groups.Select(g => (double?)g.Where(c => c.Points < 0).Sum(c => -c.Points)).ToList()) { Style = new SeriesStyle { Color = 1 } },
-        ]) { Title = "Scope change by epic", YTitle = "Story points" };
+            new ChartSeries(L.T("Points added"), groups.Select(g => (double?)g.Where(c => c.Points > 0).Sum(c => c.Points)).ToList()) { Style = new SeriesStyle { Color = 3 } },
+            new ChartSeries(L.T("Points removed"), groups.Select(g => (double?)g.Where(c => c.Points < 0).Sum(c => -c.Points)).ToList()) { Style = new SeriesStyle { Color = 1 } },
+        ]) { Title = L.T("Scope change by epic"), YTitle = L.T("Story points") };
     }
 
     /// <summary>What a report shows and what a team does with it (the report's interpretation and steering).</summary>
     public static string Explain(string report) => report switch
     {
-        "velocity" => "Points completed per sprint. Plan the next sprints with the average; a dip after a change in the team is normal while it settles.",
-        "reliability" => "How much of what the team committed to it finished. Far below 100%: commit to less or split stories; always above: the team can take more.",
-        "throughput" => "How many issues the team finishes per sprint. Steady numbers make forecasts reliable; big swings point at stories of very different sizes.",
-        "leadtime" => "How long an issue takes from being written to done. Long or growing lead times: the backlog holds work too early; refine closer to the work.",
-        "defects" => "Bugs found and fixed in each sprint. More found than fixed for several sprints: raise the Definition of Done (tests, reviews) or plan time for bugs.",
-        "wip" => "Issues in progress at the same time. High WIP slows everything down: finish before starting, or set WIP limits on the board's columns.",
-        "capacity" => "Capacity planned, points taken on and points completed. Committing above capacity or completing well below it are signs to re-plan.",
-        "control" => "Cycle time from starting an issue to finishing it. Points far above the average are issues that got stuck: look at what blocked them.",
-        "flow" => "Issues per status over time. A widening In Progress band means work starts faster than it finishes.",
-        "forecast" => "When the remaining scope can be done at a pessimistic, neutral and optimistic velocity. Late against the target: cut scope, add capacity or move the date.",
-        "scope" => "Issues added, re-estimated or dropped over a period. Large additions after planning push the delivery date: decide what leaves the scope in exchange.",
-        "burndown" => "Points left in the sprint against the ideal line. Flat stretches mean work is stuck; above the line near the end, the sprint goal is at risk.",
-        "burnup" => "Points done and the sprint's scope. A rising scope line means work was added during the sprint.",
+        "velocity" => L.T("Points completed per sprint. Plan the next sprints with the average; a dip after a change in the team is normal while it settles."),
+        "reliability" => L.T("How much of what the team committed to it finished. Far below 100%: commit to less or split stories; always above: the team can take more."),
+        "throughput" => L.T("How many issues the team finishes per sprint. Steady numbers make forecasts reliable; big swings point at stories of very different sizes."),
+        "leadtime" => L.T("How long an issue takes from being written to done. Long or growing lead times: the backlog holds work too early; refine closer to the work."),
+        "defects" => L.T("Bugs found and fixed in each sprint. More found than fixed for several sprints: raise the Definition of Done (tests, reviews) or plan time for bugs."),
+        "wip" => L.T("Issues in progress at the same time. High WIP slows everything down: finish before starting, or set WIP limits on the board's columns."),
+        "capacity" => L.T("Capacity planned, points taken on and points completed. Committing above capacity or completing well below it are signs to re-plan."),
+        "control" => L.T("Cycle time from starting an issue to finishing it. Points far above the average are issues that got stuck: look at what blocked them."),
+        "flow" => L.T("Issues per status over time. A widening In Progress band means work starts faster than it finishes."),
+        "forecast" => L.T("When the remaining scope can be done at a pessimistic, neutral and optimistic velocity. Late against the target: cut scope, add capacity or move the date."),
+        "scope" => L.T("Issues added, re-estimated or dropped over a period. Large additions after planning push the delivery date: decide what leaves the scope in exchange."),
+        "burndown" => L.T("Points left in the sprint against the ideal line. Flat stretches mean work is stuck; above the line near the end, the sprint goal is at risk."),
+        "burnup" => L.T("Points done and the sprint's scope. A rising scope line means work was added during the sprint."),
         _ => "",
     };
 }

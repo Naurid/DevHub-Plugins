@@ -5,6 +5,7 @@ using DevHub.Board.Core.Model;
 using DevHub.Board.Core.Search;
 using DevHub.Board.Core.Storage;
 using DevHub.ViewModels.Dialogs;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Services.Board;
 
@@ -76,7 +77,7 @@ public sealed partial class BoardContext : ObservableObject
         catch (Exception e) when (e is BoardStoreException or BoardConflictException or IOException or UnauthorizedAccessException)
         {
             ApplyNow();
-            await _dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Board", "The board couldn't be saved.", "OK",
+            await _dialogs.ShowDialogAsync(new ConfirmDialogViewModel(L.T("Board"), L.T("The board couldn't be saved."), "OK",
                 [e.Message], destructive: false, showCancel: false));
             return false;
         }
@@ -101,12 +102,12 @@ public sealed partial class BoardContext : ObservableObject
         if (unfinished.Count == 0)
             return true;
         var text = unfinished.Count == 1
-            ? $"{unfinished[0].Issue.Key} \"{unfinished[0].Issue.Summary}\" isn't done by your Definition of Done yet. Move it to Done anyway?"
-            : $"{unfinished.Count} issues aren't done by your Definition of Done yet. Move them to Done anyway?";
+            ? L.T($"{unfinished[0].Issue.Key} \"{unfinished[0].Issue.Summary}\" isn't done by your Definition of Done yet. Move it to Done anyway?")
+            : L.T($"{unfinished.Count} issues aren't done by your Definition of Done yet. Move them to Done anyway?");
         var lines = unfinished.Count == 1
             ? unfinished[0].Missing
-            : unfinished.Select(u => $"{u.Issue.Key}: {u.Missing.Count} not ticked").ToList();
-        return await _dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Not Done Yet", text, "Move to Done", lines, destructive: false));
+            : unfinished.Select(u => L.T($"{u.Issue.Key}: {u.Missing.Count} not ticked")).ToList();
+        return await _dialogs.ShowDialogAsync(new ConfirmDialogViewModel(L.T("Not Done Yet"), text, L.T("Move to Done"), lines, destructive: false));
     }
 
     public async Task UndoAsync()
@@ -123,7 +124,7 @@ public sealed partial class BoardContext : ObservableObject
         }
         catch (Exception e) when (e is BoardStoreException or BoardConflictException or IOException)
         {
-            _status.Show("Undo failed: " + e.Message);
+            _status.Show(L.T("Undo failed: ") + e.Message);
         }
         ApplyNow();
     }
@@ -136,17 +137,17 @@ public sealed partial class BoardContext : ObservableObject
         }
         catch (Exception e) when (e is BoardStoreException or IOException or UnauthorizedAccessException)
         {
-            _status.Show("The board couldn't be read again: " + e.Message);
+            _status.Show(L.T("The board couldn't be read again: ") + e.Message);
         }
         ApplyNow();
     }
 
     // ---- Names for display --------------------------------------------------------------------------------
 
-    public string PersonName(string? id) => id is null ? "Unassigned" : Project.Person(id)?.Name ?? "Someone who left";
+    public string PersonName(string? id) => id is null ? L.T("Unassigned") : Project.Person(id)?.Name ?? L.T("Someone who left");
     public string StatusName(string? id) => Project.Status(id)?.Name ?? id ?? "";
     public string TypeName(string? id) => Project.IssueType(id)?.Name ?? id ?? "";
-    public string PriorityName(string? id) => Project.Priority(id)?.Name ?? "None";
+    public string PriorityName(string? id) => Project.Priority(id)?.Name ?? L.T("None");
 
     public string Duration(int? minutes) => minutes is { } m ? WorkDuration.Format(m, Project.Settings) : "";
 

@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Templates.Core.Rendering;
 
@@ -38,21 +39,21 @@ public static class VariableValues
                     else if (bool.TryParse(value, out var flag))
                         value = flag ? "true" : "false";
                     else
-                        issues.Add(new ValueIssue(variable.Name, $"{label} must be true or false."));
+                        issues.Add(new ValueIssue(variable.Name, L.T($"{label} must be true or false.")));
                     break;
 
                 case VariableType.Choice:
                     if (value.Length == 0 && !variable.Required)
                         break;
                     if (!variable.Choices.Contains(value))
-                        issues.Add(new ValueIssue(variable.Name, $"Pick one of: {string.Join(", ", variable.Choices)}."));
+                        issues.Add(new ValueIssue(variable.Name, L.T($"Pick one of: {string.Join(", ", variable.Choices)}.")));
                     break;
 
                 default:
                     if (variable.Required && string.IsNullOrWhiteSpace(value))
-                        issues.Add(new ValueIssue(variable.Name, $"{label} is required."));
+                        issues.Add(new ValueIssue(variable.Name, L.T($"{label} is required.")));
                     else if (value.Length > 0 && variable.Pattern is { } pattern && !Matches(pattern, value))
-                        issues.Add(new ValueIssue(variable.Name, $"{label} doesn't have the expected form ({pattern})."));
+                        issues.Add(new ValueIssue(variable.Name, L.T($"{label} doesn't have the expected form ({pattern}).")));
                     break;
             }
             values[variable.Name] = value;

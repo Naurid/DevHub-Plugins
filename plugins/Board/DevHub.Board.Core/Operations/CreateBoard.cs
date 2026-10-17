@@ -1,5 +1,6 @@
 using DevHub.Board.Core.Model;
 using DevHub.Board.Core.Storage;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Board.Core;
 
@@ -36,10 +37,10 @@ public sealed record CreateBoard(string Key, string Name, BoardPreset Preset, Bo
     {
         var key = Key.Trim().ToUpperInvariant();
         if (!IssueKey.IsValidProjectKey(key))
-            throw new BoardRuleException("A project key is 1–10 capital letters or digits, starting with a letter (like DEV).");
+            throw new BoardRuleException(L.T("A project key is 1–10 capital letters or digits, starting with a letter (like DEV)."));
         var name = string.IsNullOrWhiteSpace(Name) ? key : Name.Trim();
         if (string.IsNullOrWhiteSpace(Creator.Name))
-            throw new BoardRuleException("Your name is needed for the board.");
+            throw new BoardRuleException(L.T("Your name is needed for the board."));
 
         var (statuses, kind, columns) = BoardPresets.Statuses(Preset);
         var workflowId = context.NewId();
@@ -54,14 +55,14 @@ public sealed record CreateBoard(string Key, string Name, BoardPreset Preset, Bo
         if (Preset == BoardPreset.Scrum)
             project = project with { CustomFields = BoardPresets.ScrumFields, DefinitionOfDone = BoardPresets.ScrumDefinitionOfDone };
 
-        var workflow = new Workflow { Id = workflowId, Name = "Default", Statuses = statuses.Select(s => s.Id).ToList() };
+        var workflow = new Workflow { Id = workflowId, Name = L.T("Default"), Statuses = statuses.Select(s => s.Id).ToList() };
         var board = new BoardDefinition
         {
             Id = context.NewId(),
             Name = Preset switch
             {
-                BoardPreset.Scrum => $"{key} Scrum board",
-                BoardPreset.BugTriage => "Bug triage",
+                BoardPreset.Scrum => L.T($"{key} Scrum board"),
+                BoardPreset.BugTriage => L.T("Bug triage"),
                 _ => $"{key} board",
             },
             Kind = kind,
@@ -69,8 +70,8 @@ public sealed record CreateBoard(string Key, string Name, BoardPreset Preset, Bo
             Filter = Preset == BoardPreset.BugTriage ? "type = bug" : "",
             QuickFilters =
             [
-                new QuickFilter { Id = context.NewId(), Name = "Only my issues", Query = "assignee = currentUser()" },
-                new QuickFilter { Id = context.NewId(), Name = "Recently updated", Query = "updated >= -1d" },
+                new QuickFilter { Id = context.NewId(), Name = L.T("Only my issues"), Query = "assignee = currentUser()" },
+                new QuickFilter { Id = context.NewId(), Name = L.T("Recently updated"), Query = "updated >= -1d" },
             ],
         };
 
@@ -80,7 +81,7 @@ public sealed record CreateBoard(string Key, string Name, BoardPreset Preset, Bo
             [BoardPaths.Workflow(workflow.Id)] = BoardJson.Serialize(workflow),
             [BoardPaths.Board(board.Id)] = BoardJson.Serialize(board),
         };
-        return new BoardChange($"Board {key} created", files);
+        return new BoardChange(L.T($"Board {key} created"), files);
     }
 }
 
@@ -92,52 +93,52 @@ public static class BoardPresets
     {
         IssueTypes =
         [
-            new IssueType { Id = "epic", Name = "Epic", Level = IssueTypeLevel.Epic, Icon = "epic" },
-            new IssueType { Id = "story", Name = "Story", Icon = "story" },
-            new IssueType { Id = "task", Name = "Task", Icon = "task" },
-            new IssueType { Id = "bug", Name = "Bug", Icon = "bug" },
-            new IssueType { Id = "subtask", Name = "Sub-task", Level = IssueTypeLevel.Subtask, Icon = "subtask" },
+            new IssueType { Id = "epic", Name = L.T("Epic"), Level = IssueTypeLevel.Epic, Icon = "epic" },
+            new IssueType { Id = "story", Name = L.T("Story"), Icon = "story" },
+            new IssueType { Id = "task", Name = L.T("Task"), Icon = "task" },
+            new IssueType { Id = "bug", Name = L.T("Bug"), Icon = "bug" },
+            new IssueType { Id = "subtask", Name = L.T("Sub-task"), Level = IssueTypeLevel.Subtask, Icon = "subtask" },
         ],
         Priorities =
         [
-            new Priority { Id = "highest", Name = "Highest", Icon = "highest" },
-            new Priority { Id = "high", Name = "High", Icon = "high" },
-            new Priority { Id = "medium", Name = "Medium", Icon = "medium" },
-            new Priority { Id = "low", Name = "Low", Icon = "low" },
-            new Priority { Id = "lowest", Name = "Lowest", Icon = "lowest" },
+            new Priority { Id = "highest", Name = L.T("Highest"), Icon = "highest" },
+            new Priority { Id = "high", Name = L.T("High"), Icon = "high" },
+            new Priority { Id = "medium", Name = L.T("Medium"), Icon = "medium" },
+            new Priority { Id = "low", Name = L.T("Low"), Icon = "low" },
+            new Priority { Id = "lowest", Name = L.T("Lowest"), Icon = "lowest" },
         ],
         DefaultPriority = "medium",
         Resolutions =
         [
-            new Resolution { Id = "done", Name = "Done" },
-            new Resolution { Id = "wontdo", Name = "Won't Do" },
-            new Resolution { Id = "duplicate", Name = "Duplicate" },
-            new Resolution { Id = "cannotreproduce", Name = "Cannot Reproduce" },
+            new Resolution { Id = "done", Name = L.T("Done") },
+            new Resolution { Id = "wontdo", Name = L.T("Won't Do") },
+            new Resolution { Id = "duplicate", Name = L.T("Duplicate") },
+            new Resolution { Id = "cannotreproduce", Name = L.T("Cannot Reproduce") },
         ],
         LinkTypes =
         [
-            new LinkType { Id = "blocks", Outward = "blocks", Inward = "is blocked by" },
-            new LinkType { Id = "relates", Outward = "relates to", Inward = "relates to" },
-            new LinkType { Id = "duplicates", Outward = "duplicates", Inward = "is duplicated by" },
-            new LinkType { Id = "clones", Outward = "clones", Inward = "is cloned by" },
+            new LinkType { Id = "blocks", Outward = "blocks", Inward = L.T("is blocked by") },
+            new LinkType { Id = "relates", Outward = L.T("relates to"), Inward = L.T("relates to") },
+            new LinkType { Id = "duplicates", Outward = "duplicates", Inward = L.T("is duplicated by") },
+            new LinkType { Id = "clones", Outward = "clones", Inward = L.T("is cloned by") },
         ],
     };
 
     /// <summary>A Scrum board's custom fields: Business value, to prioritise the backlog by.</summary>
     public static IReadOnlyList<FieldDefinition> ScrumFields { get; } =
     [
-        new FieldDefinition { Id = "value", Name = "Business value", Type = FieldType.Number },
+        new FieldDefinition { Id = "value", Name = L.T("Business value"), Type = FieldType.Number },
     ];
 
     /// <summary>A Scrum board's starting Definition of Done (edit it in Project Settings).</summary>
     public static IReadOnlyList<DoneItem> ScrumDefinitionOfDone { get; } =
     [
-        new DoneItem { Id = "standards", Text = "Code follows the team's standards" },
-        new DoneItem { Id = "tests", Text = "Unit tests written and passing" },
-        new DoneItem { Id = "review", Text = "Code reviewed" },
-        new DoneItem { Id = "docs", Text = "Documentation updated" },
-        new DoneItem { Id = "deployed", Text = "Deployed to the test environment" },
-        new DoneItem { Id = "accepted", Text = "Accepted by the Product Owner" },
+        new DoneItem { Id = "standards", Text = L.T("Code follows the team's standards") },
+        new DoneItem { Id = "tests", Text = L.T("Unit tests written and passing") },
+        new DoneItem { Id = "review", Text = L.T("Code reviewed") },
+        new DoneItem { Id = "docs", Text = L.T("Documentation updated") },
+        new DoneItem { Id = "deployed", Text = L.T("Deployed to the test environment") },
+        new DoneItem { Id = "accepted", Text = L.T("Accepted by the Product Owner") },
     ];
 
     /// <summary>A preset's statuses, board kind and columns (column name + the status ids it holds).</summary>
@@ -148,21 +149,21 @@ public static class BoardPresets
         {
             BoardPreset.Scrum =>
             [
-                S("todo", "To Do", StatusCategory.ToDo), S("inprogress", "In Progress", StatusCategory.InProgress),
-                S("inreview", "In Review", StatusCategory.InProgress), S("done", "Done", StatusCategory.Done),
+                S("todo", L.T("To Do"), StatusCategory.ToDo), S("inprogress", L.T("In Progress"), StatusCategory.InProgress),
+                S("inreview", L.T("In Review"), StatusCategory.InProgress), S("done", L.T("Done"), StatusCategory.Done),
             ],
             BoardPreset.Kanban =>
             [
-                S("backlog", "Backlog", StatusCategory.ToDo), S("selected", "Selected for Development", StatusCategory.ToDo),
-                S("inprogress", "In Progress", StatusCategory.InProgress), S("done", "Done", StatusCategory.Done),
+                S("backlog", L.T("Backlog"), StatusCategory.ToDo), S("selected", L.T("Selected for Development"), StatusCategory.ToDo),
+                S("inprogress", L.T("In Progress"), StatusCategory.InProgress), S("done", L.T("Done"), StatusCategory.Done),
             ],
             BoardPreset.BugTriage =>
             [
-                S("new", "New", StatusCategory.ToDo), S("triaged", "Triaged", StatusCategory.ToDo),
-                S("inprogress", "In Progress", StatusCategory.InProgress), S("fixed", "Fixed", StatusCategory.Done),
-                S("wontfix", "Won't Fix", StatusCategory.Done),
+                S("new", L.T("New"), StatusCategory.ToDo), S("triaged", L.T("Triaged"), StatusCategory.ToDo),
+                S("inprogress", L.T("In Progress"), StatusCategory.InProgress), S("fixed", L.T("Fixed"), StatusCategory.Done),
+                S("wontfix", L.T("Won't Fix"), StatusCategory.Done),
             ],
-            _ => [S("todo", "To Do", StatusCategory.ToDo), S("done", "Done", StatusCategory.Done)],
+            _ => [S("todo", L.T("To Do"), StatusCategory.ToDo), S("done", L.T("Done"), StatusCategory.Done)],
         };
         var kind = preset == BoardPreset.Scrum ? BoardKind.Scrum : BoardKind.Kanban;
         IReadOnlyList<(string, IReadOnlyList<string>)> columns = preset == BoardPreset.Empty

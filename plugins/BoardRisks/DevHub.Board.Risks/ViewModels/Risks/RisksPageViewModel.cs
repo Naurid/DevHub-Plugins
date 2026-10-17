@@ -10,6 +10,7 @@ using DevHub.Sdk.Core.Charts;
 using DevHub.Services;
 using DevHub.ViewModels.Board;
 using DevHub.ViewModels.Dialogs;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Risks;
 
@@ -17,7 +18,7 @@ namespace DevHub.ViewModels.Risks;
 public sealed class RisksPageProvider(IExportService export) : IBoardPageProvider
 {
     public string Id => "risks";
-    public string Title => "Risks";
+    public string Title => L.T("Risks");
     public int Order => 680;
     public BoardPageViewModel Create(BoardPageHost host) => new RisksPageViewModel(host, export);
 }
@@ -28,7 +29,7 @@ public sealed record RiskRow(Risk Risk, string OwnerName)
     public string Key => Risk.Key;
     public string Title => Risk.Title;
     public string Score => $"{Risk.Score} · {Risk.Level}";
-    public string Detail => $"P{Risk.Probability} × I{Risk.Impact} · {Risk.Status}" + (OwnerName.Length > 0 ? " · " + OwnerName : "");
+    public string Detail => L.T($"P{Risk.Probability} × I{Risk.Impact} · {Risk.Status}") + (OwnerName.Length > 0 ? " · " + OwnerName : "");
     public bool IsClosed => Risk.Status == RiskStatus.Closed;
     public bool IsCritical => Risk.Score >= 16 && !IsClosed;
     public bool IsHigh => Risk.Score is >= 10 and < 16 && !IsClosed;
@@ -57,7 +58,7 @@ public sealed partial class RisksPageViewModel : BoardPageViewModel
         Refresh();
     }
 
-    public override string Title => "Risks";
+    public override string Title => L.T("Risks");
 
     public ObservableCollection<RiskRow> Risks { get; } = [];
     [ObservableProperty] private RiskRow? _selected;
@@ -119,7 +120,7 @@ public sealed partial class RisksPageViewModel : BoardPageViewModel
     private void UpdateScore()
     {
         var score = int.Parse(EditProbability?.Id ?? "3", CultureInfo.InvariantCulture) * int.Parse(EditImpact?.Id ?? "3", CultureInfo.InvariantCulture);
-        EditScore = $"Score {score} · {RiskRegister.LevelOf(score)}";
+        EditScore = L.T($"Score {score} · {RiskRegister.LevelOf(score)}");
     }
 
     private void Refresh()
@@ -128,7 +129,7 @@ public sealed partial class RisksPageViewModel : BoardPageViewModel
         var keep = Selected?.Risk.Id;
         var all = RiskRegister.All(board);
         People.Clear();
-        People.Add(new NamedItem(null, "No owner"));
+        People.Add(new NamedItem(null, L.T("No owner")));
         foreach (var p in board.Project.People)
             People.Add(NamedItem.Person(p));
         Risks.Clear();
@@ -137,9 +138,9 @@ public sealed partial class RisksPageViewModel : BoardPageViewModel
         Matrix = RiskRegister.Matrix(all);
         var open = all.Where(r => r.Status != RiskStatus.Closed).ToList();
         Summary = all.Count == 0
-            ? "No risk yet. Raise the ones that could stop the project: the team, the technology, the schedule, outside parties."
-            : $"{open.Count} open of {all.Count} · {open.Count(r => r.Score >= 16)} critical, {open.Count(r => r.Score is >= 10 and < 16)} high · " +
-              $"{open.Count(r => r.Owner is null)} without an owner";
+            ? L.T("No risk yet. Raise the ones that could stop the project: the team, the technology, the schedule, outside parties.")
+            : L.T($"{open.Count} open of {all.Count} · {open.Count(r => r.Score >= 16)} critical, {open.Count(r => r.Score is >= 10 and < 16)} high · ") +
+              L.T($"{open.Count(r => r.Owner is null)} without an owner");
         OnPropertyChanged(nameof(HasRisks));
         // Keep the editor's unsaved changes when the board changes for another reason.
         var dirty = IsDirty;
@@ -195,7 +196,7 @@ public sealed partial class RisksPageViewModel : BoardPageViewModel
     {
         if (Context.Snapshot.IssueByKey(NewIssueKey.Trim()) is not { } issue)
         {
-            Context.Status.Show($"There's no issue {NewIssueKey.Trim()} on this board.");
+            Context.Status.Show(L.T($"There's no issue {NewIssueKey.Trim()} on this board."));
             return;
         }
         if (!_issueIds.Contains(issue.Id))
@@ -208,10 +209,10 @@ public sealed partial class RisksPageViewModel : BoardPageViewModel
     [RelayCommand]
     private async Task AddRiskAsync()
     {
-        var dialog = new TextInputDialogViewModel("Raise a Risk", "What could go wrong?", "", "Raise")
+        var dialog = new TextInputDialogViewModel(L.T("Raise a Risk"), L.T("What could go wrong?"), "", L.T("Raise"))
         {
-            Choice = new ChoiceInput("Category", [.. RiskRegister.Categories], RiskRegister.Categories[0]),
-            Explanation = "Then rate its probability and impact, give it an owner and plan the mitigation on the right.",
+            Choice = new ChoiceInput(L.T("Category"), [.. RiskRegister.Categories], RiskRegister.Categories[0]),
+            Explanation = L.T("Then rate its probability and impact, give it an owner and plan the mitigation on the right."),
         };
         if (!await Context.Dialogs.ShowDialogAsync(dialog))
             return;
@@ -250,18 +251,18 @@ public sealed partial class RisksPageViewModel : BoardPageViewModel
     [RelayCommand]
     private async Task DeleteAsync()
     {
-        if (Selected?.Risk is { } risk && await Context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Delete Risk",
-                $"Delete {risk.Key} \"{risk.Title}\"? Closing it (Status: Closed) keeps it in the register.", "Delete", [risk.ToString()])))
+        if (Selected?.Risk is { } risk && await Context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel(L.T("Delete Risk"),
+                L.T($"Delete {risk.Key} \"{risk.Title}\"? Closing it (Status: Closed) keeps it in the register."), L.T("Delete"), [risk.ToString()])))
         {
             IsDirty = false;
             await Context.RunAsync(new DeleteRisk(risk.Id));
         }
     }
 
-    private string ExportName => $"Risks {Context.Project.Key}";
+    private string ExportName => L.T($"Risks {Context.Project.Key}");
 
     [RelayCommand]
-    private Task SaveMatrixAsync() => _export.SaveChartAsync(ChartKind.Heatmap, Matrix, $"Risk matrix {Context.Project.Key}");
+    private Task SaveMatrixAsync() => _export.SaveChartAsync(ChartKind.Heatmap, Matrix, L.T($"Risk matrix {Context.Project.Key}"));
 
     [RelayCommand]
     private Task CopyMatrixAsync() => _export.CopyChartAsync(ChartKind.Heatmap, Matrix);

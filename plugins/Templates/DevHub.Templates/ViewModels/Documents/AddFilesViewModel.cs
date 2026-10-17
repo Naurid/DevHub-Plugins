@@ -7,6 +7,7 @@ using DevHub.Templates.Core.Commands;
 using DevHub.Templates.Core.Generation;
 using DevHub.Templates.Core.Rendering;
 using DevHub.ViewModels.Templates;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Documents;
 
@@ -43,10 +44,10 @@ public sealed partial class AddFilesViewModel : DocumentViewModelBase
         Browser = new TemplateBrowserViewModel(templates, OnTemplateSelected, kind: TemplateBrowserViewModel.ItemKind);
     }
 
-    public override string Title => "Add Files";
+    public override string Title => L.T("Add Files");
     public override string Icon => IconKind.Template;
     public override bool FillsEditorArea => true;
-    public override DocumentNavigation Navigation => new() { Text = "Add Files from Template…", Menu = "File", MenuOrder = 1, WelcomeOrder = 15 };
+    public override DocumentNavigation Navigation => new() { Text = L.T("Add Files from Template…"), Menu = "File", MenuOrder = 1, WelcomeOrder = 15 };
 
     public TemplateBrowserViewModel Browser { get; }
 
@@ -59,7 +60,7 @@ public sealed partial class AddFilesViewModel : DocumentViewModelBase
     [ObservableProperty] private IReadOnlyList<StepIndicatorViewModel> _steps = StepIndicatorViewModel.For(0, StepIndicatorViewModel.ItemSteps);
 
     /// <summary>The folder the files go into (shown above the list; the form starts with it).</summary>
-    public string FolderText => _folder.Length == 0 ? "Pick a template, then the folder." : "Into " + _folder;
+    public string FolderText => _folder.Length == 0 ? L.T("Pick a template, then the folder.") : L.T("Into ") + _folder;
 
     protected override void OnActivationChanged(bool isActive)
     {
@@ -145,9 +146,9 @@ public sealed partial class AddFilesViewModel : DocumentViewModelBase
         }
         if (result.Staged is not { } staged)
         {
-            _status.Show($"Couldn't prepare the files: {string.Join(" ", result.Errors)}");
-            await _dialogs.ShowDialogAsync(new Dialogs.ConfirmDialogViewModel("Can't Add the Files",
-                "Nothing was changed in the folder.", "OK", result.Errors, destructive: false, showCancel: false));
+            _status.Show(L.T($"Couldn't prepare the files: {string.Join(" ", result.Errors)}"));
+            await _dialogs.ShowDialogAsync(new Dialogs.ConfirmDialogViewModel(L.T("Can't Add the Files"),
+                L.T("Nothing was changed in the folder."), "OK", result.Errors, destructive: false, showCancel: false));
             return;
         }
 
@@ -180,7 +181,7 @@ public sealed partial class AddFilesViewModel : DocumentViewModelBase
         }
         catch (Exception ex)
         {
-            preview.ShowError("Couldn't add the files: " + ex.Message + " Some changes may already be in the folder.");
+            preview.ShowError(L.T("Couldn't add the files: ") + ex.Message + L.T(" Some changes may already be in the folder."));
             return;
         }
         _staged = null;
@@ -193,7 +194,7 @@ public sealed partial class AddFilesViewModel : DocumentViewModelBase
         if (commands.Count > 0)
             (results, cancelled) = await TemplateFlow.RunPostCreateAsync(_templates, _status, commands, folder, log, run => SetPage(run, 2));
 
-        _status.Show(cancelled || results.Any(r => !r.Succeeded) ? $"Added files to {folder}; a command didn't finish." : $"Added files to {folder}.");
+        _status.Show(cancelled || results.Any(r => !r.Succeeded) ? L.T($"Added files to {folder}; a command didn't finish.") : L.T($"Added files to {folder}."));
         SetPage(new DonePageViewModel(folder, results, cancelled, log, null,
             () => TemplatesService.Reveal(folder),
             () => ShowForm(_template), isItem: true), 2);

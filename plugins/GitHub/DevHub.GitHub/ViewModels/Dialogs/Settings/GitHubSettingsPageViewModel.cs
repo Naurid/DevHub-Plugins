@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHub.GitHub.Core;
 using DevHub.Services;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Dialogs.Settings;
 
@@ -23,7 +24,7 @@ public sealed partial class GitHubSettingsPageViewModel : SettingsPageViewModelB
 
     public override string Title => "GitHub";
     public override int Order => 300;
-    public override string Keywords => "github account sign in login logout token credential manager clone publish";
+    public override string Keywords => L.T("github account sign in login logout token credential manager clone publish");
 
     public ObservableCollection<GitHubAccountRowViewModel> Accounts { get; } = new();
 
@@ -40,7 +41,7 @@ public sealed partial class GitHubSettingsPageViewModel : SettingsPageViewModelB
     private string? _unavailableReason;
 
     public string? EmptyText => IsLoading || HasAccounts ? null
-        : UnavailableReason ?? "Not signed in. Sign in to push to GitHub, publish repositories and clone your own.";
+        : UnavailableReason ?? L.T("Not signed in. Sign in to push to GitHub, publish repositories and clone your own.");
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SignInCommand))]
@@ -55,10 +56,9 @@ public sealed partial class GitHubSettingsPageViewModel : SettingsPageViewModelB
     {
         IsLoading = true;
         if (!_session.IsAvailable)
-            UnavailableReason = "Git is not installed, so there's no Git Credential Manager to sign in with.";
+            UnavailableReason = L.T("Git is not installed, so there's no Git Credential Manager to sign in with.");
         else if (!await _session.IsCredentialManagerAvailableAsync())
-            UnavailableReason = "Git Credential Manager isn't installed. It comes with Git for Windows (git-scm.com): " +
-                                "reinstall or update Git and keep \"Git Credential Manager\" ticked.";
+            UnavailableReason = L.T("Git Credential Manager isn't installed. It comes with Git for Windows (git-scm.com): reinstall or update Git and keep \"Git Credential Manager\" ticked.");
         else
             UnavailableReason = null;
 
@@ -112,7 +112,7 @@ public sealed partial class GitHubAccountRowViewModel : ObservableObject
     public string Account { get; }
 
     /// <summary>"Gabor Vilics · signed in", "checking…", or what's wrong.</summary>
-    [ObservableProperty] private string _detail = "Checking with GitHub…";
+    [ObservableProperty] private string _detail = L.T("Checking with GitHub…");
 
     /// <summary>The account's GitHub picture, once downloaded.</summary>
     [ObservableProperty] private byte[]? _avatar;
@@ -129,7 +129,7 @@ public sealed partial class GitHubAccountRowViewModel : ObservableObject
         {
             var (user, avatar) = await session.GetProfileAsync(Account);
             Avatar = avatar;
-            Detail = user.Name is { Length: > 0 } name ? $"{name} · signed in" : "Signed in";
+            Detail = user.Name is { Length: > 0 } name ? L.T($"{name} · signed in") : L.T("Signed in");
         }
         catch (GitHubException ex)
         {
@@ -138,7 +138,7 @@ public sealed partial class GitHubAccountRowViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            Detail = "Couldn't check the sign-in: " + ex.Message;
+            Detail = L.T("Couldn't check the sign-in: ") + ex.Message;
             IsProblem = true;
         }
     }

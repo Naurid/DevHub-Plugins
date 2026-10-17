@@ -1,6 +1,7 @@
 using DevHub.Board.Core.Model;
 using DevHub.Board.Core.Search;
 using DevHub.Board.Core.Storage;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Board.Core;
 
@@ -19,7 +20,7 @@ public sealed record SaveFilter(string Name, string Query) : IBoardOperation
         }
         catch (QueryException e)
         {
-            throw new BoardRuleException("The query has a problem: " + e.Message);
+            throw new BoardRuleException(L.T("The query has a problem: ") + e.Message);
         }
         var change = new ChangeBuilder(board, context);
         var existing = Id is null ? null : board.Filters.GetValueOrDefault(Id);
@@ -31,7 +32,7 @@ public sealed record SaveFilter(string Name, string Query) : IBoardOperation
             Owner = existing?.Owner ?? context.Who,
         };
         change.Write(BoardPaths.Filter(filter.Id), filter);
-        return change.Build($"Filter {name} saved");
+        return change.Build(L.T($"Filter {name} saved"));
     }
 }
 
@@ -39,9 +40,9 @@ public sealed record DeleteFilter(string FilterId) : IBoardOperation
 {
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
-        var filter = board.Filters.GetValueOrDefault(FilterId) ?? throw new BoardRuleException("That filter doesn't exist any more.");
+        var filter = board.Filters.GetValueOrDefault(FilterId) ?? throw new BoardRuleException(L.T("That filter doesn't exist any more."));
         var change = new ChangeBuilder(board, context);
         change.Delete(BoardPaths.Filter(filter.Id));
-        return change.Build($"Filter {filter.Name} deleted");
+        return change.Build(L.T($"Filter {filter.Name} deleted"));
     }
 }

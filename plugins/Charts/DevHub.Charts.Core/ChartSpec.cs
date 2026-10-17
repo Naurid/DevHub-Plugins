@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using DevHub.Sdk.Core.Charts;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Charts.Core;
 
@@ -61,12 +62,12 @@ public sealed record ChartSpec
     /// <summary>A sample to start from: velocity of four sprints.</summary>
     public static ChartSpec Sample { get; } = new()
     {
-        Title = "Velocity",
-        XTitle = "Sprint",
-        YTitle = "Story points",
+        Title = L.T("Velocity"),
+        XTitle = L.T("Sprint"),
+        YTitle = L.T("Story points"),
         Kind = ChartKind.Combo,
-        Table = "Sprint\tCommitted\tCompleted\nSprint 1\t21\t13\nSprint 2\t20\t18\nSprint 3\t22\t21\nSprint 4\t24\t23\n",
-        Series = [new SeriesSpec { Name = "Committed", Kind = SeriesKind.Bar }, new SeriesSpec { Name = "Completed", Markers = true, ValueLabels = true }],
+        Table = L.T("Sprint\tCommitted\tCompleted\nSprint 1\t21\t13\nSprint 2\t20\t18\nSprint 3\t22\t21\nSprint 4\t24\t23\n"),
+        Series = [new SeriesSpec { Name = L.T("Committed"), Kind = SeriesKind.Bar }, new SeriesSpec { Name = L.T("Completed"), Markers = true, ValueLabels = true }],
     };
 
     /// <summary>A chart from elsewhere (a report) as a spec: its numbers as a tab-separated table, its titles and styles.</summary>
@@ -175,11 +176,11 @@ public static class ChartBuilder
     {
         var rows = TableText.Parse(spec.Table);
         if (rows.Count == 0)
-            return (ChartData.Empty, "Paste a table: the first row names the series, the first column the labels (copy cells from Excel, Sheets or Word).");
+            return (ChartData.Empty, L.T("Paste a table: the first row names the series, the first column the labels (copy cells from Excel, Sheets or Word)."));
         var width = rows.Max(r => r.Count);
         string Cell(int r, int c) => c < rows[r].Count ? rows[r][c] : "";
         if (width < 2 || rows.Count < 2)
-            return (ChartData.Empty, "A table needs a header row and at least one row of numbers, with labels in the first column.");
+            return (ChartData.Empty, L.T("A table needs a header row and at least one row of numbers, with labels in the first column."));
 
         List<string> labels;
         List<(string Name, List<double?> Values)> series;
@@ -195,11 +196,11 @@ public static class ChartBuilder
         }
         series = series.Where(s => s.Values.Any(v => v is not null)).ToList();
         if (series.Count == 0)
-            return (ChartData.Empty, "No numbers found: the cells after the first column (or row) should hold numbers.");
+            return (ChartData.Empty, L.T("No numbers found: the cells after the first column (or row) should hold numbers."));
 
         var data = new ChartData(labels, series.Select((s, i) =>
         {
-            var name = s.Name.Length > 0 ? s.Name : $"Series {i + 1}";
+            var name = s.Name.Length > 0 ? s.Name : L.T($"Series {i + 1}");
             var style = spec.Series.FirstOrDefault(x => x.Name == name);
             return new ChartSeries(name, s.Values)
             {

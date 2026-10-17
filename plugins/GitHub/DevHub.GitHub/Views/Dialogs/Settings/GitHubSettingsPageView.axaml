@@ -4,6 +4,7 @@
 -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:vm="using:DevHub.ViewModels.Dialogs.Settings"
              xmlns:c="using:DevHub.Controls"
              x:Class="DevHub.Views.Dialogs.Settings.GitHubSettingsPageView"
@@ -11,7 +12,7 @@
 
     <StackPanel Spacing="{DynamicResource Spacing}">
         <TextBlock Classes="secondary" TextWrapping="Wrap"
-                   Text="DevHub uses the GitHub sign-in of Git Credential Manager, the same one git uses when you push to github.com. DevHub never stores your password or token: it borrows the token from Credential Manager for each request (Publish to GitHub, Clone from GitHub)." />
+                   Text="{l:T 'DevHub uses the GitHub sign-in of Git Credential Manager, the same one git uses when you push to github.com. DevHub never stores your password or token: it borrows the token from Credential Manager for each request (Publish to GitHub, Clone from GitHub).'}" />
 
         <ItemsControl ItemsSource="{Binding Accounts}" IsVisible="{Binding HasAccounts}">
             <ItemsControl.ItemTemplate>
@@ -26,8 +27,8 @@
                                 <TextBlock Classes="small secondary" Text="{Binding Detail}" TextWrapping="Wrap"
                                            Classes.problem="{Binding IsProblem}" />
                             </StackPanel>
-                            <Button Grid.Column="2" Content="Sign Out…" Command="{Binding SignOutCommand}" VerticalAlignment="Center"
-                                    ToolTip.Tip="Remove this sign-in from Git Credential Manager (asks first)" />
+                            <Button Grid.Column="2" Content="{l:T 'Sign Out…'}" Command="{Binding SignOutCommand}" VerticalAlignment="Center"
+                                    ToolTip.Tip="{l:T 'Remove this sign-in from Git Credential Manager (asks first)'}" />
                         </Grid>
                     </Border>
                 </DataTemplate>
@@ -38,8 +39,8 @@
                    IsVisible="{Binding EmptyText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
         <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}">
-            <Button Classes="accent" Content="Sign In…" Command="{Binding SignInCommand}"
-                    ToolTip.Tip="Opens Git Credential Manager's GitHub sign-in (browser, device code or token)" />
+            <Button Classes="accent" Content="{l:T 'Sign In…'}" Command="{Binding SignInCommand}"
+                    ToolTip.Tip="{l:T 'Opens Git Credential Manager\'s GitHub sign-in (browser, device code or token)'}" />
         </StackPanel>
     </StackPanel>
 

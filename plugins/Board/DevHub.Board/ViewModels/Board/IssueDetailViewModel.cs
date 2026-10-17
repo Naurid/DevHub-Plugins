@@ -9,6 +9,7 @@ using DevHub.Board.Core.Model;
 using DevHub.Sdk.Core.Formatting;
 using DevHub.Services.Board;
 using DevHub.ViewModels.Dialogs;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Board;
 
@@ -180,7 +181,7 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
     public ObservableCollection<NamedItem> Parents { get; } = [];
     [ObservableProperty] private NamedItem? _parent;
     [ObservableProperty] private bool _showParent;
-    [ObservableProperty] private string _parentLabel = "Epic";
+    [ObservableProperty] private string _parentLabel = L.T("Epic");
 
     public ObservableCollection<NamedItem> SprintChoices { get; } = [];
     [ObservableProperty] private NamedItem? _sprint;
@@ -266,8 +267,8 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
         Summary = issue.Summary;
         Description = issue.Description;
         OnPropertyChanged(nameof(HasDescription));
-        Created = "Created " + RelativeOrDate(issue.Created);
-        Updated = "Updated " + RelativeOrDate(issue.Updated);
+        Created = L.T("Created ") + RelativeOrDate(issue.Created);
+        Updated = L.T("Updated ") + RelativeOrDate(issue.Updated);
 
         var parent = board.Issue(issue.Parent);
         ParentId = parent?.Id;
@@ -296,22 +297,22 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
         Fill(Priorities, project.Priorities.Select(p => new NamedItem(p.Id, p.Name, p.Icon)));
         Priority = Priorities.FirstOrDefault(p => p.Id == issue.Priority);
 
-        Fill(People, [new NamedItem(null, "Unassigned"), .. project.People.OrderBy(p => p.Name, StringComparer.CurrentCultureIgnoreCase)
+        Fill(People, [new NamedItem(null, L.T("Unassigned")), .. project.People.OrderBy(p => p.Name, StringComparer.CurrentCultureIgnoreCase)
             .Select(NamedItem.Person)]);
         Assignee = People.FirstOrDefault(p => p.Id == issue.Assignee) ?? People[0];
         Reporter = People.FirstOrDefault(p => p.Id == issue.Reporter) ?? People[0];
         IsAssignedToMe = issue.Assignee is not null && issue.Assignee == _context.Me;
 
         ShowParent = level != IssueTypeLevel.Epic;
-        ParentLabel = level == IssueTypeLevel.Subtask ? "Parent" : "Epic";
+        ParentLabel = level == IssueTypeLevel.Subtask ? L.T("Parent") : L.T("Epic");
         var wanted = level == IssueTypeLevel.Subtask ? IssueTypeLevel.Standard : IssueTypeLevel.Epic;
         var parents = board.Issues.Values.Where(i => board.LevelOf(i) == wanted && i.Id != issue.Id && (!board.IsDone(i) || i.Id == issue.Parent))
             .OrderBy(i => i.Rank, StringComparer.Ordinal).Select(i => new NamedItem(i.Id, $"{i.Key} {i.Summary}")).ToList();
-        Fill(Parents, level == IssueTypeLevel.Subtask ? parents : [new NamedItem(null, "No epic"), .. parents]);
+        Fill(Parents, level == IssueTypeLevel.Subtask ? parents : [new NamedItem(null, L.T("No epic")), .. parents]);
         Parent = Parents.FirstOrDefault(p => p.Id == issue.Parent) ?? (level == IssueTypeLevel.Subtask ? null : Parents.FirstOrDefault());
 
         ShowSprint = board.Sprints.Count > 0 && level == IssueTypeLevel.Standard;
-        Fill(SprintChoices, [new NamedItem(null, "Backlog"), .. board.Sprints.Values
+        Fill(SprintChoices, [new NamedItem(null, L.T("Backlog")), .. board.Sprints.Values
             .Where(s => s.State != SprintState.Closed || s.Id == issue.Sprint).OrderBy(s => s.Sequence)
             .Select(s => new NamedItem(s.Id, s.State == SprintState.Active ? s.Name + " (active)" : s.Name))]);
         Sprint = SprintChoices.FirstOrDefault(s => s.Id == issue.Sprint) ?? SprintChoices[0];
@@ -321,7 +322,7 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
         OriginalEstimate = _context.Duration(issue.Time.OriginalMinutes);
         RemainingEstimate = issue.Time.RemainingMinutes is { } rm ? WorkDuration.Format(rm, project.Settings) : "";
         var spent = issue.Time.SpentMinutes + board.ChildrenOf(issue.Id).Sum(c => c.Time.SpentMinutes);
-        TimeSpent = spent > 0 ? WorkDuration.Format(spent, project.Settings) + " logged" : "nothing logged";
+        TimeSpent = spent > 0 ? WorkDuration.Format(spent, project.Settings) + " logged" : L.T("nothing logged");
         var total = spent + (issue.Time.RemainingMinutes ?? 0);
         TimeProgress = total > 0 ? (double)spent / total : 0;
         Start = issue.Start?.ToDateTime(TimeOnly.MinValue);
@@ -337,8 +338,8 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
         {
             IReadOnlyList<NamedItem> choices = field.Type switch
             {
-                FieldType.Select => [new NamedItem(null, "None"), .. field.Options.Select(o => new NamedItem(o, o))],
-                FieldType.Person => [new NamedItem(null, "Nobody"), .. project.People.Select(NamedItem.Person)],
+                FieldType.Select => [new NamedItem(null, L.T("None")), .. field.Options.Select(o => new NamedItem(o, o))],
+                FieldType.Person => [new NamedItem(null, L.T("Nobody")), .. project.People.Select(NamedItem.Person)],
                 _ => [],
             };
             CustomFields.Add(new CustomFieldRow(field, issue.Custom.GetValueOrDefault(field.Id), choices, SaveCustomFieldAsync));
@@ -347,7 +348,7 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
 
         // Children: an epic's issues, or a standard issue's sub-tasks.
         CanHaveChildren = level != IssueTypeLevel.Subtask && project.IssueTypes.Any(t => t.Level == level - 1);
-        ChildrenTitle = level == IssueTypeLevel.Epic ? "Issues in this epic" : "Sub-tasks";
+        ChildrenTitle = level == IssueTypeLevel.Epic ? L.T("Issues in this epic") : "Sub-tasks";
         var children = board.ChildrenOf(issue.Id);
         Children.Clear();
         foreach (var child in children)
@@ -492,7 +493,7 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
             _ = Save(IssueFields.StoryPoints, new FieldValue.Number(points));
         else
         {
-            _context.Status.Show("Story points must be a number.");
+            _context.Status.Show(L.T("Story points must be a number."));
             Refresh();
         }
     }
@@ -513,7 +514,7 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
             _ = Save(field, new FieldValue.Minutes(minutes));
         else
         {
-            _context.Status.Show("A duration looks like 2h, 1d 4h or 30m.");
+            _context.Status.Show(L.T("A duration looks like 2h, 1d 4h or 30m."));
             Refresh();
         }
     }
@@ -561,7 +562,7 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
     private async Task EditComponentsAsync()
     {
         var items = _context.Project.Components.Select(c => new ChecklistItem(c.Id, c.Name, _issue.Components.Contains(c.Id), c.Description)).ToList();
-        var dialog = new ChecklistDialogViewModel($"Components of {Key}", "The parts of the product this issue is about.", items);
+        var dialog = new ChecklistDialogViewModel(L.T($"Components of {Key}"), L.T("The parts of the product this issue is about."), items);
         if (await _context.Dialogs.ShowDialogAsync(dialog))
             await SaveAndRefresh(new EditIssue(IssueId, IssueFields.Components, new FieldValue.Items(dialog.CheckedIds)));
     }
@@ -573,7 +574,7 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
             .OrderBy(v => v.Release ?? DateOnly.MaxValue).ThenBy(v => v.Name, StringComparer.CurrentCultureIgnoreCase)
             .Select(v => new ChecklistItem(v.Id, v.Name, _issue.FixVersions.Contains(v.Id), v.Released ? "released" : v.Release?.ToString("d MMM yyyy", CultureInfo.CurrentCulture)))
             .ToList();
-        var dialog = new ChecklistDialogViewModel($"Fix versions of {Key}", "The releases this issue is planned for.", items);
+        var dialog = new ChecklistDialogViewModel(L.T($"Fix versions of {Key}"), L.T("The releases this issue is planned for."), items);
         if (await _context.Dialogs.ShowDialogAsync(dialog))
             await SaveAndRefresh(new EditIssue(IssueId, IssueFields.FixVersions, new FieldValue.Items(dialog.CheckedIds)));
     }
@@ -643,7 +644,7 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
         var other = _context.Snapshot.IssueByKey(NewLinkKey.Trim());
         if (other is null)
         {
-            _context.Status.Show($"There's no issue {NewLinkKey.Trim()} on this board.");
+            _context.Status.Show(L.T($"There's no issue {NewLinkKey.Trim()} on this board."));
             return;
         }
         var ok = type.Inward
@@ -669,7 +670,7 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
     [RelayCommand]
     private async Task AddAttachmentAsync()
     {
-        var path = await _context.Dialogs.PickFileAsync("Attach a file", "All files", ["*"]);
+        var path = await _context.Dialogs.PickFileAsync(L.T("Attach a file"), L.T("All files"), ["*"]);
         if (path is null)
             return;
         byte[] bytes;
@@ -677,14 +678,14 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
         {
             if (new FileInfo(path).Length > AddAttachment.MaxBytes)
             {
-                _context.Status.Show($"Attachments can be up to {AddAttachment.MaxBytes / 1024 / 1024} MB.");
+                _context.Status.Show(L.T($"Attachments can be up to {AddAttachment.MaxBytes / 1024 / 1024} MB."));
                 return;
             }
             bytes = await File.ReadAllBytesAsync(path);
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException)
         {
-            _context.Status.Show("The file couldn't be read: " + e.Message);
+            _context.Status.Show(L.T("The file couldn't be read: ") + e.Message);
             return;
         }
         await SaveAndRefresh(new AddAttachment(IssueId, Path.GetFileName(path), bytes));
@@ -699,7 +700,7 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
         if (_context.Snapshot.AttachmentBytes(_issue, attachment) is { } bytes)
             _services.OpenFile(attachment.FileName, bytes);
         else
-            _context.Status.Show($"{attachment.FileName} is missing from the board's files.");
+            _context.Status.Show(L.T($"{attachment.FileName} is missing from the board's files."));
     }
 
     [RelayCommand]
@@ -707,8 +708,8 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
     {
         if (row is null)
             return;
-        var ok = await _context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Remove Attachment",
-            $"Remove {row.FileName} from {Key}?", "Remove", [row.FileName]));
+        var ok = await _context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel(L.T("Remove Attachment"),
+            L.T($"Remove {row.FileName} from {Key}?"), L.T("Remove"), [row.FileName]));
         if (ok)
             await SaveAndRefresh(new RemoveAttachment(IssueId, row.Id));
     }
@@ -750,7 +751,7 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
     {
         if (row is null)
             return;
-        var ok = await _context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Delete Comment", "Delete this comment?", "Delete", [row.Body]));
+        var ok = await _context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel(L.T("Delete Comment"), L.T("Delete this comment?"), L.T("Delete"), [row.Body]));
         if (ok)
             await SaveAndRefresh(new DeleteComment(IssueId, row.Id));
     }
@@ -767,8 +768,8 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
     {
         if (row is null)
             return;
-        var ok = await _context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Delete Work Log",
-            $"Delete {row.Spent} logged by {row.Author}? The time goes back onto the remaining estimate.", "Delete", [row.Note]));
+        var ok = await _context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel(L.T("Delete Work Log"),
+            L.T($"Delete {row.Spent} logged by {row.Author}? The time goes back onto the remaining estimate."), L.T("Delete"), [row.Note]));
         if (ok)
             await SaveAndRefresh(new DeleteWorkLog(IssueId, row.Id));
     }
@@ -808,7 +809,7 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
             (IssueFields.FixVersions, new FieldValue.Items(_issue.FixVersions)),
             (IssueFields.StoryPoints, new FieldValue.Number(_issue.StoryPoints)),
         };
-        if (await _context.RunAsync(new CreateIssue(_issue.Type, "Clone of " + _issue.Summary)
+        if (await _context.RunAsync(new CreateIssue(_issue.Type, L.T("Clone of ") + _issue.Summary)
             {
                 Id = id, Parent = _issue.Parent, Description = _issue.Description, Fields = fields,
             }))
@@ -838,19 +839,19 @@ public static class HistoryText
         switch (entry.Field)
         {
             case "created":
-                return "created the issue";
+                return L.T("created the issue");
             case "comment":
                 return entry.To is not null ? "added a comment" : "deleted a comment";
             case "worklog":
-                return entry.To is not null ? $"logged {Minutes(entry.To)}" : $"deleted {Minutes(entry.From)} of logged work";
+                return entry.To is not null ? $"logged {Minutes(entry.To)}" : L.T($"deleted {Minutes(entry.From)} of logged work");
             case "attachment":
                 return entry.To is not null ? $"attached {entry.To}" : $"removed {entry.From}";
             case "link":
                 return entry.To is not null ? "added a link " + LinkText(entry.To) : "removed a link " + LinkText(entry.From);
             case "key":
-                return $"moved it from {entry.From} to {entry.To}";
+                return L.T($"moved it from {entry.From} to {entry.To}");
             case IssueFields.Description:
-                return "changed the description";
+                return L.T("changed the description");
         }
         var name = IssueFields.DisplayName(entry.Field, project);
         var from = Value(entry.Field, entry.From);
@@ -871,7 +872,7 @@ public static class HistoryText
             var inward = raw.Contains("<:");
             var parts = raw.Split(inward ? "<:" : ":");
             var type = project.LinkType(parts[0]);
-            var other = parts.Length > 1 ? board.Issue(parts[1])?.Key ?? "a deleted issue" : "";
+            var other = parts.Length > 1 ? board.Issue(parts[1])?.Key ?? L.T("a deleted issue") : "";
             return $"({(inward ? type?.Inward : type?.Outward) ?? parts[0]} {other})";
         }
 
@@ -886,7 +887,7 @@ public static class HistoryText
                 IssueFields.Priority => context.PriorityName(raw),
                 IssueFields.Resolution => project.Resolution(raw)?.Name ?? raw,
                 IssueFields.Assignee or IssueFields.Reporter => context.PersonName(raw),
-                IssueFields.Parent => board.Issue(raw)?.Key ?? "a deleted issue",
+                IssueFields.Parent => board.Issue(raw)?.Key ?? L.T("a deleted issue"),
                 IssueFields.Sprint => board.Sprints.GetValueOrDefault(raw)?.Name ?? raw,
                 IssueFields.Components => string.Join(", ", raw.Split(',').Select(c => project.Component(c)?.Name ?? c)),
                 IssueFields.FixVersions => string.Join(", ", raw.Split(',').Select(v => board.Versions.GetValueOrDefault(v)?.Name ?? v)),

@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHub.Templates.Core;
 using DevHub.Templates.Core.Editing;
 using DevHub.Templates.Core.Rendering;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Templates.Editor;
 
@@ -282,8 +283,8 @@ public sealed partial class CommandPartViewModel : EditorPartViewModel
         : "";
 
     public string RunInText => RunIn == RunIn.Root
-        ? "Runs inside the (empty) project folder, e.g. dotnet new console --output ."
-        : "Runs in the folder above and must create the project folder itself, e.g. cargo new {{Name}}";
+        ? L.T("Runs inside the (empty) project folder, e.g. dotnet new console --output .")
+        : L.T("Runs in the folder above and must create the project folder itself, e.g. cargo new {{Name}}");
 
     public BaseCommand? Build() => HasCommand && Command.Trim().Length > 0
         ? (_original ?? new BaseCommand()) with { Command = Command.Trim(), Args = ListText.SplitLines(Args), RunIn = RunIn }
@@ -335,11 +336,11 @@ public sealed partial class StepItemViewModel : EditorPartViewModel
 
     public bool UsesPath => Op is StepOp.CreateFolder or StepOp.Delete;
     public bool UsesFromTo => !UsesPath;
-    public string ToLabel => Op == StepOp.Rename ? "New name" : "To";
+    public string ToLabel => Op == StepOp.Rename ? L.T("New name") : L.T("To");
 
     public string Summary => Op switch
     {
-        StepOp.CreateFolder => $"create folder {Path}",
+        StepOp.CreateFolder => L.T($"create folder {Path}"),
         StepOp.Delete => $"delete {Path}",
         StepOp.Rename => $"rename {From} → {To}",
         _ => $"move {From} → {To}",
@@ -347,10 +348,10 @@ public sealed partial class StepItemViewModel : EditorPartViewModel
 
     public string Help => Op switch
     {
-        StepOp.CreateFolder => "Creates the folder (and its parents).",
-        StepOp.Delete => "Deletes files or folders. A path, or a glob (*, **, ?): a glob matching nothing is fine.",
-        StepOp.Rename => "Renames one file or folder in place. \"New name\" is just the name, not a path.",
-        _ => "Moves a path or everything a glob matches. \"To\" ending in / is a folder (names are kept); otherwise it's the new path of one item.",
+        StepOp.CreateFolder => L.T("Creates the folder (and its parents)."),
+        StepOp.Delete => L.T("Deletes files or folders. A path, or a glob (*, **, ?): a glob matching nothing is fine."),
+        StepOp.Rename => L.T("Renames one file or folder in place. \"New name\" is just the name, not a path."),
+        _ => L.T("Moves a path or everything a glob matches. \"To\" ending in / is a folder (names are kept); otherwise it's the new path of one item."),
     };
 
     public TemplateStep Build() => _original with
@@ -371,7 +372,7 @@ public sealed class PostCreatePartViewModel(TemplateManifest manifest, Func<IRea
     private readonly Func<IReadOnlyList<string>> _boolVariables = boolVariables;
 
     protected override PostCreateItemViewModel CreateItem() =>
-        new(new PostCreateCommand { Name = "Initialize git", Command = "git", Args = ["init"] }, _boolVariables, _changed);
+        new(new PostCreateCommand { Name = L.T("Initialize git"), Command = "git", Args = ["init"] }, _boolVariables, _changed);
 
     public IReadOnlyList<PostCreateCommand> Build() => Items.Select(i => i.Build()).ToList();
 }

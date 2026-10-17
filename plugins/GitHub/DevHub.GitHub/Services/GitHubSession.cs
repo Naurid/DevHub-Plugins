@@ -1,5 +1,6 @@
 using DevHub.GitHub.Core;
 using DevHub.ViewModels.Dialogs;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Services;
 
@@ -71,7 +72,7 @@ public sealed class GitHubSession(IDialogService dialogs, IStatusService status,
         }
         catch (Exception ex)
         {
-            status.Show("Couldn't read the GitHub accounts from Git Credential Manager: " + ex.Message);
+            status.Show(L.T("Couldn't read the GitHub accounts from Git Credential Manager: ") + ex.Message);
             return [];
         }
     }
@@ -91,19 +92,19 @@ public sealed class GitHubSession(IDialogService dialogs, IStatusService status,
 
         var before = await ListAccountsAsync();
         using var cts = new CancellationTokenSource();
-        var task = status.StartTask("Signing in to GitHub (finish in the window that opened)…", cts.Cancel);
+        var task = status.StartTask(L.T("Signing in to GitHub (finish in the window that opened)…"), cts.Cancel);
         try
         {
             await github.Credentials.SignInAsync(cts.Token);
         }
         catch (OperationCanceledException)
         {
-            status.Show("GitHub sign-in cancelled.");
+            status.Show(L.T("GitHub sign-in cancelled."));
             return false;
         }
         catch (Exception ex)
         {
-            status.Show("GitHub sign-in failed: " + FirstLine(ex));
+            status.Show(L.T("GitHub sign-in failed: ") + FirstLine(ex));
             return false;
         }
         finally
@@ -113,7 +114,7 @@ public sealed class GitHubSession(IDialogService dialogs, IStatusService status,
 
         _profiles.Clear(); // a renewed sign-in may fix a profile that failed
         var added = (await ListAccountsAsync()).Except(before).ToList();
-        status.Show(added.Count > 0 ? $"Signed in to GitHub as {string.Join(", ", added)}." : "GitHub sign-in finished.");
+        status.Show(added.Count > 0 ? L.T($"Signed in to GitHub as {string.Join(", ", added)}.") : L.T("GitHub sign-in finished."));
         return added.Count > 0 || before.Count > 0;
     }
 
@@ -123,9 +124,8 @@ public sealed class GitHubSession(IDialogService dialogs, IStatusService status,
         if (github is null)
             return;
 
-        var confirm = new ConfirmDialogViewModel("Sign Out of GitHub",
-            $"Remove the GitHub sign-in for {account} from Git Credential Manager? Pushing to and pulling from " +
-            "github.com will ask you to sign in again (other apps using git share this sign-in).", "Sign Out");
+        var confirm = new ConfirmDialogViewModel(L.T("Sign Out of GitHub"),
+            L.T($"Remove the GitHub sign-in for {account} from Git Credential Manager? Pushing to and pulling from github.com will ask you to sign in again (other apps using git share this sign-in)."), L.T("Sign Out"));
         if (!await dialogs.ShowDialogAsync(confirm))
             return;
 
@@ -133,11 +133,11 @@ public sealed class GitHubSession(IDialogService dialogs, IStatusService status,
         {
             await github.Credentials.SignOutAsync(account);
             _profiles.Remove(account);
-            status.Show($"Signed out {account}.");
+            status.Show(L.T($"Signed out {account}."));
         }
         catch (Exception ex)
         {
-            status.Show("Sign-out failed: " + FirstLine(ex));
+            status.Show(L.T("Sign-out failed: ") + FirstLine(ex));
         }
     }
 
@@ -149,7 +149,7 @@ public sealed class GitHubSession(IDialogService dialogs, IStatusService status,
     {
         if (github is null)
         {
-            status.Show("Git is not installed, so DevHub can't reach GitHub.");
+            status.Show(L.T("Git is not installed, so DevHub can't reach GitHub."));
             return [];
         }
 
@@ -157,10 +157,9 @@ public sealed class GitHubSession(IDialogService dialogs, IStatusService status,
         if (accounts.Count > 0)
             return accounts;
 
-        var ask = new ConfirmDialogViewModel("Sign In to GitHub",
-            $"To {purpose}, DevHub needs your GitHub account. Sign in now? Git Credential Manager opens a sign-in " +
-            "window; git uses the same sign-in for pushing, and DevHub never stores your password or token.",
-            "Sign In", destructive: false);
+        var ask = new ConfirmDialogViewModel(L.T("Sign In to GitHub"),
+            L.T($"To {purpose}, DevHub needs your GitHub account. Sign in now? Git Credential Manager opens a sign-in window; git uses the same sign-in for pushing, and DevHub never stores your password or token."),
+            L.T("Sign In"), destructive: false);
         if (!await dialogs.ShowDialogAsync(ask) || !await SignInAsync())
             return [];
         return await ListAccountsAsync();

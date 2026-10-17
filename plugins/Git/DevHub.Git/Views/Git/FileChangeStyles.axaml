@@ -7,6 +7,7 @@
 -->
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="using:DevHub.Localization"
         xmlns:vm="using:DevHub.ViewModels.Git"
         xmlns:c="using:DevHub.Controls"
         xmlns:conv="using:DevHub.Converters">
@@ -46,7 +47,7 @@
                   Background="Transparent" c:DoubleTap.Command="{Binding ToggleCommand}">
                 <Button Classes="flat" Padding="0" Command="{Binding ToggleCommand}" VerticalAlignment="Center"
                         Width="{DynamicResource Size.TreeArrow}" Height="{DynamicResource Size.TreeArrow}"
-                        AutomationProperties.Name="Fold or unfold">
+                        AutomationProperties.Name="{l:T 'Fold or unfold'}">
                     <Panel>
                         <c:Icon Kind="chevronDown" IsVisible="{Binding IsExpanded}" />
                         <c:Icon Kind="chevronRight" IsVisible="{Binding !IsExpanded}" />

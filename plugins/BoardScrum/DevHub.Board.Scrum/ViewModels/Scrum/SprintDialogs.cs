@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DevHub.Board.Core;
 using DevHub.Board.Core.Model;
 using DevHub.ViewModels.Dialogs;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Scrum;
 
@@ -19,17 +20,17 @@ public sealed partial class StartSprintDialogViewModel : DialogViewModelBase
         var issues = board.Issues.Values.Where(i => i.Sprint == sprint.Id && board.LevelOf(i) == IssueTypeLevel.Standard).ToList();
         var points = issues.Sum(i => i.StoryPoints ?? 0);
         Summary = $"{issues.Count} issues, {points.ToString("0.##", CultureInfo.CurrentCulture)} points"
-                  + (issues.Count(i => i.StoryPoints is null) is var unestimated and > 0 ? $" ({unestimated} not estimated)" : "")
+                  + (issues.Count(i => i.StoryPoints is null) is var unestimated and > 0 ? L.T($" ({unestimated} not estimated)") : "")
                   + (sprint.Capacity is { } c ? $" · capacity {c.ToString("0.##", CultureInfo.CurrentCulture)}" : "");
     }
 
-    public override string Title => "Start Sprint";
-    public override string OkText => "Start";
+    public override string Title => L.T("Start Sprint");
+    public override string OkText => L.T("Start");
     public override bool FitsContent => true;
     public override double Width => 480;
     public override double MinHeight => 0;
 
-    public IReadOnlyList<string> Lengths { get; } = ["1 week", "2 weeks", "3 weeks", "4 weeks", "Custom"];
+    public IReadOnlyList<string> Lengths { get; } = [L.T("1 week"), L.T("2 weeks"), L.T("3 weeks"), L.T("4 weeks"), L.T("Custom")];
 
     [ObservableProperty] private string _name;
     [ObservableProperty] private string _goal;
@@ -47,7 +48,7 @@ public sealed partial class StartSprintDialogViewModel : DialogViewModelBase
 
     private void UpdateEnd()
     {
-        if (Length == "Custom" || StartDate is null)
+        if (Length == L.T("Custom") || StartDate is null)
             return;
         var weeks = int.Parse(Length[..1], CultureInfo.InvariantCulture);
         EndDate = StartDate.Value.AddDays(7 * weeks - 1);
@@ -55,9 +56,9 @@ public sealed partial class StartSprintDialogViewModel : DialogViewModelBase
 
     protected override Task<bool> ApplyChangesAsync()
     {
-        Error = string.IsNullOrWhiteSpace(Name) ? "Give the sprint a name."
-            : StartDate is null || EndDate is null ? "Choose the dates."
-            : EndDate < StartDate ? "The sprint ends after it starts."
+        Error = string.IsNullOrWhiteSpace(Name) ? L.T("Give the sprint a name.")
+            : StartDate is null || EndDate is null ? L.T("Choose the dates.")
+            : EndDate < StartDate ? L.T("The sprint ends after it starts.")
             : null;
         return Task.FromResult(Error is null);
     }
@@ -112,8 +113,8 @@ public sealed partial class EditSprintDialogViewModel : DialogViewModelBase
         UpdatePlan();
     }
 
-    public override string Title => "Edit Sprint";
-    public override string OkText => "Save";
+    public override string Title => L.T("Edit Sprint");
+    public override string OkText => L.T("Save");
     public override bool FitsContent => true;
     public override double Width => 560;
     public override double MinHeight => 0;
@@ -157,14 +158,14 @@ public sealed partial class EditSprintDialogViewModel : DialogViewModelBase
         var working = WorkingDays(StartAt, EndAt);
         var personDays = Team.Sum(r => r.Value ?? 0);
         var focused = personDays * (FocusValue ?? 1);
-        PlanText = $"{working} working days{(StartAt is null || EndAt is null ? " (no dates yet: as long as the last sprint)" : "")} · {personDays:0.##} person-days · {focused:0.##} focused days";
+        PlanText = L.T($"{working} working days{(StartAt is null || EndAt is null ? L.T(" (no dates yet: as long as the last sprint)") : "")} · {personDays:0.##} person-days · {focused:0.##} focused days");
         var rate = SprintCapacity.PointsPerFocusedDay(_board, _sprintId);
         Suggested = SprintCapacity.Suggested(_board, focused, _sprintId);
         SuggestionText = Suggested is { } s
-            ? $"Suggested: {s:0.##} points ({rate:0.##} points per focused day over the last sprints)"
+            ? L.T($"Suggested: {s:0.##} points ({rate:0.##} points per focused day over the last sprints)")
             : rate is null
-                ? "No suggestion yet: no finished sprint has availability recorded. Plan the first sprints low while the team gets going."
-                : "Enter who is available to get a suggestion.";
+                ? L.T("No suggestion yet: no finished sprint has availability recorded. Plan the first sprints low while the team gets going.")
+                : L.T("Enter who is available to get a suggestion.");
     }
 
     [CommunityToolkit.Mvvm.Input.RelayCommand]
@@ -190,18 +191,18 @@ public sealed partial class EditSprintDialogViewModel : DialogViewModelBase
         if (Capacity.Trim().Length > 0)
         {
             if (!double.TryParse(Capacity.Trim().Replace(',', '.'), NumberStyles.Float, CultureInfo.InvariantCulture, out var c) || c < 0)
-                Error = "Capacity is a number of story points.";
+                Error = L.T("Capacity is a number of story points.");
             else
                 CapacityValue = c;
         }
         if (Team.Any(r => r.Value is null))
-            Error = "Available days are numbers (0 for someone who's away).";
+            Error = L.T("Available days are numbers (0 for someone who's away).");
         if (FocusValue is null)
-            Error = "The focus factor is a percentage from 1 to 100.";
+            Error = L.T("The focus factor is a percentage from 1 to 100.");
         if (string.IsNullOrWhiteSpace(Name))
-            Error = "Give the sprint a name.";
+            Error = L.T("Give the sprint a name.");
         if (StartDate is { } s && EndDate is { } e && e < s)
-            Error = "The sprint ends after it starts.";
+            Error = L.T("The sprint ends after it starts.");
         return Task.FromResult(Error is null);
     }
 }
@@ -218,18 +219,18 @@ public sealed partial class CompleteSprintDialogViewModel : DialogViewModelBase
         var done = issues.Where(board.IsDone).ToList();
         var open = issues.Count - done.Count;
         SprintName = sprint.Name;
-        Summary = $"{done.Count} of {issues.Count} issues done ({done.Sum(i => i.StoryPoints ?? 0).ToString("0.##", CultureInfo.CurrentCulture)} of "
+        Summary = L.T($"{done.Count} of {issues.Count} issues done ({done.Sum(i => i.StoryPoints ?? 0).ToString("0.##", CultureInfo.CurrentCulture)} of ")
                   + $"{issues.Sum(i => i.StoryPoints ?? 0).ToString("0.##", CultureInfo.CurrentCulture)} points; "
-                  + $"{sprint.CommittedPoints.ToString("0.##", CultureInfo.CurrentCulture)} committed at the start).";
+                  + L.T($"{sprint.CommittedPoints.ToString("0.##", CultureInfo.CurrentCulture)} committed at the start).");
         HasOpen = open > 0;
-        OpenText = open == 1 ? "1 issue isn't done. Move it to:" : $"{open} issues aren't done. Move them to:";
+        OpenText = open == 1 ? L.T("1 issue isn't done. Move it to:") : L.T($"{open} issues aren't done. Move them to:");
         _future = board.Sprints.Values.Where(s => s.State == SprintState.Future).OrderBy(s => s.Sequence).ToList();
-        Targets = ["The backlog", .. _future.Select(s => s.Name), "A new sprint"];
+        Targets = [L.T("The backlog"), .. _future.Select(s => s.Name), L.T("A new sprint")];
         _target = _future.Count > 0 ? _future[0].Name : Targets[0];
     }
 
-    public override string Title => "Complete Sprint";
-    public override string OkText => "Complete";
+    public override string Title => L.T("Complete Sprint");
+    public override string OkText => L.T("Complete");
     public override bool FitsContent => true;
     public override double Width => 480;
     public override double MinHeight => 0;
@@ -241,8 +242,8 @@ public sealed partial class CompleteSprintDialogViewModel : DialogViewModelBase
     public IReadOnlyList<string> Targets { get; }
     [ObservableProperty] private string _target;
 
-    public OpenIssuesGoTo MoveTo => Target == "The backlog" ? OpenIssuesGoTo.Backlog
-        : Target == "A new sprint" ? OpenIssuesGoTo.NewSprint
+    public OpenIssuesGoTo MoveTo => Target == L.T("The backlog") ? OpenIssuesGoTo.Backlog
+        : Target == L.T("A new sprint") ? OpenIssuesGoTo.NewSprint
         : OpenIssuesGoTo.NextSprint;
 
     public string? NextSprintId => _future.FirstOrDefault(s => s.Name == Target)?.Id;

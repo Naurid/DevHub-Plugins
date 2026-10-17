@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHub.Git.Core;
 using DevHub.Sdk.Core.Search;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Git;
 
@@ -81,10 +82,10 @@ public sealed partial class BranchPopupViewModel : ViewModelBase
         var filtering = !string.IsNullOrWhiteSpace(Query);
         Rows.Clear();
         if (!filtering)
-            Rows.Add(new BranchPopupRow(BranchPopupRowKind.NewBranch, "New Branch…", null, Run));
+            Rows.Add(new BranchPopupRow(BranchPopupRowKind.NewBranch, L.T("New Branch…"), null, Run));
 
-        AddGroup("Local", _branches.Where(b => !b.IsRemote));
-        AddGroup("Remote", _branches.Where(b => b.IsRemote));
+        AddGroup(L.T("Local"), _branches.Where(b => !b.IsRemote));
+        AddGroup(L.T("Remote"), _branches.Where(b => b.IsRemote));
 
         // First branch that isn't the current one: Enter right away switches somewhere.
         Selected = Rows.FirstOrDefault(r => r.Branch is { IsCurrent: false }) ?? Rows.FirstOrDefault(r => r.IsSelectable);

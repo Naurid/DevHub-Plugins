@@ -1,3 +1,5 @@
+using DevHub.Sdk.Core.Localization;
+
 namespace DevHub.Projects.Core;
 
 /// <summary>
@@ -17,8 +19,8 @@ public sealed class ToolLocator : IToolLocator
     {
         var tools = new List<DevTool>
         {
-            new(ToolIds.OsDefault, "OS default", null),
-            new(ToolIds.Explorer, "File Explorer", null)
+            new(ToolIds.OsDefault, L.T("OS default"), null),
+            new(ToolIds.Explorer, L.T("File Explorer"), null)
         };
 
         AddIfFound(tools, ToolIds.Rider, "Rider", FindRider());
@@ -27,7 +29,7 @@ public sealed class ToolLocator : IToolLocator
         AddIfFound(tools, ToolIds.UnityHub, "Unity Hub", FindUnityHub());
 
         // Custom is always an option; its executable comes from the per-language setting.
-        tools.Add(new DevTool(ToolIds.Custom, "Custom…", null));
+        tools.Add(new DevTool(ToolIds.Custom, L.T("Custom…"), null));
         return tools;
     }
 

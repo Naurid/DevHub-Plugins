@@ -5,6 +5,7 @@
 -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:vm="using:DevHub.ViewModels.Git"
              xmlns:c="using:DevHub.Controls"
              xmlns:gitv="using:DevHub.Views.Git"
@@ -33,7 +34,7 @@
                 Command="{Binding Active.Repository.BranchPopup.OpenCommand, FallbackValue={x:Null}}"
                 IsVisible="{Binding Active.Repository.Branch, Converter={x:Static StringConverters.IsNotNullOrEmpty}, FallbackValue=False}"
                 ToolTip.Tip="{Binding Active.Repository.Branch, StringFormat='Branch {0}: click for branches (Ctrl+Shift+`)', FallbackValue=''}"
-                AutomationProperties.Name="Branches">
+                AutomationProperties.Name="{l:T 'Branches'}">
             <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}">
                 <c:Icon Kind="vcs" VerticalAlignment="Center" />
                 <!-- Capped so a long branch name ends in "…" instead of running into the toolbar. -->

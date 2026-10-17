@@ -1,5 +1,6 @@
 using System.Globalization;
 using DevHub.Board.Core.Model;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Board.Core.Fields;
 
@@ -73,25 +74,25 @@ public static class IssueFields
     /// <summary>For people: "Story points", or a custom field's name.</summary>
     public static string DisplayName(string field, BoardProject project) => field switch
     {
-        Summary => "Summary",
-        Description => "Description",
-        Type => "Type",
-        Status => "Status",
-        Resolution => "Resolution",
-        Priority => "Priority",
-        Parent => "Parent",
-        Assignee => "Assignee",
-        Reporter => "Reporter",
-        Labels => "Labels",
-        Components => "Components",
-        FixVersions => "Fix versions",
-        StoryPoints => "Story points",
-        OriginalEstimate => "Original estimate",
-        RemainingEstimate => "Remaining estimate",
-        Start => "Start date",
-        Due => "Due date",
-        Sprint => "Sprint",
-        Rank => "Rank",
+        Summary => L.T("Summary"),
+        Description => L.T("Description"),
+        Type => L.T("Type"),
+        Status => L.T("Status"),
+        Resolution => L.T("Resolution"),
+        Priority => L.T("Priority"),
+        Parent => L.T("Parent"),
+        Assignee => L.T("Assignee"),
+        Reporter => L.T("Reporter"),
+        Labels => L.T("Labels"),
+        Components => L.T("Components"),
+        FixVersions => L.T("Fix versions"),
+        StoryPoints => L.T("Story points"),
+        OriginalEstimate => L.T("Original estimate"),
+        RemainingEstimate => L.T("Remaining estimate"),
+        Start => L.T("Start date"),
+        Due => L.T("Due date"),
+        Sprint => L.T("Sprint"),
+        Rank => L.T("Rank"),
         _ when field.StartsWith(CustomPrefix, StringComparison.Ordinal) =>
             project.CustomField(field[CustomPrefix.Length..])?.Name ?? field[CustomPrefix.Length..],
         _ => field,
@@ -120,7 +121,7 @@ public static class IssueFields
         Rank => new FieldValue.Text(issue.Rank),
         _ when field.StartsWith(CustomPrefix, StringComparison.Ordinal) =>
             new FieldValue.Text(issue.Custom.GetValueOrDefault(field[CustomPrefix.Length..])),
-        _ => throw new BoardRuleException($"There's no field \"{field}\"."),
+        _ => throw new BoardRuleException(L.T($"There's no field \"{field}\".")),
     };
 
     /// <summary>The issue with <paramref name="field"/> set to <paramref name="value"/> (not checked: see <see cref="Validate"/>).</summary>
@@ -145,8 +146,8 @@ public static class IssueFields
             Due => issue with { Due = DateValue() },
             Sprint => issue with { Sprint = Text() },
             _ when field.StartsWith(CustomPrefix, StringComparison.Ordinal) => SetCustom(field[CustomPrefix.Length..], Text()),
-            Status or Resolution => throw new BoardRuleException("Status and resolution change through a transition."),
-            _ => throw new BoardRuleException($"There's no field \"{field}\"."),
+            Status or Resolution => throw new BoardRuleException(L.T("Status and resolution change through a transition.")),
+            _ => throw new BoardRuleException(L.T($"There's no field \"{field}\".")),
         };
 
         string? Text() => value switch
@@ -206,9 +207,9 @@ public static class IssueFields
         {
             case Summary:
                 if (string.IsNullOrWhiteSpace(text))
-                    throw new BoardRuleException("The summary can't be empty.");
+                    throw new BoardRuleException(L.T("The summary can't be empty."));
                 if (text.Trim().Length > MaxSummaryLength)
-                    throw new BoardRuleException($"The summary is longer than {MaxSummaryLength} characters.");
+                    throw new BoardRuleException(L.T($"The summary is longer than {MaxSummaryLength} characters."));
                 break;
             case Description:
                 break;
@@ -217,51 +218,51 @@ public static class IssueFields
                 break;
             case Priority:
                 if (text is not null && project.Priority(text) is null)
-                    throw new BoardRuleException($"There's no priority \"{text}\".");
+                    throw new BoardRuleException(L.T($"There's no priority \"{text}\"."));
                 break;
             case Parent:
                 ValidateParent(board, issue, issue.Type, text);
                 break;
             case Assignee or Reporter:
                 if (text is not null && project.Person(text) is null)
-                    throw new BoardRuleException($"There's nobody with the id \"{text}\" on this board.");
+                    throw new BoardRuleException(L.T($"There's nobody with the id \"{text}\" on this board."));
                 break;
             case Labels:
                 foreach (var label in Items(value))
                 {
                     if (label.Any(char.IsWhiteSpace) || label.Contains(','))
-                        throw new BoardRuleException($"A label can't contain spaces or commas (\"{label}\").");
+                        throw new BoardRuleException(L.T($"A label can't contain spaces or commas (\"{label}\")."));
                 }
                 break;
             case Components:
                 foreach (var id in Items(value).Where(id => project.Component(id) is null))
-                    throw new BoardRuleException($"There's no component \"{id}\".");
+                    throw new BoardRuleException(L.T($"There's no component \"{id}\"."));
                 break;
             case FixVersions:
                 foreach (var id in Items(value).Where(id => !board.Versions.ContainsKey(id)))
-                    throw new BoardRuleException($"There's no version \"{id}\".");
+                    throw new BoardRuleException(L.T($"There's no version \"{id}\"."));
                 break;
             case StoryPoints:
                 var points = value switch
                 {
                     FieldValue.Number n => n.Value,
                     FieldValue.Text { Value: { Length: > 0 } s } when double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out var p) => p,
-                    FieldValue.Text { Value: { Length: > 0 } } => throw new BoardRuleException("Story points must be a number."),
+                    FieldValue.Text { Value: { Length: > 0 } } => throw new BoardRuleException(L.T("Story points must be a number.")),
                     _ => null,
                 };
                 if (points is < 0 or > 10000 || (points is { } pt && !double.IsFinite(pt)))
-                    throw new BoardRuleException("Story points must be between 0 and 10000.");
+                    throw new BoardRuleException(L.T("Story points must be between 0 and 10000."));
                 break;
             case OriginalEstimate or RemainingEstimate:
                 if (value is FieldValue.Minutes { Value: < 0 } or FieldValue.Number { Value: < 0 })
-                    throw new BoardRuleException("An estimate can't be negative.");
+                    throw new BoardRuleException(L.T("An estimate can't be negative."));
                 if (value is not (FieldValue.Minutes or FieldValue.Number))
-                    throw new BoardRuleException("An estimate is a number of minutes.");
+                    throw new BoardRuleException(L.T("An estimate is a number of minutes."));
                 break;
             case Start or Due:
                 if (value is FieldValue.Text { Value: { Length: > 0 } d }
                     && !DateOnly.TryParseExact(d, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
-                    throw new BoardRuleException("A date looks like 2026-10-31.");
+                    throw new BoardRuleException(L.T("A date looks like 2026-10-31."));
                 var date = value switch
                 {
                     FieldValue.Date { Value: { } dv } => dv,
@@ -269,23 +270,23 @@ public static class IssueFields
                     _ => (DateOnly?)null,
                 };
                 if (date is { } chosen && (field == Start ? issue.Due is { } due && chosen > due : issue.Start is { } start && chosen < start))
-                    throw new BoardRuleException("The start date can't be after the due date.");
+                    throw new BoardRuleException(L.T("The start date can't be after the due date."));
                 break;
             case Sprint:
                 if (text is not null && !board.Sprints.ContainsKey(text))
-                    throw new BoardRuleException($"There's no sprint \"{text}\".");
+                    throw new BoardRuleException(L.T($"There's no sprint \"{text}\"."));
                 if (board.LevelOf(issue) == IssueTypeLevel.Subtask && text != board.Issue(issue.Parent)?.Sprint)
-                    throw new BoardRuleException("A sub-task is in its parent's sprint.");
+                    throw new BoardRuleException(L.T("A sub-task is in its parent's sprint."));
                 break;
             case Status or Resolution:
-                throw new BoardRuleException("Status and resolution change through a transition.");
+                throw new BoardRuleException(L.T("Status and resolution change through a transition."));
             default:
                 if (field.StartsWith(CustomPrefix, StringComparison.Ordinal))
                 {
                     ValidateCustom(board, field[CustomPrefix.Length..], text);
                     break;
                 }
-                throw new BoardRuleException($"There's no field \"{field}\".");
+                throw new BoardRuleException(L.T($"There's no field \"{field}\"."));
         }
     }
 
@@ -296,49 +297,49 @@ public static class IssueFields
         if (parentId is null)
         {
             if (level == IssueTypeLevel.Subtask)
-                throw new BoardRuleException("A sub-task needs a parent issue.");
+                throw new BoardRuleException(L.T("A sub-task needs a parent issue."));
             return;
         }
-        var parent = board.Issue(parentId) ?? throw new BoardRuleException("The parent issue doesn't exist.");
+        var parent = board.Issue(parentId) ?? throw new BoardRuleException(L.T("The parent issue doesn't exist."));
         if (issue is not null && parent.Id == issue.Id)
-            throw new BoardRuleException("An issue can't be its own parent.");
+            throw new BoardRuleException(L.T("An issue can't be its own parent."));
         switch (level)
         {
             case IssueTypeLevel.Epic:
-                throw new BoardRuleException("An epic can't have a parent.");
+                throw new BoardRuleException(L.T("An epic can't have a parent."));
             case IssueTypeLevel.Standard when board.LevelOf(parent) != IssueTypeLevel.Epic:
-                throw new BoardRuleException($"{parent.Key} isn't an epic: only epics can hold issues.");
+                throw new BoardRuleException(L.T($"{parent.Key} isn't an epic: only epics can hold issues."));
             case IssueTypeLevel.Subtask when board.LevelOf(parent) != IssueTypeLevel.Standard:
-                throw new BoardRuleException($"A sub-task's parent must be a standard issue, and {parent.Key} isn't one.");
+                throw new BoardRuleException(L.T($"A sub-task's parent must be a standard issue, and {parent.Key} isn't one."));
         }
     }
 
     private static void ValidateType(BoardSnapshot board, Issue issue, string? typeId)
     {
-        var type = board.Project.IssueType(typeId) ?? throw new BoardRuleException($"There's no issue type \"{typeId}\".");
+        var type = board.Project.IssueType(typeId) ?? throw new BoardRuleException(L.T($"There's no issue type \"{typeId}\"."));
         var oldLevel = board.LevelOf(issue);
         if (type.Level != oldLevel && board.ChildrenOf(issue.Id).Count > 0)
             throw new BoardRuleException(oldLevel == IssueTypeLevel.Epic
-                ? "This epic still has issues: move them out first."
-                : "This issue still has sub-tasks: move or delete them first.");
+                ? L.T("This epic still has issues: move them out first.")
+                : L.T("This issue still has sub-tasks: move or delete them first."));
         ValidateParent(board, issue, type.Id, issue.Parent);
     }
 
     private static void ValidateCustom(BoardSnapshot board, string id, string? text)
     {
-        var definition = board.Project.CustomField(id) ?? throw new BoardRuleException($"There's no custom field \"{id}\".");
+        var definition = board.Project.CustomField(id) ?? throw new BoardRuleException(L.T($"There's no custom field \"{id}\"."));
         if (text is null)
             return;
         switch (definition.Type)
         {
             case FieldType.Number when !double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out _):
-                throw new BoardRuleException($"{definition.Name} must be a number.");
+                throw new BoardRuleException(L.T($"{definition.Name} must be a number."));
             case FieldType.Date when !DateOnly.TryParseExact(text, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out _):
-                throw new BoardRuleException($"{definition.Name} must be a date like 2026-10-31.");
+                throw new BoardRuleException(L.T($"{definition.Name} must be a date like 2026-10-31."));
             case FieldType.Select when !definition.Options.Contains(text):
-                throw new BoardRuleException($"\"{text}\" isn't one of {definition.Name}'s choices.");
+                throw new BoardRuleException(L.T($"\"{text}\" isn't one of {definition.Name}'s choices."));
             case FieldType.Person when board.Project.Person(text) is null:
-                throw new BoardRuleException($"There's nobody with the id \"{text}\" on this board.");
+                throw new BoardRuleException(L.T($"There's nobody with the id \"{text}\" on this board."));
         }
     }
 

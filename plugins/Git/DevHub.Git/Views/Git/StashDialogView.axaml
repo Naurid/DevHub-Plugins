@@ -1,18 +1,19 @@
 <!-- Stash Changes: message (optional), untracked files, keep staged changes. -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:vm="using:DevHub.ViewModels.Git"
              xmlns:c="using:DevHub.Controls"
              x:Class="DevHub.Views.Git.StashDialogView"
              x:DataType="vm:StashDialogViewModel">
     <StackPanel Margin="{DynamicResource Padding.Dialog}" Spacing="{DynamicResource Spacing}">
         <TextBlock Classes="secondary" TextWrapping="Wrap"
-                   Text="Puts your uncommitted changes aside and returns the files to the last commit. Get them back from Stashes (Apply or Pop)." />
-        <TextBlock Classes="secondary" Text="Message (optional)" />
-        <TextBox Text="{Binding Message}" PlaceholderText="half-done login form"
-                 AutomationProperties.Name="Stash message" c:FocusOnLoad.IsEnabled="True" />
-        <CheckBox Content="Include new (untracked) files" IsChecked="{Binding IncludeUntracked}" />
-        <CheckBox Content="Keep staged changes in place too" IsChecked="{Binding KeepIndex}"
-                  ToolTip.Tip="The stash still holds everything; the staged changes also stay in your files" />
+                   Text="{l:T 'Puts your uncommitted changes aside and returns the files to the last commit. Get them back from Stashes (Apply or Pop).'}" />
+        <TextBlock Classes="secondary" Text="{l:T 'Message (optional)'}" />
+        <TextBox Text="{Binding Message}" PlaceholderText="{l:T 'half-done login form'}"
+                 AutomationProperties.Name="{l:T 'Stash message'}" c:FocusOnLoad.IsEnabled="True" />
+        <CheckBox Content="{l:T 'Include new (untracked) files'}" IsChecked="{Binding IncludeUntracked}" />
+        <CheckBox Content="{l:T 'Keep staged changes in place too'}" IsChecked="{Binding KeepIndex}"
+                  ToolTip.Tip="{l:T 'The stash still holds everything; the staged changes also stay in your files'}" />
     </StackPanel>
 </UserControl>

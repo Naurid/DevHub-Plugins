@@ -3,6 +3,7 @@ using DevHub.Controls;
 using DevHub.Services;
 using DevHub.Services.Board;
 using DevHub.ViewModels.Documents;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Actions.Providers;
 
@@ -27,62 +28,62 @@ public sealed class BoardActionProvider(BoardOpener opener, IServiceProvider ser
 {
     public IEnumerable<AppAction> GetActions()
     {
-        yield return new AppAction(BoardActionIds.New, "New Board…", new AsyncRelayCommand(() => opener.NewBoardAsync()))
+        yield return new AppAction(BoardActionIds.New, L.T("New Board…"), new AsyncRelayCommand(() => opener.NewBoardAsync()))
         {
             Category = "Board",
             IconKind = IconKind.Add,
             Menu = "Board",
             MenuOrder = 0,
             WelcomeOrder = 60,
-            Description = "Create a board: epics, stories, sprints and columns you shape yourself, kept as plain files.",
+            Description = L.T("Create a board: epics, stories, sprints and columns you shape yourself, kept as plain files."),
         };
-        yield return new AppAction(BoardActionIds.Open, "Open Board…", new AsyncRelayCommand(opener.OpenBoardAsync))
+        yield return new AppAction(BoardActionIds.Open, L.T("Open Board…"), new AsyncRelayCommand(opener.OpenBoardAsync))
         {
             Category = "Board",
             IconKind = IconKind.Folder,
             Menu = "Board",
             MenuOrder = 1,
             WelcomeOrder = 61,
-            Description = "Open the board in a folder.",
+            Description = L.T("Open the board in a folder."),
         };
-        yield return new AppAction(BoardActionIds.ForProject, "Board of This Project", new AsyncRelayCommand(opener.BoardForProjectAsync))
+        yield return new AppAction(BoardActionIds.ForProject, L.T("Board of This Project"), new AsyncRelayCommand(opener.BoardForProjectAsync))
         {
             Category = "Board",
             Menu = "Board",
             MenuOrder = 2,
-            Description = "Open (or create) the board of the project or repository in front.",
+            Description = L.T("Open (or create) the board of the project or repository in front."),
         };
-        yield return new AppAction(BoardActionIds.CreateIssue, "Create Issue…", new AsyncRelayCommand(() => OnBoard(b => b.CreateIssueCommand.ExecuteAsync(null))))
+        yield return new AppAction(BoardActionIds.CreateIssue, L.T("Create Issue…"), new AsyncRelayCommand(() => OnBoard(b => b.CreateIssueCommand.ExecuteAsync(null))))
         {
             Category = "Board",
             IconKind = IconKind.Add,
             Gesture = "Ctrl+Alt+I",
             Menu = "Board",
             MenuOrder = 100,
-            Description = "Create an issue on the board in front.",
+            Description = L.T("Create an issue on the board in front."),
         };
-        yield return new AppAction(BoardActionIds.Backlog, "Show Backlog", new AsyncRelayCommand(() => OnBoard(b => ShowPage(b, "backlog"))))
+        yield return new AppAction(BoardActionIds.Backlog, L.T("Show Backlog"), new AsyncRelayCommand(() => OnBoard(b => ShowPage(b, "backlog"))))
         {
             Category = "Board",
             Menu = "Board",
             MenuOrder = 101,
         };
-        yield return new AppAction(BoardActionIds.Search, "Search Issues", new AsyncRelayCommand(() => OnBoard(b => ShowPage(b, "search"))))
+        yield return new AppAction(BoardActionIds.Search, L.T("Search Issues"), new AsyncRelayCommand(() => OnBoard(b => ShowPage(b, "search"))))
         {
             Category = "Board",
             IconKind = IconKind.Search,
             Menu = "Board",
             MenuOrder = 102,
-            Description = "Search the board in front with the query language (type = bug AND assignee = currentUser()).",
+            Description = L.T("Search the board in front with the query language (type = bug AND assignee = currentUser())."),
         };
-        yield return new AppAction("Board.GoToIssue", "Go to Issue…", new AsyncRelayCommand(() => OnBoard(GoToIssueAsync)))
+        yield return new AppAction("Board.GoToIssue", L.T("Go to Issue…"), new AsyncRelayCommand(() => OnBoard(GoToIssueAsync)))
         {
             Category = "Board",
             Menu = "Board",
             MenuOrder = 103,
-            Description = "Open an issue of the board in front by its key (DEV-12).",
+            Description = L.T("Open an issue of the board in front by its key (DEV-12)."),
         };
-        yield return new AppAction("Board.MyOpenIssues", "My Open Issues", new AsyncRelayCommand(() => OnBoard(b =>
+        yield return new AppAction("Board.MyOpenIssues", L.T("My Open Issues"), new AsyncRelayCommand(() => OnBoard(b =>
         {
             b.ShowSearch("assignee = currentUser() AND statusCategory != Done ORDER BY priority, rank");
             return Task.CompletedTask;
@@ -91,15 +92,15 @@ public sealed class BoardActionProvider(BoardOpener opener, IServiceProvider ser
             Category = "Board",
             Menu = "Board",
             MenuOrder = 104,
-            Description = "The open issues assigned to you on the board in front.",
+            Description = L.T("The open issues assigned to you on the board in front."),
         };
-        yield return new AppAction(BoardActionIds.Undo, "Undo Last Board Change", new AsyncRelayCommand(() => OnBoard(b => b.UndoCommand.ExecuteAsync(null))))
+        yield return new AppAction(BoardActionIds.Undo, L.T("Undo Last Board Change"), new AsyncRelayCommand(() => OnBoard(b => b.UndoCommand.ExecuteAsync(null))))
         {
             Category = "Board",
             Menu = "Board",
             MenuOrder = 200,
         };
-        yield return new AppAction(BoardActionIds.Settings, "Board Settings", new AsyncRelayCommand(() => OnBoard(b =>
+        yield return new AppAction(BoardActionIds.Settings, L.T("Board Settings"), new AsyncRelayCommand(() => OnBoard(b =>
         {
             b.ProjectSettingsCommand.Execute(null);
             return Task.CompletedTask;
@@ -109,18 +110,18 @@ public sealed class BoardActionProvider(BoardOpener opener, IServiceProvider ser
             IconKind = IconKind.Settings,
             Menu = "Board",
             MenuOrder = 201,
-            Description = "Workflows, statuses, issue types, priorities, fields, components, versions and people of the board in front.",
+            Description = L.T("Workflows, statuses, issue types, priorities, fields, components, versions and people of the board in front."),
         };
     }
 
 
     private async Task GoToIssueAsync(BoardDocumentViewModel board)
     {
-        var dialog = new ViewModels.Dialogs.TextInputDialogViewModel("Go to Issue", "Issue key", board.Context!.Project.Key + "-", "Open");
+        var dialog = new ViewModels.Dialogs.TextInputDialogViewModel(L.T("Go to Issue"), L.T("Issue key"), board.Context!.Project.Key + "-", L.T("Open"));
         if (!await dialogs.ShowDialogAsync(dialog))
             return;
         if (!board.GoToIssue(dialog.Text))
-            status.Show($"There's no issue {dialog.Text} on this board.");
+            status.Show(L.T($"There's no issue {dialog.Text} on this board."));
     }
     private static Task ShowPage(BoardDocumentViewModel board, string page)
     {
@@ -148,12 +149,12 @@ public sealed class BoardActionProvider(BoardOpener opener, IServiceProvider ser
         }
         if (board is null)
         {
-            status.Show("Open a board first (Board → New Board… or Open Board…).");
+            status.Show(L.T("Open a board first (Board → New Board… or Open Board…)."));
             return;
         }
         if (board.Context is null)
         {
-            status.Show("The board is still loading.");
+            status.Show(L.T("The board is still loading."));
             return;
         }
         await action(board);

@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHub.Git.Core;
 using DevHub.Services;
 using DevHub.ViewModels.Dialogs;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Git;
 
@@ -50,10 +51,10 @@ public sealed partial class ConflictOperations : ObservableObject
 
     public string Title => Operation switch
     {
-        RepositoryOperation.Merging => "Merge in progress",
-        RepositoryOperation.Rebasing => "Rebase in progress",
-        RepositoryOperation.CherryPicking => "Cherry-pick in progress",
-        RepositoryOperation.Reverting => "Revert in progress",
+        RepositoryOperation.Merging => L.T("Merge in progress"),
+        RepositoryOperation.Rebasing => L.T("Rebase in progress"),
+        RepositoryOperation.CherryPicking => L.T("Cherry-pick in progress"),
+        RepositoryOperation.Reverting => L.T("Revert in progress"),
         _ => "",
     };
 
@@ -61,10 +62,10 @@ public sealed partial class ConflictOperations : ObservableObject
     public string Hint => ConflictCount switch
     {
         0 => Operation == RepositoryOperation.Merging
-            ? "All conflicts are resolved: Continue to commit the merge."
-            : "All conflicts are resolved: Continue.",
-        1 => "1 conflicted file: resolve it in Changes (right-click: Accept Yours / Theirs, Merge Tool), then Continue.",
-        var n => $"{n} conflicted files: resolve them in Changes (right-click: Accept Yours / Theirs, Merge Tool), then Continue.",
+            ? L.T("All conflicts are resolved: Continue to commit the merge.")
+            : L.T("All conflicts are resolved: Continue."),
+        1 => L.T("1 conflicted file: resolve it in Changes (right-click: Accept Yours / Theirs, Merge Tool), then Continue."),
+        var n => L.T($"{n} conflicted files: resolve them in Changes (right-click: Accept Yours / Theirs, Merge Tool), then Continue."),
     };
 
     /// <summary>Only a rebase can skip the commit that stopped it.</summary>
@@ -72,12 +73,12 @@ public sealed partial class ConflictOperations : ObservableObject
 
     /// <summary>What "yours" / "theirs" mean right now (menu tooltips).</summary>
     public string YoursHint => Operation == RepositoryOperation.Rebasing
-        ? "Keep your commit's version (the commit being replayed)"
-        : "Keep the current branch's version";
+        ? L.T("Keep your commit's version (the commit being replayed)")
+        : L.T("Keep the current branch's version");
 
     public string TheirsHint => Operation == RepositoryOperation.Rebasing
-        ? "Keep the version of the branch you're rebasing onto"
-        : "Keep the incoming (merged) branch's version";
+        ? L.T("Keep the version of the branch you're rebasing onto")
+        : L.T("Keep the incoming (merged) branch's version");
 
     /// <summary>Called after every repository refresh.</summary>
     public void Update(RepositoryOperation operation, RepoStatus status)
@@ -97,9 +98,8 @@ public sealed partial class ConflictOperations : ObservableObject
     [RelayCommand(CanExecute = nameof(CanSkipNow))]
     private async Task SkipAsync()
     {
-        var confirm = new ConfirmDialogViewModel("Skip Commit",
-            "Leave out the commit that stopped the rebase? Its changes won't be in the rebased branch " +
-            "(the original commit stays reachable through the reflog for a while).", "Skip Commit");
+        var confirm = new ConfirmDialogViewModel(L.T("Skip Commit"),
+            L.T("Leave out the commit that stopped the rebase? Its changes won't be in the rebased branch (the original commit stays reachable through the reflog for a while)."), L.T("Skip Commit"));
         if (await _dialogs.ShowDialogAsync(confirm))
             await RunAsync("Skip", async client => Report(await client.SkipAsync()));
     }
@@ -109,14 +109,13 @@ public sealed partial class ConflictOperations : ObservableObject
     private async Task AbortAsync()
     {
         var what = Title.Replace(" in progress", "").ToLowerInvariant();
-        var confirm = new ConfirmDialogViewModel($"Abort {Title.Split(' ')[0]}",
-            $"Abort the {what}? The branch and files go back to how they were before it started; " +
-            "conflicts you've resolved so far are thrown away.", "Abort");
+        var confirm = new ConfirmDialogViewModel(L.T($"Abort {Title.Split(' ')[0]}"),
+            L.T($"Abort the {what}? The branch and files go back to how they were before it started; conflicts you've resolved so far are thrown away."), L.T("Abort"));
         if (await _dialogs.ShowDialogAsync(confirm))
             await RunAsync("Abort", async client =>
             {
                 await client.AbortAsync();
-                _status.Show($"Aborted the {what}; everything is back as before.");
+                _status.Show(L.T($"Aborted the {what}; everything is back as before."));
             });
     }
 
@@ -130,12 +129,12 @@ public sealed partial class ConflictOperations : ObservableObject
         if (files.Count == 0)
             return;
 
-        var side = choice == ConflictChoice.Yours ? "your" : "the incoming";
-        var confirm = new ConfirmDialogViewModel(choice == ConflictChoice.Yours ? "Accept Yours" : "Accept Theirs",
+        var side = choice == ConflictChoice.Yours ? "your" : L.T("the incoming");
+        var confirm = new ConfirmDialogViewModel(choice == ConflictChoice.Yours ? L.T("Accept Yours") : L.T("Accept Theirs"),
             files.Count == 1
-                ? $"Keep {side} version of {files[0].Path}? The other side's changes to it (and any edits you made to resolve it) are dropped."
-                : $"Keep {side} version of {files.Count} files? The other side's changes to them (and any edits you made) are dropped.",
-            choice == ConflictChoice.Yours ? "Accept Yours" : "Accept Theirs",
+                ? L.T($"Keep {side} version of {files[0].Path}? The other side's changes to it (and any edits you made to resolve it) are dropped.")
+                : L.T($"Keep {side} version of {files.Count} files? The other side's changes to them (and any edits you made) are dropped."),
+            choice == ConflictChoice.Yours ? L.T("Accept Yours") : L.T("Accept Theirs"),
             files.Count == 1 ? null : files.Select(f => f.Path).ToList(), destructive: false);
         if (!await _dialogs.ShowDialogAsync(confirm))
             return;
@@ -144,7 +143,7 @@ public sealed partial class ConflictOperations : ObservableObject
         {
             foreach (var file in files)
                 await client.ResolveAsync(file, choice);
-            _status.Show(files.Count == 1 ? $"Resolved {files[0].Path}." : $"Resolved {files.Count} files.");
+            _status.Show(files.Count == 1 ? L.T($"Resolved {files[0].Path}.") : L.T($"Resolved {files.Count} files."));
         });
     }
 
@@ -160,9 +159,8 @@ public sealed partial class ConflictOperations : ObservableObject
                 withMarkers.Add(file.Path);
         if (withMarkers.Count > 0)
         {
-            var confirm = new ConfirmDialogViewModel("Conflict Markers Left",
-                "These files still contain conflict markers (<<<<<<< … >>>>>>>). Mark them as resolved anyway? " +
-                "The markers would end up in the commit.", "Mark as Resolved", withMarkers);
+            var confirm = new ConfirmDialogViewModel(L.T("Conflict Markers Left"),
+                L.T("These files still contain conflict markers (<<<<<<< … >>>>>>>). Mark them as resolved anyway? The markers would end up in the commit."), L.T("Mark as Resolved"), withMarkers);
             if (!await _dialogs.ShowDialogAsync(confirm))
                 return;
         }
@@ -170,7 +168,7 @@ public sealed partial class ConflictOperations : ObservableObject
         await RunAsync("Mark as resolved", async client =>
         {
             await client.MarkResolvedAsync(files.Select(f => f.Path));
-            _status.Show(files.Count == 1 ? $"Marked {files[0].Path} as resolved." : $"Marked {files.Count} files as resolved.");
+            _status.Show(files.Count == 1 ? L.T($"Marked {files[0].Path} as resolved.") : L.T($"Marked {files.Count} files as resolved."));
         });
     }
 
@@ -185,11 +183,9 @@ public sealed partial class ConflictOperations : ObservableObject
 
         if (await _client.GetMergeToolAsync() is not { } tool)
         {
-            var open = new ConfirmDialogViewModel("No Merge Tool",
-                "No merge tool is configured in git (merge.tool). You can open the file in your editor and resolve the " +
-                "<<<<<<< … >>>>>>> sections by hand, then Mark as Resolved. (To set up a tool: " +
-                "\"git config --global merge.tool <name>\", e.g. vscode, meld, kdiff3, p4merge.)",
-                "Open in Editor", destructive: false);
+            var open = new ConfirmDialogViewModel(L.T("No Merge Tool"),
+                L.T("No merge tool is configured in git (merge.tool). You can open the file in your editor and resolve the <<<<<<< … >>>>>>> sections by hand, then Mark as Resolved. (To set up a tool: \"git config --global merge.tool <name>\", e.g. vscode, meld, kdiff3, p4merge.)"),
+                L.T("Open in Editor"), destructive: false);
             if (await _dialogs.ShowDialogAsync(open))
                 _openInEditor(file.Path);
             return;
@@ -197,15 +193,15 @@ public sealed partial class ConflictOperations : ObservableObject
 
         using var cts = new CancellationTokenSource();
         IsBusy = true;
-        var task = _status.StartTask($"Waiting for {tool}: {file.FileName}…", cts.Cancel);
+        var task = _status.StartTask(L.T($"Waiting for {tool}: {file.FileName}…"), cts.Cancel);
         try
         {
             await _client.RunMergeToolAsync(file.Path, cts.Token);
-            _status.Show($"{tool} finished: {file.Path} is resolved.");
+            _status.Show(L.T($"{tool} finished: {file.Path} is resolved."));
         }
         catch (OperationCanceledException)
         {
-            _status.Show("Merge tool closed; the file is still conflicted.");
+            _status.Show(L.T("Merge tool closed; the file is still conflicted."));
         }
         catch (Exception ex)
         {
@@ -222,7 +218,7 @@ public sealed partial class ConflictOperations : ObservableObject
     private void Report(OperationOutcome outcome) =>
         _status.Show(outcome switch
         {
-            OperationOutcome.Conflicts => "Stopped on conflicts again (the next commit): resolve them, then Continue.",
+            OperationOutcome.Conflicts => L.T("Stopped on conflicts again (the next commit): resolve them, then Continue."),
             _ => $"{Title.Replace(" in progress", "")} finished.",
         });
 

@@ -5,6 +5,7 @@ using DevHub.Board.Core;
 using DevHub.Board.Core.Import;
 using DevHub.Integration;
 using DevHub.Services.Board;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Dialogs;
 
@@ -23,21 +24,21 @@ public sealed partial class ImportDialogViewModel : DialogViewModelBase
     {
         _context = context;
         _gitHub = gitHub;
-        Sources = gitHub is null ? ["Jira (CSV export)"] : ["Jira (CSV export)", "GitHub repository issues"];
+        Sources = gitHub is null ? [L.T("Jira (CSV export)")] : [L.T("Jira (CSV export)"), L.T("GitHub repository issues")];
         _source = Sources[0];
     }
 
-    public override string Title => "Import Issues";
-    public override string OkText => "Import";
+    public override string Title => L.T("Import Issues");
+    public override string OkText => L.T("Import");
     public override double Width => 620;
     public override double Height => 560;
 
     public IReadOnlyList<string> Sources { get; }
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(IsJira))] private string _source;
-    public bool IsJira => Source.StartsWith("Jira", StringComparison.Ordinal);
+    public bool IsJira => Source == Sources[0];   // Jira first, then GitHub
     [ObservableProperty] private string _file = "";
     [ObservableProperty] private string _repository = "";
-    [ObservableProperty] private string _preview = "Choose what to import, then Load to see what would happen.";
+    [ObservableProperty] private string _preview = L.T("Choose what to import, then Load to see what would happen.");
     [ObservableProperty] private string? _error;
     [ObservableProperty] private bool _isLoading;
 
@@ -46,7 +47,7 @@ public sealed partial class ImportDialogViewModel : DialogViewModelBase
     [RelayCommand]
     private async Task BrowseAsync()
     {
-        if (await _context.Dialogs.PickFileAsync("Jira CSV export", "CSV files", ["*.csv"]) is { } path)
+        if (await _context.Dialogs.PickFileAsync(L.T("Jira CSV export"), L.T("CSV files"), ["*.csv"]) is { } path)
             File = path;
     }
 
@@ -64,11 +65,11 @@ public sealed partial class ImportDialogViewModel : DialogViewModelBase
             {
                 if (!System.IO.File.Exists(File))
                 {
-                    Error = "Choose the CSV file Jira exported (Filters → Export → CSV, all fields).";
+                    Error = L.T("Choose the CSV file Jira exported (Filters → Export → CSV, all fields).");
                     return;
                 }
                 issues = JiraCsvImport.Read(await System.IO.File.ReadAllTextAsync(File));
-                source = "Jira";
+                source = L.T("Jira");
             }
             else
             {
@@ -77,7 +78,7 @@ public sealed partial class ImportDialogViewModel : DialogViewModelBase
                     repo = repo["https://github.com/".Length..];
                 if (repo.Count(c => c == '/') != 1)
                 {
-                    Error = "Name the repository as owner/name (like naurid/devhub).";
+                    Error = L.T("Name the repository as owner/name (like naurid/devhub).");
                     return;
                 }
                 issues = GitHubIssuesImport.Read(await GitHubPagesAsync(repo));
@@ -85,7 +86,7 @@ public sealed partial class ImportDialogViewModel : DialogViewModelBase
             }
             if (issues.Count == 0)
             {
-                Error = "No issues were found there.";
+                Error = L.T("No issues were found there.");
                 return;
             }
             _import = new ImportIssues(issues, source);
@@ -112,7 +113,7 @@ public sealed partial class ImportDialogViewModel : DialogViewModelBase
         {
             var response = await _gitHub!.SendAsync(GitHubApiRequest.Get(path));
             if (!response.IsSuccess)
-                throw new FormatException($"GitHub answered {(int)response.Status}: is the repository name right, and are you signed in with access to it?");
+                throw new FormatException(L.T($"GitHub answered {(int)response.Status}: is the repository name right, and are you signed in with access to it?"));
             pages.Add(response.Body);
             path = response.NextPageUrl;
         }
@@ -122,20 +123,20 @@ public sealed partial class ImportDialogViewModel : DialogViewModelBase
     private static string Describe(ImportPreview preview)
     {
         var text = new StringBuilder();
-        text.Append(preview.Issues).Append(" issues will be created (new keys; their old keys still find them).\n");
+        text.Append(preview.Issues).Append(L.T(" issues will be created (new keys; their old keys still find them).\n"));
         if (preview.NewPeople.Count > 0)
-            text.Append("\nPeople added: ").Append(string.Join(", ", preview.NewPeople)).Append('\n');
+            text.Append(L.T("\nPeople added: ")).Append(string.Join(", ", preview.NewPeople)).Append('\n');
         if (preview.NewComponents.Count > 0)
-            text.Append("Components added: ").Append(string.Join(", ", preview.NewComponents)).Append('\n');
+            text.Append(L.T("Components added: ")).Append(string.Join(", ", preview.NewComponents)).Append('\n');
         if (preview.NewVersions.Count > 0)
-            text.Append("Versions added: ").Append(string.Join(", ", preview.NewVersions)).Append('\n');
+            text.Append(L.T("Versions added: ")).Append(string.Join(", ", preview.NewVersions)).Append('\n');
         if (preview.Types.Count > 0)
             text.Append("\nTypes: ").Append(string.Join(", ", preview.Types.Select(t => $"{t.Key} → {t.Value}"))).Append('\n');
         if (preview.Statuses.Count > 0)
             text.Append("Statuses: ").Append(string.Join(", ", preview.Statuses.Select(s => $"{s.Key} → {s.Value}"))).Append('\n');
         foreach (var warning in preview.Warnings)
             text.Append("\n• ").Append(warning);
-        text.Append("\n\nSprints aren't imported. Undo (Board menu) takes the whole import back.");
+        text.Append(L.T("\n\nSprints aren't imported. Undo (Board menu) takes the whole import back."));
         return text.ToString();
     }
 

@@ -3,6 +3,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Templates.Core;
 
@@ -53,16 +54,16 @@ public static class ManifestSerializer
         }
         catch (JsonException ex)
         {
-            return new ManifestReadResult(null, "template.json isn't valid: " + ex.Message);
+            return new ManifestReadResult(null, L.T("template.json isn't valid: ") + ex.Message);
         }
 
         return manifest switch
         {
-            null => new ManifestReadResult(null, "template.json is empty."),
-            { SchemaVersion: null } => new ManifestReadResult(null, "template.json has no schemaVersion."),
+            null => new ManifestReadResult(null, L.T("template.json is empty.")),
+            { SchemaVersion: null } => new ManifestReadResult(null, L.T("template.json has no schemaVersion.")),
             { SchemaVersion: > TemplateManifest.CurrentSchemaVersion } m => new ManifestReadResult(null,
-                $"This template needs a newer DevHub (template format {m.SchemaVersion}; this DevHub reads up to {TemplateManifest.CurrentSchemaVersion})."),
-            { SchemaVersion: < 1 } m => new ManifestReadResult(null, $"template.json has an invalid schemaVersion ({m.SchemaVersion})."),
+                L.T($"This template needs a newer DevHub (template format {m.SchemaVersion}; this DevHub reads up to {TemplateManifest.CurrentSchemaVersion}).")),
+            { SchemaVersion: < 1 } m => new ManifestReadResult(null, L.T($"template.json has an invalid schemaVersion ({m.SchemaVersion}).")),
             _ => new ManifestReadResult(manifest, null),
         };
     }

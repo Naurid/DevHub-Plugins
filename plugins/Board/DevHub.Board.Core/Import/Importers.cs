@@ -3,6 +3,7 @@ using System.Text.Json;
 using DevHub.Board.Core.Fields;
 using DevHub.Board.Core.Model;
 using DevHub.Board.Core.Storage;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Board.Core.Import;
 
@@ -68,7 +69,7 @@ public static class JiraCsvImport
         var key = Col("Issue key", "Key");
         var summary = Col("Summary");
         if (summary < 0)
-            throw new FormatException("This doesn't look like a Jira CSV export: there's no Summary column.");
+            throw new FormatException(L.T("This doesn't look like a Jira CSV export: there's no Summary column."));
         var type = Col("Issue Type", "Issuetype", "Type");
         var status = Col("Status");
         var priority = Col("Priority");
@@ -235,7 +236,7 @@ public sealed record ImportIssues(IReadOnlyList<ImportedIssue> Issues, string So
     private BoardChange Build(BoardSnapshot board, OperationContext context, PreviewCollector? preview)
     {
         if (Issues.Count == 0)
-            throw new BoardRuleException("There's nothing to import.");
+            throw new BoardRuleException(L.T("There's nothing to import."));
         var change = new ChangeBuilder(board, context);
         var project = board.Project;
         var people = project.People.ToList();
@@ -353,7 +354,7 @@ public sealed record ImportIssues(IReadOnlyList<ImportedIssue> Issues, string So
             if (string.IsNullOrWhiteSpace(source.Summary))
                 continue;
             var type = TypeFor(source.Type);
-            var workflow = board.WorkflowFor(type.Id) ?? throw new BoardRuleException("The board has no workflow.");
+            var workflow = board.WorkflowFor(type.Id) ?? throw new BoardRuleException(L.T("The board has no workflow."));
             var status = StatusFor(source.Status, workflow);
             var done = project.Status(status)?.Category == StatusCategory.Done;
             rank = Rank.Between(rank, null);
@@ -368,7 +369,7 @@ public sealed record ImportIssues(IReadOnlyList<ImportedIssue> Issues, string So
                 OldKeys = source.ExternalKey is { Length: > 0 } ext && !ext.StartsWith('#') ? [ext.ToUpperInvariant()] : [],
                 Type = type.Id,
                 Summary = source.Summary.Trim().Length > IssueFields.MaxSummaryLength ? source.Summary.Trim()[..IssueFields.MaxSummaryLength] : source.Summary.Trim(),
-                Description = source.Description + (source.ExternalKey is { } k ? $"\n\n_Imported from {Source} ({k})._" : ""),
+                Description = source.Description + (source.ExternalKey is { } k ? L.T($"\n\n_Imported from {Source} ({k})._") : ""),
                 Status = status,
                 Resolution = resolution,
                 Priority = project.Priorities.FirstOrDefault(p => string.Equals(p.Name, source.Priority, StringComparison.OrdinalIgnoreCase))?.Id ?? project.DefaultPriorityId,
@@ -384,7 +385,7 @@ public sealed record ImportIssues(IReadOnlyList<ImportedIssue> Issues, string So
                     OriginalMinutes = source.OriginalMinutes,
                     RemainingMinutes = source.RemainingMinutes,
                     Log = source.SpentMinutes is { } spent
-                        ? [new WorkLog { Id = NewId(), Started = source.Resolved ?? source.Created ?? context.Now, Minutes = spent, Note = $"Imported from {Source}" }]
+                        ? [new WorkLog { Id = NewId(), Started = source.Resolved ?? source.Created ?? context.Now, Minutes = spent, Note = L.T($"Imported from {Source}") }]
                         : [],
                 },
                 Due = source.Due,
@@ -405,13 +406,13 @@ public sealed record ImportIssues(IReadOnlyList<ImportedIssue> Issues, string So
             if (source.ParentKey is not { } parentKey || !byExternal.TryGetValue(parentKey, out var parentId))
             {
                 if (source.ParentKey is not null)
-                    preview?.Warnings.Add($"Parents outside the import aren't linked (e.g. {source.ParentKey}).");
+                    preview?.Warnings.Add(L.T($"Parents outside the import aren't linked (e.g. {source.ParentKey})."));
                 continue;
             }
             if (levels[parentId] == levels[issue.Id] + 1)
                 created[i] = (source, issue with { Parent = parentId });
             else
-                preview?.Warnings.Add("Some parent links don't fit the epic → story → sub-task hierarchy and are left out.");
+                preview?.Warnings.Add(L.T("Some parent links don't fit the epic → story → sub-task hierarchy and are left out."));
         }
         if (created.Any(c => levels[c.Issue.Id] == IssueTypeLevel.Subtask && c.Issue.Parent is null))
         {
@@ -420,7 +421,7 @@ public sealed record ImportIssues(IReadOnlyList<ImportedIssue> Issues, string So
             for (var i = 0; i < created.Count; i++)
                 if (levels[created[i].Issue.Id] == IssueTypeLevel.Subtask && created[i].Issue.Parent is null)
                     created[i] = (created[i].Source, created[i].Issue with { Type = standard });
-            preview?.Warnings.Add("Sub-tasks without their parent in the import become standard issues.");
+            preview?.Warnings.Add(L.T("Sub-tasks without their parent in the import become standard issues."));
         }
 
         foreach (var (source, issue) in created)
@@ -435,6 +436,6 @@ public sealed record ImportIssues(IReadOnlyList<ImportedIssue> Issues, string So
             change.WriteIssue(final, times, keepTimes: true);
         }
         change.WriteProject(project with { NextNumber = number, People = people, Components = components });
-        return change.Build($"{created.Count} issues imported from {Source}");
+        return change.Build(L.T($"{created.Count} issues imported from {Source}"));
     }
 }

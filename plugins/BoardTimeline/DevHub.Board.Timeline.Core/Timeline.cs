@@ -4,6 +4,7 @@ using DevHub.Board.Core;
 using DevHub.Board.Core.Fields;
 using DevHub.Board.Core.Model;
 using DevHub.Board.Core.Storage;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Board.Timeline.Core;
 
@@ -128,14 +129,14 @@ public static class Releases
         var done = issues.Where(board.IsDone).ToList();
         foreach (var group in done.GroupBy(i => i.Type).OrderBy(g => g.Key == "bug" ? 1 : 0).ThenBy(g => project.IssueType(g.Key)?.Name))
         {
-            var heading = group.Key == "bug" ? "Fixed" : (project.IssueType(group.Key)?.Name ?? group.Key) + (group.Count() == 1 ? "" : "s");
+            var heading = group.Key == "bug" ? L.T("Fixed") : (project.IssueType(group.Key)?.Name ?? group.Key) + (group.Count() == 1 ? "" : "s");
             text.Append("### ").Append(heading).Append('\n');
             foreach (var issue in group)
                 text.Append("- ").Append(issue.Summary).Append(" (").Append(issue.Key).Append(")\n");
             text.Append('\n');
         }
         if (done.Count == 0)
-            text.Append("Nothing is finished in this version yet.\n\n");
+            text.Append(L.T("Nothing is finished in this version yet.\n\n"));
         var open = issues.Where(i => !board.IsDone(i)).ToList();
         if (includeOpen && open.Count > 0)
         {
@@ -157,11 +158,11 @@ public sealed record ReleaseVersion(string VersionId, DateOnly Today) : IBoardOp
 
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
-        var version = board.Versions.GetValueOrDefault(VersionId) ?? throw new BoardRuleException("That version doesn't exist any more.");
+        var version = board.Versions.GetValueOrDefault(VersionId) ?? throw new BoardRuleException(L.T("That version doesn't exist any more."));
         if (version.Released)
-            throw new BoardRuleException($"{version.Name} is already released.");
+            throw new BoardRuleException(L.T($"{version.Name} is already released."));
         if (MoveOpenTo is not null && (MoveOpenTo == VersionId || !board.Versions.ContainsKey(MoveOpenTo)))
-            throw new BoardRuleException("Choose another version for the unfinished issues.");
+            throw new BoardRuleException(L.T("Choose another version for the unfinished issues."));
         var change = new ChangeBuilder(board, context);
         change.Write(BoardPaths.Version(version.Id), version with { Released = true, Release = version.Release ?? Today });
         var open = board.Issues.Values.Where(i => i.FixVersions.Contains(VersionId) && !board.IsDone(i)).ToList();
@@ -172,7 +173,7 @@ public sealed record ReleaseVersion(string VersionId, DateOnly Today) : IBoardOp
                 versions.Add(MoveOpenTo);
             change.WriteIssue(issue, issue with { FixVersions = versions });
         }
-        var target = MoveOpenTo is null ? "no version" : board.Versions[MoveOpenTo].Name;
-        return change.Build(open.Count == 0 ? $"Version {version.Name} released" : $"Version {version.Name} released, {open.Count} unfinished issues moved to {target}");
+        var target = MoveOpenTo is null ? L.T("no version") : board.Versions[MoveOpenTo].Name;
+        return change.Build(open.Count == 0 ? L.T($"Version {version.Name} released") : L.T($"Version {version.Name} released, {open.Count} unfinished issues moved to {target}"));
     }
 }

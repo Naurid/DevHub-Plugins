@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Dialogs;
 
@@ -9,6 +10,9 @@ public sealed partial class ChoiceInput(string label, IReadOnlyList<string> opti
     public string Label { get; } = label;
     public IReadOnlyList<string> Options { get; } = options;
     [ObservableProperty] private string _selected = selected;
+
+    /// <summary>The position of the chosen option: compare this, not the (translated) text.</summary>
+    public int SelectedIndex => Options.ToList().IndexOf(Selected);
 }
 
 /// <summary>
@@ -61,7 +65,7 @@ public sealed partial class TextInputDialogViewModel : DialogViewModelBase
     {
         if (ShowText && !AllowEmpty && string.IsNullOrWhiteSpace(Text))
         {
-            Error = $"Enter {Label.ToLowerInvariant()}.";
+            Error = L.T($"Enter {Label.ToLowerInvariant()}.");
             return Task.FromResult(false);
         }
         Text = Text.Trim();
@@ -84,7 +88,7 @@ public sealed partial class ChecklistItem(string id, string name, bool isChecked
 public sealed class ChecklistDialogViewModel(string title, string explanation, IReadOnlyList<ChecklistItem> items) : DialogViewModelBase
 {
     public override string Title { get; } = title;
-    public override string OkText => "Save";
+    public override string OkText => L.T("Save");
     public override double Width => 460;
     public override double Height => 460;
 

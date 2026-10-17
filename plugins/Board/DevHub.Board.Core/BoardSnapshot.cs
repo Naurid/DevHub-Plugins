@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using System.Text.Json;
 using DevHub.Board.Core.Model;
 using DevHub.Board.Core.Storage;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Board.Core;
 
@@ -69,7 +70,7 @@ public sealed class BoardSnapshot
     {
         var all = files.Files.ToImmutableDictionary(StringComparer.Ordinal);
         if (!all.TryGetValue(BoardPaths.Project, out var projectBytes))
-            throw new BoardStoreException("This folder holds no board (board.json is missing).");
+            throw new BoardStoreException(L.T("This folder holds no board (board.json is missing)."));
 
         BoardProject project;
         try
@@ -78,7 +79,7 @@ public sealed class BoardSnapshot
         }
         catch (JsonException e)
         {
-            throw new BoardStoreException("board.json can't be read: " + e.Message, e);
+            throw new BoardStoreException(L.T("board.json can't be read: ") + e.Message, e);
         }
 
         var empty = new BoardSnapshot(files.Version, all, project,
@@ -127,17 +128,17 @@ public sealed class BoardSnapshot
             problems.Remove(path);
             all.TryGetValue(path, out var bytes);
             if (BoardPaths.IdOf(path, BoardPaths.IssuesFolder, ".json") is { } issueId)
-                Read(issues, issueId, path, bytes, (Issue i) => i.Id == issueId ? null : "its id doesn't match the file name");
+                Read(issues, issueId, path, bytes, (Issue i) => i.Id == issueId ? null : L.T("its id doesn't match the file name"));
             else if (BoardPaths.IdOf(path, BoardPaths.WorkflowsFolder, ".json") is { } workflowId)
-                Read(workflows, workflowId, path, bytes, (Workflow w) => w.Id == workflowId ? null : "its id doesn't match the file name");
+                Read(workflows, workflowId, path, bytes, (Workflow w) => w.Id == workflowId ? null : L.T("its id doesn't match the file name"));
             else if (BoardPaths.IdOf(path, BoardPaths.BoardsFolder, ".json") is { } boardId)
-                Read(boards, boardId, path, bytes, (BoardDefinition b) => b.Id == boardId ? null : "its id doesn't match the file name");
+                Read(boards, boardId, path, bytes, (BoardDefinition b) => b.Id == boardId ? null : L.T("its id doesn't match the file name"));
             else if (BoardPaths.IdOf(path, BoardPaths.VersionsFolder, ".json") is { } versionId)
-                Read(versions, versionId, path, bytes, (FixVersion v) => v.Id == versionId ? null : "its id doesn't match the file name");
+                Read(versions, versionId, path, bytes, (FixVersion v) => v.Id == versionId ? null : L.T("its id doesn't match the file name"));
             else if (BoardPaths.IdOf(path, BoardPaths.SprintsFolder, ".json") is { } sprintId)
-                Read(sprints, sprintId, path, bytes, (Sprint s) => s.Id == sprintId ? null : "its id doesn't match the file name");
+                Read(sprints, sprintId, path, bytes, (Sprint s) => s.Id == sprintId ? null : L.T("its id doesn't match the file name"));
             else if (BoardPaths.IdOf(path, BoardPaths.FiltersFolder, ".json") is { } filterId)
-                Read(filters, filterId, path, bytes, (SavedFilter f) => f.Id == filterId ? null : "its id doesn't match the file name");
+                Read(filters, filterId, path, bytes, (SavedFilter f) => f.Id == filterId ? null : L.T("its id doesn't match the file name"));
         }
 
         return new BoardSnapshot(version, all, project, issues.ToImmutable(), workflows.ToImmutable(), boards.ToImmutable(),

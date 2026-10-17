@@ -9,6 +9,7 @@ using DevHub.Controls;
 using DevHub.Services.Board;
 using DevHub.ViewModels.Board;
 using DevHub.ViewModels.Dialogs;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Documents;
 
@@ -101,7 +102,7 @@ public sealed partial class BoardDocumentViewModel : DocumentViewModelBase, IDis
             }
             if (_context is null)
             {
-                Message = $"There's no board in {Location.Location} yet.";
+                Message = L.T($"There's no board in {Location.Location} yet.");
                 CanCreateHere = true;
                 return;
             }
@@ -111,7 +112,7 @@ public sealed partial class BoardDocumentViewModel : DocumentViewModelBase, IDis
         }
         catch (Exception e) when (e is BoardStoreException or IOException or UnauthorizedAccessException)
         {
-            Message = "The board can't be opened: " + e.Message;
+            Message = L.T("The board can't be opened: ") + e.Message;
         }
         finally
         {
@@ -335,14 +336,14 @@ public sealed partial class BoardDocumentViewModel : DocumentViewModelBase, IDis
     {
         if (_context is null)
             return;
-        var dialog = new TextInputDialogViewModel("New Board", "Name", $"{_context.Project.Key} board {Boards.Count + 1}", "Create")
+        var dialog = new TextInputDialogViewModel(L.T("New Board"), L.T("Name"), $"{_context.Project.Key} board {Boards.Count + 1}", L.T("Create"))
         {
-            Choice = new ChoiceInput("Kind", ["Kanban", "Scrum"], "Kanban"),
+            Choice = new ChoiceInput(L.T("Kind"), [L.T("Kanban"), L.T("Scrum")], L.T("Kanban")),
         };
         if (!await _services.Dialogs.ShowDialogAsync(dialog))
             return;
         var id = BoardIds.New();
-        var kind = dialog.Choice!.Selected == "Scrum" ? BoardKind.Scrum : BoardKind.Kanban;
+        var kind = dialog.Choice!.SelectedIndex == 1 ? BoardKind.Scrum : BoardKind.Kanban;   // Kanban, Scrum
         if (await _context.RunAsync(new CreateBoardView(dialog.Text, kind) { Id = id }))
             SelectedBoard = Boards.FirstOrDefault(b => b.Id == id) ?? SelectedBoard;
     }
@@ -352,8 +353,8 @@ public sealed partial class BoardDocumentViewModel : DocumentViewModelBase, IDis
     {
         if (_context is null || SelectedBoard is not { } board)
             return;
-        var ok = await _services.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Delete Board",
-            $"Delete the board \"{board.Name}\"? Its columns, filter and quick filters go; the issues stay.", "Delete", [board.Name]));
+        var ok = await _services.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel(L.T("Delete Board"),
+            L.T($"Delete the board \"{board.Name}\"? Its columns, filter and quick filters go; the issues stay."), L.T("Delete"), [board.Name]));
         if (ok)
             await _context.RunAsync(new DeleteBoardView(board.Id));
     }
@@ -366,26 +367,26 @@ public sealed partial class BoardDocumentViewModel : DocumentViewModelBase, IDis
     }
 
     [RelayCommand]
-    private Task ExportCsvAsync() => ExportAsync("csv", "CSV files", c => DevHub.Board.Core.Import.BoardExport.ToCsv(c.Snapshot));
+    private Task ExportCsvAsync() => ExportAsync("csv", L.T("CSV files"), c => DevHub.Board.Core.Import.BoardExport.ToCsv(c.Snapshot));
 
     [RelayCommand]
-    private Task ExportJsonAsync() => ExportAsync("json", "JSON files", c => DevHub.Board.Core.Import.BoardExport.ToJson(c.Snapshot));
+    private Task ExportJsonAsync() => ExportAsync("json", L.T("JSON files"), c => DevHub.Board.Core.Import.BoardExport.ToJson(c.Snapshot));
 
     private async Task ExportAsync(string extension, string filter, Func<BoardContext, string> content)
     {
         if (_context is null)
             return;
-        var path = await _services.Dialogs.PickSaveFileAsync("Export issues", $"{_context.Project.Key.ToLowerInvariant()}-issues.{extension}", filter, extension);
+        var path = await _services.Dialogs.PickSaveFileAsync(L.T("Export issues"), $"{_context.Project.Key.ToLowerInvariant()}-issues.{extension}", filter, extension);
         if (path is null)
             return;
         try
         {
             await File.WriteAllTextAsync(path, content(_context), new System.Text.UTF8Encoding(false));
-            _services.Status.Show($"Exported {_context.Snapshot.Issues.Count} issues to {path}.");
+            _services.Status.Show(L.T($"Exported {_context.Snapshot.Issues.Count} issues to {path}."));
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException)
         {
-            _services.Status.Show("The export couldn't be written: " + e.Message);
+            _services.Status.Show(L.T("The export couldn't be written: ") + e.Message);
         }
     }
 

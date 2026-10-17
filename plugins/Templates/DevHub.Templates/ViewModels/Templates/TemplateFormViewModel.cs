@@ -6,6 +6,7 @@ using DevHub.Templates.Core;
 using DevHub.Templates.Core.Generation;
 using DevHub.Templates.Core.Items;
 using DevHub.Templates.Core.Rendering;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Templates;
 
@@ -73,11 +74,11 @@ public sealed partial class TemplateFormViewModel : ViewModelBase, IDisposable
     public bool IsWrongKind => !IsBroken && !ShowsForm;
 
     public string WrongKindText => IsItem
-        ? "This is an item template: it adds files to a folder you already have. Use it from Add Files from Template (File menu, a project's right-click menu in Projects, or a repository tab)."
-        : "This is a project template: it creates a new project folder. Use it from New Project (Ctrl+N).";
+        ? L.T("This is an item template: it adds files to a folder you already have. Use it from Add Files from Template (File menu, a project's right-click menu in Projects, or a repository tab).")
+        : L.T("This is a project template: it creates a new project folder. Use it from New Project (Ctrl+N).");
 
-    public string LocationLabel => ForItems ? "Folder" : "Location";
-    public string LocationDescription => ForItems ? "The files are added in here (it must exist)." : "The project folder is created in here.";
+    public string LocationLabel => ForItems ? L.T("Folder") : L.T("Location");
+    public string LocationDescription => ForItems ? L.T("The files are added in here (it must exist).") : L.T("The project folder is created in here.");
 
     public ObservableCollection<VariableFieldViewModel> Fields { get; } = [];
     public bool HasFields => Fields.Count > 0;
@@ -91,7 +92,7 @@ public sealed partial class TemplateFormViewModel : ViewModelBase, IDisposable
     public bool CanBeRaw => IsProject && !ForItems && Manifest!.BaseCommand is not null;
 
     public string RawText => Manifest?.BaseCommand is { } command
-        ? $"Raw project: only run {command.Command} (no template files, steps or post-create commands)"
+        ? L.T($"Raw project: only run {command.Command} (no template files, steps or post-create commands)")
         : "";
 
     /// <summary>"Creates C:\Dev\MyGame", or why that folder can't be used.</summary>
@@ -141,15 +142,15 @@ public sealed partial class TemplateFormViewModel : ViewModelBase, IDisposable
         if (guess is not null)
             field.Text = guess.Namespace;
         field.Hint = guess is null
-            ? "No .csproj, .asmdef or Unity project above this folder: type the namespace."
-            : $"Filled in {guess.Source}; change it if you like.";
+            ? L.T("No .csproj, .asmdef or Unity project above this folder: type the namespace.")
+            : L.T($"Filled in {guess.Source}; change it if you like.");
         _settingNamespace = false;
     }
 
     [RelayCommand]
     private async Task BrowseAsync()
     {
-        if (await _dialogs.PickFolderAsync(ForItems ? "Add the files to" : "Create the project in") is { } folder)
+        if (await _dialogs.PickFolderAsync(ForItems ? L.T("Add the files to") : L.T("Create the project in")) is { } folder)
             Location = folder;
     }
 
@@ -182,7 +183,7 @@ public sealed partial class TemplateFormViewModel : ViewModelBase, IDisposable
         {
             // Not filled in yet: say what's missing calmly instead of showing a path built from empty values.
             TargetPath = null;
-            TargetText = ForItems ? "Fill in the fields." : "Fill in the fields to see where the project goes.";
+            TargetText = ForItems ? L.T("Fill in the fields.") : L.T("Fill in the fields to see where the project goes.");
             TargetIsError = false;
             return;
         }
@@ -193,16 +194,16 @@ public sealed partial class TemplateFormViewModel : ViewModelBase, IDisposable
             var folder = Location.Trim();
             var exists = Path.IsPathFullyQualified(folder) && Directory.Exists(folder);
             TargetPath = exists && check.Succeeded ? Path.GetFullPath(folder) : null;
-            TargetText = exists ? "Adds to " + Path.GetFullPath(folder)
-                : folder.Length == 0 || !Path.IsPathFullyQualified(folder) ? "Choose the folder to add the files to."
-                : $"The folder {folder} doesn't exist.";
+            TargetText = exists ? L.T("Adds to ") + Path.GetFullPath(folder)
+                : folder.Length == 0 || !Path.IsPathFullyQualified(folder) ? L.T("Choose the folder to add the files to.")
+                : L.T($"The folder {folder} doesn't exist.");
             TargetIsError = !exists;
             return;
         }
 
         var target = ProjectGenerator.TargetFor(manifest, _templates.NewContext(Values), Location.Trim());
         TargetPath = target.Succeeded && check.Succeeded ? Path.Combine(Location.Trim(), target.Path!) : null;
-        TargetText = target.Succeeded ? "Creates " + Path.Combine(Location.Trim(), target.Path!) : target.Error!;
+        TargetText = target.Succeeded ? L.T("Creates ") + Path.Combine(Location.Trim(), target.Path!) : target.Error!;
         TargetIsError = !target.Succeeded;
     }
 }
@@ -228,7 +229,7 @@ public sealed partial class VariableFieldViewModel : ViewModelBase
     public IReadOnlyList<string> Choices => Variable.Choices;
 
     /// <summary>The placeholder it fills, for the tooltip ("{{Name}}").</summary>
-    public string ToolTip => "{{" + Variable.Name + "}}" + (Variable.Pattern is { } p ? $"  ·  must match {p}" : "");
+    public string ToolTip => "{{" + Variable.Name + "}}" + (Variable.Pattern is { } p ? L.T($"  ·  must match {p}") : "");
 
     [ObservableProperty] private string _text;
     [ObservableProperty] private bool _isChecked;

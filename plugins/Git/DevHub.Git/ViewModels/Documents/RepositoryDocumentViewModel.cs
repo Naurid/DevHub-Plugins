@@ -5,6 +5,7 @@ using DevHub.Controls;
 using DevHub.Git.Core;
 using DevHub.Services;
 using DevHub.ViewModels.Git;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Documents;
 
@@ -69,11 +70,11 @@ public sealed partial class RepositoryDocumentViewModel : DocumentViewModelBase,
             () => branchOperations.Branches, Name, services.Host);
 
         // Fork's sidebar: sections, then Branches and Remotes as folding trees, then more sections.
-        BranchesGroup = new SidebarGroupNode("Local", IconKind.Vcs)
+        BranchesGroup = new SidebarGroupNode(L.T("Local"), IconKind.Vcs)
         {
             NewBranchCommand = new AsyncRelayCommand(() => branchOperations.NewBranchAsync()),
         };
-        RemotesGroup = new SidebarGroupNode("Remotes", IconKind.Fetch)
+        RemotesGroup = new SidebarGroupNode(L.T("Remotes"), IconKind.Fetch)
         {
             ManageRemotesCommand = Remote.ManageRemotesCommand,
             PublishCommand = Remote.PublishCommand,
@@ -157,11 +158,11 @@ public sealed partial class RepositoryDocumentViewModel : DocumentViewModelBase,
     /// </summary>
     public IReadOnlyList<SidebarNode> Sidebar { get; }
 
-    private RepositorySection LocalChangesSection { get; } = new("Changes", IconKind.Edit, "");
-    private RepositorySection AllCommitsSection { get; } = new("All Commits", IconKind.Commit, "");
-    private RepositorySection TagsSection { get; } = new("Tags", IconKind.Template, "");
-    private RepositorySection StashesSection { get; } = new("Stashes", IconKind.Copy, "");
-    private RepositorySection SubmodulesSection { get; } = new("Submodules", IconKind.Folder, "");
+    private RepositorySection LocalChangesSection { get; } = new(L.T("Changes"), IconKind.Edit, "");
+    private RepositorySection AllCommitsSection { get; } = new(L.T("All Commits"), IconKind.Commit, "");
+    private RepositorySection TagsSection { get; } = new(L.T("Tags"), IconKind.Template, "");
+    private RepositorySection StashesSection { get; } = new(L.T("Stashes"), IconKind.Copy, "");
+    private RepositorySection SubmodulesSection { get; } = new(L.T("Submodules"), IconKind.Folder, "");
 
     /// <summary>The Branches group (local branches) and the Remotes group (each remote, its branches).</summary>
     public SidebarGroupNode BranchesGroup { get; }

@@ -9,13 +9,14 @@ using DevHub.Board.Timeline.Core;
 using ReleaseList = DevHub.Board.Timeline.Core.Releases;
 using DevHub.ViewModels.Board;
 using DevHub.ViewModels.Dialogs;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Timeline;
 
 public sealed class TimelinePageProvider : IBoardPageProvider
 {
     public string Id => "timeline";
-    public string Title => "Timeline";
+    public string Title => L.T("Timeline");
     public int Order => 600;
     public BoardPageViewModel Create(BoardPageHost host) => new TimelinePageViewModel(host);
 }
@@ -23,7 +24,7 @@ public sealed class TimelinePageProvider : IBoardPageProvider
 public sealed class ReleasesPageProvider : IBoardPageProvider
 {
     public string Id => "releases";
-    public string Title => "Releases";
+    public string Title => L.T("Releases");
     public int Order => 650;
     public BoardPageViewModel Create(BoardPageHost host) => new ReleasesPageViewModel(host);
 }
@@ -39,12 +40,12 @@ public sealed class TimelineRowViewModel(TimelineItem item, TimelineResult range
     public double End { get; } = range.Fraction(item.End.AddDays(1));
     public double Today { get; } = today;
     public double Progress => Item.Progress;
-    public string Dates => $"{Item.Start:d MMM} – {Item.End:d MMM yyyy}" + (Item.DatesGuessed ? " (estimated: set start and due dates)" : "");
+    public string Dates => $"{Item.Start:d MMM} – {Item.End:d MMM yyyy}" + (Item.DatesGuessed ? L.T(" (estimated: set start and due dates)") : "");
     public string ToolTip => $"{Key} {Summary}\n{Dates}\n{Item.Progress:P0} done"
-                             + (Item.IsLate ? "\nLate: its due date has passed." : "")
-                             + (Item.BlockedBy.Count > 0 ? "\nBlocked by " + string.Join(", ", Item.BlockedBy.Select(b => b.Key)) : "")
-                             + (Item.HasConflict ? "\nStarts before a blocker is due." : "");
-    public string? BlockedText => Item.BlockedBy.Count == 0 ? null : "blocked by " + string.Join(", ", Item.BlockedBy.Select(b => b.Key));
+                             + (Item.IsLate ? L.T("\nLate: its due date has passed.") : "")
+                             + (Item.BlockedBy.Count > 0 ? L.T("\nBlocked by ") + string.Join(", ", Item.BlockedBy.Select(b => b.Key)) : "")
+                             + (Item.HasConflict ? L.T("\nStarts before a blocker is due.") : "");
+    public string? BlockedText => Item.BlockedBy.Count == 0 ? null : L.T("blocked by ") + string.Join(", ", Item.BlockedBy.Select(b => b.Key));
     public IRelayCommand SelectCommand => new RelayCommand(() => host.SelectIssue(Item.Issue.Id));
     public IRelayCommand OpenCommand => new RelayCommand(() => host.OpenIssue(Item.Issue.Id));
 
@@ -64,7 +65,7 @@ public sealed partial class TimelinePageViewModel : BoardPageViewModel
         Refresh();
     }
 
-    public override string Title => "Timeline";
+    public override string Title => L.T("Timeline");
 
     public ObservableCollection<TimelineRowViewModel> Rows { get; } = [];
     [ObservableProperty] private bool _withIssues;
@@ -93,7 +94,7 @@ public sealed partial class TimelinePageViewModel : BoardPageViewModel
             Rows.Add(new TimelineRowViewModel(item, result, Today, Host));
         IsEmpty = Rows.Count == 0;
         var epics = result.Items.Where(i => i.Depth == 0).ToList();
-        Summary = epics.Count == 0 ? "" : $"{epics.Count} epics · {epics.Count(e => e.IsLate)} late · {epics.Count(e => e.DatesGuessed)} without dates";
+        Summary = epics.Count == 0 ? "" : L.T($"{epics.Count} epics · {epics.Count(e => e.IsLate)} late · {epics.Count(e => e.DatesGuessed)} without dates");
     }
 
     [RelayCommand]
@@ -106,7 +107,7 @@ public sealed record ReleaseRow(ReleaseStatus Status)
 {
     public string Id => Status.Version.Id;
     public string Name => Status.Version.Name;
-    public string Detail => (Status.Version.Released ? "Released" : Status.IsLate ? "Late" : "Unreleased")
+    public string Detail => (Status.Version.Released ? L.T("Released") : Status.IsLate ? L.T("Late") : L.T("Unreleased"))
                             + (Status.Version.Release is { } d ? " · " + d.ToString("d MMM yyyy", CultureInfo.CurrentCulture) : "")
                             + $" · {Status.Done}/{Status.Issues.Count} done";
     public double Fraction => Status.Fraction;
@@ -125,7 +126,7 @@ public sealed partial class ReleasesPageViewModel : BoardPageViewModel, ICardHos
         Refresh();
     }
 
-    public override string Title => "Releases";
+    public override string Title => L.T("Releases");
 
     System.Windows.Input.ICommand ICardHost.SelectCommand => SelectIssueCommand;
     System.Windows.Input.ICommand ICardHost.OpenCommand => OpenIssueCommand;
@@ -172,7 +173,7 @@ public sealed partial class ReleasesPageViewModel : BoardPageViewModel, ICardHos
     [RelayCommand]
     private async Task NewVersionAsync()
     {
-        var dialog = new TextInputDialogViewModel("New Version", "Name", "", "Create") { SecondLabel = "Release date (optional, like 2026-12-01)" };
+        var dialog = new TextInputDialogViewModel(L.T("New Version"), L.T("Name"), "", L.T("Create")) { SecondLabel = L.T("Release date (optional, like 2026-12-01)") };
         if (!await Context.Dialogs.ShowDialogAsync(dialog))
             return;
         DateOnly? release = DateOnly.TryParseExact(dialog.SecondText.Trim(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var d)
@@ -189,11 +190,11 @@ public sealed partial class ReleasesPageViewModel : BoardPageViewModel, ICardHos
             return;
         var others = Releases.Where(r => r.Id != release.Id && !r.Status.Version.Released).ToList();
         var open = release.Status.Open;
-        var dialog = new TextInputDialogViewModel($"Release {release.Name}", "", "", "Release")
+        var dialog = new TextInputDialogViewModel(L.T($"Release {release.Name}"), "", "", L.T("Release"))
         {
             ShowText = false,
-            Explanation = open == 0 ? $"Mark {release.Name} released?" : $"{open} issue(s) in {release.Name} aren't done. Move them to:",
-            Choice = open == 0 ? null : new ChoiceInput("Move them to", ["No version", .. others.Select(o => o.Name)], others.FirstOrDefault()?.Name ?? "No version"),
+            Explanation = open == 0 ? L.T($"Mark {release.Name} released?") : L.T($"{open} issue(s) in {release.Name} aren't done. Move them to:"),
+            Choice = open == 0 ? null : new ChoiceInput(L.T("Move them to"), [L.T("No version"), .. others.Select(o => o.Name)], others.FirstOrDefault()?.Name ?? L.T("No version")),
         };
         if (!await Context.Dialogs.ShowDialogAsync(dialog))
             return;
@@ -206,17 +207,17 @@ public sealed partial class ReleasesPageViewModel : BoardPageViewModel, ICardHos
     {
         if (Selected is null)
             return;
-        var path = await Context.Dialogs.PickSaveFileAsync("Save release notes", $"release-notes-{BoardsSafe(Selected.Name)}.md", "Markdown", "md");
+        var path = await Context.Dialogs.PickSaveFileAsync(L.T("Save release notes"), $"release-notes-{BoardsSafe(Selected.Name)}.md", L.T("Markdown"), "md");
         if (path is null)
             return;
         try
         {
             await File.WriteAllTextAsync(path, Notes);
-            Context.Status.Show($"Release notes saved to {path}.");
+            Context.Status.Show(L.T($"Release notes saved to {path}."));
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException)
         {
-            Context.Status.Show("The release notes couldn't be saved: " + e.Message);
+            Context.Status.Show(L.T("The release notes couldn't be saved: ") + e.Message);
         }
     }
 

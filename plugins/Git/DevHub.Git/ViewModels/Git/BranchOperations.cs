@@ -1,6 +1,7 @@
 using DevHub.Git.Core;
 using DevHub.Services;
 using DevHub.ViewModels.Dialogs;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Git;
 
@@ -27,25 +28,24 @@ public sealed class BranchOperations(GitRepositoryClient? client, IDialogService
         {
             if (await client.CheckoutAsync(branch) == CheckoutResult.Done)
             {
-                status.Show($"Checked out {LocalName(branch)}.");
+                status.Show(L.T($"Checked out {LocalName(branch)}."));
                 return;
             }
 
             // JetBrains' Smart Checkout: nothing is lost either way, so it isn't "destructive".
-            var smart = new ConfirmDialogViewModel("Local Changes in the Way",
-                $"Your local changes would be overwritten by checking out {branch.ShortName}. Stash them, " +
-                $"check out {branch.ShortName}, and put the changes back on top (Smart Checkout)?",
-                "Smart Checkout", destructive: false);
+            var smart = new ConfirmDialogViewModel(L.T("Local Changes in the Way"),
+                L.T($"Your local changes would be overwritten by checking out {branch.ShortName}. Stash them, ") +
+                L.T($"check out {branch.ShortName}, and put the changes back on top (Smart Checkout)?"),
+                L.T("Smart Checkout"), destructive: false);
             if (!await dialogs.ShowDialogAsync(smart))
             {
-                status.Show("Checkout cancelled; nothing changed.");
+                status.Show(L.T("Checkout cancelled; nothing changed."));
                 return;
             }
 
             status.Show(await client.SmartCheckoutAsync(branch) == SmartCheckoutResult.Done
-                ? $"Checked out {LocalName(branch)}; your local changes came along."
-                : $"Checked out {LocalName(branch)}, but your changes conflicted when re-applied. " +
-                  "The conflicts are marked in the files, and the changes are also kept as a stash.");
+                ? L.T($"Checked out {LocalName(branch)}; your local changes came along.")
+                : L.T($"Checked out {LocalName(branch)}, but your changes conflicted when re-applied. The conflicts are marked in the files, and the changes are also kept as a stash."));
         });
     }
 
@@ -61,7 +61,7 @@ public sealed class BranchOperations(GitRepositoryClient? client, IDialogService
             return;
 
         var dialog = new BranchNameDialogViewModel(client, Branches,
-            title: label is null ? "New Branch" : $"New Branch from {label}",
+            title: label is null ? L.T("New Branch") : L.T($"New Branch from {label}"),
             initialName: initialName,
             showCheckout: true);
         if (!await dialogs.ShowDialogAsync(dialog))
@@ -70,7 +70,7 @@ public sealed class BranchOperations(GitRepositoryClient? client, IDialogService
         await RunAsync("Create branch", async () =>
         {
             await client.CreateBranchAsync(dialog.Name, from, dialog.Checkout);
-            status.Show(dialog.Checkout ? $"Created and checked out {dialog.Name}." : $"Created {dialog.Name}.");
+            status.Show(dialog.Checkout ? L.T($"Created and checked out {dialog.Name}.") : L.T($"Created {dialog.Name}."));
         });
     }
 
@@ -80,14 +80,14 @@ public sealed class BranchOperations(GitRepositoryClient? client, IDialogService
             return;
 
         var dialog = new BranchNameDialogViewModel(client, Branches.Where(b => b.Ref != branch.Ref).ToList(),
-            title: $"Rename {branch.Name}", initialName: branch.Name, showCheckout: false, okText: "Rename");
+            title: L.T($"Rename {branch.Name}"), initialName: branch.Name, showCheckout: false, okText: L.T("Rename"));
         if (!await dialogs.ShowDialogAsync(dialog) || dialog.Name == branch.Name)
             return;
 
         await RunAsync("Rename branch", async () =>
         {
             await client.RenameBranchAsync(branch.Name, dialog.Name);
-            status.Show($"Renamed {branch.Name} to {dialog.Name}.");
+            status.Show(L.T($"Renamed {branch.Name} to {dialog.Name}."));
         });
     }
 
@@ -97,8 +97,8 @@ public sealed class BranchOperations(GitRepositoryClient? client, IDialogService
         if (client is null || branch.IsRemote || branch.IsCurrent)
             return;
 
-        var confirm = new ConfirmDialogViewModel("Delete Branch",
-            $"Delete the branch {branch.Name}? Its commits stay wherever they're also on another branch.", "Delete");
+        var confirm = new ConfirmDialogViewModel(L.T("Delete Branch"),
+            L.T($"Delete the branch {branch.Name}? Its commits stay wherever they're also on another branch."), L.T("Delete"));
         if (!await dialogs.ShowDialogAsync(confirm))
             return;
 
@@ -106,26 +106,24 @@ public sealed class BranchOperations(GitRepositoryClient? client, IDialogService
         {
             if (await client.DeleteBranchAsync(branch.Name))
             {
-                status.Show($"Deleted {branch.Name}.");
+                status.Show(L.T($"Deleted {branch.Name}."));
                 return;
             }
 
             // The Git rules: say exactly what is lost. git's "not fully merged" means not merged
             // into the current branch (or the branch's upstream); the commits may still be on some
             // other branch, so don't claim more than that.
-            var current = Branches.FirstOrDefault(b => b.IsCurrent)?.Name ?? "the current commit";
-            var force = new ConfirmDialogViewModel("Branch Not Merged",
-                $"{branch.Name} has commits that aren't in {current} (last: \"{branch.Subject}\"). " +
-                "If no other branch has them either, deleting it loses them; git can then only find them " +
-                "through the reflog, for a few weeks.",
-                "Delete Anyway");
+            var current = Branches.FirstOrDefault(b => b.IsCurrent)?.Name ?? L.T("the current commit");
+            var force = new ConfirmDialogViewModel(L.T("Branch Not Merged"),
+                L.T($"{branch.Name} has commits that aren't in {current} (last: \"{branch.Subject}\"). If no other branch has them either, deleting it loses them; git can then only find them through the reflog, for a few weeks."),
+                L.T("Delete Anyway"));
             if (!await dialogs.ShowDialogAsync(force))
             {
-                status.Show($"Kept {branch.Name}.");
+                status.Show(L.T($"Kept {branch.Name}."));
                 return;
             }
             await client.DeleteBranchAsync(branch.Name, force: true);
-            status.Show($"Deleted {branch.Name} (with its unmerged commits).");
+            status.Show(L.T($"Deleted {branch.Name} (with its unmerged commits)."));
         });
     }
 
@@ -137,18 +135,17 @@ public sealed class BranchOperations(GitRepositoryClient? client, IDialogService
     {
         if (client is null || branch.IsCurrent)
             return;
-        var current = Branches.FirstOrDefault(b => b.IsCurrent)?.Name ?? "the current commit";
+        var current = Branches.FirstOrDefault(b => b.IsCurrent)?.Name ?? L.T("the current commit");
 
-        var confirm = new ConfirmDialogViewModel("Merge",
-            $"Merge {branch.ShortName} into {current}? If both changed the same lines, the merge stops so you can " +
-            "resolve the conflicts (or abort, which puts everything back).", "Merge", destructive: false);
+        var confirm = new ConfirmDialogViewModel(L.T("Merge"),
+            L.T($"Merge {branch.ShortName} into {current}? If both changed the same lines, the merge stops so you can resolve the conflicts (or abort, which puts everything back)."), L.T("Merge"), destructive: false);
         if (!await dialogs.ShowDialogAsync(confirm))
             return;
 
         await RunAsync("Merge", async () => Report(await client.MergeAsync(branch.ShortName),
-            done: $"Merged {branch.ShortName} into {current}.",
-            upToDate: $"{current} already contains everything in {branch.ShortName}.",
-            conflicts: $"The merge of {branch.ShortName} stopped on conflicts. Resolve them in Changes, then Continue."));
+            done: L.T($"Merged {branch.ShortName} into {current}."),
+            upToDate: L.T($"{current} already contains everything in {branch.ShortName}."),
+            conflicts: L.T($"The merge of {branch.ShortName} stopped on conflicts. Resolve them in Changes, then Continue.")));
     }
 
     /// <summary>
@@ -159,19 +156,18 @@ public sealed class BranchOperations(GitRepositoryClient? client, IDialogService
     {
         if (client is null || branch.IsCurrent)
             return;
-        var current = Branches.FirstOrDefault(b => b.IsCurrent)?.Name ?? "the current commit";
+        var current = Branches.FirstOrDefault(b => b.IsCurrent)?.Name ?? L.T("the current commit");
 
-        var confirm = new ConfirmDialogViewModel("Rebase",
-            $"Rebase {current} onto {branch.ShortName}? Your commits on {current} are replayed on top of it as new " +
-            "commits. If they were already pushed, pushing again needs Force Push, which affects anyone who pulled them.",
-            "Rebase", destructive: false);
+        var confirm = new ConfirmDialogViewModel(L.T("Rebase"),
+            L.T($"Rebase {current} onto {branch.ShortName}? Your commits on {current} are replayed on top of it as new commits. If they were already pushed, pushing again needs Force Push, which affects anyone who pulled them."),
+            L.T("Rebase"), destructive: false);
         if (!await dialogs.ShowDialogAsync(confirm))
             return;
 
         await RunAsync("Rebase", async () => Report(await client.RebaseAsync(branch.ShortName),
-            done: $"Rebased {current} onto {branch.ShortName}.",
-            upToDate: $"{current} is already on top of {branch.ShortName}.",
-            conflicts: "The rebase stopped on conflicts. Resolve them in Changes, then Continue (or Skip that commit)."));
+            done: L.T($"Rebased {current} onto {branch.ShortName}."),
+            upToDate: L.T($"{current} is already on top of {branch.ShortName}."),
+            conflicts: L.T("The rebase stopped on conflicts. Resolve them in Changes, then Continue (or Skip that commit).")));
     }
 
     private void Report(OperationOutcome outcome, string done, string upToDate, string conflicts)

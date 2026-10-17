@@ -1,6 +1,7 @@
 <!-- Board Settings: name, kind, filter, swimlanes, what hides, card fields, quick filters. -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:vm="using:DevHub.ViewModels.Dialogs"
              xmlns:core="using:DevHub.Board.Core.Model"
              xmlns:c="using:DevHub.Controls"
@@ -8,22 +9,22 @@
              x:DataType="vm:BoardSettingsDialogViewModel">
     <ScrollViewer HorizontalScrollBarVisibility="Disabled">
         <StackPanel Margin="{DynamicResource Padding.Dialog}" Spacing="{DynamicResource Spacing}">
-            <c:SettingsRow Label="Name">
-                <TextBox Text="{Binding Name}" AutomationProperties.Name="Board name" />
+            <c:SettingsRow Label="{l:T 'Name'}">
+                <TextBox Text="{Binding Name}" AutomationProperties.Name="{l:T 'Board name'}" />
             </c:SettingsRow>
-            <c:SettingsRow Label="Scrum board" Description="Shows only the active sprint's issues (sprints come with the Board.Scrum plugin).">
-                <CheckBox IsChecked="{Binding IsScrum}" AutomationProperties.Name="Scrum board" />
+            <c:SettingsRow Label="{l:T 'Scrum board'}" Description="{l:T 'Shows only the active sprint\'s issues (sprints come with the Board.Scrum plugin).'}">
+                <CheckBox IsChecked="{Binding IsScrum}" AutomationProperties.Name="{l:T 'Scrum board'}" />
             </c:SettingsRow>
-            <c:SettingsRow Label="Shows" Description="{Binding FilterHelp}">
+            <c:SettingsRow Label="{l:T 'Shows'}" Description="{Binding FilterHelp}">
                 <StackPanel Spacing="{DynamicResource Spacing.Small}">
-                    <TextBox Classes="code" Text="{Binding Filter}" PlaceholderText="(every issue)" AutomationProperties.Name="Board filter" />
+                    <TextBox Classes="code" Text="{Binding Filter}" PlaceholderText="{l:T '(every issue)'}" AutomationProperties.Name="{l:T 'Board filter'}" />
                     <TextBlock Classes="small" Text="{Binding FilterError}" Foreground="{DynamicResource Brush.Status.Error}" TextWrapping="Wrap"
                                IsVisible="{Binding FilterError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                     <TextBlock Classes="small secondary" Text="{Binding FilterCount}" />
                 </StackPanel>
             </c:SettingsRow>
-            <c:SettingsRow Label="Swimlanes" Description="Rows that group the cards. Dragging a card to another lane changes that field.">
-                <ComboBox ItemsSource="{Binding SwimlaneModes}" SelectedItem="{Binding Swimlanes}" AutomationProperties.Name="Swimlanes">
+            <c:SettingsRow Label="{l:T 'Swimlanes'}" Description="{l:T 'Rows that group the cards. Dragging a card to another lane changes that field.'}">
+                <ComboBox ItemsSource="{Binding SwimlaneModes}" SelectedItem="{Binding Swimlanes}" AutomationProperties.Name="{l:T 'Swimlanes'}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate x:DataType="core:SwimlaneMode">
                             <TextBlock Text="{Binding}" />
@@ -31,19 +32,19 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
             </c:SettingsRow>
-            <c:SettingsRow Label="Hide">
+            <c:SettingsRow Label="{l:T 'Hide'}">
                 <StackPanel Spacing="{DynamicResource Spacing.Small}">
-                    <CheckBox Content="Epics (they're in the Backlog's epics panel)" IsChecked="{Binding HideEpics}" />
-                    <CheckBox Content="Sub-tasks (their parent's card counts them)" IsChecked="{Binding HideSubtasks}" />
+                    <CheckBox Content="{l:T 'Epics (they\'re in the Backlog\'s epics panel)'}" IsChecked="{Binding HideEpics}" />
+                    <CheckBox Content="{l:T 'Sub-tasks (their parent\'s card counts them)'}" IsChecked="{Binding HideSubtasks}" />
                     <Grid ColumnDefinitions="Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
-                        <CheckBox Content="Done issues after" IsChecked="{Binding HideDone}" />
+                        <CheckBox Content="{l:T 'Done issues after'}" IsChecked="{Binding HideDone}" />
                         <TextBox Grid.Column="1" Text="{Binding DoneDays}" IsEnabled="{Binding HideDone}" MinWidth="{DynamicResource Size.PointsColumn}"
-                                 AutomationProperties.Name="Days" />
-                        <TextBlock Grid.Column="2" Text="days (Kanban boards)" VerticalAlignment="Center" />
+                                 AutomationProperties.Name="{l:T 'Days'}" />
+                        <TextBlock Grid.Column="2" Text="{l:T 'days (Kanban boards)'}" VerticalAlignment="Center" />
                     </Grid>
                 </StackPanel>
             </c:SettingsRow>
-            <c:SettingsRow Label="On cards">
+            <c:SettingsRow Label="{l:T 'On cards'}">
                 <ItemsControl ItemsSource="{Binding CardFields}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -57,16 +58,16 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </c:SettingsRow>
-            <c:SettingsRow Label="Quick filters" Description="Buttons above the board; each is a search query.">
+            <c:SettingsRow Label="{l:T 'Quick filters'}" Description="{l:T 'Buttons above the board; each is a search query.'}">
                 <StackPanel Spacing="{DynamicResource Spacing.Small}">
                     <ItemsControl ItemsSource="{Binding QuickFilters}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="vm:QuickFilterRow">
                                 <StackPanel Spacing="{DynamicResource Spacing.Small}" Margin="{DynamicResource Margin.BlockBelow}">
                                     <Grid ColumnDefinitions="*,2*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}">
-                                        <TextBox Text="{Binding Name}" AutomationProperties.Name="Quick filter name" />
-                                        <TextBox Grid.Column="1" Classes="code" Text="{Binding Query}" AutomationProperties.Name="Quick filter query" />
-                                        <Button Grid.Column="2" Classes="flat" ToolTip.Tip="Remove" AutomationProperties.Name="Remove quick filter"
+                                        <TextBox Text="{Binding Name}" AutomationProperties.Name="{l:T 'Quick filter name'}" />
+                                        <TextBox Grid.Column="1" Classes="code" Text="{Binding Query}" AutomationProperties.Name="{l:T 'Quick filter query'}" />
+                                        <Button Grid.Column="2" Classes="flat" ToolTip.Tip="{l:T 'Remove'}" AutomationProperties.Name="{l:T 'Remove quick filter'}"
                                                 Command="{Binding $parent[UserControl].((vm:BoardSettingsDialogViewModel)DataContext).RemoveQuickFilterCommand}"
                                                 CommandParameter="{Binding}">
                                             <c:Icon Kind="delete" />
@@ -78,7 +79,7 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-                    <Button Classes="flat" Content="Add Quick Filter" Command="{Binding AddQuickFilterCommand}" HorizontalAlignment="Left" />
+                    <Button Classes="flat" Content="{l:T 'Add Quick Filter'}" Command="{Binding AddQuickFilterCommand}" HorizontalAlignment="Left" />
                 </StackPanel>
             </c:SettingsRow>
             <TextBlock Text="{Binding Error}" Foreground="{DynamicResource Brush.Status.Error}" TextWrapping="Wrap"

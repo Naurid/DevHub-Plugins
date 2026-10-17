@@ -1,6 +1,7 @@
 using DevHub.Git.Core;
 using DevHub.Services;
 using DevHub.ViewModels.Dialogs;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Git;
 
@@ -27,9 +28,9 @@ public sealed class CommitOperations(GitRepositoryClient? client, IDialogService
         if (client is null)
             return;
         await RunAsync("Cherry-pick", async () => Report(await client.CherryPickAsync(commit),
-            done: $"Cherry-picked {commit.ShortId} \"{commit.Subject}\" onto the current branch.",
-            upToDate: $"The current branch already has the changes of {commit.ShortId}; nothing to do.",
-            conflicts: $"Cherry-picking {commit.ShortId} stopped on conflicts. Resolve them in Changes, then Continue (or Abort)."));
+            done: L.T($"Cherry-picked {commit.ShortId} \"{commit.Subject}\" onto the current branch."),
+            upToDate: L.T($"The current branch already has the changes of {commit.ShortId}; nothing to do."),
+            conflicts: L.T($"Cherry-picking {commit.ShortId} stopped on conflicts. Resolve them in Changes, then Continue (or Abort).")));
     }
 
     /// <summary>
@@ -41,9 +42,9 @@ public sealed class CommitOperations(GitRepositoryClient? client, IDialogService
         if (client is null)
             return;
         await RunAsync("Revert", async () => Report(await client.RevertAsync(commit),
-            done: $"Reverted {commit.ShortId}: a new commit undoes \"{commit.Subject}\".",
-            upToDate: $"The changes of {commit.ShortId} are already undone; nothing to do.",
-            conflicts: $"Reverting {commit.ShortId} stopped on conflicts. Resolve them in Changes, then Continue (or Abort)."));
+            done: L.T($"Reverted {commit.ShortId}: a new commit undoes \"{commit.Subject}\"."),
+            upToDate: L.T($"The changes of {commit.ShortId} are already undone; nothing to do."),
+            conflicts: L.T($"Reverting {commit.ShortId} stopped on conflicts. Resolve them in Changes, then Continue (or Abort).")));
     }
 
     /// <summary>New branch starting at <paramref name="commit"/>.</summary>
@@ -56,15 +57,14 @@ public sealed class CommitOperations(GitRepositoryClient? client, IDialogService
             return;
 
         var dialog = new TagDialogViewModel(client, Tags,
-            commit is null ? "Tag the current commit" : $"Tag {commit.ShortId} {commit.Subject}");
+            commit is null ? L.T("Tag the current commit") : L.T($"Tag {commit.ShortId} {commit.Subject}"));
         if (!await dialogs.ShowDialogAsync(dialog))
             return;
 
         await RunAsync("Create tag", async () =>
         {
             await client.CreateTagAsync(dialog.Name, commit?.Id, dialog.Message);
-            status.Show($"Created tag {dialog.Name}{(string.IsNullOrWhiteSpace(dialog.Message) ? "" : " (annotated)")}. " +
-                        "Tags aren't sent by Push: right-click it in Tags → Push Tag.");
+            status.Show(L.T($"Created tag {dialog.Name}{(string.IsNullOrWhiteSpace(dialog.Message) ? "" : L.T(" (annotated)"))}. Tags aren't sent by Push: right-click it in Tags → Push Tag."));
         });
     }
 
@@ -74,17 +74,17 @@ public sealed class CommitOperations(GitRepositoryClient? client, IDialogService
         if (client is null)
             return;
 
-        var confirm = new ConfirmDialogViewModel("Delete Tag",
-            $"Delete the tag {tag.Name}? The commit it marks stays." +
-            (tag.IsAnnotated ? " The tag's own message is lost." : "") +
-            " If it was pushed, the remote keeps its copy (Delete from Remote removes that).", "Delete");
+        var confirm = new ConfirmDialogViewModel(L.T("Delete Tag"),
+            L.T($"Delete the tag {tag.Name}? The commit it marks stays.") +
+            (tag.IsAnnotated ? L.T(" The tag's own message is lost.") : "") +
+            L.T(" If it was pushed, the remote keeps its copy (Delete from Remote removes that)."), L.T("Delete"));
         if (!await dialogs.ShowDialogAsync(confirm))
             return;
 
         await RunAsync("Delete tag", async () =>
         {
             await client.DeleteTagAsync(tag.Name);
-            status.Show($"Deleted tag {tag.Name}.");
+            status.Show(L.T($"Deleted tag {tag.Name}."));
         });
     }
 
@@ -93,8 +93,8 @@ public sealed class CommitOperations(GitRepositoryClient? client, IDialogService
     {
         if (client is null || await PickRemoteAsync() is not { } target)
             return;
-        if (await remote.RunNetworkAsync($"Pushing tag {tag.Name} to {target}", (p, ct) => client.PushTagAsync(target, tag.Name, p, ct)))
-            status.Show($"Pushed tag {tag.Name} to {target}.");
+        if (await remote.RunNetworkAsync(L.T($"Pushing tag {tag.Name} to {target}"), (p, ct) => client.PushTagAsync(target, tag.Name, p, ct)))
+            status.Show(L.T($"Pushed tag {tag.Name} to {target}."));
     }
 
     /// <summary>Deletes a tag on the remote after asking; the local tag stays.</summary>
@@ -103,15 +103,14 @@ public sealed class CommitOperations(GitRepositoryClient? client, IDialogService
         if (client is null || await PickRemoteAsync() is not { } target)
             return;
 
-        var confirm = new ConfirmDialogViewModel("Delete Tag from Remote",
-            $"Delete the tag {tag.Name} on {target}? Everyone fetching from {target} stops seeing it (copies they " +
-            "already fetched stay with them). Your local tag stays.", "Delete from Remote");
+        var confirm = new ConfirmDialogViewModel(L.T("Delete Tag from Remote"),
+            L.T($"Delete the tag {tag.Name} on {target}? Everyone fetching from {target} stops seeing it (copies they already fetched stay with them). Your local tag stays."), L.T("Delete from Remote"));
         if (!await dialogs.ShowDialogAsync(confirm))
             return;
 
-        if (await remote.RunNetworkAsync($"Deleting tag {tag.Name} on {target}",
+        if (await remote.RunNetworkAsync(L.T($"Deleting tag {tag.Name} on {target}"),
                 (p, ct) => client.DeleteRemoteTagAsync(target, tag.Name, p, ct)))
-            status.Show($"Deleted tag {tag.Name} on {target}; your local tag stays.");
+            status.Show(L.T($"Deleted tag {tag.Name} on {target}; your local tag stays."));
     }
 
     /// <summary>"origin" if there is one, else the first remote; null (and says so) without remotes.</summary>
@@ -121,12 +120,12 @@ public sealed class CommitOperations(GitRepositoryClient? client, IDialogService
         {
             var remotes = await client!.GetRemotesAsync();
             if (remotes.Count == 0)
-                status.Show("This repository has no remote to push to.");
+                status.Show(L.T("This repository has no remote to push to."));
             return remotes.Contains("origin") ? "origin" : remotes.FirstOrDefault();
         }
         catch (Exception ex)
         {
-            status.Show("Couldn't read the remotes: " + ex.Message);
+            status.Show(L.T("Couldn't read the remotes: ") + ex.Message);
             return null;
         }
     }

@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHub.GitHub.Core;
 using DevHub.ViewModels.Dialogs;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Git;
 
@@ -28,8 +29,8 @@ public sealed partial class PublishToGitHubDialogViewModel : DialogViewModelBase
         _remoteName = existingRemotes.Contains("origin") ? "github" : "origin";
     }
 
-    public override string Title => "Publish to GitHub";
-    public override string OkText => "Publish";
+    public override string Title => L.T("Publish to GitHub");
+    public override string OkText => L.T("Publish");
     public override bool FitsContent => true;
     public override double Width => 480;
     public override double MinWidth => 400;
@@ -63,17 +64,17 @@ public sealed partial class PublishToGitHubDialogViewModel : DialogViewModelBase
         RemoteName = RemoteName.Trim();
         if (!GitHubService.IsValidRepositoryName(Name))
         {
-            Error = "Use letters, digits, \"-\", \"_\" or \".\" for the name (up to 100 characters).";
+            Error = L.T("Use letters, digits, \"-\", \"_\" or \".\" for the name (up to 100 characters).");
             return false;
         }
         if (RemoteName.Length == 0 || RemoteName.Any(char.IsWhiteSpace) || RemoteName.StartsWith('-'))
         {
-            Error = "Enter a remote name without spaces (usually \"origin\").";
+            Error = L.T("Enter a remote name without spaces (usually \"origin\").");
             return false;
         }
         if (_existingRemotes.Contains(RemoteName))
         {
-            Error = $"This repository already has a remote named {RemoteName}: pick another name.";
+            Error = L.T($"This repository already has a remote named {RemoteName}: pick another name.");
             return false;
         }
 

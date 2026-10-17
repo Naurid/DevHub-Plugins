@@ -3,6 +3,7 @@ using DevHub.Templates.Core;
 using DevHub.Templates.Core.Commands;
 using DevHub.Templates.Core.Generation;
 using DevHub.Templates.Core.Rendering;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Templates;
 
@@ -26,21 +27,21 @@ internal static class TemplateFlow
             {
                 var copy = await TemplateStore.DuplicateAsync(template, templates.PersonalLibrary);
                 if (copy.Entry is not { } copied)
-                    return (null, new SaveOutcome(false, "Couldn't copy the template: " + string.Join(" ", copy.Errors)));
+                    return (null, new SaveOutcome(false, L.T("Couldn't copy the template: ") + string.Join(" ", copy.Errors)));
                 target = copied;
             }
 
             var saved = await TemplateStore.SaveAsync(target, target.Manifest! with { Steps = [.. target.Manifest!.Steps, .. steps] });
             if (saved.Entry is not { } entry)
-                return (null, new SaveOutcome(false, "Couldn't save the template: " + string.Join(" ", saved.Errors)));
+                return (null, new SaveOutcome(false, L.T("Couldn't save the template: ") + string.Join(" ", saved.Errors)));
 
             templates.NotifyChanged(); // the Templates tab and open editors see it too
             var count = steps.Count == 1 ? "1 step" : $"{steps.Count} steps";
-            return (entry, new SaveOutcome(true, $"Saved {count} to {entry.Reference}. The next {what} from it is arranged this way."));
+            return (entry, new SaveOutcome(true, L.T($"Saved {count} to {entry.Reference}. The next {what} from it is arranged this way.")));
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            return (null, new SaveOutcome(false, "Couldn't save the template: " + ex.Message));
+            return (null, new SaveOutcome(false, L.T("Couldn't save the template: ") + ex.Message));
         }
     }
 
@@ -55,9 +56,9 @@ internal static class TemplateFlow
     {
         var name = Path.GetFileName(folder);
         var cts = new CancellationTokenSource();
-        var run = new RunPageViewModel($"Setting up {name}", log, cts.Cancel, () => { });
+        var run = new RunPageViewModel(L.T($"Setting up {name}"), log, cts.Cancel, () => { });
         show(run);
-        var task = status.StartTask($"Setting up {name}…", cts.Cancel);
+        var task = status.StartTask(L.T($"Setting up {name}…"), cts.Cancel);
 
         var results = new List<CommandResult>();
         var cancelled = false;
@@ -84,7 +85,7 @@ internal static class TemplateFlow
         }
         catch (Exception ex)
         {
-            log.Add("Couldn't run the commands: " + ex.Message, isError: true);
+            log.Add(L.T("Couldn't run the commands: ") + ex.Message, isError: true);
             cancelled = true;
         }
         finally

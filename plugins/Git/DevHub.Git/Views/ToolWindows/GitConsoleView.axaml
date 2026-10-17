@@ -4,6 +4,7 @@
 -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:vm="using:DevHub.ViewModels.ToolWindows"
              xmlns:c="using:DevHub.Controls"
              x:Class="DevHub.Views.ToolWindows.GitConsoleView"
@@ -18,15 +19,15 @@
     <c:ToolWindowFrame Header="{Binding Title}">
         <c:ToolWindowFrame.HeaderActions>
             <c:Toolbar>
-                <c:ActionButton IconKind="delete" ToolTip.Tip="Clear" Command="{Binding ClearCommand}" />
+                <c:ActionButton IconKind="delete" ToolTip.Tip="{l:T 'Clear'}" Command="{Binding ClearCommand}" />
                 <c:ToolbarSeparator />
-                <c:ActionButton IconKind="close" ToolTip.Tip="Hide" Command="{Binding ToggleCommand}" />
+                <c:ActionButton IconKind="close" ToolTip.Tip="{l:T 'Hide'}" Command="{Binding ToggleCommand}" />
             </c:Toolbar>
         </c:ToolWindowFrame.HeaderActions>
 
         <Panel>
-            <c:EmptyState IconKind="vcs" Title="No git commands yet"
-                          Description="Every git command DevHub runs shows up here."
+            <c:EmptyState IconKind="vcs" Title="{l:T 'No git commands yet'}"
+                          Description="{l:T 'Every git command DevHub runs shows up here.'}"
                           IsVisible="{Binding !HasRows}" />
 
             <ListBox ItemsSource="{Binding Rows}" Background="Transparent" IsVisible="{Binding HasRows}">

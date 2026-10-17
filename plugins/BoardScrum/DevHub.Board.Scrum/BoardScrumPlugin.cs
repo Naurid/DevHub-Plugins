@@ -8,6 +8,7 @@ using DevHub.Services;
 using DevHub.ViewModels.Documents;
 using DevHub.ViewModels.Scrum;
 using Microsoft.Extensions.DependencyInjection;
+using DevHub.Sdk.Core.Localization;
 
 [assembly: DevHub.Plugins.DevHubPlugin(typeof(DevHub.Plugins.BoardScrumPlugin))]
 
@@ -35,14 +36,14 @@ public sealed class ScrumActionProvider(IServiceProvider services, IStatusServic
 {
     public IEnumerable<AppAction> GetActions()
     {
-        yield return new AppAction("Board.CreateSprint", "Create Sprint", new AsyncRelayCommand(() => OnBoard(b => b.Context!.RunAsync(new CreateSprint()))))
+        yield return new AppAction("Board.CreateSprint", L.T("Create Sprint"), new AsyncRelayCommand(() => OnBoard(b => b.Context!.RunAsync(new CreateSprint()))))
         {
             Category = "Board",
             Menu = "Board",
             MenuOrder = 150,
-            Description = "Plan another sprint on the board in front.",
+            Description = L.T("Plan another sprint on the board in front."),
         };
-        yield return new AppAction("Board.SprintPlanning", "Sprint Planning", new AsyncRelayCommand(() => OnBoard(b =>
+        yield return new AppAction("Board.SprintPlanning", L.T("Sprint Planning"), new AsyncRelayCommand(() => OnBoard(b =>
         {
             b.SelectedPage = b.Pages.FirstOrDefault(p => p.Id == "scrum-planning") ?? b.SelectedPage;
             return Task.CompletedTask;
@@ -51,7 +52,7 @@ public sealed class ScrumActionProvider(IServiceProvider services, IStatusServic
             Category = "Board",
             Menu = "Board",
             MenuOrder = 151,
-            Description = "The backlog with a list per sprint (Scrum boards).",
+            Description = L.T("The backlog with a list per sprint (Scrum boards)."),
         };
     }
 
@@ -61,11 +62,11 @@ public sealed class ScrumActionProvider(IServiceProvider services, IStatusServic
         var documents = (IDocumentService)services.GetService(typeof(IDocumentService))!;
         if (documents.Active is not BoardDocumentViewModel { Context: not null } board)
         {
-            status.Show("Open a board first.");
+            status.Show(L.T("Open a board first."));
             return;
         }
         if (board.SelectedBoard?.Kind != BoardKind.Scrum)
-            status.Show("Sprints are planned on Scrum boards (Board Settings → Scrum board).");
+            status.Show(L.T("Sprints are planned on Scrum boards (Board Settings → Scrum board)."));
         await action(board);
     }
 }

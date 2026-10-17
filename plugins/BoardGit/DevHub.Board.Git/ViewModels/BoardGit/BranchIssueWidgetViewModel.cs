@@ -10,6 +10,7 @@ using DevHub.Services.BoardGit;
 using DevHub.ViewModels.Dialogs;
 using DevHub.ViewModels.Documents;
 using DevHub.ViewModels.Shell;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.BoardGit;
 
@@ -87,7 +88,7 @@ public sealed partial class BranchIssueWidgetViewModel : StatusBarWidgetViewMode
                         if (IssueKeys.Find(branch, candidate.Key).FirstOrDefault() is not { } key)
                             continue;
                         var found = await _services.WithBoardAsync(candidate, c =>
-                            Task.FromResult(c.Snapshot.IssueByKey(key) is { } i ? (i.Id, $"{i.Key} {i.Summary}", $"{i.Key} · {c.StatusName(i.Status)} on {candidate.Name}: open the issue") : default));
+                            Task.FromResult(c.Snapshot.IssueByKey(key) is { } i ? (i.Id, $"{i.Key} {i.Summary}", L.T($"{i.Key} · {c.StatusName(i.Status)} on {candidate.Name}: open the issue")) : default));
                         if (found.Id is null)
                             continue;
                         (issueId, text, tip) = found;
@@ -131,8 +132,8 @@ public sealed partial class BranchIssueWidgetViewModel : StatusBarWidgetViewMode
                     if (commands.Count == 0)
                         return false;
                     var settings = context.Project.Settings;
-                    var ok = await _services.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Smart Commit",
-                        $"The commit message asks for these changes on {board.Name}. Apply them?", "Apply",
+                    var ok = await _services.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel(L.T("Smart Commit"),
+                        L.T($"The commit message asks for these changes on {board.Name}. Apply them?"), L.T("Apply"),
                         commands.Select(c => c.Describe(settings)).ToList(), destructive: false));
                     if (!ok)
                         return false;
@@ -145,7 +146,7 @@ public sealed partial class BranchIssueWidgetViewModel : StatusBarWidgetViewMode
         }
         catch (Exception ex) when (ex is GitException or IOException or InvalidOperationException)
         {
-            _services.Status.Show("Smart commit skipped: " + ex.Message);
+            _services.Status.Show(L.T("Smart commit skipped: ") + ex.Message);
         }
     }
 

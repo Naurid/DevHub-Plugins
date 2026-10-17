@@ -1,3 +1,5 @@
+using DevHub.Sdk.Core.Localization;
+
 namespace DevHub.Templates.Core.Rendering;
 
 /// <summary>A rendered path, or why it can't be used.</summary>
@@ -69,18 +71,18 @@ public static class PathRenderer
     private static string? Problem(string name, bool allowGlobs)
     {
         if (name.Length == 0 || string.IsNullOrWhiteSpace(name))
-            return "is empty";
+            return L.T("is empty");
         if (name.Contains('/') || name.Contains('\\'))
-            return "contains a slash, so it isn't one name";
+            return L.T("contains a slash, so it isn't one name");
         if (name is "." or "..")
-            return "isn't allowed as a name";
+            return L.T("isn't allowed as a name");
         if (name.IndexOfAny(allowGlobs ? InvalidGlobNameChars : InvalidNameChars) >= 0)
-            return "contains a character Windows doesn't allow in names";
+            return L.T("contains a character Windows doesn't allow in names");
         if (name.EndsWith('.') || name.EndsWith(' '))
-            return "ends with a dot or space, which Windows drops";
+            return L.T("ends with a dot or space, which Windows drops");
         var stem = name.Split('.')[0];
         if (ReservedNames.Contains(stem))
-            return "is a name Windows reserves";
+            return L.T("is a name Windows reserves");
         return null;
     }
 }

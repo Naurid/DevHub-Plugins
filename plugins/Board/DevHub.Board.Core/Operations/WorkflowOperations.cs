@@ -1,5 +1,6 @@
 using DevHub.Board.Core.Model;
 using DevHub.Board.Core.Storage;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Board.Core;
 
@@ -9,17 +10,17 @@ internal static class Definitions
     public static string RequireName(string? name, string what)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new BoardRuleException($"The {what} needs a name.");
+            throw new BoardRuleException(L.T($"The {what} needs a name."));
         var trimmed = name.Trim();
         if (trimmed.Length > 80)
-            throw new BoardRuleException($"The {what}'s name is longer than 80 characters.");
+            throw new BoardRuleException(L.T($"The {what}'s name is longer than 80 characters."));
         return trimmed;
     }
 
     public static void RequireUnique<T>(IEnumerable<T> items, Func<T, string> name, string candidate, string what, Func<T, bool>? except = null)
     {
         if (items.Any(i => (except is null || !except(i)) && string.Equals(name(i), candidate, StringComparison.OrdinalIgnoreCase)))
-            throw new BoardRuleException($"There's already a {what} called \"{candidate}\".");
+            throw new BoardRuleException(L.T($"There's already a {what} called \"{candidate}\"."));
     }
 
     public static string NewIdFor(ChangeBuilder change, string? wanted, IEnumerable<string> taken)
@@ -28,7 +29,7 @@ internal static class Definitions
         if (wanted is not null)
         {
             if (!BoardIds.IsValid(wanted) || used.Contains(wanted))
-                throw new BoardRuleException($"The id \"{wanted}\" can't be used.");
+                throw new BoardRuleException(L.T($"The id \"{wanted}\" can't be used."));
             return wanted;
         }
         string id;
@@ -46,7 +47,7 @@ internal static class Definitions
         var items = list.ToList();
         var from = items.FindIndex(i => match(i));
         if (from < 0)
-            throw new BoardRuleException("That item doesn't exist any more.");
+            throw new BoardRuleException(L.T("That item doesn't exist any more."));
         var item = items[from];
         items.RemoveAt(from);
         items.Insert(Math.Clamp(index, 0, items.Count), item);
@@ -71,7 +72,7 @@ public sealed record AddStatus(string Name, StatusCategory Category) : IBoardOpe
     {
         var change = new ChangeBuilder(board, context);
         var status = AddTo(change, Name, Category, Id, Workflow);
-        return change.Build($"Status {status.Name} added");
+        return change.Build(L.T($"Status {status.Name} added"));
     }
 
     /// <summary>Adds the status inside another operation (AddColumn).</summary>
@@ -81,7 +82,7 @@ public sealed record AddStatus(string Name, StatusCategory Category) : IBoardOpe
         var trimmed = Definitions.RequireName(name, "status");
         Definitions.RequireUnique(change.Project.Statuses, s => s.Name, trimmed, "status");
         if (workflowId is not null && !board.Workflows.ContainsKey(workflowId))
-            throw new BoardRuleException("That workflow doesn't exist.");
+            throw new BoardRuleException(L.T("That workflow doesn't exist."));
 
         var status = new Status
         {
@@ -101,7 +102,7 @@ public sealed record RenameStatus(string StatusId, string Name) : IBoardOperatio
 {
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
-        var status = board.Project.Status(StatusId) ?? throw new BoardRuleException("That status doesn't exist any more.");
+        var status = board.Project.Status(StatusId) ?? throw new BoardRuleException(L.T("That status doesn't exist any more."));
         var name = Definitions.RequireName(Name, "status");
         Definitions.RequireUnique(board.Project.Statuses, s => s.Name, name, "status", s => s.Id == StatusId);
         var change = new ChangeBuilder(board, context);
@@ -109,7 +110,7 @@ public sealed record RenameStatus(string StatusId, string Name) : IBoardOperatio
         {
             Statuses = Definitions.Replace(board.Project.Statuses, s => s.Id == StatusId, s => s with { Name = name }),
         });
-        return change.Build($"Status {status.Name} renamed to {name}");
+        return change.Build(L.T($"Status {status.Name} renamed to {name}"));
     }
 }
 
@@ -121,9 +122,9 @@ public sealed record SetStatusCategory(string StatusId, StatusCategory Category)
 {
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
-        var status = board.Project.Status(StatusId) ?? throw new BoardRuleException("That status doesn't exist any more.");
+        var status = board.Project.Status(StatusId) ?? throw new BoardRuleException(L.T("That status doesn't exist any more."));
         if (status.Category == Category)
-            return new BoardChange("No change", new Dictionary<string, byte[]?>());
+            return new BoardChange(L.T("No change"), new Dictionary<string, byte[]?>());
         var change = new ChangeBuilder(board, context);
         var project = board.Project with
         {
@@ -133,7 +134,7 @@ public sealed record SetStatusCategory(string StatusId, StatusCategory Category)
         var updated = BoardSnapshotView.WithProject(board, project);
         foreach (var issue in board.Issues.Values.Where(i => i.Status == StatusId))
             change.WriteIssue(issue, CreateIssue.WithDoneState(updated, issue, issue.Status, null, context));
-        return change.Build($"Status {status.Name} is now {Category}");
+        return change.Build(L.T($"Status {status.Name} is now {Category}"));
     }
 }
 
@@ -145,23 +146,23 @@ public sealed record DeleteStatus(string StatusId, string? MoveIssuesTo) : IBoar
 {
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
-        var status = board.Project.Status(StatusId) ?? throw new BoardRuleException("That status doesn't exist any more.");
+        var status = board.Project.Status(StatusId) ?? throw new BoardRuleException(L.T("That status doesn't exist any more."));
         var affected = board.Issues.Values.Where(i => i.Status == StatusId).ToList();
         if (affected.Count > 0)
         {
             if (MoveIssuesTo is null || MoveIssuesTo == StatusId || board.Project.Status(MoveIssuesTo) is null)
-                throw new BoardRuleException($"{affected.Count} issues are in {status.Name}: choose where they go.");
+                throw new BoardRuleException(L.T($"{affected.Count} issues are in {status.Name}: choose where they go."));
             foreach (var issue in affected)
             {
                 var workflow = board.WorkflowFor(issue.Type);
                 if (workflow is not null && !workflow.Statuses.Contains(MoveIssuesTo))
-                    throw new BoardRuleException($"{issue.Key} can't move there: its workflow ({workflow.Name}) doesn't have that status.");
+                    throw new BoardRuleException(L.T($"{issue.Key} can't move there: its workflow ({workflow.Name}) doesn't have that status."));
             }
         }
         foreach (var workflow in board.Workflows.Values)
         {
             if (workflow.Statuses.Count == 1 && workflow.Statuses[0] == StatusId)
-                throw new BoardRuleException($"{status.Name} is the only status of the {workflow.Name} workflow.");
+                throw new BoardRuleException(L.T($"{status.Name} is the only status of the {workflow.Name} workflow."));
         }
 
         var change = new ChangeBuilder(board, context);
@@ -186,8 +187,8 @@ public sealed record DeleteStatus(string StatusId, string? MoveIssuesTo) : IBoar
             });
         }
         return change.Build(affected.Count == 0
-            ? $"Status {status.Name} deleted"
-            : $"Status {status.Name} deleted, {affected.Count} issues moved to {board.Project.Status(MoveIssuesTo)!.Name}");
+            ? L.T($"Status {status.Name} deleted")
+            : L.T($"Status {status.Name} deleted, {affected.Count} issues moved to {board.Project.Status(MoveIssuesTo)!.Name}"));
     }
 }
 
@@ -196,12 +197,12 @@ public sealed record MoveStatusInWorkflow(string WorkflowId, string StatusId, in
 {
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
-        var workflow = board.Workflows.GetValueOrDefault(WorkflowId) ?? throw new BoardRuleException("That workflow doesn't exist any more.");
+        var workflow = board.Workflows.GetValueOrDefault(WorkflowId) ?? throw new BoardRuleException(L.T("That workflow doesn't exist any more."));
         if (!workflow.Statuses.Contains(StatusId))
-            throw new BoardRuleException("That status isn't part of the workflow.");
+            throw new BoardRuleException(L.T("That status isn't part of the workflow."));
         var change = new ChangeBuilder(board, context);
         change.Write(BoardPaths.Workflow(workflow.Id), workflow with { Statuses = Definitions.Move(workflow.Statuses, s => s == StatusId, Index) });
-        return change.Build($"Workflow {workflow.Name}: statuses reordered");
+        return change.Build(L.T($"Workflow {workflow.Name}: statuses reordered"));
     }
 }
 
@@ -210,13 +211,13 @@ public sealed record AddStatusToWorkflow(string WorkflowId, string StatusId) : I
 {
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
-        var workflow = board.Workflows.GetValueOrDefault(WorkflowId) ?? throw new BoardRuleException("That workflow doesn't exist any more.");
-        var status = board.Project.Status(StatusId) ?? throw new BoardRuleException("That status doesn't exist any more.");
+        var workflow = board.Workflows.GetValueOrDefault(WorkflowId) ?? throw new BoardRuleException(L.T("That workflow doesn't exist any more."));
+        var status = board.Project.Status(StatusId) ?? throw new BoardRuleException(L.T("That status doesn't exist any more."));
         if (workflow.Statuses.Contains(StatusId))
-            throw new BoardRuleException($"{status.Name} is already part of {workflow.Name}.");
+            throw new BoardRuleException(L.T($"{status.Name} is already part of {workflow.Name}."));
         var change = new ChangeBuilder(board, context);
         change.Write(BoardPaths.Workflow(workflow.Id), workflow with { Statuses = [.. workflow.Statuses, StatusId] });
-        return change.Build($"Workflow {workflow.Name}: {status.Name} added");
+        return change.Build(L.T($"Workflow {workflow.Name}: {status.Name} added"));
     }
 }
 
@@ -225,16 +226,16 @@ public sealed record RemoveStatusFromWorkflow(string WorkflowId, string StatusId
 {
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
-        var workflow = board.Workflows.GetValueOrDefault(WorkflowId) ?? throw new BoardRuleException("That workflow doesn't exist any more.");
-        var status = board.Project.Status(StatusId) ?? throw new BoardRuleException("That status doesn't exist any more.");
+        var workflow = board.Workflows.GetValueOrDefault(WorkflowId) ?? throw new BoardRuleException(L.T("That workflow doesn't exist any more."));
+        var status = board.Project.Status(StatusId) ?? throw new BoardRuleException(L.T("That status doesn't exist any more."));
         if (!workflow.Statuses.Contains(StatusId))
-            throw new BoardRuleException($"{status.Name} isn't part of {workflow.Name}.");
+            throw new BoardRuleException(L.T($"{status.Name} isn't part of {workflow.Name}."));
         if (workflow.Statuses.Count == 1)
-            throw new BoardRuleException("A workflow needs at least one status.");
+            throw new BoardRuleException(L.T("A workflow needs at least one status."));
         var types = Definitions.TypesUsing(board, workflow);
         var affected = board.Issues.Values.Where(i => i.Status == StatusId && types.Contains(i.Type)).ToList();
         if (affected.Count > 0 && (MoveIssuesTo is null || MoveIssuesTo == StatusId || !workflow.Statuses.Contains(MoveIssuesTo)))
-            throw new BoardRuleException($"{affected.Count} issues are in {status.Name}: choose another status of {workflow.Name} for them.");
+            throw new BoardRuleException(L.T($"{affected.Count} issues are in {status.Name}: choose another status of {workflow.Name} for them."));
 
         var change = new ChangeBuilder(board, context);
         change.Write(BoardPaths.Workflow(workflow.Id), workflow with
@@ -244,7 +245,7 @@ public sealed record RemoveStatusFromWorkflow(string WorkflowId, string StatusId
         });
         foreach (var issue in affected)
             change.WriteIssue(issue, CreateIssue.WithDoneState(board, issue, MoveIssuesTo!, null, context));
-        return change.Build($"Workflow {workflow.Name}: {status.Name} removed");
+        return change.Build(L.T($"Workflow {workflow.Name}: {status.Name} removed"));
     }
 }
 
@@ -253,18 +254,18 @@ public sealed record SetTransitions(string WorkflowId, bool AnyToAny, IReadOnlyL
 {
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
-        var workflow = board.Workflows.GetValueOrDefault(WorkflowId) ?? throw new BoardRuleException("That workflow doesn't exist any more.");
+        var workflow = board.Workflows.GetValueOrDefault(WorkflowId) ?? throw new BoardRuleException(L.T("That workflow doesn't exist any more."));
         foreach (var t in Transitions)
         {
             if (!workflow.Statuses.Contains(t.To) || (t.From is not null && !workflow.Statuses.Contains(t.From)))
-                throw new BoardRuleException("A transition uses a status that isn't part of the workflow.");
+                throw new BoardRuleException(L.T("A transition uses a status that isn't part of the workflow."));
             if (t.From == t.To)
-                throw new BoardRuleException("A transition goes from one status to another.");
+                throw new BoardRuleException(L.T("A transition goes from one status to another."));
         }
         var distinct = Transitions.DistinctBy(t => (t.From, t.To)).ToList();
         var change = new ChangeBuilder(board, context);
         change.Write(BoardPaths.Workflow(workflow.Id), workflow with { AnyToAny = AnyToAny, Transitions = distinct });
-        return change.Build($"Workflow {workflow.Name}: transitions changed");
+        return change.Build(L.T($"Workflow {workflow.Name}: transitions changed"));
     }
 }
 
@@ -279,8 +280,8 @@ public sealed record CreateWorkflow(string Name) : IBoardOperation
         var name = Definitions.RequireName(Name, "workflow");
         Definitions.RequireUnique(board.Workflows.Values, w => w.Name, name, "workflow");
         var change = new ChangeBuilder(board, context);
-        var source = CopyOf is null ? null : board.Workflows.GetValueOrDefault(CopyOf) ?? throw new BoardRuleException("The workflow to copy doesn't exist.");
-        var first = board.Project.Statuses.FirstOrDefault() ?? throw new BoardRuleException("The project has no statuses.");
+        var source = CopyOf is null ? null : board.Workflows.GetValueOrDefault(CopyOf) ?? throw new BoardRuleException(L.T("The workflow to copy doesn't exist."));
+        var first = board.Project.Statuses.FirstOrDefault() ?? throw new BoardRuleException(L.T("The project has no statuses."));
         var workflow = new Workflow
         {
             Id = Definitions.NewIdFor(change, Id, board.Workflows.Keys),
@@ -290,7 +291,7 @@ public sealed record CreateWorkflow(string Name) : IBoardOperation
             Transitions = source?.Transitions ?? [],
         };
         change.Write(BoardPaths.Workflow(workflow.Id), workflow);
-        return change.Build($"Workflow {name} created");
+        return change.Build(L.T($"Workflow {name} created"));
     }
 }
 
@@ -298,12 +299,12 @@ public sealed record RenameWorkflow(string WorkflowId, string Name) : IBoardOper
 {
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
-        var workflow = board.Workflows.GetValueOrDefault(WorkflowId) ?? throw new BoardRuleException("That workflow doesn't exist any more.");
+        var workflow = board.Workflows.GetValueOrDefault(WorkflowId) ?? throw new BoardRuleException(L.T("That workflow doesn't exist any more."));
         var name = Definitions.RequireName(Name, "workflow");
         Definitions.RequireUnique(board.Workflows.Values, w => w.Name, name, "workflow", w => w.Id == WorkflowId);
         var change = new ChangeBuilder(board, context);
         change.Write(BoardPaths.Workflow(workflow.Id), workflow with { Name = name });
-        return change.Build($"Workflow {workflow.Name} renamed to {name}");
+        return change.Build(L.T($"Workflow {workflow.Name} renamed to {name}"));
     }
 }
 
@@ -312,16 +313,16 @@ public sealed record DeleteWorkflow(string WorkflowId) : IBoardOperation
 {
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
-        var workflow = board.Workflows.GetValueOrDefault(WorkflowId) ?? throw new BoardRuleException("That workflow doesn't exist any more.");
+        var workflow = board.Workflows.GetValueOrDefault(WorkflowId) ?? throw new BoardRuleException(L.T("That workflow doesn't exist any more."));
         if (board.Workflows.Count == 1)
-            throw new BoardRuleException("A board needs at least one workflow.");
+            throw new BoardRuleException(L.T("A board needs at least one workflow."));
         if (board.Project.IssueTypes.FirstOrDefault(t => t.Workflow == WorkflowId) is { } user)
-            throw new BoardRuleException($"{user.Name} issues use {workflow.Name}: give them another workflow first.");
+            throw new BoardRuleException(L.T($"{user.Name} issues use {workflow.Name}: give them another workflow first."));
         if (board.DefaultWorkflow?.Id == WorkflowId)
-            throw new BoardRuleException($"{workflow.Name} is the default workflow: make another one the default first.");
+            throw new BoardRuleException(L.T($"{workflow.Name} is the default workflow: make another one the default first."));
         var change = new ChangeBuilder(board, context);
         change.Delete(BoardPaths.Workflow(workflow.Id));
-        return change.Build($"Workflow {workflow.Name} deleted");
+        return change.Build(L.T($"Workflow {workflow.Name} deleted"));
     }
 }
 
@@ -335,13 +336,13 @@ public sealed record SetDefaultWorkflow(string WorkflowId) : IBoardOperation
 
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
-        var workflow = board.Workflows.GetValueOrDefault(WorkflowId) ?? throw new BoardRuleException("That workflow doesn't exist any more.");
+        var workflow = board.Workflows.GetValueOrDefault(WorkflowId) ?? throw new BoardRuleException(L.T("That workflow doesn't exist any more."));
         var change = new ChangeBuilder(board, context);
         var project = board.Project with { DefaultWorkflow = WorkflowId };
         change.WriteProject(project);
         var updated = BoardSnapshotView.WithProject(board, project);
         AssignWorkflow.MoveStrandedIssues(change, updated, board.Issues.Values.Where(i => updated.WorkflowFor(i.Type)?.Id == WorkflowId), StatusMap);
-        return change.Build($"{workflow.Name} is now the default workflow");
+        return change.Build(L.T($"{workflow.Name} is now the default workflow"));
     }
 }
 
@@ -355,9 +356,9 @@ public sealed record AssignWorkflow(string IssueTypeId, string? WorkflowId) : IB
 
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
-        var type = board.Project.IssueType(IssueTypeId) ?? throw new BoardRuleException("That issue type doesn't exist any more.");
+        var type = board.Project.IssueType(IssueTypeId) ?? throw new BoardRuleException(L.T("That issue type doesn't exist any more."));
         if (WorkflowId is not null && !board.Workflows.ContainsKey(WorkflowId))
-            throw new BoardRuleException("That workflow doesn't exist any more.");
+            throw new BoardRuleException(L.T("That workflow doesn't exist any more."));
         var change = new ChangeBuilder(board, context);
         var project = board.Project with
         {
@@ -367,7 +368,7 @@ public sealed record AssignWorkflow(string IssueTypeId, string? WorkflowId) : IB
         var updated = BoardSnapshotView.WithProject(board, project);
         var workflow = updated.WorkflowFor(IssueTypeId)!;
         MoveStrandedIssues(change, updated, board.Issues.Values.Where(i => i.Type == IssueTypeId), StatusMap);
-        return change.Build($"{type.Name} issues now follow {workflow.Name}");
+        return change.Build(L.T($"{type.Name} issues now follow {workflow.Name}"));
     }
 
     /// <summary>Moves issues whose status their (new) workflow doesn't have: by the map, else to its first status.</summary>
@@ -381,7 +382,7 @@ public sealed record AssignWorkflow(string IssueTypeId, string? WorkflowId) : IB
                 continue;
             var target = map.TryGetValue(issue.Status, out var mapped) && workflow.Statuses.Contains(mapped)
                 ? mapped
-                : workflow.InitialStatus ?? throw new BoardRuleException($"{workflow.Name} has no statuses.");
+                : workflow.InitialStatus ?? throw new BoardRuleException(L.T($"{workflow.Name} has no statuses."));
             var current = change.Issue(issue.Id)!;
             change.WriteIssue(current, CreateIssue.WithDoneState(updated, current, target, null, change.Context));
         }

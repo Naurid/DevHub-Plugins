@@ -1,6 +1,7 @@
 using DevHub.Board.Core.Fields;
 using DevHub.Board.Core.Model;
 using DevHub.Board.Core.Storage;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Board.Core;
 
@@ -26,15 +27,15 @@ public sealed record CreateIssue(string Type, string Summary) : IBoardOperation
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
         var project = board.Project;
-        var type = project.IssueType(Type) ?? throw new BoardRuleException($"There's no issue type \"{Type}\".");
+        var type = project.IssueType(Type) ?? throw new BoardRuleException(L.T($"There's no issue type \"{Type}\"."));
         var id = Id ?? new ChangeBuilder(board, context).NewId();
         if (!BoardIds.IsValid(id) || board.Issues.ContainsKey(id))
-            throw new BoardRuleException($"The id \"{id}\" can't be used.");
+            throw new BoardRuleException(L.T($"The id \"{id}\" can't be used."));
 
-        var workflow = board.WorkflowFor(type.Id) ?? throw new BoardRuleException("The board has no workflow.");
-        var status = Status ?? workflow.InitialStatus ?? throw new BoardRuleException("The workflow has no statuses.");
+        var workflow = board.WorkflowFor(type.Id) ?? throw new BoardRuleException(L.T("The board has no workflow."));
+        var status = Status ?? workflow.InitialStatus ?? throw new BoardRuleException(L.T("The workflow has no statuses."));
         if (!workflow.Statuses.Contains(status))
-            throw new BoardRuleException($"\"{status}\" isn't a status of the {workflow.Name} workflow.");
+            throw new BoardRuleException(L.T($"\"{status}\" isn't a status of the {workflow.Name} workflow."));
 
         IssueFields.ValidateParent(board, null, type.Id, Parent);
         var parent = board.Issue(Parent);
@@ -94,7 +95,7 @@ public sealed record CreateIssue(string Type, string Summary) : IBoardOperation
             return issue with { Status = status, Resolution = null, Resolved = null };
         var chosen = resolution ?? issue.Resolution ?? board.Project.Resolutions.FirstOrDefault()?.Id;
         if (resolution is not null && board.Project.Resolution(resolution) is null)
-            throw new BoardRuleException($"There's no resolution \"{resolution}\".");
+            throw new BoardRuleException(L.T($"There's no resolution \"{resolution}\"."));
         return issue with { Status = status, Resolution = chosen, Resolved = issue.Resolved ?? context.Now };
     }
 }
@@ -112,12 +113,12 @@ public sealed record BulkEdit(IReadOnlyList<string> IssueIds, IReadOnlyList<(str
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
         if (IssueIds.Count == 0 || Changes.Count == 0)
-            throw new BoardRuleException("Nothing to change.");
+            throw new BoardRuleException(L.T("Nothing to change."));
         var change = new ChangeBuilder(board, context);
         var keys = new List<string>();
         foreach (var id in IssueIds.Distinct())
         {
-            var before = change.Issue(id) ?? throw new BoardRuleException("The issue doesn't exist any more.");
+            var before = change.Issue(id) ?? throw new BoardRuleException(L.T("The issue doesn't exist any more."));
             var after = before;
             foreach (var (field, value) in Changes)
             {
@@ -144,7 +145,7 @@ public sealed record BulkEdit(IReadOnlyList<string> IssueIds, IReadOnlyList<(str
         }
         var fields = string.Join(", ", Changes.Select(c => IssueFields.DisplayName(c.Field, board.Project).ToLowerInvariant()));
         var who = keys.Count == 1 ? keys[0] : $"{keys.Count} issues";
-        return change.Build(keys.Count == 0 ? "No change" : $"{who}: {fields} changed");
+        return change.Build(keys.Count == 0 ? L.T("No change") : $"{who}: {fields} changed");
     }
 }
 
@@ -158,17 +159,17 @@ public sealed record TransitionIssue(string IssueId, string Status) : IBoardOper
 
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
-        var before = board.Issue(IssueId) ?? throw new BoardRuleException("The issue doesn't exist any more.");
-        var target = board.Project.Status(Status) ?? throw new BoardRuleException($"There's no status \"{Status}\".");
-        var workflow = board.WorkflowFor(before.Type) ?? throw new BoardRuleException("The board has no workflow.");
+        var before = board.Issue(IssueId) ?? throw new BoardRuleException(L.T("The issue doesn't exist any more."));
+        var target = board.Project.Status(Status) ?? throw new BoardRuleException(L.T($"There's no status \"{Status}\"."));
+        var workflow = board.WorkflowFor(before.Type) ?? throw new BoardRuleException(L.T("The board has no workflow."));
         if (before.Status == Status && Resolution is null)
-            throw new BoardRuleException($"{before.Key} is already in {target.Name}.");
+            throw new BoardRuleException(L.T($"{before.Key} is already in {target.Name}."));
         if (before.Status != Status && !workflow.Allows(before.Status, Status))
         {
             var from = board.Project.Status(before.Status)?.Name ?? before.Status;
             throw new BoardRuleException(workflow.Statuses.Contains(Status)
-                ? $"The {workflow.Name} workflow doesn't allow {from} → {target.Name}."
-                : $"{target.Name} isn't part of the {workflow.Name} workflow.");
+                ? L.T($"The {workflow.Name} workflow doesn't allow {from} → {target.Name}.")
+                : L.T($"{target.Name} isn't part of the {workflow.Name} workflow."));
         }
 
         var after = CreateIssue.WithDoneState(board, before, Status, Resolution, context);
@@ -188,11 +189,11 @@ public sealed record RankIssue(string IssueId, string? Above, string? Below) : I
 {
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
-        var issue = board.Issue(IssueId) ?? throw new BoardRuleException("The issue doesn't exist any more.");
-        var above = Above is null ? null : board.Issue(Above) ?? throw new BoardRuleException("The issue above doesn't exist any more.");
-        var below = Below is null ? null : board.Issue(Below) ?? throw new BoardRuleException("The issue below doesn't exist any more.");
+        var issue = board.Issue(IssueId) ?? throw new BoardRuleException(L.T("The issue doesn't exist any more."));
+        var above = Above is null ? null : board.Issue(Above) ?? throw new BoardRuleException(L.T("The issue above doesn't exist any more."));
+        var below = Below is null ? null : board.Issue(Below) ?? throw new BoardRuleException(L.T("The issue below doesn't exist any more."));
         if (above?.Id == issue.Id || below?.Id == issue.Id)
-            throw new BoardRuleException("An issue can't be ranked next to itself.");
+            throw new BoardRuleException(L.T("An issue can't be ranked next to itself."));
 
         var change = new ChangeBuilder(board, context);
         var lo = above?.Rank;
@@ -263,10 +264,10 @@ public sealed record RankByField(IReadOnlyList<string> IssueIds, string Field, b
 {
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
-        var issues = IssueIds.Distinct().Select(id => board.Issue(id) ?? throw new BoardRuleException("An issue doesn't exist any more.")).ToList();
+        var issues = IssueIds.Distinct().Select(id => board.Issue(id) ?? throw new BoardRuleException(L.T("An issue doesn't exist any more."))).ToList();
         var slots = issues.Select(i => i.Rank).OrderBy(r => r, StringComparer.Ordinal).ToList();
         if (slots.Distinct(StringComparer.Ordinal).Count() != slots.Count || slots.Any(r => !Rank.IsValid(r)))
-            throw new BoardRuleException("Some of these issues share a rank; drag one of them first, then sort again.");
+            throw new BoardRuleException(L.T("Some of these issues share a rank; drag one of them first, then sort again."));
 
         double? Value(Issue issue) => IssueFields.Get(issue, Field) switch
         {
@@ -286,7 +287,7 @@ public sealed record RankByField(IReadOnlyList<string> IssueIds, string Field, b
             if (ordered[i].Rank != slots[i])
                 change.WriteIssue(ordered[i], ordered[i] with { Rank = slots[i] });
         }
-        return change.Build($"{issues.Count} issue(s) ranked by {IssueFields.DisplayName(Field, board.Project)}");
+        return change.Build(L.T($"{issues.Count} issue(s) ranked by {IssueFields.DisplayName(Field, board.Project)}"));
     }
 }
 
@@ -298,7 +299,7 @@ public sealed record DeleteIssue(string IssueId, bool WithSubtasks = false) : IB
 {
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
-        var issue = board.Issue(IssueId) ?? throw new BoardRuleException("The issue doesn't exist any more.");
+        var issue = board.Issue(IssueId) ?? throw new BoardRuleException(L.T("The issue doesn't exist any more."));
         var change = new ChangeBuilder(board, context);
         var deleted = new HashSet<string>(StringComparer.Ordinal) { issue.Id };
         foreach (var child in board.ChildrenOf(issue.Id))
@@ -306,7 +307,7 @@ public sealed record DeleteIssue(string IssueId, bool WithSubtasks = false) : IB
             if (board.LevelOf(child) == IssueTypeLevel.Subtask)
             {
                 if (!WithSubtasks)
-                    throw new BoardRuleException($"{issue.Key} has sub-tasks: delete them too, or move them first.");
+                    throw new BoardRuleException(L.T($"{issue.Key} has sub-tasks: delete them too, or move them first."));
                 deleted.Add(child.Id);
             }
             else
@@ -323,6 +324,6 @@ public sealed record DeleteIssue(string IssueId, bool WithSubtasks = false) : IB
         }
         foreach (var id in deleted)
             change.DeleteIssue(board.Issue(id)!);
-        return change.Build(deleted.Count == 1 ? $"{issue.Key}: deleted" : $"{issue.Key}: deleted with {deleted.Count - 1} sub-tasks");
+        return change.Build(deleted.Count == 1 ? $"{issue.Key}: deleted" : L.T($"{issue.Key}: deleted with {deleted.Count - 1} sub-tasks"));
     }
 }

@@ -2,6 +2,7 @@ using DevHub.Board.Core;
 using DevHub.Board.Core.Model;
 using DevHub.Services.Board;
 using DevHub.ViewModels.Dialogs;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Board;
 
@@ -17,13 +18,13 @@ public static class IssueCommands
         var children = snapshot.ChildrenOf(issue.Id);
         var subtasks = children.Where(c => snapshot.LevelOf(c) == IssueTypeLevel.Subtask).ToList();
         var epicIssues = children.Count - subtasks.Count;
-        var text = $"Delete {issue.Key} \"{issue.Summary}\" with its comments, work log, attachments and history?";
+        var text = L.T($"Delete {issue.Key} \"{issue.Summary}\" with its comments, work log, attachments and history?");
         if (subtasks.Count > 0)
-            text += $" Its {subtasks.Count} sub-task(s) are deleted too.";
+            text += L.T($" Its {subtasks.Count} sub-task(s) are deleted too.");
         if (epicIssues > 0)
-            text += $" Its {epicIssues} issue(s) stay, without an epic.";
-        text += " Undo (Board menu) brings it back right after.";
-        var ok = await context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Delete Issue", text, "Delete",
+            text += L.T($" Its {epicIssues} issue(s) stay, without an epic.");
+        text += L.T(" Undo (Board menu) brings it back right after.");
+        var ok = await context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel(L.T("Delete Issue"), text, L.T("Delete"),
             [$"{issue.Key} {issue.Summary}", .. subtasks.Select(s => $"{s.Key} {s.Summary}")]));
         return ok && await context.RunAsync(new DeleteIssue(issue.Id, WithSubtasks: subtasks.Count > 0));
     }

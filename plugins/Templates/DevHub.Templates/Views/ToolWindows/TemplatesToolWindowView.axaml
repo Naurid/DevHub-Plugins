@@ -4,6 +4,7 @@
 -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:vm="using:DevHub.ViewModels.ToolWindows"
              xmlns:c="using:DevHub.Controls"
              xmlns:a="using:DevHub.Actions"
@@ -12,15 +13,15 @@
     <c:ToolWindowFrame Header="{Binding Title}">
         <c:ToolWindowFrame.HeaderActions>
             <c:Toolbar>
-                <c:ActionButton IconKind="add" ToolTip.Tip="New Project (Ctrl+N)" AutomationProperties.Name="New Project"
+                <c:ActionButton IconKind="add" ToolTip.Tip="{l:T 'New Project (Ctrl+N)'}" AutomationProperties.Name="{l:T 'New Project'}"
                                 Command="{Binding NewProjectCommand}" />
-                <c:ActionButton IconKind="import" ToolTip.Tip="Add Files from Template" AutomationProperties.Name="Add Files"
+                <c:ActionButton IconKind="import" ToolTip.Tip="{l:T 'Add Files from Template'}" AutomationProperties.Name="{l:T 'Add Files'}"
                                 Command="{Binding AddFilesCommand}" />
-                <c:ActionButton IconKind="edit" ToolTip.Tip="New Template…" AutomationProperties.Name="New Template"
+                <c:ActionButton IconKind="edit" ToolTip.Tip="{l:T 'New Template…'}" AutomationProperties.Name="{l:T 'New Template'}"
                                 Command="{Binding NewTemplateCommand}" />
                 <c:ActionButton Action="{a:Action Templates.Reload}" />
                 <c:ToolbarSeparator />
-                <c:ActionButton IconKind="close" ToolTip.Tip="Hide" Command="{Binding ToggleCommand}" />
+                <c:ActionButton IconKind="close" ToolTip.Tip="{l:T 'Hide'}" Command="{Binding ToggleCommand}" />
             </c:Toolbar>
         </c:ToolWindowFrame.HeaderActions>
 
@@ -28,8 +29,8 @@
             <Grid DockPanel.Dock="Bottom" ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}"
                   Margin="{DynamicResource Padding.SidebarHeader}">
                 <Button Classes="accent" Content="{Binding UseText}" Command="{Binding UseSelectedCommand}"
-                        HorizontalAlignment="Stretch" ToolTip.Tip="Double-click a template does the same" />
-                <Button Grid.Column="1" Content="Edit" Command="{Binding EditSelectedCommand}" />
+                        HorizontalAlignment="Stretch" ToolTip.Tip="{l:T 'Double-click a template does the same'}" />
+                <Button Grid.Column="1" Content="{l:T 'Edit'}" Command="{Binding EditSelectedCommand}" />
             </Grid>
             <ContentControl Content="{Binding Browser}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
         </DockPanel>

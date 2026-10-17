@@ -1,3 +1,5 @@
+using DevHub.Sdk.Core.Localization;
+
 namespace DevHub.Templates.Core;
 
 /// <summary>
@@ -67,7 +69,7 @@ public static class TemplateStore
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            return new TemplateEntry(library, folder, null, ["Couldn't read template.json: " + ex.Message]);
+            return new TemplateEntry(library, folder, null, [L.T("Couldn't read template.json: ") + ex.Message]);
         }
 
         var read = ManifestSerializer.Read(json);
@@ -91,7 +93,7 @@ public static class TemplateStore
 
         var folder = Path.Combine(library.Root, manifest.Id);
         if (Directory.Exists(folder))
-            return TemplateStoreResult.Failed($"\"{library.Name}\" already has a template \"{manifest.Id}\".");
+            return TemplateStoreResult.Failed(L.T($"\"{library.Name}\" already has a template \"{manifest.Id}\"."));
 
         Directory.CreateDirectory(Path.Combine(folder, ContentFolderName));
         await WriteManifestAsync(folder, manifest, ct);
@@ -113,7 +115,7 @@ public static class TemplateStore
         {
             var renamed = Path.Combine(entry.Library.Root, manifest.Id);
             if (Directory.Exists(renamed))
-                return TemplateStoreResult.Failed($"\"{entry.Library.Name}\" already has a template \"{manifest.Id}\".");
+                return TemplateStoreResult.Failed(L.T($"\"{entry.Library.Name}\" already has a template \"{manifest.Id}\"."));
             Directory.Move(folder, renamed);
             folder = renamed;
         }
@@ -142,7 +144,7 @@ public static class TemplateStore
         if (CheckWritable(target) is { } readOnly)
             return readOnly;
         if (entry.Manifest is not { } manifest)
-            return TemplateStoreResult.Failed("This template's template.json can't be read, so it can't be duplicated.");
+            return TemplateStoreResult.Failed(L.T("This template's template.json can't be read, so it can't be duplicated."));
 
         var id = manifest.Id;
         for (var n = 1; Directory.Exists(Path.Combine(target.Root, id)); n++)
@@ -161,7 +163,7 @@ public static class TemplateStore
 
     private static TemplateStoreResult? CheckWritable(TemplateLibrary library) =>
         library.IsReadOnly
-            ? TemplateStoreResult.Failed($"\"{library.Name}\" is read-only: duplicate the template into your own library to change it.")
+            ? TemplateStoreResult.Failed(L.T($"\"{library.Name}\" is read-only: duplicate the template into your own library to change it."))
             : null;
 
     private static TemplateStoreResult? Invalid(TemplateManifest manifest) =>

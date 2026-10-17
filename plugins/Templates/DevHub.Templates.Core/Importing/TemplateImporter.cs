@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using DevHub.Templates.Core.Generation;
 using DevHub.Templates.Core.Rendering;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Templates.Core.Importing;
 
@@ -138,7 +139,7 @@ public static partial class TemplateImporter
         var problems = entries.Where(e => e.TargetPath is not null)
             .GroupBy(e => e.TargetPath!, StringComparer.OrdinalIgnoreCase)
             .Where(g => g.Count() > 1)
-            .Select(g => $"{string.Join(" and ", g.Select(e => e.Path))} would all become \"{g.Key}\".")
+            .Select(g => L.T($"{string.Join(" and ", g.Select(e => e.Path))} would all become \"{g.Key}\"."))
             .ToList();
         foreach (var entry in entries.Where(e => e.TargetPath is not null && e.Hits > 0))
         {

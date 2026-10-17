@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHub.Git.Core;
 using DevHub.Services;
 using DevHub.ViewModels.Dialogs;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Git;
 
@@ -48,7 +49,7 @@ public sealed partial class RemoteOperations : ObservableObject
     private bool CanPublish() => CanRun() && _host is not null;
 
     /// <summary>"Publish to GitHub…", or null when no hosting plugin is on (the menu items are hidden then).</summary>
-    public string? PublishText => _host is null ? null : $"Publish to {_host.Name}…";
+    public string? PublishText => _host is null ? null : L.T($"Publish to {_host.Name}…");
 
     private GitBranch? Current => _branches().FirstOrDefault(b => b.IsCurrent && !b.IsRemote);
 
@@ -71,18 +72,18 @@ public sealed partial class RemoteOperations : ObservableObject
         var empty = (await _client.GetRemotesAsync()).Where(r => remoteBranches.All(b => b.Remote != r)).ToList();
         if (s.Upstream is null && empty.Count > 0)
         {
-            var which = empty.Count == 1 ? $"{empty[0]} is empty" : $"{string.Join(", ", empty)} are empty";
+            var which = empty.Count == 1 ? L.T($"{empty[0]} is empty") : L.T($"{string.Join(", ", empty)} are empty");
             _status.Show(s.CommitId is null
-                ? $"Fetched: {which} (no branches yet). Make the first commit, then Push to publish it."
-                : $"Fetched: {which} (no branches yet). Push (Ctrl+Shift+K) publishes {s.DisplayBranch}.");
+                ? L.T($"Fetched: {which} (no branches yet). Make the first commit, then Push to publish it.")
+                : L.T($"Fetched: {which} (no branches yet). Push (Ctrl+Shift+K) publishes {s.DisplayBranch}."));
             return;
         }
 
         _status.Show(s switch
         {
             { Upstream: null } => "Fetched.",
-            { Behind: > 0 } => $"Fetched: {s.DisplayBranch} is {s.Behind} commit{S(s.Behind)} behind {s.Upstream}. Update (Ctrl+T) to bring them in.",
-            _ => $"Fetched: {s.DisplayBranch} is up to date with {s.Upstream}.",
+            { Behind: > 0 } => L.T($"Fetched: {s.DisplayBranch} is {s.Behind} commit{S(s.Behind)} behind {s.Upstream}. Update (Ctrl+T) to bring them in."),
+            _ => L.T($"Fetched: {s.DisplayBranch} is up to date with {s.Upstream}."),
         });
     }
 
@@ -97,35 +98,35 @@ public sealed partial class RemoteOperations : ObservableObject
     {
         if (Current is not { } branch)
         {
-            _status.Show("Not on a branch (detached HEAD): nothing to update.");
+            _status.Show(L.T("Not on a branch (detached HEAD): nothing to update."));
             return;
         }
         if (branch.Upstream is null)
         {
-            await ShowMessageAsync("No Upstream Branch",
-                $"{branch.Name} isn't connected to a remote branch, so there's nothing to update from. Push it once to create one.");
+            await ShowMessageAsync(L.T("No Upstream Branch"),
+                L.T($"{branch.Name} isn't connected to a remote branch, so there's nothing to update from. Push it once to create one."));
             return;
         }
 
         try
         {
             if (await RunAsync($"Updating {branch.Name}", (p, ct) => _client!.PullAsync(PullMode.FastForwardOnly, p, ct), throwOn: RemoteErrorKind.Diverged))
-                _status.Show($"{branch.Name} is up to date with {branch.Upstream}.");
+                _status.Show(L.T($"{branch.Name} is up to date with {branch.Upstream}."));
         }
         catch (RemoteOperationException)
         {
             // Diverged: both sides have commits. Rebasing replays ours on top; nothing is lost.
-            var rebase = new ConfirmDialogViewModel("Branches Have Diverged",
-                $"{branch.Name} and {branch.Upstream} both have new commits. Rebase your local commits on top of " +
-                $"{branch.Upstream}? Uncommitted changes are put aside and restored afterwards.",
-                "Rebase", destructive: false);
+            var rebase = new ConfirmDialogViewModel(L.T("Branches Have Diverged"),
+                L.T($"{branch.Name} and {branch.Upstream} both have new commits. Rebase your local commits on top of ") +
+                L.T($"{branch.Upstream}? Uncommitted changes are put aside and restored afterwards."),
+                L.T("Rebase"), destructive: false);
             if (!await _dialogs.ShowDialogAsync(rebase))
             {
-                _status.Show("Update cancelled; nothing changed.");
+                _status.Show(L.T("Update cancelled; nothing changed."));
                 return;
             }
             if (await RunAsync($"Rebasing {branch.Name}", (p, ct) => _client!.PullAsync(PullMode.Rebase, p, ct)))
-                _status.Show($"Rebased {branch.Name} onto {branch.Upstream}.");
+                _status.Show(L.T($"Rebased {branch.Name} onto {branch.Upstream}."));
         }
     }
 
@@ -155,7 +156,7 @@ public sealed partial class RemoteOperations : ObservableObject
             return;
         if (Current is not { } branch)
         {
-            _status.Show("Not on a branch (detached HEAD): nothing to push.");
+            _status.Show(L.T("Not on a branch (detached HEAD): nothing to push."));
             return;
         }
 
@@ -185,24 +186,23 @@ public sealed partial class RemoteOperations : ObservableObject
                 }
                 catch (Exception ex)
                 {
-                    _status.Show($"Couldn't add the remote {add.Name}: {(ex is GitException g ? g.StandardError.Trim() : ex.Message)}");
+                    _status.Show(L.T($"Couldn't add the remote {add.Name}: {(ex is GitException g ? g.StandardError.Trim() : ex.Message)}"));
                     return;
                 }
                 // The user just chose to push there: no second confirmation.
                 newUpstreamRemote = add.Name;
                 confirm = false;
             }
-            if (confirm && !await _dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Push New Branch",
-                    $"Push {branch.Name} to {newUpstreamRemote}? It's created there as {newUpstreamRemote}/{branch.Name}, " +
-                    "and this branch tracks it from now on.", "Push", destructive: false)))
+            if (confirm && !await _dialogs.ShowDialogAsync(new ConfirmDialogViewModel(L.T("Push New Branch"),
+                    L.T($"Push {branch.Name} to {newUpstreamRemote}? It's created there as {newUpstreamRemote}/{branch.Name}, and this branch tracks it from now on."), L.T("Push"), destructive: false)))
                 return;
         }
         else if (force)
         {
-            var confirmForce = new ConfirmDialogViewModel("Force Push",
-                $"Overwrite {branch.Upstream} with your {branch.Name}? Commits on {branch.Upstream} that aren't in your " +
-                $"branch will be removed from it. (Safe mode: if someone pushed since your last fetch, nothing is overwritten.)",
-                "Force Push", destructive: true);
+            var confirmForce = new ConfirmDialogViewModel(L.T("Force Push"),
+                L.T($"Overwrite {branch.Upstream} with your {branch.Name}? Commits on {branch.Upstream} that aren't in your ") +
+                L.T($"branch will be removed from it. (Safe mode: if someone pushed since your last fetch, nothing is overwritten.)"),
+                L.T("Force Push"), destructive: true);
             if (!await _dialogs.ShowDialogAsync(confirmForce))
                 return;
         }
@@ -211,11 +211,11 @@ public sealed partial class RemoteOperations : ObservableObject
             var outgoing = await _client.GetUnpushedCommitsAsync();
             if (outgoing.Count == 0)
             {
-                _status.Show($"Nothing to push: {branch.Name} has no commits that {branch.Upstream} doesn't have.");
+                _status.Show(L.T($"Nothing to push: {branch.Name} has no commits that {branch.Upstream} doesn't have."));
                 return;
             }
-            if (confirm && !await _dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Push",
-                    $"Push {outgoing.Count} commit{S(outgoing.Count)} from {branch.Name} to {branch.Upstream}?", "Push",
+            if (confirm && !await _dialogs.ShowDialogAsync(new ConfirmDialogViewModel(L.T("Push"),
+                    L.T($"Push {outgoing.Count} commit{S(outgoing.Count)} from {branch.Name} to {branch.Upstream}?"), L.T("Push"),
                     outgoing.Select(c => $"{c.ShortId[..7]}  {c.Subject}").ToList(), destructive: false)))
                 return;
         }
@@ -225,23 +225,22 @@ public sealed partial class RemoteOperations : ObservableObject
         {
             if (await RunAsync($"Pushing {branch.Name}",
                     (p, ct) => _client.PushAsync(newUpstreamRemote, force, p, ct), throwOn: RemoteErrorKind.Rejected))
-                _status.Show($"Pushed {branch.Name} to {target}.");
+                _status.Show(L.T($"Pushed {branch.Name} to {target}."));
         }
         catch (RemoteOperationException)
         {
             // Rejected: the remote has commits we don't. Update first (rebase), then push again.
-            var update = new ConfirmDialogViewModel("Push Rejected",
-                $"{target} has commits that you don't have yet. Rebase your commits on top of them and push again? " +
-                "(If you amended or rebased commits that were already pushed, use Git → Force Push instead.)",
-                "Rebase and Push", destructive: false);
+            var update = new ConfirmDialogViewModel(L.T("Push Rejected"),
+                L.T($"{target} has commits that you don't have yet. Rebase your commits on top of them and push again? (If you amended or rebased commits that were already pushed, use Git → Force Push instead.)"),
+                L.T("Rebase and Push"), destructive: false);
             if (!await _dialogs.ShowDialogAsync(update))
             {
-                _status.Show("Push cancelled; nothing was sent.");
+                _status.Show(L.T("Push cancelled; nothing was sent."));
                 return;
             }
             if (await RunAsync($"Rebasing {branch.Name}", (p, ct) => _client.PullAsync(PullMode.Rebase, p, ct))
                 && await RunAsync($"Pushing {branch.Name}", (p, ct) => _client.PushAsync(null, false, p, ct)))
-                _status.Show($"Rebased onto {target} and pushed.");
+                _status.Show(L.T($"Rebased onto {target} and pushed."));
         }
     }
 
@@ -277,7 +276,7 @@ public sealed partial class RemoteOperations : ObservableObject
         }
         catch (Exception ex)
         {
-            _status.Show("Couldn't read the remotes: " + ex.Message);
+            _status.Show(L.T("Couldn't read the remotes: ") + ex.Message);
             return;
         }
 
@@ -290,7 +289,7 @@ public sealed partial class RemoteOperations : ObservableObject
         }
         catch (Exception ex)
         {
-            _status.Show($"Created {created.WebUrl} on {_host.Name}, but adding it as the remote {created.RemoteName} failed: {ex.Message}");
+            _status.Show(L.T($"Created {created.WebUrl} on {_host.Name}, but adding it as the remote {created.RemoteName} failed: {ex.Message}"));
             await _refresh();
             return;
         }
@@ -298,16 +297,16 @@ public sealed partial class RemoteOperations : ObservableObject
         if (Current is not { } branch)
         {
             // No commits yet (or a detached HEAD): nothing to push.
-            _status.Show($"Created {created.WebUrl} and added it as {created.RemoteName}. Commit, then Push to send your work.");
+            _status.Show(L.T($"Created {created.WebUrl} and added it as {created.RemoteName}. Commit, then Push to send your work."));
             await _refresh();
             return;
         }
 
         if (await RunAsync($"Publishing {branch.Name} to {_host.Name}",
                 (p, ct) => _client.PushAsync(created.RemoteName, forceWithLease: false, p, ct)))
-            _status.Show($"Published to {created.WebUrl}: {branch.Name} is pushed and tracks {created.RemoteName}/{branch.Name}.");
+            _status.Show(L.T($"Published to {created.WebUrl}: {branch.Name} is pushed and tracks {created.RemoteName}/{branch.Name}."));
         else
-            _status.Show($"Created {created.WebUrl} and added it as {created.RemoteName}, but the push didn't go through; try Push again.");
+            _status.Show(L.T($"Created {created.WebUrl} and added it as {created.RemoteName}, but the push didn't go through; try Push again."));
     }
 
     // ---- Running ---------------------------------------------------------------------------------
@@ -321,7 +320,7 @@ public sealed partial class RemoteOperations : ObservableObject
     {
         if (!CanRun())
         {
-            _status.Show(IsBusy ? "Another fetch / push is still running; try again when it's done." : "Git is not available.");
+            _status.Show(IsBusy ? L.T("Another fetch / push is still running; try again when it's done.") : L.T("Git is not available."));
             return false;
         }
         return await RunAsync(title, operation);

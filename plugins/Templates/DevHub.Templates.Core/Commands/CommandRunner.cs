@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Text;
 using DevHub.Templates.Core.Rendering;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Templates.Core.Commands;
 
@@ -45,12 +46,12 @@ public sealed class CommandRunner
         if (Resolve(command.Command) is not { } executable)
         {
             var what = command.Command.StartsWith('@')
-                ? $"DevHub doesn't know where {command.Command[1..]} is installed."
-                : $"\"{command.Command}\" wasn't found. Is it installed and on PATH?";
+                ? L.T($"DevHub doesn't know where {command.Command[1..]} is installed.")
+                : L.T($"\"{command.Command}\" wasn't found. Is it installed and on PATH?");
             return new CommandResult(command, null, what, output);
         }
         if (!Directory.Exists(workingDirectory))
-            return new CommandResult(command, null, $"The folder {workingDirectory} doesn't exist.", output);
+            return new CommandResult(command, null, L.T($"The folder {workingDirectory} doesn't exist."), output);
 
         var info = new ProcessStartInfo
         {
@@ -96,7 +97,7 @@ public sealed class CommandRunner
         }
         catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
         {
-            return new CommandResult(command, null, $"Couldn't start {command.Command}: {ex.Message}", output);
+            return new CommandResult(command, null, L.T($"Couldn't start {command.Command}: {ex.Message}"), output);
         }
         process.StandardInput.Close();
         process.BeginOutputReadLine();
@@ -116,7 +117,7 @@ public sealed class CommandRunner
         List<CommandOutputLine> lines;
         lock (gate)
             lines = [.. output];
-        var error = process.ExitCode == 0 ? null : $"{command.Name} failed (exit code {process.ExitCode}).";
+        var error = process.ExitCode == 0 ? null : L.T($"{command.Name} failed (exit code {process.ExitCode}).");
         return new CommandResult(command, process.ExitCode, error, lines);
     }
 

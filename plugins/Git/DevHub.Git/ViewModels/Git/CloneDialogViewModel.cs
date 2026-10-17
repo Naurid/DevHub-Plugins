@@ -5,6 +5,7 @@ using DevHub.Git.Core;
 using DevHub.Sdk.Core.Search;
 using DevHub.Services;
 using DevHub.ViewModels.Dialogs;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Git;
 
@@ -31,14 +32,14 @@ public sealed partial class CloneDialogViewModel : DialogViewModelBase
         _ = LoadAccountsAsync();
     }
 
-    public override string Title => "Clone Repository";
-    public override string OkText => "Clone";
+    public override string Title => L.T("Clone Repository");
+    public override string OkText => L.T("Clone");
     public override double Width => 640;
     public override double Height => 560;
     public override double MinHeight => 420;
 
     /// <summary>"Your GitHub repositories" (the host list's label), or null when there's no host: then only URL.</summary>
-    public string? HostSourceText => _host is null ? null : $"Your {_host.Name} repositories";
+    public string? HostSourceText => _host is null ? null : L.T($"Your {_host.Name} repositories");
 
     public bool HasHost => _host is not null;
 
@@ -74,7 +75,7 @@ public sealed partial class CloneDialogViewModel : DialogViewModelBase
     [ObservableProperty] private HostRepositoryRowViewModel? _selectedRepository;
 
     /// <summary>"Loading your repositories…", "No repositories match.", a GitHub error, or null.</summary>
-    [ObservableProperty] private string? _listMessage = "Loading…";
+    [ObservableProperty] private string? _listMessage = L.T("Loading…");
 
     [ObservableProperty] private string _url = "";
 
@@ -90,7 +91,7 @@ public sealed partial class CloneDialogViewModel : DialogViewModelBase
     private string _folderName = "";
 
     public string TargetPath => Path.Combine(Folder, FolderName.Trim());
-    public string TargetText => FolderName.Trim().Length == 0 ? "" : "Clones into " + TargetPath;
+    public string TargetText => FolderName.Trim().Length == 0 ? "" : L.T("Clones into ") + TargetPath;
 
     [ObservableProperty] private string? _error;
 
@@ -111,8 +112,8 @@ public sealed partial class CloneDialogViewModel : DialogViewModelBase
         if (Accounts.Count == 0)
         {
             ListMessage = _host.IsAvailable
-                ? $"Not signed in to {_host.Name}: Sign In to see your repositories, or clone from a URL."
-                : "Git is not installed.";
+                ? L.T($"Not signed in to {_host.Name}: Sign In to see your repositories, or clone from a URL.")
+                : L.T("Git is not installed.");
             IsFromHost = false;
             return;
         }
@@ -130,7 +131,7 @@ public sealed partial class CloneDialogViewModel : DialogViewModelBase
             return;
 
         var cts = _loadCts = new CancellationTokenSource();
-        ListMessage = "Loading your repositories…";
+        ListMessage = L.T("Loading your repositories…");
         try
         {
             var repositories = await _host.ListRepositoriesAsync(account, cts.Token);
@@ -173,8 +174,8 @@ public sealed partial class CloneDialogViewModel : DialogViewModelBase
                 .Select(x => x.Row)
                 .ToList();
         ListMessage = Repositories.Count > 0 ? null
-            : _allRepositories.Count == 0 ? "No repositories on this account yet."
-            : "No repository matches.";
+            : _allRepositories.Count == 0 ? L.T("No repositories on this account yet.")
+            : L.T("No repository matches.");
         if (SelectedRepository is null || !Repositories.Contains(SelectedRepository))
             SelectedRepository = Repositories.FirstOrDefault();
     }
@@ -198,7 +199,7 @@ public sealed partial class CloneDialogViewModel : DialogViewModelBase
     [RelayCommand]
     private async Task BrowseAsync()
     {
-        if (await _dialogs.PickFolderAsync("Clone into which folder?") is { } folder)
+        if (await _dialogs.PickFolderAsync(L.T("Clone into which folder?")) is { } folder)
             Folder = folder;
     }
 
@@ -208,13 +209,13 @@ public sealed partial class CloneDialogViewModel : DialogViewModelBase
         CloneUrl = IsFromHost ? SelectedRepository?.Repository.CloneUrl ?? "" : Url.Trim();
         var name = FolderName.Trim();
         if (CloneUrl.Length == 0)
-            Error = IsFromHost ? "Select a repository." : "Enter the repository's URL.";
+            Error = IsFromHost ? L.T("Select a repository.") : L.T("Enter the repository's URL.");
         else if (name.Length == 0 || name.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
-            Error = "Enter a valid folder name.";
+            Error = L.T("Enter a valid folder name.");
         else if (!Directory.Exists(Folder))
-            Error = $"The folder {Folder} doesn't exist.";
+            Error = L.T($"The folder {Folder} doesn't exist.");
         else if (Directory.Exists(TargetPath) && Directory.EnumerateFileSystemEntries(TargetPath).Any())
-            Error = $"{TargetPath} already exists and isn't empty: pick another folder name.";
+            Error = L.T($"{TargetPath} already exists and isn't empty: pick another folder name.");
         return Task.FromResult(Error is null);
     }
 }

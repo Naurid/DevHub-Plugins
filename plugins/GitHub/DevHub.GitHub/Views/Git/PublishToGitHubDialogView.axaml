@@ -1,31 +1,32 @@
 <!-- Publish to GitHub: account (when several), name (+ where it will be), description, private, remote name. -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:vm="using:DevHub.ViewModels.Git"
              xmlns:c="using:DevHub.Controls"
              x:Class="DevHub.Views.Git.PublishToGitHubDialogView"
              x:DataType="vm:PublishToGitHubDialogViewModel">
     <StackPanel Margin="{DynamicResource Padding.Dialog}" Spacing="{DynamicResource Spacing}">
         <TextBlock Classes="secondary" TextWrapping="Wrap"
-                   Text="Creates an empty repository on GitHub under your account, adds it as a remote, and pushes the current branch to it." />
+                   Text="{l:T 'Creates an empty repository on GitHub under your account, adds it as a remote, and pushes the current branch to it.'}" />
 
         <StackPanel Spacing="{DynamicResource Spacing}" IsVisible="{Binding HasSeveralAccounts}">
-            <TextBlock Classes="secondary" Text="Account" />
+            <TextBlock Classes="secondary" Text="{l:T 'Account'}" />
             <ComboBox ItemsSource="{Binding Accounts}" SelectedItem="{Binding Account}" HorizontalAlignment="Stretch"
-                      AutomationProperties.Name="GitHub account" />
+                      AutomationProperties.Name="{l:T 'GitHub account'}" />
         </StackPanel>
 
-        <TextBlock Classes="secondary" Text="Repository name" />
-        <TextBox Text="{Binding Name}" AutomationProperties.Name="Repository name" c:FocusOnLoad.IsEnabled="True" />
+        <TextBlock Classes="secondary" Text="{l:T 'Repository name'}" />
+        <TextBox Text="{Binding Name}" AutomationProperties.Name="{l:T 'Repository name'}" c:FocusOnLoad.IsEnabled="True" />
         <TextBlock Classes="small secondary" Text="{Binding Preview}" />
 
-        <TextBlock Classes="secondary" Text="Description (optional)" />
-        <TextBox Text="{Binding Description}" AutomationProperties.Name="Description" />
+        <TextBlock Classes="secondary" Text="{l:T 'Description (optional)'}" />
+        <TextBox Text="{Binding Description}" AutomationProperties.Name="{l:T 'Description'}" />
 
-        <CheckBox Content="Private (only you and people you invite can see it)" IsChecked="{Binding IsPrivate}" />
+        <CheckBox Content="{l:T 'Private (only you and people you invite can see it)'}" IsChecked="{Binding IsPrivate}" />
 
-        <TextBlock Classes="secondary" Text="Remote name" />
-        <TextBox Text="{Binding RemoteName}" AutomationProperties.Name="Remote name" />
+        <TextBlock Classes="secondary" Text="{l:T 'Remote name'}" />
+        <TextBox Text="{Binding RemoteName}" AutomationProperties.Name="{l:T 'Remote name'}" />
 
         <TextBlock Text="{Binding Error}" TextWrapping="Wrap" Foreground="{DynamicResource Brush.Status.Error}"
                    IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />

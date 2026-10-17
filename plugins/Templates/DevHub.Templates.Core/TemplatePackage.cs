@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using DevHub.Templates.Core.Editing;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Templates.Core;
 
@@ -33,14 +34,14 @@ public static class TemplatePackage
     public static async Task<TemplateStoreResult> ImportAsync(string zipPath, TemplateLibrary library, CancellationToken ct = default)
     {
         if (library.IsReadOnly)
-            return TemplateStoreResult.Failed($"\"{library.Name}\" is read-only.");
+            return TemplateStoreResult.Failed(L.T($"\"{library.Name}\" is read-only."));
 
         using var zip = ZipFile.OpenRead(zipPath);
         var manifests = zip.Entries.Where(e => e.Name == TemplateStore.ManifestFileName).ToList();
         // template.json at the top, or in the one top folder.
         var manifestEntry = manifests.FirstOrDefault(e => e.FullName.Replace('\\', '/').Count(c => c == '/') <= 1);
         if (manifestEntry is null || manifests.Count(e => e.FullName.Replace('\\', '/').Count(c => c == '/') <= 1) > 1)
-            return TemplateStoreResult.Failed("The zip doesn't hold one template (a template.json at its top or in its one top folder).");
+            return TemplateStoreResult.Failed(L.T("The zip doesn't hold one template (a template.json at its top or in its one top folder)."));
         var prefix = manifestEntry.FullName[..^TemplateStore.ManifestFileName.Length];
 
         string json;
@@ -49,7 +50,7 @@ public static class TemplatePackage
             json = await reader.ReadToEndAsync(ct);
         var (manifest, problems) = ManifestText.Parse(json);
         if (manifest is null || problems.Count > 0)
-            return TemplateStoreResult.Failed(["The template.json in the zip can't be used:", .. problems]);
+            return TemplateStoreResult.Failed([L.T("The template.json in the zip can't be used:"), .. problems]);
 
         var id = TemplateIds.Unique(library, manifest.Id);
         var folder = Path.Combine(library.Root, id);
@@ -65,7 +66,7 @@ public static class TemplatePackage
                     continue;
                 var target = Path.GetFullPath(Path.Combine(folder, relative));
                 if (!target.StartsWith(root, StringComparison.OrdinalIgnoreCase))
-                    throw new InvalidDataException($"\"{entry.FullName}\" would be written outside the template.");
+                    throw new InvalidDataException(L.T($"\"{entry.FullName}\" would be written outside the template."));
                 if (relative.EndsWith('/'))
                 {
                     Directory.CreateDirectory(target);

@@ -8,6 +8,7 @@ using DevHub.Board.Core.Storage;
 using DevHub.Controls;
 using DevHub.Services.Board;
 using DevHub.ViewModels.Dialogs;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Documents;
 
@@ -24,14 +25,14 @@ public sealed partial class ProjectSettingsDocumentViewModel : DocumentViewModel
     private BoardContext? _context;
     private bool _loading;
     private bool _disposed;
-    private string _title = "Board settings";
+    private string _title = L.T("Board settings");
 
     public ProjectSettingsDocumentViewModel(BoardLocation location, BoardUiServices services)
     {
         Location = location;
         _services = services;
-        Sections = ["General", "Workflows", "Statuses", "Issue types", "Priorities", "Resolutions", "Definition of Done", "Custom fields",
-            "Components", "Versions", "People", "Link types"];
+        Sections = [L.T("General"), L.T("Workflows"), L.T("Statuses"), L.T("Issue types"), L.T("Priorities"), L.T("Resolutions"), L.T("Definition of Done"), L.T("Custom fields"),
+            L.T("Components"), L.T("Versions"), L.T("People"), L.T("Link types")];
         _section = Sections[0];
     }
 
@@ -46,18 +47,18 @@ public sealed partial class ProjectSettingsDocumentViewModel : DocumentViewModel
     [ObservableProperty] private ProjectSettingsModel? _model;
     [ObservableProperty] private string? _message;
 
-    public bool IsGeneral => Section == "General";
-    public bool IsWorkflows => Section == "Workflows";
-    public bool IsStatuses => Section == "Statuses";
-    public bool IsIssueTypes => Section == "Issue types";
-    public bool IsPriorities => Section == "Priorities";
-    public bool IsResolutions => Section == "Resolutions";
-    public bool IsDefinitionOfDone => Section == "Definition of Done";
-    public bool IsCustomFields => Section == "Custom fields";
-    public bool IsComponents => Section == "Components";
-    public bool IsVersions => Section == "Versions";
-    public bool IsPeople => Section == "People";
-    public bool IsLinkTypes => Section == "Link types";
+    public bool IsGeneral => Section == L.T("General");
+    public bool IsWorkflows => Section == L.T("Workflows");
+    public bool IsStatuses => Section == L.T("Statuses");
+    public bool IsIssueTypes => Section == L.T("Issue types");
+    public bool IsPriorities => Section == L.T("Priorities");
+    public bool IsResolutions => Section == L.T("Resolutions");
+    public bool IsDefinitionOfDone => Section == L.T("Definition of Done");
+    public bool IsCustomFields => Section == L.T("Custom fields");
+    public bool IsComponents => Section == L.T("Components");
+    public bool IsVersions => Section == L.T("Versions");
+    public bool IsPeople => Section == L.T("People");
+    public bool IsLinkTypes => Section == L.T("Link types");
 
     partial void OnSectionChanged(string value)
     {
@@ -86,7 +87,7 @@ public sealed partial class ProjectSettingsDocumentViewModel : DocumentViewModel
             }
             if (_context is null)
             {
-                Message = "The board isn't there any more.";
+                Message = L.T("The board isn't there any more.");
                 return;
             }
             _context.Changed += OnBoardChanged;
@@ -95,7 +96,7 @@ public sealed partial class ProjectSettingsDocumentViewModel : DocumentViewModel
         }
         catch (Exception e) when (e is BoardStoreException or IOException or UnauthorizedAccessException)
         {
-            Message = "The board can't be opened: " + e.Message;
+            Message = L.T("The board can't be opened: ") + e.Message;
         }
         finally
         {
@@ -226,11 +227,11 @@ public sealed partial class ProjectSettingsModel : ObservableObject
     private bool _reloading;
 
     private static readonly IReadOnlyList<NamedItem> TypeIcons =
-        new[] { "epic", "story", "task", "bug", "subtask", "spike" }.Select(i => new NamedItem(i, char.ToUpperInvariant(i[0]) + i[1..], i)).ToList();
+        new[] { "epic", "story", "task", "bug", "subtask", "spike" }.Select(i => new NamedItem(i, L.T(char.ToUpperInvariant(i[0]) + i[1..]), i)).ToList();   // names in i18n by hand
     private static readonly IReadOnlyList<NamedItem> PriorityIcons =
-        new[] { "highest", "high", "medium", "low", "lowest" }.Select(i => new NamedItem(i, char.ToUpperInvariant(i[0]) + i[1..], i)).ToList();
+        new[] { "highest", "high", "medium", "low", "lowest" }.Select(i => new NamedItem(i, L.T(char.ToUpperInvariant(i[0]) + i[1..]), i)).ToList();   // names in i18n by hand
     private static readonly IReadOnlyList<NamedItem> Categories =
-        [new("ToDo", "To Do"), new("InProgress", "In Progress"), new("Done", "Done")];
+        [new("ToDo", L.T("To Do")), new("InProgress", L.T("In Progress")), new("Done", L.T("Done"))];
 
     public ProjectSettingsModel(BoardContext context)
     {
@@ -267,15 +268,15 @@ public sealed partial class ProjectSettingsModel : ObservableObject
             && double.TryParse(DaysPerWeek, NumberStyles.Float, CultureInfo.CurrentCulture, out var days))
             _ = Run(new SetTimeTracking(hours, days));
         else
-            _context.Status.Show("Hours per day and days per week are numbers.");
+            _context.Status.Show(L.T("Hours per day and days per week are numbers."));
     }
 
     [RelayCommand]
     private async Task ChangeKeyAsync()
     {
-        var dialog = new TextInputDialogViewModel("Change Project Key", "New key", Snapshot.Project.Key, "Change")
+        var dialog = new TextInputDialogViewModel(L.T("Change Project Key"), L.T("New key"), Snapshot.Project.Key, L.T("Change"))
         {
-            Explanation = $"Every issue gets the new key ({Snapshot.Project.Key}-12 becomes NEW-12). The old keys keep working in branch names and commit messages.",
+            Explanation = L.T($"Every issue gets the new key ({Snapshot.Project.Key}-12 becomes NEW-12). The old keys keep working in branch names and commit messages."),
         };
         if (await _context.Dialogs.ShowDialogAsync(dialog))
             await Run(new ChangeProjectKey(dialog.Text));
@@ -329,7 +330,7 @@ public sealed partial class ProjectSettingsModel : ObservableObject
             {
                 var id = workflow.Statuses[i];
                 WorkflowStatuses.Add(new NamedRow(id, _context.StatusName(id), null,
-                    (i == 0 ? "first: new issues start here · " : "") + CategoryName(project.Status(id)?.Category)));
+                    (i == 0 ? L.T("first: new issues start here · ") : "") + CategoryName(project.Status(id)?.Category)));
             }
             foreach (var s in project.Statuses.Where(s => !workflow.Statuses.Contains(s.Id)))
                 StatusesToAdd.Add(new NamedItem(s.Id, s.Name));
@@ -337,12 +338,12 @@ public sealed partial class ProjectSettingsModel : ObservableObject
             AnyToAny = workflow.AnyToAny;
             IsDefaultWorkflow = Snapshot.DefaultWorkflow?.Id == workflow.Id;
             var users = project.IssueTypes.Where(t => Snapshot.WorkflowFor(t.Id)?.Id == workflow.Id).Select(t => t.Name).ToList();
-            WorkflowUsers = users.Count == 0 ? "No issue type uses it." : "Used by: " + string.Join(", ", users);
+            WorkflowUsers = users.Count == 0 ? L.T("No issue type uses it.") : L.T("Used by: ") + string.Join(", ", users);
 
             foreach (var to in workflow.Statuses)
                 TransitionColumns.Add(_context.StatusName(to));
             void Changed() => _ = SaveTransitions(workflow.Id);
-            TransitionRows.Add(new TransitionRow("From any status", workflow.Statuses
+            TransitionRows.Add(new TransitionRow(L.T("From any status"), workflow.Statuses
                 .Select(to => new TransitionCell(null, to, workflow.Transitions.Any(t => t.From is null && t.To == to), false, Changed)).ToList()));
             foreach (var from in workflow.Statuses)
             {
@@ -368,14 +369,14 @@ public sealed partial class ProjectSettingsModel : ObservableObject
     [RelayCommand]
     private async Task NewWorkflowAsync()
     {
-        var dialog = new TextInputDialogViewModel("New Workflow", "Name", "", "Create")
+        var dialog = new TextInputDialogViewModel(L.T("New Workflow"), L.T("Name"), "", L.T("Create"))
         {
-            Choice = new ChoiceInput("Start from", ["A copy of " + (SelectedWorkflow?.Name ?? "the default"), "Just the first status"], "A copy of " + (SelectedWorkflow?.Name ?? "the default")),
+            Choice = new ChoiceInput(L.T("Start from"), [L.T("A copy of ") + (SelectedWorkflow?.Name ?? L.T("the default")), L.T("Just the first status")], L.T("A copy of ") + (SelectedWorkflow?.Name ?? L.T("the default"))),
         };
         if (!await _context.Dialogs.ShowDialogAsync(dialog))
             return;
         var id = BoardIds.New();
-        var copy = dialog.Choice!.Selected.StartsWith("A copy", StringComparison.Ordinal) ? SelectedWorkflow?.Id ?? Snapshot.DefaultWorkflow?.Id : null;
+        var copy = dialog.Choice!.SelectedIndex == 0 ? SelectedWorkflow?.Id ?? Snapshot.DefaultWorkflow?.Id : null;
         if (await Run(new CreateWorkflow(dialog.Text) { Id = id, CopyOf = copy }))
             SelectedWorkflow = Workflows.FirstOrDefault(w => w.Id == id);
     }
@@ -385,7 +386,7 @@ public sealed partial class ProjectSettingsModel : ObservableObject
     {
         if (SelectedWorkflow is not { } wf)
             return;
-        if (await _context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Delete Workflow", $"Delete the workflow {wf.Name}?", "Delete", [wf.Name])))
+        if (await _context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel(L.T("Delete Workflow"), L.T($"Delete the workflow {wf.Name}?"), L.T("Delete"), [wf.Name])))
             await Run(new DeleteWorkflow(wf.Id));
     }
 
@@ -411,11 +412,11 @@ public sealed partial class ProjectSettingsModel : ObservableObject
         var others = workflow.Statuses.Where(s => s != row.Id).Select(_context.StatusName).ToList();
         if (others.Count == 0)
             return;
-        var dialog = new TextInputDialogViewModel($"Remove {row.Name} from {wf.Name}", "", "", "Remove")
+        var dialog = new TextInputDialogViewModel(L.T($"Remove {row.Name} from {wf.Name}"), "", "", L.T("Remove"))
         {
             ShowText = false,
-            Explanation = "Issues of the types that follow this workflow and are in this status move to:",
-            Choice = new ChoiceInput("Move them to", others, others[0]),
+            Explanation = L.T("Issues of the types that follow this workflow and are in this status move to:"),
+            Choice = new ChoiceInput(L.T("Move them to"), others, others[0]),
         };
         if (!await _context.Dialogs.ShowDialogAsync(dialog))
             return;
@@ -445,10 +446,10 @@ public sealed partial class ProjectSettingsModel : ObservableObject
     [RelayCommand]
     private async Task AddStatusAsync()
     {
-        var dialog = new TextInputDialogViewModel("Add Status", "Name", "", "Add")
+        var dialog = new TextInputDialogViewModel(L.T("Add Status"), L.T("Name"), "", L.T("Add"))
         {
-            Explanation = "The status joins every workflow (at the end). Put it on a board with a column's Statuses… menu.",
-            Choice = new ChoiceInput("Counts as", Categories.Select(c => c.Name).ToList(), "In Progress"),
+            Explanation = L.T("The status joins every workflow (at the end). Put it on a board with a column's Statuses… menu."),
+            Choice = new ChoiceInput(L.T("Counts as"), Categories.Select(c => c.Name).ToList(), L.T("In Progress")),
         };
         if (await _context.Dialogs.ShowDialogAsync(dialog))
             await Run(new AddStatus(dialog.Text, ParseCategory(Categories.First(c => c.Name == dialog.Choice!.Selected).Id)));
@@ -461,14 +462,14 @@ public sealed partial class ProjectSettingsModel : ObservableObject
             return;
         var count = Snapshot.Issues.Values.Count(i => i.Status == row.Id);
         var others = Snapshot.Project.Statuses.Where(s => s.Id != row.Id).ToList();
-        var dialog = new TextInputDialogViewModel($"Delete {row.Name}", "", "", "Delete")
+        var dialog = new TextInputDialogViewModel(L.T($"Delete {row.Name}"), "", "", L.T("Delete"))
         {
             ShowText = false,
             Destructive = true,
             Explanation = count == 0
-                ? $"Delete the status {row.Name}? It leaves every workflow and board column."
-                : $"{count} issue(s) are in {row.Name}. It leaves every workflow and board column; its issues move to:",
-            Choice = count == 0 || others.Count == 0 ? null : new ChoiceInput("Move them to", others.Select(o => o.Name).ToList(), others[0].Name),
+                ? L.T($"Delete the status {row.Name}? It leaves every workflow and board column.")
+                : L.T($"{count} issue(s) are in {row.Name}. It leaves every workflow and board column; its issues move to:"),
+            Choice = count == 0 || others.Count == 0 ? null : new ChoiceInput(L.T("Move them to"), others.Select(o => o.Name).ToList(), others[0].Name),
         };
         if (!await _context.Dialogs.ShowDialogAsync(dialog))
             return;
@@ -483,15 +484,15 @@ public sealed partial class ProjectSettingsModel : ObservableObject
     [RelayCommand]
     private async Task AddIssueTypeAsync()
     {
-        var dialog = new TextInputDialogViewModel("Add Issue Type", "Name", "", "Add")
+        var dialog = new TextInputDialogViewModel(L.T("Add Issue Type"), L.T("Name"), "", L.T("Add"))
         {
-            Choice = new ChoiceInput("Level", ["Standard (like Story, Task)", "Epic (holds standard issues)", "Sub-task (inside a standard issue)"], "Standard (like Story, Task)"),
-            SecondChoice = new ChoiceInput("Icon", TypeIcons.Select(i => i.Name).ToList(), "Task"),
+            Choice = new ChoiceInput(L.T("Level"), [L.T("Standard (like Story, Task)"), L.T("Epic (holds standard issues)"), L.T("Sub-task (inside a standard issue)")], L.T("Standard (like Story, Task)")),
+            SecondChoice = new ChoiceInput(L.T("Icon"), TypeIcons.Select(i => i.Name).ToList(), TypeIcons[2].Name),
         };
         if (!await _context.Dialogs.ShowDialogAsync(dialog))
             return;
-        var level = dialog.Choice!.Selected.StartsWith("Epic", StringComparison.Ordinal) ? IssueTypeLevel.Epic
-            : dialog.Choice.Selected.StartsWith("Sub", StringComparison.Ordinal) ? IssueTypeLevel.Subtask : IssueTypeLevel.Standard;
+        var level = dialog.Choice!.SelectedIndex == 1 ? IssueTypeLevel.Epic
+            : dialog.Choice.SelectedIndex == 2 ? IssueTypeLevel.Subtask : IssueTypeLevel.Standard;
         var icon = TypeIcons.First(i => i.Name == dialog.SecondChoice!.Selected).Id!;
         await Run(new AddIssueType(dialog.Text, level, icon));
     }
@@ -505,15 +506,15 @@ public sealed partial class ProjectSettingsModel : ObservableObject
         var others = Snapshot.Project.IssueTypes.Where(t => t.Id != row.Id && t.Level == type.Level).ToList();
         if (count > 0 && others.Count == 0)
         {
-            _context.Status.Show($"{count} issue(s) are {type.Name}s and there's no other type of that level to turn them into.");
+            _context.Status.Show(L.T($"{count} issue(s) are {type.Name}s and there's no other type of that level to turn them into."));
             return;
         }
-        var dialog = new TextInputDialogViewModel($"Delete {type.Name}", "", "", "Delete")
+        var dialog = new TextInputDialogViewModel(L.T($"Delete {type.Name}"), "", "", L.T("Delete"))
         {
             ShowText = false,
             Destructive = true,
-            Explanation = count == 0 ? $"Delete the issue type {type.Name}?" : $"{count} issue(s) are {type.Name}s. They become:",
-            Choice = count == 0 ? null : new ChoiceInput("Turn them into", others.Select(o => o.Name).ToList(), others[0].Name),
+            Explanation = count == 0 ? L.T($"Delete the issue type {type.Name}?") : L.T($"{count} issue(s) are {type.Name}s. They become:"),
+            Choice = count == 0 ? null : new ChoiceInput(L.T("Turn them into"), others.Select(o => o.Name).ToList(), others[0].Name),
         };
         if (!await _context.Dialogs.ShowDialogAsync(dialog))
             return;
@@ -528,9 +529,9 @@ public sealed partial class ProjectSettingsModel : ObservableObject
     [RelayCommand]
     private async Task AddPriorityAsync()
     {
-        var dialog = new TextInputDialogViewModel("Add Priority", "Name", "", "Add")
+        var dialog = new TextInputDialogViewModel(L.T("Add Priority"), L.T("Name"), "", L.T("Add"))
         {
-            Choice = new ChoiceInput("Icon", PriorityIcons.Select(i => i.Name).ToList(), "Medium"),
+            Choice = new ChoiceInput(L.T("Icon"), PriorityIcons.Select(i => i.Name).ToList(), PriorityIcons[2].Name),
         };
         if (await _context.Dialogs.ShowDialogAsync(dialog))
             await Run(new AddPriority(dialog.Text, PriorityIcons.First(i => i.Name == dialog.Choice!.Selected).Id!));
@@ -556,12 +557,12 @@ public sealed partial class ProjectSettingsModel : ObservableObject
         if (row is null)
             return;
         var others = Snapshot.Project.Priorities.Where(p => p.Id != row.Id).ToList();
-        var dialog = new TextInputDialogViewModel($"Delete {row.Name}", "", "", "Delete")
+        var dialog = new TextInputDialogViewModel(L.T($"Delete {row.Name}"), "", "", L.T("Delete"))
         {
             ShowText = false,
             Destructive = true,
-            Explanation = "Issues with this priority get:",
-            Choice = new ChoiceInput("Instead", ["No priority", .. others.Select(o => o.Name)], others.FirstOrDefault()?.Name ?? "No priority"),
+            Explanation = L.T("Issues with this priority get:"),
+            Choice = new ChoiceInput(L.T("Instead"), [L.T("No priority"), .. others.Select(o => o.Name)], others.FirstOrDefault()?.Name ?? L.T("No priority")),
         };
         if (await _context.Dialogs.ShowDialogAsync(dialog))
             await Run(new DeletePriority(row.Id, others.FirstOrDefault(o => o.Name == dialog.Choice!.Selected)?.Id));
@@ -570,7 +571,7 @@ public sealed partial class ProjectSettingsModel : ObservableObject
     [RelayCommand]
     private async Task AddResolutionAsync()
     {
-        var dialog = new TextInputDialogViewModel("Add Resolution", "Name", "", "Add");
+        var dialog = new TextInputDialogViewModel(L.T("Add Resolution"), L.T("Name"), "", L.T("Add"));
         if (await _context.Dialogs.ShowDialogAsync(dialog))
             await Run(new AddResolution(dialog.Text));
     }
@@ -583,15 +584,15 @@ public sealed partial class ProjectSettingsModel : ObservableObject
         var others = Snapshot.Project.Resolutions.Where(r => r.Id != row.Id).ToList();
         if (others.Count == 0)
         {
-            _context.Status.Show("Done issues need at least one resolution.");
+            _context.Status.Show(L.T("Done issues need at least one resolution."));
             return;
         }
-        var dialog = new TextInputDialogViewModel($"Delete {row.Name}", "", "", "Delete")
+        var dialog = new TextInputDialogViewModel(L.T($"Delete {row.Name}"), "", "", L.T("Delete"))
         {
             ShowText = false,
             Destructive = true,
-            Explanation = "Issues resolved this way get:",
-            Choice = new ChoiceInput("Instead", others.Select(o => o.Name).ToList(), others[0].Name),
+            Explanation = L.T("Issues resolved this way get:"),
+            Choice = new ChoiceInput(L.T("Instead"), others.Select(o => o.Name).ToList(), others[0].Name),
         };
         if (await _context.Dialogs.ShowDialogAsync(dialog))
             await Run(new DeleteResolution(row.Id, others.First(o => o.Name == dialog.Choice!.Selected).Id));
@@ -608,16 +609,16 @@ public sealed partial class ProjectSettingsModel : ObservableObject
     [RelayCommand]
     private async Task AddCustomFieldAsync()
     {
-        var dialog = new TextInputDialogViewModel("Add Field", "Name", "", "Add")
+        var dialog = new TextInputDialogViewModel(L.T("Add Field"), L.T("Name"), "", L.T("Add"))
         {
-            Choice = new ChoiceInput("Kind", ["Text", "Number", "Date", "Choice", "Person"], "Text"),
-            SecondLabel = "Choices (for a Choice field), separated by commas",
+            Choice = new ChoiceInput(L.T("Kind"), [L.T("Text"), L.T("Number"), L.T("Date"), L.T("Choice"), L.T("Person")], L.T("Text")),
+            SecondLabel = L.T("Choices (for a Choice field), separated by commas"),
         };
         if (!await _context.Dialogs.ShowDialogAsync(dialog))
             return;
-        var type = dialog.Choice!.Selected switch
+        var type = dialog.Choice!.SelectedIndex switch   // Text, Number, Date, Choice, Person
         {
-            "Number" => FieldType.Number, "Date" => FieldType.Date, "Choice" => FieldType.Select, "Person" => FieldType.Person, _ => FieldType.Text,
+            1 => FieldType.Number, 2 => FieldType.Date, 3 => FieldType.Select, 4 => FieldType.Person, _ => FieldType.Text,
         };
         await Run(new AddCustomField(dialog.Text, type) { Options = dialog.SecondText.Split(',') });
     }
@@ -628,15 +629,15 @@ public sealed partial class ProjectSettingsModel : ObservableObject
         if (row is null)
             return;
         var used = Snapshot.Issues.Values.Count(i => i.Custom.ContainsKey(row.Id));
-        if (await _context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Delete Field",
-                used == 0 ? $"Delete the field {row.Name}?" : $"Delete the field {row.Name} and its values on {used} issue(s)?", "Delete", [row.Name])))
+        if (await _context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel(L.T("Delete Field"),
+                used == 0 ? L.T($"Delete the field {row.Name}?") : L.T($"Delete the field {row.Name} and its values on {used} issue(s)?"), L.T("Delete"), [row.Name])))
             await Run(new DeleteCustomField(row.Id));
     }
 
     [RelayCommand]
     private async Task AddComponentAsync()
     {
-        var dialog = new TextInputDialogViewModel("Add Component", "Name", "", "Add") { SecondLabel = "Description (optional)" };
+        var dialog = new TextInputDialogViewModel(L.T("Add Component"), L.T("Name"), "", L.T("Add")) { SecondLabel = L.T("Description (optional)") };
         if (await _context.Dialogs.ShowDialogAsync(dialog))
             await Run(new AddComponent(dialog.Text, dialog.SecondText));
     }
@@ -644,15 +645,15 @@ public sealed partial class ProjectSettingsModel : ObservableObject
     [RelayCommand]
     private async Task DeleteComponentAsync(NamedRow? row)
     {
-        if (row is not null && await _context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Delete Component",
-                $"Delete the component {row.Name}? Issues filed under it lose it.", "Delete", [row.Name])))
+        if (row is not null && await _context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel(L.T("Delete Component"),
+                L.T($"Delete the component {row.Name}? Issues filed under it lose it."), L.T("Delete"), [row.Name])))
             await Run(new DeleteComponent(row.Id));
     }
 
     [RelayCommand]
     private async Task AddVersionAsync()
     {
-        var dialog = new TextInputDialogViewModel("Add Version", "Name", "", "Add") { SecondLabel = "Release date (optional, like 2026-12-01)" };
+        var dialog = new TextInputDialogViewModel(L.T("Add Version"), L.T("Name"), "", L.T("Add")) { SecondLabel = L.T("Release date (optional, like 2026-12-01)") };
         if (!await _context.Dialogs.ShowDialogAsync(dialog))
             return;
         DateOnly? release = DateOnly.TryParse(dialog.SecondText, CultureInfo.CurrentCulture, out var d)
@@ -663,15 +664,15 @@ public sealed partial class ProjectSettingsModel : ObservableObject
     [RelayCommand]
     private async Task DeleteVersionAsync(NamedRow? row)
     {
-        if (row is not null && await _context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Delete Version",
-                $"Delete the version {row.Name}? Issues planned for it lose it.", "Delete", [row.Name])))
+        if (row is not null && await _context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel(L.T("Delete Version"),
+                L.T($"Delete the version {row.Name}? Issues planned for it lose it."), L.T("Delete"), [row.Name])))
             await Run(new DeleteVersion(row.Id));
     }
 
     [RelayCommand]
     private async Task AddPersonAsync()
     {
-        var dialog = new TextInputDialogViewModel("Add Person", "Name", "", "Add") { SecondLabel = "Email (optional; matches git authors and avatars)" };
+        var dialog = new TextInputDialogViewModel(L.T("Add Person"), L.T("Name"), "", L.T("Add")) { SecondLabel = L.T("Email (optional; matches git authors and avatars)") };
         if (await _context.Dialogs.ShowDialogAsync(dialog))
             await Run(new AddPerson(dialog.Text, dialog.SecondText));
     }
@@ -679,8 +680,8 @@ public sealed partial class ProjectSettingsModel : ObservableObject
     [RelayCommand]
     private async Task RemovePersonAsync(NamedRow? row)
     {
-        if (row is not null && await _context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Remove Person",
-                $"Take {row.Name} off the board? Issues assigned to them become unassigned.", "Remove", [row.Name])))
+        if (row is not null && await _context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel(L.T("Remove Person"),
+                L.T($"Take {row.Name} off the board? Issues assigned to them become unassigned."), L.T("Remove"), [row.Name])))
             await Run(new RemovePerson(row.Id));
     }
 
@@ -690,9 +691,9 @@ public sealed partial class ProjectSettingsModel : ObservableObject
 
     public IReadOnlyList<NamedItem> DoneCheckModes { get; } =
     [
-        new(nameof(DoneCheck.Off), "Off: moving to Done is never checked"),
-        new(nameof(DoneCheck.Warn), "Ask: confirm when something isn't ticked"),
-        new(nameof(DoneCheck.Block), "Strict: refuse until everything is ticked"),
+        new(nameof(DoneCheck.Off), L.T("Off: moving to Done is never checked")),
+        new(nameof(DoneCheck.Warn), L.T("Ask: confirm when something isn't ticked")),
+        new(nameof(DoneCheck.Block), L.T("Strict: refuse until everything is ticked")),
     ];
 
     [ObservableProperty] private NamedItem? _doneCheckMode;
@@ -706,7 +707,7 @@ public sealed partial class ProjectSettingsModel : ObservableObject
     [RelayCommand]
     private async Task AddDoneItemAsync()
     {
-        var dialog = new TextInputDialogViewModel("Add to the Definition of Done", "What every story needs (\"Code reviewed\")", "", "Add");
+        var dialog = new TextInputDialogViewModel(L.T("Add to the Definition of Done"), L.T("What every story needs (\"Code reviewed\")"), "", L.T("Add"));
         if (await _context.Dialogs.ShowDialogAsync(dialog))
             await Run(new AddDoneItem(dialog.Text));
     }
@@ -735,9 +736,9 @@ public sealed partial class ProjectSettingsModel : ObservableObject
     [RelayCommand]
     private async Task AddLinkTypeAsync()
     {
-        var dialog = new TextInputDialogViewModel("Add Link Type", "From the issue holding it (\"blocks\")", "", "Add")
+        var dialog = new TextInputDialogViewModel(L.T("Add Link Type"), L.T("From the issue holding it (\"blocks\")"), "", L.T("Add"))
         {
-            SecondLabel = "From the other issue (\"is blocked by\"; empty = the same)",
+            SecondLabel = L.T("From the other issue (\"is blocked by\"; empty = the same)"),
         };
         if (await _context.Dialogs.ShowDialogAsync(dialog))
             await Run(new AddLinkType(dialog.Text, dialog.SecondText));
@@ -746,8 +747,8 @@ public sealed partial class ProjectSettingsModel : ObservableObject
     [RelayCommand]
     private async Task DeleteLinkTypeAsync(NamedRow? row)
     {
-        if (row is not null && await _context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Delete Link Type",
-                $"Delete the link type \"{row.Name}\" and every link of that type?", "Delete", [row.Name])))
+        if (row is not null && await _context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel(L.T("Delete Link Type"),
+                L.T($"Delete the link type \"{row.Name}\" and every link of that type?"), L.T("Delete"), [row.Name])))
             await Run(new DeleteLinkType(row.Id));
     }
 
@@ -796,11 +797,11 @@ public sealed partial class ProjectSettingsModel : ObservableObject
             }
 
             IssueTypes.Clear();
-            IReadOnlyList<NamedItem> workflowChoices = [new NamedItem(null, "Default workflow"), .. board.Workflows.Values.Select(w => new NamedItem(w.Id, w.Name))];
+            IReadOnlyList<NamedItem> workflowChoices = [new NamedItem(null, L.T("Default workflow")), .. board.Workflows.Values.Select(w => new NamedItem(w.Id, w.Name))];
             foreach (var t in project.IssueTypes)
             {
                 var row = new NamedRow(t.Id, t.Name, (r, name) => Run(new EditIssueType(r.Id, name, r.Choice?.Id ?? "task")),
-                    t.Level switch { IssueTypeLevel.Epic => "Epic level", IssueTypeLevel.Subtask => "Sub-task level", _ => "Standard level" })
+                    t.Level switch { IssueTypeLevel.Epic => L.T("Epic level"), IssueTypeLevel.Subtask => L.T("Sub-task level"), _ => L.T("Standard level") })
                 {
                     Choices = TypeIcons,
                     Choices2 = workflowChoices,
@@ -848,7 +849,7 @@ public sealed partial class ProjectSettingsModel : ObservableObject
             foreach (var f in project.CustomFields)
             {
                 var row = new NamedRow(f.Id, f.Name, (r, name) => Run(new EditCustomField(r.Id, name, r.Second.Split(','))),
-                    f.Type switch { FieldType.Select => "Choice", _ => f.Type.ToString() })
+                    f.Type switch { FieldType.Select => L.T("Choice"), _ => f.Type.ToString() })
                 {
                     Changed = (r, what) => what == nameof(NamedRow.Second) && f.Type == FieldType.Select
                         ? Run(new EditCustomField(r.Id, r.Name, r.Second.Split(',')))
@@ -940,7 +941,7 @@ public sealed partial class ProjectSettingsModel : ObservableObject
                 release = d;
             else
             {
-                _context.Status.Show("A release date looks like 2026-12-01.");
+                _context.Status.Show(L.T("A release date looks like 2026-12-01."));
                 return Task.CompletedTask;
             }
         }
@@ -951,8 +952,8 @@ public sealed partial class ProjectSettingsModel : ObservableObject
 
     private static string CategoryName(StatusCategory? category) => category switch
     {
-        StatusCategory.Done => "Done",
-        StatusCategory.InProgress => "In Progress",
-        _ => "To Do",
+        StatusCategory.Done => L.T("Done"),
+        StatusCategory.InProgress => L.T("In Progress"),
+        _ => L.T("To Do"),
     };
 }

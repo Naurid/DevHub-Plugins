@@ -1,6 +1,7 @@
 <!-- Manage Remotes: the remotes (name + URL), Add… / Edit… / Remove…, and git's objection if one failed. -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:vm="using:DevHub.ViewModels.Git"
              xmlns:git="clr-namespace:DevHub.Git.Core;assembly=DevHub.Git.Core"
              xmlns:c="using:DevHub.Controls"
@@ -9,10 +10,10 @@
     <DockPanel Margin="{DynamicResource Padding.Dialog}">
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="{DynamicResource Spacing}"
                     Margin="{DynamicResource Margin.BlockBelow}">
-            <Button Content="Add…" Command="{Binding AddCommand}" ToolTip.Tip="Add a remote: a name (usually origin) and its URL" />
-            <Button Content="Edit…" Command="{Binding EditCommand}" ToolTip.Tip="Rename the selected remote or change its URL" />
-            <Button Content="Remove…" Command="{Binding RemoveCommand}"
-                    ToolTip.Tip="Remove the selected remote from this repository (asks first; the server is untouched)" />
+            <Button Content="{l:T 'Add…'}" Command="{Binding AddCommand}" ToolTip.Tip="{l:T 'Add a remote: a name (usually origin) and its URL'}" />
+            <Button Content="{l:T 'Edit…'}" Command="{Binding EditCommand}" ToolTip.Tip="{l:T 'Rename the selected remote or change its URL'}" />
+            <Button Content="{l:T 'Remove…'}" Command="{Binding RemoveCommand}"
+                    ToolTip.Tip="{l:T 'Remove the selected remote from this repository (asks first; the server is untouched)'}" />
         </StackPanel>
 
         <TextBlock DockPanel.Dock="Bottom" Text="{Binding Error}" TextWrapping="Wrap"
@@ -20,11 +21,11 @@
                    IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
         <Panel>
-            <c:EmptyState IconKind="fetch" Title="No remotes"
-                          Description="A remote is where you push to and pull from, e.g. a repository on GitHub. Add one with its URL, or use Git → Publish to GitHub… to create one."
+            <c:EmptyState IconKind="fetch" Title="{l:T 'No remotes'}"
+                          Description="{l:T 'A remote is where you push to and pull from, e.g. a repository on GitHub. Add one with its URL, or use Git → Publish to GitHub… to create one.'}"
                           IsVisible="{Binding !HasRemotes}" />
             <ListBox ItemsSource="{Binding Remotes}" SelectedItem="{Binding Selected}" IsVisible="{Binding HasRemotes}"
-                     AutomationProperties.Name="Remotes">
+                     AutomationProperties.Name="{l:T 'Remotes'}">
                 <ListBox.ItemTemplate>
                     <DataTemplate x:DataType="git:GitRemote">
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Spacing}" Background="Transparent"

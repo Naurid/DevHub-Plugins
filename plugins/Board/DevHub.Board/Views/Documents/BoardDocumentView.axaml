@@ -4,6 +4,7 @@
 -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:vm="using:DevHub.ViewModels.Documents"
              xmlns:core="using:DevHub.Board.Core.Model"
              xmlns:c="using:DevHub.Controls"
@@ -21,10 +22,10 @@
 
     <Panel>
         <!-- Not loaded: loading, no board here, or an error. -->
-        <c:EmptyState IconKind="menu" Title="Board" Description="{Binding Message}" IsVisible="{Binding !IsLoaded}">
+        <c:EmptyState IconKind="menu" Title="{l:T 'Board'}" Description="{Binding Message}" IsVisible="{Binding !IsLoaded}">
             <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}" HorizontalAlignment="Center">
-                <Button Classes="accent" Content="Create Board…" Command="{Binding CreateBoardHereCommand}" IsVisible="{Binding CanCreateHere}" />
-                <Button Content="Try Again" Command="{Binding RetryCommand}"
+                <Button Classes="accent" Content="{l:T 'Create Board…'}" Command="{Binding CreateBoardHereCommand}" IsVisible="{Binding CanCreateHere}" />
+                <Button Content="{l:T 'Try Again'}" Command="{Binding RetryCommand}"
                         IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
             </StackPanel>
         </c:EmptyState>
@@ -33,7 +34,7 @@
             <Border DockPanel.Dock="Top" Classes="pageHeader">
                 <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
                     <ComboBox ItemsSource="{Binding Boards}" SelectedItem="{Binding SelectedBoard}" VerticalAlignment="Center"
-                              AutomationProperties.Name="Board" ToolTip.Tip="Which board of this project to show">
+                              AutomationProperties.Name="{l:T 'Board'}" ToolTip.Tip="{l:T 'Which board of this project to show'}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate x:DataType="core:BoardDefinition">
                                 <TextBlock Text="{Binding Name}" />
@@ -41,7 +42,7 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     <ListBox Grid.Column="1" Classes="pages" ItemsSource="{Binding Pages}" SelectedItem="{Binding SelectedPage}"
-                             Background="Transparent" AutomationProperties.Name="Pages" VerticalAlignment="Center"
+                             Background="Transparent" AutomationProperties.Name="{l:T 'Pages'}" VerticalAlignment="Center"
                              ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                         <!-- Wraps onto a second line when the pages don't fit beside the search box (a narrow window). -->
                         <ListBox.ItemsPanel>
@@ -55,29 +56,29 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
-                    <c:SearchField Grid.Column="2" Text="{Binding Search}" PlaceholderText="Search this board"
+                    <c:SearchField Grid.Column="2" Text="{Binding Search}" PlaceholderText="{l:T 'Search this board'}"
                                    Width="{DynamicResource Size.BoardSearch}" VerticalAlignment="Center" />
-                    <Button Grid.Column="3" Classes="accent" Content="Create" Command="{Binding CreateIssueCommand}"
-                            ToolTip.Tip="Create an issue (Ctrl+Alt+I)" VerticalAlignment="Center" />
-                    <Button Grid.Column="4" Classes="flat" ToolTip.Tip="Board menu" AutomationProperties.Name="Board menu"
+                    <Button Grid.Column="3" Classes="accent" Content="{l:T 'Create'}" Command="{Binding CreateIssueCommand}"
+                            ToolTip.Tip="{l:T 'Create an issue (Ctrl+Alt+I)'}" VerticalAlignment="Center" />
+                    <Button Grid.Column="4" Classes="flat" ToolTip.Tip="{l:T 'Board menu'}" AutomationProperties.Name="{l:T 'Board menu'}"
                             VerticalAlignment="Center">
                         <c:Icon Kind="moreVertical" />
                         <Button.Flyout>
                             <MenuFlyout Placement="BottomEdgeAlignedRight">
-                                <MenuItem Header="Board Settings…" Command="{Binding BoardSettingsCommand}" />
-                                <MenuItem Header="New Board View…" Command="{Binding NewBoardViewCommand}" />
-                                <MenuItem Header="Delete This Board View…" Command="{Binding DeleteBoardViewCommand}" />
+                                <MenuItem Header="{l:T 'Board Settings…'}" Command="{Binding BoardSettingsCommand}" />
+                                <MenuItem Header="{l:T 'New Board View…'}" Command="{Binding NewBoardViewCommand}" />
+                                <MenuItem Header="{l:T 'Delete This Board View…'}" Command="{Binding DeleteBoardViewCommand}" />
                                 <Separator />
-                                <MenuItem Header="Project Settings (workflows, statuses, types, fields…)" Command="{Binding ProjectSettingsCommand}" />
+                                <MenuItem Header="{l:T 'Project Settings (workflows, statuses, types, fields…)'}" Command="{Binding ProjectSettingsCommand}" />
                                 <Separator />
                                 <MenuItem Header="{Binding UndoText, StringFormat='Undo: {0}', TargetNullValue='Undo'}" Command="{Binding UndoCommand}"
                                           IsEnabled="{Binding UndoText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                                <MenuItem Header="Reload from Disk" Command="{Binding ReloadCommand}" />
-                                <MenuItem Header="Copy Board To… (another folder, a repository branch)" Command="{Binding CopyBoardCommand}" />
+                                <MenuItem Header="{l:T 'Reload from Disk'}" Command="{Binding ReloadCommand}" />
+                                <MenuItem Header="{l:T 'Copy Board To… (another folder, a repository branch)'}" Command="{Binding CopyBoardCommand}" />
                                 <Separator />
-                                <MenuItem Header="Import Issues… (Jira CSV, GitHub)" Command="{Binding ImportIssuesCommand}" />
-                                <MenuItem Header="Export Issues as CSV…" Command="{Binding ExportCsvCommand}" />
-                                <MenuItem Header="Export Board as JSON…" Command="{Binding ExportJsonCommand}" />
+                                <MenuItem Header="{l:T 'Import Issues… (Jira CSV, GitHub)'}" Command="{Binding ImportIssuesCommand}" />
+                                <MenuItem Header="{l:T 'Export Issues as CSV…'}" Command="{Binding ExportCsvCommand}" />
+                                <MenuItem Header="{l:T 'Export Board as JSON…'}" Command="{Binding ExportJsonCommand}" />
                             </MenuFlyout>
                         </Button.Flyout>
                     </Button>

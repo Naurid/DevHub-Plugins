@@ -1,5 +1,6 @@
 using DevHub.Board.Core.Model;
 using DevHub.Board.Core.Search;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Board.Core;
 
@@ -64,7 +65,7 @@ public static class BoardLayout
         }
         catch (QueryException e)
         {
-            problem = "The board's filter has a problem: " + e.Message;
+            problem = L.T("The board's filter has a problem: ") + e.Message;
         }
 
         var words = options.Search.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
@@ -119,14 +120,14 @@ public static class BoardLayout
         // Lane key and title per issue, plus the order lanes come in (the "none" lane last).
         (string Key, string Title, string Sort) LaneOf(Issue issue) => definition.Swimlanes switch
         {
-            SwimlaneMode.Assignee => project.Person(issue.Assignee) is { } p ? (p.Id, p.Name, "0" + p.Name) : ("", "Unassigned", "1"),
-            SwimlaneMode.Epic => board.EpicOf(issue) is { } e ? (e.Id, $"{e.Key} {e.Summary}", "0" + e.Rank) : ("", "No epic", "1"),
+            SwimlaneMode.Assignee => project.Person(issue.Assignee) is { } p ? (p.Id, p.Name, "0" + p.Name) : ("", L.T("Unassigned"), "1"),
+            SwimlaneMode.Epic => board.EpicOf(issue) is { } e ? (e.Id, $"{e.Key} {e.Summary}", "0" + e.Rank) : ("", L.T("No epic"), "1"),
             SwimlaneMode.Priority => project.Priority(issue.Priority) is { } pr
                 ? (pr.Id, pr.Name, "0" + project.Priorities.ToList().IndexOf(pr).ToString("D4"))
-                : ("", "No priority", "1"),
+                : ("", L.T("No priority"), "1"),
             SwimlaneMode.Type => project.IssueType(issue.Type) is { } t
                 ? (t.Id, t.Name, "0" + project.IssueTypes.ToList().IndexOf(t).ToString("D4"))
-                : ("", "Other", "1"),
+                : ("", L.T("Other"), "1"),
             _ => ("", "", ""),
         };
 

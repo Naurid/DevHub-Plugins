@@ -1,5 +1,6 @@
 using DevHub.Templates.Core.Commands;
 using DevHub.Templates.Core.Rendering;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Templates.Core.Generation;
 
@@ -40,7 +41,7 @@ public sealed class ProjectGenerator(CommandRunner runner)
         bool raw = false, IProgress<GenerationProgress>? progress = null, CancellationToken ct = default)
     {
         if (template is not { IsUsable: true, Manifest: { Kind: TemplateKind.Project } manifest })
-            return Fail(template.Problems.Count > 0 ? [.. template.Problems] : ["This isn't a project template."]);
+            return Fail(template.Problems.Count > 0 ? [.. template.Problems] : [L.T("This isn't a project template.")]);
         if (raw && manifest.BaseCommand is null)
             return Fail("This template has no base command, so there's no raw project to make.");
 
@@ -62,7 +63,7 @@ public sealed class ProjectGenerator(CommandRunner runner)
             {
                 var runIn = manifest.BaseCommand!.RunIn == RunIn.Root ? workRoot : work;
                 Directory.CreateDirectory(runIn);
-                progress?.Report(new GenerationProgress($"Running {command.DisplayText}"));
+                progress?.Report(new GenerationProgress(L.T($"Running {command.DisplayText}")));
                 var output = progress is null ? null : new InlineProgress<CommandOutputLine>(l => progress.Report(new GenerationProgress("", l)));
                 commandResult = await runner.RunAsync(command, runIn, output, ct);
                 if (!commandResult.Succeeded)
@@ -74,7 +75,7 @@ public sealed class ProjectGenerator(CommandRunner runner)
                 {
                     project.Dispose();
                     return new StageResult<StagedProject>(null,
-                        [$"The base command didn't create the folder \"{rootName}\" (with runIn \"parent\" it must create the project folder itself)."],
+                        [L.T($"The base command didn't create the folder \"{rootName}\" (with runIn \"parent\" it must create the project folder itself).")],
                         commandResult);
                 }
                 project.Tree = FileTree.Scan(workRoot, EntryOrigin.Command);
@@ -84,7 +85,7 @@ public sealed class ProjectGenerator(CommandRunner runner)
                 return new StageResult<StagedProject>(project, [], commandResult);
 
             // 2. The template's content on top.
-            progress?.Report(new GenerationProgress("Copying the template's files"));
+            progress?.Report(new GenerationProgress(L.T("Copying the template's files")));
             if (await Staging.OverlayAsync(template, manifest, context, project.Tree, Path.Combine(staging, "content"), ct) is { } overlayError)
             {
                 project.Dispose();
@@ -92,7 +93,7 @@ public sealed class ProjectGenerator(CommandRunner runner)
             }
 
             // 3. Steps.
-            progress?.Report(new GenerationProgress("Arranging the files"));
+            progress?.Report(new GenerationProgress(L.T("Arranging the files")));
             if (Staging.ApplySteps(manifest, context, project.Tree) is { } stepError)
             {
                 project.Dispose();
@@ -117,11 +118,11 @@ public sealed class ProjectGenerator(CommandRunner runner)
     {
         var root = TemplateRendering.RootFolder(manifest, context);
         if (!root.Succeeded)
-            return new RenderedPath(null, "Project folder: " + root.Error);
+            return new RenderedPath(null, L.T("Project folder: ") + root.Error);
         if (string.IsNullOrWhiteSpace(parentFolder) || !Path.IsPathFullyQualified(parentFolder))
-            return new RenderedPath(null, "Choose the folder to create the project in.");
+            return new RenderedPath(null, L.T("Choose the folder to create the project in."));
         if (!Directory.Exists(parentFolder))
-            return new RenderedPath(null, $"The folder {parentFolder} doesn't exist.");
+            return new RenderedPath(null, L.T($"The folder {parentFolder} doesn't exist."));
         return StagedProject.TargetProblem(Path.Combine(parentFolder, root.Path!)) is { } problem
             ? new RenderedPath(null, problem)
             : root;
@@ -200,9 +201,9 @@ public sealed class StagedProject : IStagedResult
 
     /// <summary>Why a project can't be placed at <paramref name="target"/> (a file, or a folder that isn't empty), or null.</summary>
     internal static string? TargetProblem(string target) =>
-        File.Exists(target) ? $"{target} is a file. Pick another name."
+        File.Exists(target) ? L.T($"{target} is a file. Pick another name.")
         : Directory.Exists(target) && Directory.EnumerateFileSystemEntries(target).Any()
-            ? $"{target} already exists and isn't empty. Pick another name or folder."
+            ? L.T($"{target} already exists and isn't empty. Pick another name or folder.")
         : null;
 }
 
@@ -244,9 +245,9 @@ internal static class Staging
         {
             var rendered = PathRenderer.RenderPath(SafePath.Relative(template.ContentFolder, folder), context);
             if (!rendered.Succeeded)
-                return "Template folder name: " + rendered.Error;
+                return L.T("Template folder name: ") + rendered.Error;
             if (tree[rendered.Path!] is { IsFolder: false })
-                return $"\"{rendered.Path}\" is a file in the result, so the template's folder can't go there.";
+                return L.T($"\"{rendered.Path}\" is a file in the result, so the template's folder can't go there.");
             tree.AddFolder(rendered.Path!, EntryOrigin.Template);
         }
 
@@ -256,9 +257,9 @@ internal static class Staging
                 continue;
             var rendered = PathRenderer.RenderPath(SafePath.Relative(template.ContentFolder, file), context);
             if (!rendered.Succeeded)
-                return "Template file name: " + rendered.Error;
+                return L.T("Template file name: ") + rendered.Error;
             if (tree[rendered.Path!] is { IsFolder: true })
-                return $"\"{rendered.Path}\" is a folder in the result, so the template's file can't go there.";
+                return L.T($"\"{rendered.Path}\" is a folder in the result, so the template's file can't go there.");
 
             var staged = SafePath.Resolve(stagingContent, rendered.Path!)!;
             await ContentFiles.CopyAsync(file, staged, context, manifest.BinaryExtensions, ct);
@@ -275,7 +276,7 @@ internal static class Staging
         for (var i = 0; i < steps.Count; i++)
         {
             if (tree.Apply(steps[i]) is { } error)
-                return $"Step {i + 1}: {error}";
+                return L.T($"Step {i + 1}: {error}");
         }
         return null;
     }
@@ -287,7 +288,7 @@ internal static class Staging
         {
             var trimmed = path.TrimEnd('/');
             if (trimmed.Length == 0 || trimmed.Split('/').Any(s => s is "" or "." or ".."))
-                return $"\"{path}\" isn't a path inside the project.";
+                return L.T($"\"{path}\" isn't a path inside the project.");
         }
         if (tree.Apply(new RenderedStep(edit.Op, edit.Path, edit.From, edit.To, null)) is { } error)
             return error;

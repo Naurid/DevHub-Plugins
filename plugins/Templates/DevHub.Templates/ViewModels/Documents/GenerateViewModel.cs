@@ -7,6 +7,7 @@ using DevHub.Templates.Core.Commands;
 using DevHub.Templates.Core.Generation;
 using DevHub.Templates.Core.Rendering;
 using DevHub.ViewModels.Templates;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Documents;
 
@@ -53,10 +54,10 @@ public sealed partial class GenerateViewModel : DocumentViewModelBase
         Browser = new TemplateBrowserViewModel(templates, OnTemplateSelected);
     }
 
-    public override string Title => "New Project";
+    public override string Title => L.T("New Project");
     public override string Icon => IconKind.Add;
     public override bool FillsEditorArea => true;
-    public override DocumentNavigation Navigation => new() { Text = "New Project…", Gesture = "Ctrl+N", Menu = "File", MenuOrder = 0, WelcomeOrder = 10 };
+    public override DocumentNavigation Navigation => new() { Text = L.T("New Project…"), Gesture = "Ctrl+N", Menu = "File", MenuOrder = 0, WelcomeOrder = 10 };
 
     public TemplateBrowserViewModel Browser { get; }
 
@@ -160,10 +161,10 @@ public sealed partial class GenerateViewModel : DocumentViewModelBase
         var name = Path.GetFileName(form.TargetPath!);
         var log = new OutputLogViewModel();
         var cts = new CancellationTokenSource();
-        var run = new RunPageViewModel($"Creating {name}", log, cts.Cancel, BackToForm);
+        var run = new RunPageViewModel(L.T($"Creating {name}"), log, cts.Cancel, BackToForm);
         SetPage(run, 1);
 
-        var task = _status.StartTask($"Creating {name}…", cts.Cancel);
+        var task = _status.StartTask(L.T($"Creating {name}…"), cts.Cancel);
         var progress = new Progress<GenerationProgress>(p =>
         {
             if (p.Output is { } line)
@@ -187,7 +188,7 @@ public sealed partial class GenerateViewModel : DocumentViewModelBase
         }
         catch (OperationCanceledException)
         {
-            _status.Show($"Cancelled; nothing was written to {parent}.");
+            _status.Show(L.T($"Cancelled; nothing was written to {parent}."));
             SetPage(_form, 0);
             return;
         }
@@ -205,8 +206,8 @@ public sealed partial class GenerateViewModel : DocumentViewModelBase
 
         if (result.Staged is not { } staged)
         {
-            run.Error = string.Join(Environment.NewLine, result.Errors) + Environment.NewLine + $"Nothing was written to {parent}.";
-            _status.Show($"Couldn't create {name}.");
+            run.Error = string.Join(Environment.NewLine, result.Errors) + Environment.NewLine + L.T($"Nothing was written to {parent}.");
+            _status.Show(L.T($"Couldn't create {name}."));
             return;
         }
 
@@ -241,7 +242,7 @@ public sealed partial class GenerateViewModel : DocumentViewModelBase
         }
         catch (Exception ex)
         {
-            placed = new PlaceResult(null, "Couldn't create the project: " + ex.Message);
+            placed = new PlaceResult(null, L.T("Couldn't create the project: ") + ex.Message);
         }
         if (placed.Path is not { } path)
         {
@@ -261,7 +262,7 @@ public sealed partial class GenerateViewModel : DocumentViewModelBase
             (results, cancelled) = await TemplateFlow.RunPostCreateAsync(_templates, _status, commands, path, log, run => SetPage(run, 3));
 
         await RescanProjectsAsync(staged.ParentFolder);
-        _status.Show(cancelled || results.Any(r => !r.Succeeded) ? $"Created {path}; a command didn't finish." : $"Created {path}.");
+        _status.Show(cancelled || results.Any(r => !r.Succeeded) ? L.T($"Created {path}; a command didn't finish.") : L.T($"Created {path}."));
         SetPage(new DonePageViewModel(path, results, cancelled, log,
             _opener() is { } projectOpener ? () => projectOpener.Open(path) : null,
             () => TemplatesService.Reveal(path),

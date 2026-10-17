@@ -1,6 +1,7 @@
 <!-- Create Issue: type, summary, description and the fields most often set at once; "Create another" keeps it open. -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:vm="using:DevHub.ViewModels.Dialogs"
              xmlns:c="using:DevHub.Controls"
              x:Class="DevHub.Views.Dialogs.CreateIssueDialogView"
@@ -14,8 +15,8 @@
         <StackPanel Margin="{DynamicResource Padding.Dialog}" Spacing="{DynamicResource Spacing}">
             <Grid ColumnDefinitions="*,*" ColumnSpacing="{DynamicResource Spacing}">
                 <StackPanel Spacing="{DynamicResource Spacing.Small}">
-                    <TextBlock Classes="label" Text="Type" />
-                    <ComboBox ItemsSource="{Binding Types}" SelectedItem="{Binding Type}" HorizontalAlignment="Stretch" AutomationProperties.Name="Type">
+                    <TextBlock Classes="label" Text="{l:T 'Type'}" />
+                    <ComboBox ItemsSource="{Binding Types}" SelectedItem="{Binding Type}" HorizontalAlignment="Stretch" AutomationProperties.Name="{l:T 'Type'}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate x:DataType="vm:NamedItem">
                                 <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}">
@@ -33,27 +34,27 @@
                 </StackPanel>
             </Grid>
             <StackPanel Spacing="{DynamicResource Spacing.Small}">
-                <TextBlock Classes="label" Text="Summary" />
-                <TextBox Text="{Binding Summary}" PlaceholderText="What needs to be done?" AutomationProperties.Name="Summary"
+                <TextBlock Classes="label" Text="{l:T 'Summary'}" />
+                <TextBox Text="{Binding Summary}" PlaceholderText="{l:T 'What needs to be done?'}" AutomationProperties.Name="{l:T 'Summary'}"
                          c:FocusOnLoad.IsEnabled="True" c:FocusRequest.Token="{Binding FocusSummary}" />
             </StackPanel>
             <StackPanel Spacing="{DynamicResource Spacing.Small}">
-                <TextBlock Classes="label" Text="Description" />
+                <TextBlock Classes="label" Text="{l:T 'Description'}" />
                 <TextBox Text="{Binding Description}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="{DynamicResource Size.DescriptionEditor}"
-                         PlaceholderText="{Binding DescriptionHint}" AutomationProperties.Name="Description" />
+                         PlaceholderText="{Binding DescriptionHint}" AutomationProperties.Name="{l:T 'Description'}" />
                 <CheckBox IsChecked="{Binding CreateTasks}" IsVisible="{Binding HasTasks}" AutomationProperties.Name="{Binding TasksText}">
                     <TextBlock Text="{Binding TasksText}" TextWrapping="Wrap" />
                 </CheckBox>
             </StackPanel>
             <StackPanel Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding ShowCriteria}">
-                <TextBlock Classes="label" Text="Acceptance criteria" />
+                <TextBlock Classes="label" Text="{l:T 'Acceptance criteria'}" />
                 <TextBox Text="{Binding Criteria}" AcceptsReturn="True" TextWrapping="Wrap"
-                         PlaceholderText="One per line: Given … when … then …" AutomationProperties.Name="Acceptance criteria" />
+                         PlaceholderText="{l:T 'One per line: Given … when … then …'}" AutomationProperties.Name="{l:T 'Acceptance criteria'}" />
             </StackPanel>
             <Grid ColumnDefinitions="*,*" ColumnSpacing="{DynamicResource Spacing}" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="{DynamicResource Spacing}">
                 <StackPanel Spacing="{DynamicResource Spacing.Small}">
-                    <TextBlock Classes="label" Text="Priority" />
-                    <ComboBox ItemsSource="{Binding Priorities}" SelectedItem="{Binding Priority}" HorizontalAlignment="Stretch" AutomationProperties.Name="Priority">
+                    <TextBlock Classes="label" Text="{l:T 'Priority'}" />
+                    <ComboBox ItemsSource="{Binding Priorities}" SelectedItem="{Binding Priority}" HorizontalAlignment="Stretch" AutomationProperties.Name="{l:T 'Priority'}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate x:DataType="vm:NamedItem">
                                 <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}">
@@ -65,36 +66,36 @@
                     </ComboBox>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Spacing="{DynamicResource Spacing.Small}">
-                    <TextBlock Classes="label" Text="Assignee" />
-                    <ComboBox ItemsSource="{Binding People}" SelectedItem="{Binding Assignee}" HorizontalAlignment="Stretch" AutomationProperties.Name="Assignee" />
+                    <TextBlock Classes="label" Text="{l:T 'Assignee'}" />
+                    <ComboBox ItemsSource="{Binding People}" SelectedItem="{Binding Assignee}" HorizontalAlignment="Stretch" AutomationProperties.Name="{l:T 'Assignee'}" />
                 </StackPanel>
                 <StackPanel Grid.Row="1" Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding ShowPoints}">
-                    <TextBlock Classes="label" Text="Story points" />
-                    <TextBox Text="{Binding Points}" PlaceholderText="e.g. 3" AutomationProperties.Name="Story points" />
+                    <TextBlock Classes="label" Text="{l:T 'Story points'}" />
+                    <TextBox Text="{Binding Points}" PlaceholderText="{l:T 'e.g. 3'}" AutomationProperties.Name="{l:T 'Story points'}" />
                 </StackPanel>
                 <StackPanel Grid.Row="1" Grid.Column="1" Spacing="{DynamicResource Spacing.Small}">
-                    <TextBlock Classes="label" Text="Original estimate" />
-                    <TextBox Text="{Binding Estimate}" PlaceholderText="e.g. 1d 4h" AutomationProperties.Name="Original estimate" />
+                    <TextBlock Classes="label" Text="{l:T 'Original estimate'}" />
+                    <TextBox Text="{Binding Estimate}" PlaceholderText="{l:T 'e.g. 1d 4h'}" AutomationProperties.Name="{l:T 'Original estimate'}" />
                 </StackPanel>
                 <StackPanel Grid.Row="2" Spacing="{DynamicResource Spacing.Small}">
-                    <TextBlock Classes="label" Text="Labels" />
-                    <TextBox Text="{Binding Labels}" PlaceholderText="ui backend" AutomationProperties.Name="Labels" />
+                    <TextBlock Classes="label" Text="{l:T 'Labels'}" />
+                    <TextBox Text="{Binding Labels}" PlaceholderText="{l:T 'ui backend'}" AutomationProperties.Name="{l:T 'Labels'}" />
                 </StackPanel>
                 <StackPanel Grid.Row="2" Grid.Column="1" Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding ShowSprint}">
-                    <TextBlock Classes="label" Text="Sprint" />
-                    <ComboBox ItemsSource="{Binding Sprints}" SelectedItem="{Binding Sprint}" HorizontalAlignment="Stretch" AutomationProperties.Name="Sprint" />
+                    <TextBlock Classes="label" Text="{l:T 'Sprint'}" />
+                    <ComboBox ItemsSource="{Binding Sprints}" SelectedItem="{Binding Sprint}" HorizontalAlignment="Stretch" AutomationProperties.Name="{l:T 'Sprint'}" />
                 </StackPanel>
                 <StackPanel Grid.Row="3" Spacing="{DynamicResource Spacing.Small}">
-                    <TextBlock Classes="label" Text="Start date" />
-                    <CalendarDatePicker SelectedDate="{Binding Start}" HorizontalAlignment="Stretch" AutomationProperties.Name="Start date" />
+                    <TextBlock Classes="label" Text="{l:T 'Start date'}" />
+                    <CalendarDatePicker SelectedDate="{Binding Start}" HorizontalAlignment="Stretch" AutomationProperties.Name="{l:T 'Start date'}" />
                 </StackPanel>
                 <StackPanel Grid.Row="3" Grid.Column="1" Spacing="{DynamicResource Spacing.Small}">
-                    <TextBlock Classes="label" Text="Due date" />
-                    <CalendarDatePicker SelectedDate="{Binding Due}" HorizontalAlignment="Stretch" AutomationProperties.Name="Due date" />
+                    <TextBlock Classes="label" Text="{l:T 'Due date'}" />
+                    <CalendarDatePicker SelectedDate="{Binding Due}" HorizontalAlignment="Stretch" AutomationProperties.Name="{l:T 'Due date'}" />
                 </StackPanel>
             </Grid>
             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Spacing}">
-                <CheckBox Content="Create another" IsChecked="{Binding CreateAnother}" />
+                <CheckBox Content="{l:T 'Create another'}" IsChecked="{Binding CreateAnother}" />
                 <TextBlock Grid.Column="1" Classes="secondary" Text="{Binding LastCreated}" VerticalAlignment="Center" />
             </Grid>
             <TextBlock Text="{Binding Error}" Foreground="{DynamicResource Brush.Status.Error}" TextWrapping="Wrap"

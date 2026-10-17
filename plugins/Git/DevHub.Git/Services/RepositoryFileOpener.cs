@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using DevHub.Integration;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Services;
 
@@ -28,14 +29,14 @@ public sealed class RepositoryFileOpener(IStatusService status, IEnumerable<IPro
         try
         {
             if (!File.Exists(fullPath))
-                throw new FileNotFoundException("The file doesn't exist (deleted?).", fullPath);
+                throw new FileNotFoundException(L.T("The file doesn't exist (deleted?)."), fullPath);
             // The file itself (not a command line), handed to Windows: no shell string involved.
             Process.Start(new ProcessStartInfo(fullPath) { UseShellExecute = true });
-            status.Show($"Opened {gitPath}.");
+            status.Show(L.T($"Opened {gitPath}."));
         }
         catch (Exception ex)
         {
-            status.Show($"Couldn't open {gitPath}: {ex.Message}");
+            status.Show(L.T($"Couldn't open {gitPath}: {ex.Message}"));
         }
     }
 }

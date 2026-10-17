@@ -9,6 +9,7 @@ using DevHub.Board.Core.Model;
 using DevHub.Controls;
 using DevHub.Services.Board;
 using DevHub.ViewModels.Dialogs;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Board;
 
@@ -16,7 +17,7 @@ namespace DevHub.ViewModels.Board;
 public sealed class BoardViewPageProvider : IBoardPageProvider
 {
     public string Id => "board";
-    public string Title => "Board";
+    public string Title => L.T("Board");
     public int Order => 100;
     public BoardPageViewModel Create(BoardPageHost host) => new BoardViewPageViewModel(host);
 }
@@ -59,7 +60,7 @@ public sealed class ColumnViewModel(BoardViewPageViewModel page, ColumnLayout la
         : Column.WipMinimum is { } min ? $"{Count} (min {min})" : Count.ToString(CultureInfo.CurrentCulture);
 
     public string ToolTip => HasNoStatus
-        ? "No status yet: cards can't be dropped here. Use Statuses… in the column menu."
+        ? L.T("No status yet: cards can't be dropped here. Use Statuses… in the column menu.")
         : "Statuses: " + string.Join(", ", Column.Statuses.Select(page.Context.StatusName));
 
     public bool CanMoveLeft => Index > 0;
@@ -108,7 +109,7 @@ public sealed partial class BoardViewPageViewModel : BoardPageViewModel, IItemsD
         Rebuild();
     }
 
-    public override string Title => "Board";
+    public override string Title => L.T("Board");
 
     System.Windows.Input.ICommand ICardHost.SelectCommand => SelectCommand;
     System.Windows.Input.ICommand ICardHost.OpenCommand => OpenCommand;
@@ -189,7 +190,7 @@ public sealed partial class BoardViewPageViewModel : BoardPageViewModel, IItemsD
             Problem = layout.Problem;
             NotOnBoard = layout.NotOnBoard.Count == 0
                 ? null
-                : "Not on this board: " + string.Join(", ", layout.NotOnBoard.Select(n => $"{n.Status.Name} ({n.Count})"));
+                : L.T("Not on this board: ") + string.Join(", ", layout.NotOnBoard.Select(n => $"{n.Status.Name} ({n.Count})"));
             HasNoColumns = definition.Columns.Count == 0;
 
             var sprint = layout.ActiveSprints.FirstOrDefault();
@@ -223,7 +224,7 @@ public sealed partial class BoardViewPageViewModel : BoardPageViewModel, IItemsD
         if (sprint.End is { } end)
         {
             var days = (int)Math.Ceiling((end - DateTimeOffset.Now).TotalDays);
-            parts.Add(days switch { < 0 => $"ended {-days} days ago", 0 => "ends today", 1 => "1 day left", _ => $"{days} days left" });
+            parts.Add(days switch { < 0 => L.T($"ended {-days} days ago"), 0 => L.T("ends today"), 1 => L.T("1 day left"), _ => L.T($"{days} days left") });
         }
         var all = layout.Columns.SelectMany(c => c.Cards).ToList();
         var done = layout.Columns.Where(c => c.Category == StatusCategory.Done).SelectMany(c => c.Cards).ToList();
@@ -405,9 +406,9 @@ public sealed partial class BoardViewPageViewModel : BoardPageViewModel, IItemsD
         }
         if (steps.Count == 1)
             await Context.RunAsync(steps[0]);
-        else if (await Context.RunAsync(new Batch(steps, $"{moving.Count} cards moved to {ColumnName(cell.ColumnId)}"))
+        else if (await Context.RunAsync(new Batch(steps, L.T($"{moving.Count} cards moved to {ColumnName(cell.ColumnId)}")))
                  && moving.Count < group.Count)
-            Context.Status.Show($"{moving.Count} cards moved; {group.Count - moving.Count} can't go to {ColumnName(cell.ColumnId)} (their workflow doesn't allow it).");
+            Context.Status.Show(L.T($"{moving.Count} cards moved; {group.Count - moving.Count} can't go to {ColumnName(cell.ColumnId)} (their workflow doesn't allow it)."));
     }
 
     private string ColumnName(string columnId) => Columns.FirstOrDefault(c => c.Id == columnId)?.Name ?? columnId;
@@ -431,20 +432,20 @@ public sealed partial class BoardViewPageViewModel : BoardPageViewModel, IItemsD
 
     internal async Task RenameColumnAsync(ColumnViewModel column)
     {
-        var dialog = new TextInputDialogViewModel("Rename Column", "Name", column.Name, "Rename");
+        var dialog = new TextInputDialogViewModel(L.T("Rename Column"), L.T("Name"), column.Name, L.T("Rename"));
         if (await Context.Dialogs.ShowDialogAsync(dialog))
             await Context.RunAsync(new RenameColumn(Host.Definition.Id, column.Id, dialog.Text));
     }
 
     internal async Task SetWipAsync(ColumnViewModel column)
     {
-        var dialog = new TextInputDialogViewModel("Column Limits", "Most cards (empty = no limit)",
-            column.Column.WipLimit?.ToString(CultureInfo.CurrentCulture) ?? "", "Save")
+        var dialog = new TextInputDialogViewModel(L.T("Column Limits"), L.T("Most cards (empty = no limit)"),
+            column.Column.WipLimit?.ToString(CultureInfo.CurrentCulture) ?? "", L.T("Save"))
         {
             AllowEmpty = true,
-            SecondLabel = "Fewest cards (empty = no minimum)",
+            SecondLabel = L.T("Fewest cards (empty = no minimum)"),
             SecondText = column.Column.WipMinimum?.ToString(CultureInfo.CurrentCulture) ?? "",
-            Explanation = "The column's header turns red when it holds more cards than the limit, or fewer than the minimum.",
+            Explanation = L.T("The column's header turns red when it holds more cards than the limit, or fewer than the minimum."),
         };
         if (!await Context.Dialogs.ShowDialogAsync(dialog))
             return;
@@ -458,11 +459,11 @@ public sealed partial class BoardViewPageViewModel : BoardPageViewModel, IItemsD
         var items = Context.Project.Statuses.Select(s =>
         {
             var holder = definition.ColumnOf(s.Id);
-            var note = holder is null ? "not on this board" : holder.Id == column.Id ? null : "now in " + holder.Name;
+            var note = holder is null ? L.T("not on this board") : holder.Id == column.Id ? null : L.T("now in ") + holder.Name;
             return new ChecklistItem(s.Id, s.Name, column.Column.Statuses.Contains(s.Id), note);
         }).ToList();
-        var dialog = new ChecklistDialogViewModel($"Statuses in {column.Name}",
-            "Cards in any of these statuses show in this column. A status can be in one column of a board; choosing it here takes it out of the other.",
+        var dialog = new ChecklistDialogViewModel(L.T($"Statuses in {column.Name}"),
+            L.T("Cards in any of these statuses show in this column. A status can be in one column of a board; choosing it here takes it out of the other."),
             items);
         if (await Context.Dialogs.ShowDialogAsync(dialog))
             await Context.RunAsync(new SetColumnStatuses(definition.Id, column.Id, dialog.CheckedIds));
@@ -473,11 +474,11 @@ public sealed partial class BoardViewPageViewModel : BoardPageViewModel, IItemsD
         var others = Columns.Where(c => c.Id != column.Id).ToList();
         if (others.Count == 0)
             return;
-        var dialog = new TextInputDialogViewModel($"Merge {column.Name}", "", "", "Merge")
+        var dialog = new TextInputDialogViewModel(L.T($"Merge {column.Name}"), "", "", L.T("Merge"))
         {
             ShowText = false,
-            Explanation = $"{column.Name} disappears; its statuses (and their cards) join the column you choose.",
-            Choice = new ChoiceInput("Into", others.Select(c => c.Name).ToList(), others[Math.Max(0, column.Index - 1) % others.Count].Name),
+            Explanation = L.T($"{column.Name} disappears; its statuses (and their cards) join the column you choose."),
+            Choice = new ChoiceInput(L.T("Into"), others.Select(c => c.Name).ToList(), others[Math.Max(0, column.Index - 1) % others.Count].Name),
         };
         if (!await Context.Dialogs.ShowDialogAsync(dialog))
             return;
@@ -491,16 +492,16 @@ public sealed partial class BoardViewPageViewModel : BoardPageViewModel, IItemsD
         var targets = Context.Project.Statuses.Where(s => !column.Column.Statuses.Contains(s.Id)).ToList();
         const string keep = "Keep them (their cards are listed as not on this board)";
         const string delete = "Delete them everywhere";
-        var dialog = new TextInputDialogViewModel($"Delete {column.Name}", "", "", "Delete")
+        var dialog = new TextInputDialogViewModel(L.T($"Delete {column.Name}"), "", "", L.T("Delete"))
         {
             ShowText = false,
             Destructive = true,
             Explanation = statuses.Count == 0
-                ? $"The column {column.Name} has no statuses."
-                : $"The column holds {string.Join(", ", statuses)}. What happens to those statuses?",
-            Choice = statuses.Count == 0 ? null : new ChoiceInput("Statuses", [keep, delete], keep),
+                ? L.T($"The column {column.Name} has no statuses.")
+                : L.T($"The column holds {string.Join(", ", statuses)}. What happens to those statuses?"),
+            Choice = statuses.Count == 0 ? null : new ChoiceInput(L.T("Statuses"), [keep, delete], keep),
             SecondChoice = statuses.Count == 0 || targets.Count == 0 ? null
-                : new ChoiceInput("Move their issues to", targets.Select(t => t.Name).ToList(), targets[0].Name),
+                : new ChoiceInput(L.T("Move their issues to"), targets.Select(t => t.Name).ToList(), targets[0].Name),
         };
         if (!await Context.Dialogs.ShowDialogAsync(dialog))
             return;
@@ -528,14 +529,14 @@ public sealed partial class BoardViewPageViewModel : BoardPageViewModel, IItemsD
 
     internal async Task AddColumnAsync(int index)
     {
-        var dialog = new TextInputDialogViewModel("Add Column", "Name", "", "Add")
+        var dialog = new TextInputDialogViewModel(L.T("Add Column"), L.T("Name"), "", L.T("Add"))
         {
-            Explanation = "A new column gets a status of the same name (or takes an existing status that isn't on this board yet).",
-            Choice = new ChoiceInput("Counts as", ["To Do", "In Progress", "Done"], "In Progress"),
+            Explanation = L.T("A new column gets a status of the same name (or takes an existing status that isn't on this board yet)."),
+            Choice = new ChoiceInput(L.T("Counts as"), [L.T("To Do"), L.T("In Progress"), L.T("Done")], L.T("In Progress")),
         };
         if (!await Context.Dialogs.ShowDialogAsync(dialog))
             return;
-        var category = dialog.Choice!.Selected switch { "To Do" => StatusCategory.ToDo, "Done" => StatusCategory.Done, _ => StatusCategory.InProgress };
+        var category = dialog.Choice!.SelectedIndex switch { 0 => StatusCategory.ToDo, 2 => StatusCategory.Done, _ => StatusCategory.InProgress };   // To Do, In Progress, Done
         await Context.RunAsync(new AddColumn(Host.Definition.Id, dialog.Text, category) { Index = index });
     }
 }

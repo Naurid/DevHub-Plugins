@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Git.Core;
 
@@ -145,7 +146,7 @@ public sealed class GitRunner
         var stderr = await stderrTask;
         var result = new GitResult(process.ExitCode, stdout, stderr, stopwatch.Elapsed);
 
-        var shown = options.Sensitive ? "(output hidden: it may contain a credential)"
+        var shown = options.Sensitive ? L.T("(output hidden: it may contain a credential)")
             : string.IsNullOrWhiteSpace(stderr) ? stdout : stderr;
         _log.Add(new GitCommandEntry(workingDirectory, arguments, started, result.Duration, result.ExitCode,
             shown.Length > LoggedOutputLength ? shown[..LoggedOutputLength] + "…" : shown,

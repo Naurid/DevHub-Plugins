@@ -6,6 +6,7 @@
 -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:vm="using:DevHub.ViewModels.Board"
              xmlns:c="using:DevHub.Controls"
              x:Class="DevHub.Views.Board.BoardViewPageView"
@@ -32,12 +33,12 @@
             </Grid>
             <Border Classes="banner info" IsVisible="{Binding NoActiveSprint}">
                 <TextBlock TextWrapping="Wrap"
-                           Text="No sprint is running. A Scrum board shows the active sprint's issues: plan and start a sprint in the Backlog (with the Board.Scrum plugin), or make this a Kanban board in Board Settings." />
+                           Text="{l:T 'No sprint is running. A Scrum board shows the active sprint\'s issues: plan and start a sprint in the Backlog (with the Board.Scrum plugin), or make this a Kanban board in Board Settings.'}" />
             </Border>
 
             <!-- Quick filters and assignees. -->
             <WrapPanel Orientation="Horizontal">
-                <TextBlock Classes="secondary" Text="Quick filters:" VerticalAlignment="Center" Margin="{DynamicResource Margin.RowEnd}"
+                <TextBlock Classes="secondary" Text="{l:T 'Quick filters:'}" VerticalAlignment="Center" Margin="{DynamicResource Margin.RowEnd}"
                            IsVisible="{Binding HasQuickFilters}" />
                 <ItemsControl ItemsSource="{Binding QuickFilters}">
                     <ItemsControl.ItemsPanel>
@@ -66,27 +67,27 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-                <Button Classes="flat" Content="Clear filters" Command="{Binding ClearFiltersCommand}" />
+                <Button Classes="flat" Content="{l:T 'Clear filters'}" Command="{Binding ClearFiltersCommand}" />
             </WrapPanel>
 
             <Border Classes="banner error" IsVisible="{Binding Problem, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
                 <TextBlock Text="{Binding Problem}" TextWrapping="Wrap" />
             </Border>
             <TextBlock Classes="small secondary" Text="{Binding NotOnBoard}" TextWrapping="Wrap"
-                       ToolTip.Tip="These statuses aren't in any column of this board. Add them to a column with its Statuses… menu."
+                       ToolTip.Tip="{l:T 'These statuses aren\'t in any column of this board. Add them to a column with its Statuses… menu.'}"
                        IsVisible="{Binding NotOnBoard, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
             <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}" IsVisible="{Binding HasPicked}">
                 <TextBlock Text="{Binding PickedText}" VerticalAlignment="Center" />
-                <Button Content="Edit Selected…" Command="{Binding EditPickedCommand}" />
-                <Button Classes="flat" Content="Clear selection" Command="{Binding ClearPicksCommand}" />
-                <TextBlock Classes="small secondary" Text="Drag one of them to move them all." VerticalAlignment="Center" />
+                <Button Content="{l:T 'Edit Selected…'}" Command="{Binding EditPickedCommand}" />
+                <Button Classes="flat" Content="{l:T 'Clear selection'}" Command="{Binding ClearPicksCommand}" />
+                <TextBlock Classes="small secondary" Text="{l:T 'Drag one of them to move them all.'}" VerticalAlignment="Center" />
             </StackPanel>
         </StackPanel>
 
         <Panel>
-            <c:EmptyState IconKind="add" Title="No columns yet" IsVisible="{Binding HasNoColumns}"
-                          Description="Add the columns your work goes through. Each new column gets a status of the same name.">
-                <Button Classes="accent" Content="Add Column…" Command="{Binding AddColumnAtEndCommand}" HorizontalAlignment="Center" />
+            <c:EmptyState IconKind="add" Title="{l:T 'No columns yet'}" IsVisible="{Binding HasNoColumns}"
+                          Description="{l:T 'Add the columns your work goes through. Each new column gets a status of the same name.'}">
+                <Button Classes="accent" Content="{l:T 'Add Column…'}" Command="{Binding AddColumnAtEndCommand}" HorizontalAlignment="Center" />
             </c:EmptyState>
 
             <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" IsVisible="{Binding !HasNoColumns}"
@@ -109,22 +110,22 @@
                                             <c:Icon Kind="success" IsVisible="{Binding IsDoneColumn}" VerticalAlignment="Center" />
                                             <TextBlock Grid.Column="1" Classes="columnName" Text="{Binding Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
                                             <TextBlock Grid.Column="2" Classes="secondary" Text="{Binding CountText}" VerticalAlignment="Center" />
-                                            <Button Grid.Column="3" Classes="flat" ToolTip.Tip="Column menu" AutomationProperties.Name="Column menu">
+                                            <Button Grid.Column="3" Classes="flat" ToolTip.Tip="{l:T 'Column menu'}" AutomationProperties.Name="{l:T 'Column menu'}">
                                                 <c:Icon Kind="moreVertical" />
                                                 <Button.Flyout>
                                                     <MenuFlyout>
-                                                        <MenuItem Header="Create Issue Here…" Command="{Binding AddIssueCommand}" />
+                                                        <MenuItem Header="{l:T 'Create Issue Here…'}" Command="{Binding AddIssueCommand}" />
                                                         <Separator />
-                                                        <MenuItem Header="Rename…" Command="{Binding RenameCommand}" />
-                                                        <MenuItem Header="Limits (WIP)…" Command="{Binding WipCommand}" />
-                                                        <MenuItem Header="Statuses…" Command="{Binding StatusesCommand}" />
-                                                        <MenuItem Header="Merge Into…" Command="{Binding MergeCommand}" />
+                                                        <MenuItem Header="{l:T 'Rename…'}" Command="{Binding RenameCommand}" />
+                                                        <MenuItem Header="{l:T 'Limits (WIP)…'}" Command="{Binding WipCommand}" />
+                                                        <MenuItem Header="{l:T 'Statuses…'}" Command="{Binding StatusesCommand}" />
+                                                        <MenuItem Header="{l:T 'Merge Into…'}" Command="{Binding MergeCommand}" />
                                                         <Separator />
-                                                        <MenuItem Header="Move Left" Command="{Binding MoveLeftCommand}" IsEnabled="{Binding CanMoveLeft}" />
-                                                        <MenuItem Header="Move Right" Command="{Binding MoveRightCommand}" IsEnabled="{Binding CanMoveRight}" />
-                                                        <MenuItem Header="Add Column After…" Command="{Binding AddColumnAfterCommand}" />
+                                                        <MenuItem Header="{l:T 'Move Left'}" Command="{Binding MoveLeftCommand}" IsEnabled="{Binding CanMoveLeft}" />
+                                                        <MenuItem Header="{l:T 'Move Right'}" Command="{Binding MoveRightCommand}" IsEnabled="{Binding CanMoveRight}" />
+                                                        <MenuItem Header="{l:T 'Add Column After…'}" Command="{Binding AddColumnAfterCommand}" />
                                                         <Separator />
-                                                        <MenuItem Header="Delete Column…" Command="{Binding DeleteCommand}" />
+                                                        <MenuItem Header="{l:T 'Delete Column…'}" Command="{Binding DeleteCommand}" />
                                                     </MenuFlyout>
                                                 </Button.Flyout>
                                             </Button>
@@ -133,7 +134,7 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <Button Classes="flat" ToolTip.Tip="Add a column" AutomationProperties.Name="Add column"
+                        <Button Classes="flat" ToolTip.Tip="{l:T 'Add a column'}" AutomationProperties.Name="{l:T 'Add column'}"
                                 Command="{Binding AddColumnAtEndCommand}" VerticalAlignment="Center">
                             <c:Icon Kind="add" />
                         </Button>

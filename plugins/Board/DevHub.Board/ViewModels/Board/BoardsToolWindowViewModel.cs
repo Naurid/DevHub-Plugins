@@ -7,6 +7,7 @@ using DevHub.Sdk.Core.Settings;
 using DevHub.Services.Board;
 using DevHub.ViewModels.Dialogs.Settings;
 using DevHub.ViewModels.ToolWindows;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Board;
 
@@ -24,8 +25,8 @@ public sealed partial class BoardsToolWindowViewModel : ToolWindowViewModelBase,
         Load();
     }
 
-    public override string Id => "Boards";
-    public override string Title => "Boards";
+    public override string Id => L.T("Boards");
+    public override string Title => L.T("Boards");
     public override string IconKind => Controls.IconKind.Menu;
     public override ToolWindowSlot Slot => ToolWindowSlot.Left;
     public override int Order => 500;
@@ -81,8 +82,8 @@ public sealed partial class BoardSettingsPageViewModel : SettingsPageViewModelBa
         _compactCards = settings.CompactCards;
     }
 
-    public override string Title => "Board";
-    public override string Keywords => "board jira issues name email cards planning";
+    public override string Title => L.T("Board");
+    public override string Keywords => L.T("board jira issues name email cards planning");
     public override int Order => 600;
 
     public string DefaultName => Environment.UserName;

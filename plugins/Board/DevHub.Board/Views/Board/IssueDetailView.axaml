@@ -5,6 +5,7 @@
 -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:vm="using:DevHub.ViewModels.Board"
              xmlns:dlg="using:DevHub.ViewModels.Dialogs"
              xmlns:board="using:DevHub.Board"
@@ -55,27 +56,27 @@
                         IsVisible="{Binding ParentKey, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                         ToolTip.Tip="{Binding ParentSummary}">
                     <TextBlock Classes="small" TextTrimming="CharacterEllipsis">
-                        <Run Text="in " /><Run Text="{Binding ParentKey}" /><Run Text=" " /><Run Text="{Binding ParentSummary}" />
+                        <Run Text="{l:T 'in '}" /><Run Text="{Binding ParentKey}" /><Run Text=" " /><Run Text="{Binding ParentSummary}" />
                     </TextBlock>
                 </Button>
-                <Button Grid.Column="3" Classes="flat" ToolTip.Tip="Open in its own tab" AutomationProperties.Name="Open in tab"
+                <Button Grid.Column="3" Classes="flat" ToolTip.Tip="{l:T 'Open in its own tab'}" AutomationProperties.Name="{l:T 'Open in tab'}"
                         Command="{Binding OpenTabCommand}" IsVisible="{Binding IsPanel}">
                     <c:Icon Kind="externalTools" />
                 </Button>
-                <Button Grid.Column="4" Classes="flat" ToolTip.Tip="More" AutomationProperties.Name="Issue menu">
+                <Button Grid.Column="4" Classes="flat" ToolTip.Tip="{l:T 'More'}" AutomationProperties.Name="{l:T 'Issue menu'}">
                     <c:Icon Kind="moreVertical" />
                     <Button.Flyout>
                         <MenuFlyout>
-                            <MenuItem Header="Clone" Command="{Binding CloneCommand}" />
-                            <MenuItem Header="Log Work…" Command="{Binding LogWorkCommand}" />
-                            <MenuItem Header="Attach File…" Command="{Binding AddAttachmentCommand}" />
-                            <MenuItem Header="Link Issue…" Command="{Binding StartAddLinkCommand}" />
+                            <MenuItem Header="{l:T 'Clone'}" Command="{Binding CloneCommand}" />
+                            <MenuItem Header="{l:T 'Log Work…'}" Command="{Binding LogWorkCommand}" />
+                            <MenuItem Header="{l:T 'Attach File…'}" Command="{Binding AddAttachmentCommand}" />
+                            <MenuItem Header="{l:T 'Link Issue…'}" Command="{Binding StartAddLinkCommand}" />
                             <Separator />
-                            <MenuItem Header="Delete…" Command="{Binding DeleteCommand}" />
+                            <MenuItem Header="{l:T 'Delete…'}" Command="{Binding DeleteCommand}" />
                         </MenuFlyout>
                     </Button.Flyout>
                 </Button>
-                <Button Grid.Column="5" Classes="flat" ToolTip.Tip="Close" AutomationProperties.Name="Close issue panel"
+                <Button Grid.Column="5" Classes="flat" ToolTip.Tip="{l:T 'Close'}" AutomationProperties.Name="{l:T 'Close issue panel'}"
                         Command="{Binding ClosePanelCommand}" IsVisible="{Binding IsPanel}">
                     <c:Icon Kind="close" />
                 </Button>
@@ -97,14 +98,14 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
 
-            <TextBox Classes="summary" Text="{Binding Summary, UpdateSourceTrigger=LostFocus}" AutomationProperties.Name="Summary" />
+            <TextBox Classes="summary" Text="{Binding Summary, UpdateSourceTrigger=LostFocus}" AutomationProperties.Name="{l:T 'Summary'}" />
 
             <!-- Status and resolution. -->
             <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="{DynamicResource Spacing}">
-                <ComboBox ItemsSource="{Binding Statuses}" SelectedItem="{Binding Status}" AutomationProperties.Name="Status"
-                          ToolTip.Tip="Move to another status (only the moves the workflow allows are listed)" />
+                <ComboBox ItemsSource="{Binding Statuses}" SelectedItem="{Binding Status}" AutomationProperties.Name="{l:T 'Status'}"
+                          ToolTip.Tip="{l:T 'Move to another status (only the moves the workflow allows are listed)'}" />
                 <ComboBox Grid.Column="1" ItemsSource="{Binding Resolutions}" SelectedItem="{Binding Resolution}" IsVisible="{Binding IsDone}"
-                          AutomationProperties.Name="Resolution" ToolTip.Tip="Resolution" />
+                          AutomationProperties.Name="{l:T 'Resolution'}" ToolTip.Tip="{l:T 'Resolution'}" />
                 <TextBlock Grid.Column="2" Classes="small secondary" VerticalAlignment="Center" HorizontalAlignment="Right" TextTrimming="CharacterEllipsis">
                     <Run Text="{Binding Created}" /><Run Text=" · " /><Run Text="{Binding Updated}" />
                 </TextBlock>
@@ -113,11 +114,11 @@
             <!-- Description. -->
             <StackPanel Spacing="{DynamicResource Spacing.Small}">
                 <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock Classes="section" Text="Description" />
-                    <Button Grid.Column="1" Classes="flat" Content="Edit" Command="{Binding EditDescriptionCommand}" IsVisible="{Binding !IsEditingDescription}" />
+                    <TextBlock Classes="section" Text="{l:T 'Description'}" />
+                    <Button Grid.Column="1" Classes="flat" Content="{l:T 'Edit'}" Command="{Binding EditDescriptionCommand}" IsVisible="{Binding !IsEditingDescription}" />
                 </Grid>
                 <c:MarkdownView Markdown="{Binding Description}" IsVisible="{Binding !IsEditingDescription}" />
-                <Button Classes="flat" HorizontalAlignment="Left" Content="Add a description…" Command="{Binding EditDescriptionCommand}">
+                <Button Classes="flat" HorizontalAlignment="Left" Content="{l:T 'Add a description…'}" Command="{Binding EditDescriptionCommand}">
                     <Button.IsVisible>
                         <MultiBinding Converter="{x:Static BoolConverters.And}">
                             <Binding Path="!HasDescription" />
@@ -127,11 +128,11 @@
                 </Button>
                 <StackPanel Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding IsEditingDescription}">
                     <TextBox Text="{Binding DescriptionDraft}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="{DynamicResource Size.DescriptionEditor}"
-                             AutomationProperties.Name="Description (Markdown)" c:FocusOnLoad.IsEnabled="True"
-                             PlaceholderText="Markdown: **bold**, *italic*, `code`, - lists, - [ ] tasks, [links](https://…)" />
+                             AutomationProperties.Name="{l:T 'Description (Markdown)'}" c:FocusOnLoad.IsEnabled="True"
+                             PlaceholderText="{l:T 'Markdown: **bold**, *italic*, `code`, - lists, - [ ] tasks, [links](https://…)'}" />
                     <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}">
-                        <Button Classes="accent" Content="Save" Command="{Binding SaveDescriptionCommand}" />
-                        <Button Content="Cancel" Command="{Binding CancelDescriptionCommand}" />
+                        <Button Classes="accent" Content="{l:T 'Save'}" Command="{Binding SaveDescriptionCommand}" />
+                        <Button Content="{l:T 'Cancel'}" Command="{Binding CancelDescriptionCommand}" />
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
@@ -139,7 +140,7 @@
             <!-- Acceptance criteria and Definition of Done: tick as they're met; right-click a criterion to edit or move it. -->
             <StackPanel Spacing="{DynamicResource Spacing.Small}" DataContext="{Binding Checks}" x:DataType="vm:IssueChecksViewModel">
                 <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock Classes="section" Text="Acceptance criteria" />
+                    <TextBlock Classes="section" Text="{l:T 'Acceptance criteria'}" />
                     <TextBlock Grid.Column="1" Classes="small secondary" Text="{Binding CriteriaProgress}" VerticalAlignment="Center" />
                 </Grid>
                 <ItemsControl ItemsSource="{Binding Criteria}">
@@ -150,50 +151,50 @@
                                       c:DoubleTap.Command="{Binding EditCommand}">
                                     <Grid.ContextMenu>
                                         <ContextMenu>
-                                            <MenuItem Header="Edit" Command="{Binding EditCommand}" />
-                                            <MenuItem Header="Move Up" Command="{Binding MoveUpCommand}" />
-                                            <MenuItem Header="Move Down" Command="{Binding MoveDownCommand}" />
+                                            <MenuItem Header="{l:T 'Edit'}" Command="{Binding EditCommand}" />
+                                            <MenuItem Header="{l:T 'Move Up'}" Command="{Binding MoveUpCommand}" />
+                                            <MenuItem Header="{l:T 'Move Down'}" Command="{Binding MoveDownCommand}" />
                                             <Separator />
-                                            <MenuItem Header="Remove" Command="{Binding RemoveCommand}" />
+                                            <MenuItem Header="{l:T 'Remove'}" Command="{Binding RemoveCommand}" />
                                         </ContextMenu>
                                     </Grid.ContextMenu>
                                     <CheckBox IsChecked="{Binding IsChecked}" AutomationProperties.Name="{Binding Text}">
                                         <TextBlock Text="{Binding Text}" TextWrapping="Wrap" />
                                     </CheckBox>
                                     <Button Grid.Column="1" Classes="flat" VerticalAlignment="Top" Command="{Binding RemoveCommand}"
-                                            ToolTip.Tip="Remove this criterion" AutomationProperties.Name="Remove criterion">
+                                            ToolTip.Tip="{l:T 'Remove this criterion'}" AutomationProperties.Name="{l:T 'Remove criterion'}">
                                         <c:Icon Kind="delete" />
                                     </Button>
                                 </Grid>
                                 <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing.Small}" IsVisible="{Binding IsEditing}">
-                                    <TextBox Text="{Binding Draft}" AutomationProperties.Name="Criterion" c:FocusOnLoad.IsEnabled="True">
+                                    <TextBox Text="{Binding Draft}" AutomationProperties.Name="{l:T 'Criterion'}" c:FocusOnLoad.IsEnabled="True">
                                         <TextBox.KeyBindings>
                                             <KeyBinding Gesture="Enter" Command="{Binding SaveCommand}" />
                                             <KeyBinding Gesture="Escape" Command="{Binding CancelEditCommand}" />
                                         </TextBox.KeyBindings>
                                     </TextBox>
-                                    <Button Grid.Column="1" Classes="accent" Content="Save" Command="{Binding SaveCommand}" />
-                                    <Button Grid.Column="2" Content="Cancel" Command="{Binding CancelEditCommand}" />
+                                    <Button Grid.Column="1" Classes="accent" Content="{l:T 'Save'}" Command="{Binding SaveCommand}" />
+                                    <Button Grid.Column="2" Content="{l:T 'Cancel'}" Command="{Binding CancelEditCommand}" />
                                 </Grid>
                             </Panel>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}">
-                    <TextBox Text="{Binding NewCriterion}" PlaceholderText="Add: Given … when … then … (Enter)" AutomationProperties.Name="New acceptance criterion">
+                    <TextBox Text="{Binding NewCriterion}" PlaceholderText="{l:T 'Add: Given … when … then … (Enter)'}" AutomationProperties.Name="{l:T 'New acceptance criterion'}">
                         <TextBox.KeyBindings>
                             <KeyBinding Gesture="Enter" Command="{Binding AddCriterionCommand}" />
                         </TextBox.KeyBindings>
                     </TextBox>
-                    <Button Grid.Column="1" Content="Add" Command="{Binding AddCriterionCommand}" />
+                    <Button Grid.Column="1" Content="{l:T 'Add'}" Command="{Binding AddCriterionCommand}" />
                 </Grid>
 
                 <StackPanel Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding ShowDefinitionOfDone}">
                     <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
-                        <TextBlock Classes="section" Text="Definition of Done" />
+                        <TextBlock Classes="section" Text="{l:T 'Definition of Done'}" />
                         <TextBlock Grid.Column="1" Classes="small secondary" Text="{Binding DoneProgress}" VerticalAlignment="Center" />
-                        <Button Grid.Column="2" Classes="flat" Content="Tick all" Command="{Binding TickAllDoneCommand}"
-                                ToolTip.Tip="Tick every Definition of Done item" />
+                        <Button Grid.Column="2" Classes="flat" Content="{l:T 'Tick all'}" Command="{Binding TickAllDoneCommand}"
+                                ToolTip.Tip="{l:T 'Tick every Definition of Done item'}" />
                     </Grid>
                     <ItemsControl ItemsSource="{Binding DoneItems}">
                         <ItemsControl.ItemTemplate>
@@ -211,27 +212,27 @@
 
             <!-- Details. -->
             <StackPanel Classes="fields" Spacing="{DynamicResource Spacing.Small}">
-                <TextBlock Classes="section" Text="Details" />
+                <TextBlock Classes="section" Text="{l:T 'Details'}" />
                 <Grid ColumnDefinitions="Auto,*">
-                    <TextBlock Classes="fieldLabel" Text="Type" />
+                    <TextBlock Classes="fieldLabel" Text="{l:T 'Type'}" />
                     <ComboBox Grid.Column="1" ItemsSource="{Binding Types}" SelectedItem="{Binding Type}" ItemTemplate="{StaticResource NamedWithIcon}"
-                              HorizontalAlignment="Stretch" AutomationProperties.Name="Type" />
+                              HorizontalAlignment="Stretch" AutomationProperties.Name="{l:T 'Type'}" />
                 </Grid>
                 <Grid ColumnDefinitions="Auto,*">
-                    <TextBlock Classes="fieldLabel" Text="Priority" />
+                    <TextBlock Classes="fieldLabel" Text="{l:T 'Priority'}" />
                     <ComboBox Grid.Column="1" ItemsSource="{Binding Priorities}" SelectedItem="{Binding Priority}" ItemTemplate="{StaticResource NamedWithPriority}"
-                              HorizontalAlignment="Stretch" AutomationProperties.Name="Priority" />
+                              HorizontalAlignment="Stretch" AutomationProperties.Name="{l:T 'Priority'}" />
                 </Grid>
                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}">
-                    <TextBlock Classes="fieldLabel" Text="Assignee" />
+                    <TextBlock Classes="fieldLabel" Text="{l:T 'Assignee'}" />
                     <ComboBox Grid.Column="1" ItemsSource="{Binding People}" SelectedItem="{Binding Assignee}" HorizontalAlignment="Stretch"
-                              AutomationProperties.Name="Assignee" />
-                    <Button Grid.Column="2" Classes="flat" Content="Assign to me" Command="{Binding AssignToMeCommand}" IsVisible="{Binding !IsAssignedToMe}" />
+                              AutomationProperties.Name="{l:T 'Assignee'}" />
+                    <Button Grid.Column="2" Classes="flat" Content="{l:T 'Assign to me'}" Command="{Binding AssignToMeCommand}" IsVisible="{Binding !IsAssignedToMe}" />
                 </Grid>
                 <Grid ColumnDefinitions="Auto,*">
-                    <TextBlock Classes="fieldLabel" Text="Reporter" />
+                    <TextBlock Classes="fieldLabel" Text="{l:T 'Reporter'}" />
                     <ComboBox Grid.Column="1" ItemsSource="{Binding People}" SelectedItem="{Binding Reporter}" HorizontalAlignment="Stretch"
-                              AutomationProperties.Name="Reporter" />
+                              AutomationProperties.Name="{l:T 'Reporter'}" />
                 </Grid>
                 <Grid ColumnDefinitions="Auto,*" IsVisible="{Binding ShowParent}">
                     <TextBlock Classes="fieldLabel" Text="{Binding ParentLabel}" />
@@ -239,54 +240,54 @@
                               AutomationProperties.Name="{Binding ParentLabel}" />
                 </Grid>
                 <Grid ColumnDefinitions="Auto,*" IsVisible="{Binding ShowSprint}">
-                    <TextBlock Classes="fieldLabel" Text="Sprint" />
+                    <TextBlock Classes="fieldLabel" Text="{l:T 'Sprint'}" />
                     <ComboBox Grid.Column="1" ItemsSource="{Binding SprintChoices}" SelectedItem="{Binding Sprint}" HorizontalAlignment="Stretch"
-                              AutomationProperties.Name="Sprint" />
+                              AutomationProperties.Name="{l:T 'Sprint'}" />
                 </Grid>
                 <Grid ColumnDefinitions="Auto,*" IsVisible="{Binding ShowPoints}">
-                    <TextBlock Classes="fieldLabel" Text="Story points" />
-                    <TextBox Grid.Column="1" Text="{Binding Points, UpdateSourceTrigger=LostFocus}" PlaceholderText="None" AutomationProperties.Name="Story points" />
+                    <TextBlock Classes="fieldLabel" Text="{l:T 'Story points'}" />
+                    <TextBox Grid.Column="1" Text="{Binding Points, UpdateSourceTrigger=LostFocus}" PlaceholderText="{l:T 'None'}" AutomationProperties.Name="{l:T 'Story points'}" />
                 </Grid>
                 <Grid ColumnDefinitions="Auto,*">
-                    <TextBlock Classes="fieldLabel" Text="Original estimate" />
-                    <TextBox Grid.Column="1" Text="{Binding OriginalEstimate, UpdateSourceTrigger=LostFocus}" PlaceholderText="e.g. 1d 4h"
-                             AutomationProperties.Name="Original estimate" />
+                    <TextBlock Classes="fieldLabel" Text="{l:T 'Original estimate'}" />
+                    <TextBox Grid.Column="1" Text="{Binding OriginalEstimate, UpdateSourceTrigger=LostFocus}" PlaceholderText="{l:T 'e.g. 1d 4h'}"
+                             AutomationProperties.Name="{l:T 'Original estimate'}" />
                 </Grid>
                 <Grid ColumnDefinitions="Auto,*">
-                    <TextBlock Classes="fieldLabel" Text="Remaining" />
-                    <TextBox Grid.Column="1" Text="{Binding RemainingEstimate, UpdateSourceTrigger=LostFocus}" PlaceholderText="e.g. 4h"
-                             AutomationProperties.Name="Remaining estimate" />
+                    <TextBlock Classes="fieldLabel" Text="{l:T 'Remaining'}" />
+                    <TextBox Grid.Column="1" Text="{Binding RemainingEstimate, UpdateSourceTrigger=LostFocus}" PlaceholderText="{l:T 'e.g. 4h'}"
+                             AutomationProperties.Name="{l:T 'Remaining estimate'}" />
                 </Grid>
                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}">
-                    <TextBlock Classes="fieldLabel" Text="Time tracking" />
+                    <TextBlock Classes="fieldLabel" Text="{l:T 'Time tracking'}" />
                     <StackPanel Grid.Column="1" Spacing="{DynamicResource Spacing.Small}" VerticalAlignment="Center">
                         <ProgressBar Value="{Binding TimeProgress}" Maximum="1" />
                         <TextBlock Classes="small secondary" Text="{Binding TimeSpent}" />
                     </StackPanel>
-                    <Button Grid.Column="2" Classes="flat" Content="Log work…" Command="{Binding LogWorkCommand}" />
+                    <Button Grid.Column="2" Classes="flat" Content="{l:T 'Log work…'}" Command="{Binding LogWorkCommand}" />
                 </Grid>
                 <Grid ColumnDefinitions="Auto,*">
-                    <TextBlock Classes="fieldLabel" Text="Start date" />
-                    <CalendarDatePicker Grid.Column="1" SelectedDate="{Binding Start}" HorizontalAlignment="Stretch" AutomationProperties.Name="Start date" />
+                    <TextBlock Classes="fieldLabel" Text="{l:T 'Start date'}" />
+                    <CalendarDatePicker Grid.Column="1" SelectedDate="{Binding Start}" HorizontalAlignment="Stretch" AutomationProperties.Name="{l:T 'Start date'}" />
                 </Grid>
                 <Grid ColumnDefinitions="Auto,*">
-                    <TextBlock Classes="fieldLabel" Text="Due date" />
-                    <CalendarDatePicker Grid.Column="1" SelectedDate="{Binding Due}" HorizontalAlignment="Stretch" AutomationProperties.Name="Due date" />
+                    <TextBlock Classes="fieldLabel" Text="{l:T 'Due date'}" />
+                    <CalendarDatePicker Grid.Column="1" SelectedDate="{Binding Due}" HorizontalAlignment="Stretch" AutomationProperties.Name="{l:T 'Due date'}" />
                 </Grid>
                 <Grid ColumnDefinitions="Auto,*">
-                    <TextBlock Classes="fieldLabel" Text="Labels" />
-                    <TextBox Grid.Column="1" Text="{Binding Labels, UpdateSourceTrigger=LostFocus}" PlaceholderText="ui backend (separated by spaces)"
-                             AutomationProperties.Name="Labels" />
+                    <TextBlock Classes="fieldLabel" Text="{l:T 'Labels'}" />
+                    <TextBox Grid.Column="1" Text="{Binding Labels, UpdateSourceTrigger=LostFocus}" PlaceholderText="{l:T 'ui backend (separated by spaces)'}"
+                             AutomationProperties.Name="{l:T 'Labels'}" />
                 </Grid>
                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}" IsVisible="{Binding HasComponents}">
-                    <TextBlock Classes="fieldLabel" Text="Components" />
+                    <TextBlock Classes="fieldLabel" Text="{l:T 'Components'}" />
                     <TextBlock Grid.Column="1" Text="{Binding Components, TargetNullValue='None'}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-                    <Button Grid.Column="2" Classes="flat" Content="Change…" Command="{Binding EditComponentsCommand}" />
+                    <Button Grid.Column="2" Classes="flat" Content="{l:T 'Change…'}" Command="{Binding EditComponentsCommand}" />
                 </Grid>
                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}" IsVisible="{Binding HasVersions}">
-                    <TextBlock Classes="fieldLabel" Text="Fix versions" />
+                    <TextBlock Classes="fieldLabel" Text="{l:T 'Fix versions'}" />
                     <TextBlock Grid.Column="1" Text="{Binding FixVersions}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-                    <Button Grid.Column="2" Classes="flat" Content="Change…" Command="{Binding EditVersionsCommand}" />
+                    <Button Grid.Column="2" Classes="flat" Content="{l:T 'Change…'}" Command="{Binding EditVersionsCommand}" />
                 </Grid>
                 <ItemsControl ItemsSource="{Binding CustomFields}" IsVisible="{Binding HasCustomFields}">
                     <ItemsControl.ItemTemplate>
@@ -315,26 +316,26 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="vm:IssueItemViewModel">
                             <Button Classes="cardButton" Command="{Binding SelectCommand}" AutomationProperties.Name="{Binding}"
-                                    ToolTip.Tip="Show it (double-click: open in a tab)"
+                                    ToolTip.Tip="{l:T 'Show it (double-click: open in a tab)'}"
                                     Content="{Binding}" ContentTemplate="{StaticResource IssueRow}" />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}">
-                    <TextBox Text="{Binding NewChildSummary}" PlaceholderText="Add: what needs to be done? (Enter)" AutomationProperties.Name="New child issue">
+                    <TextBox Text="{Binding NewChildSummary}" PlaceholderText="{l:T 'Add: what needs to be done? (Enter)'}" AutomationProperties.Name="{l:T 'New child issue'}">
                         <TextBox.KeyBindings>
                             <KeyBinding Gesture="Enter" Command="{Binding AddChildCommand}" />
                         </TextBox.KeyBindings>
                     </TextBox>
-                    <Button Grid.Column="1" Content="Add" Command="{Binding AddChildCommand}" />
+                    <Button Grid.Column="1" Content="{l:T 'Add'}" Command="{Binding AddChildCommand}" />
                 </Grid>
             </StackPanel>
 
             <!-- Links. -->
             <StackPanel Spacing="{DynamicResource Spacing.Small}">
                 <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock Classes="section" Text="Links" />
-                    <Button Grid.Column="1" Classes="flat" Content="Link issue…" Command="{Binding StartAddLinkCommand}" IsVisible="{Binding !IsAddingLink}" />
+                    <TextBlock Classes="section" Text="{l:T 'Links'}" />
+                    <Button Grid.Column="1" Classes="flat" Content="{l:T 'Link issue…'}" Command="{Binding StartAddLinkCommand}" IsVisible="{Binding !IsAddingLink}" />
                 </Grid>
                 <ItemsControl ItemsSource="{Binding Links}">
                     <ItemsControl.ItemTemplate>
@@ -347,7 +348,7 @@
                                 <Border Grid.Column="3" Classes="statusPill" Classes.done="{Binding OtherDone}" VerticalAlignment="Center">
                                     <TextBlock Classes="small" Text="{Binding OtherStatus}" />
                                 </Border>
-                                <Button Grid.Column="4" Classes="flat" ToolTip.Tip="Remove the link" AutomationProperties.Name="Remove link"
+                                <Button Grid.Column="4" Classes="flat" ToolTip.Tip="{l:T 'Remove the link'}" AutomationProperties.Name="{l:T 'Remove link'}"
                                         Command="{Binding $parent[UserControl].((vm:IssueDetailViewModel)DataContext).RemoveLinkCommand}" CommandParameter="{Binding}">
                                     <c:Icon Kind="close" />
                                 </Button>
@@ -356,34 +357,34 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}" IsVisible="{Binding IsAddingLink}">
-                    <ComboBox ItemsSource="{Binding LinkChoices}" SelectedItem="{Binding NewLinkType}" AutomationProperties.Name="Link type" />
-                    <TextBox Grid.Column="1" Text="{Binding NewLinkKey}" PlaceholderText="Issue key, e.g. DEV-7" AutomationProperties.Name="Issue to link"
+                    <ComboBox ItemsSource="{Binding LinkChoices}" SelectedItem="{Binding NewLinkType}" AutomationProperties.Name="{l:T 'Link type'}" />
+                    <TextBox Grid.Column="1" Text="{Binding NewLinkKey}" PlaceholderText="{l:T 'Issue key, e.g. DEV-7'}" AutomationProperties.Name="{l:T 'Issue to link'}"
                              c:FocusOnLoad.IsEnabled="True">
                         <TextBox.KeyBindings>
                             <KeyBinding Gesture="Enter" Command="{Binding AddLinkCommand}" />
                         </TextBox.KeyBindings>
                     </TextBox>
-                    <Button Grid.Column="2" Content="Link" Command="{Binding AddLinkCommand}" />
+                    <Button Grid.Column="2" Content="{l:T 'Link'}" Command="{Binding AddLinkCommand}" />
                 </Grid>
             </StackPanel>
 
             <!-- Attachments. -->
             <StackPanel Spacing="{DynamicResource Spacing.Small}">
                 <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock Classes="section" Text="Attachments" />
-                    <Button Grid.Column="1" Classes="flat" Content="Attach…" Command="{Binding AddAttachmentCommand}" />
+                    <TextBlock Classes="section" Text="{l:T 'Attachments'}" />
+                    <Button Grid.Column="1" Classes="flat" Content="{l:T 'Attach…'}" Command="{Binding AddAttachmentCommand}" />
                 </Grid>
                 <ItemsControl ItemsSource="{Binding Attachments}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="vm:AttachmentRow">
                             <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing.Small}" MinHeight="{DynamicResource Size.RowHeight}">
-                                <Button Classes="flat" HorizontalAlignment="Left" ToolTip.Tip="Open"
+                                <Button Classes="flat" HorizontalAlignment="Left" ToolTip.Tip="{l:T 'Open'}"
                                         Command="{Binding $parent[UserControl].((vm:IssueDetailViewModel)DataContext).OpenAttachmentCommand}" CommandParameter="{Binding}">
                                     <TextBlock Text="{Binding FileName}" TextTrimming="CharacterEllipsis" />
                                 </Button>
                                 <TextBlock Grid.Column="1" Classes="small secondary" Text="{Binding Size}" VerticalAlignment="Center" />
                                 <TextBlock Grid.Column="2" Classes="small secondary" Text="{Binding When}" VerticalAlignment="Center" />
-                                <Button Grid.Column="3" Classes="flat" ToolTip.Tip="Remove" AutomationProperties.Name="Remove attachment"
+                                <Button Grid.Column="3" Classes="flat" ToolTip.Tip="{l:T 'Remove'}" AutomationProperties.Name="{l:T 'Remove attachment'}"
                                         Command="{Binding $parent[UserControl].((vm:IssueDetailViewModel)DataContext).RemoveAttachmentCommand}" CommandParameter="{Binding}">
                                     <c:Icon Kind="delete" />
                                 </Button>
@@ -407,19 +408,19 @@
 
             <!-- Activity. -->
             <TabControl SelectedIndex="{Binding ActivityTab}">
-                <TabItem Header="Comments">
+                <TabItem Header="{l:T 'Comments'}">
                     <StackPanel Spacing="{DynamicResource Spacing}">
                         <TextBox Text="{Binding NewComment}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="{DynamicResource Size.CommentEditor}"
-                                 PlaceholderText="Add a comment (Markdown)…" AutomationProperties.Name="New comment" />
-                        <Button Classes="accent" Content="Comment" Command="{Binding AddCommentCommand}" HorizontalAlignment="Left" />
+                                 PlaceholderText="{l:T 'Add a comment (Markdown)…'}" AutomationProperties.Name="{l:T 'New comment'}" />
+                        <Button Classes="accent" Content="{l:T 'Comment'}" Command="{Binding AddCommentCommand}" HorizontalAlignment="Left" />
                         <StackPanel Spacing="{DynamicResource Spacing.Small}"
                                     IsVisible="{Binding EditingCommentId, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
-                            <TextBlock Classes="secondary" Text="Editing a comment" />
+                            <TextBlock Classes="secondary" Text="{l:T 'Editing a comment'}" />
                             <TextBox Text="{Binding EditingCommentText}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="{DynamicResource Size.CommentEditor}"
-                                     AutomationProperties.Name="Comment being edited" />
+                                     AutomationProperties.Name="{l:T 'Comment being edited'}" />
                             <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}">
-                                <Button Classes="accent" Content="Save" Command="{Binding SaveCommentCommand}" />
-                                <Button Content="Cancel" Command="{Binding CancelCommentEditCommand}" />
+                                <Button Classes="accent" Content="{l:T 'Save'}" Command="{Binding SaveCommentCommand}" />
+                                <Button Content="{l:T 'Cancel'}" Command="{Binding CancelCommentEditCommand}" />
                             </StackPanel>
                         </StackPanel>
                         <ItemsControl ItemsSource="{Binding Comments}">
@@ -432,9 +433,9 @@
                                             <TextBlock Grid.Column="2" Classes="small secondary" VerticalAlignment="Center">
                                                 <Run Text="{Binding WhenText}" />
                                             </TextBlock>
-                                            <Button Grid.Column="3" Classes="flat" Content="Edit" IsVisible="{Binding IsMine}"
+                                            <Button Grid.Column="3" Classes="flat" Content="{l:T 'Edit'}" IsVisible="{Binding IsMine}"
                                                     Command="{Binding $parent[UserControl].((vm:IssueDetailViewModel)DataContext).EditCommentCommand}" CommandParameter="{Binding}" />
-                                            <Button Grid.Column="4" Classes="flat" Content="Delete" IsVisible="{Binding IsMine}"
+                                            <Button Grid.Column="4" Classes="flat" Content="{l:T 'Delete'}" IsVisible="{Binding IsMine}"
                                                     Command="{Binding $parent[UserControl].((vm:IssueDetailViewModel)DataContext).DeleteCommentCommand}" CommandParameter="{Binding}" />
                                         </Grid>
                                         <c:MarkdownView Markdown="{Binding Body}" />
@@ -444,10 +445,10 @@
                         </ItemsControl>
                     </StackPanel>
                 </TabItem>
-                <TabItem Header="Work log">
+                <TabItem Header="{l:T 'Work log'}">
                     <StackPanel Spacing="{DynamicResource Spacing}">
-                        <Button Content="Log Work…" Command="{Binding LogWorkCommand}" HorizontalAlignment="Left" />
-                        <TextBlock Classes="secondary" Text="No work logged yet." IsVisible="{Binding !HasWorkLogs}" />
+                        <Button Content="{l:T 'Log Work…'}" Command="{Binding LogWorkCommand}" HorizontalAlignment="Left" />
+                        <TextBlock Classes="secondary" Text="{l:T 'No work logged yet.'}" IsVisible="{Binding !HasWorkLogs}" />
                         <ItemsControl ItemsSource="{Binding WorkLogs}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="vm:WorkLogRow">
@@ -455,13 +456,13 @@
                                         <c:Avatar Text="{Binding Author}" Width="{DynamicResource Size.AvatarSmall}" Height="{DynamicResource Size.AvatarSmall}" VerticalAlignment="Top" />
                                         <StackPanel Grid.Column="1">
                                             <TextBlock TextWrapping="Wrap">
-                                                <Run Text="{Binding Author}" FontWeight="SemiBold" /><Run Text=" logged " /><Run Text="{Binding Spent}" />
+                                                <Run Text="{Binding Author}" FontWeight="SemiBold" /><Run Text="{l:T ' logged '}" /><Run Text="{Binding Spent}" />
                                                 <Run Text=" · " /><Run Text="{Binding When}" />
                                             </TextBlock>
                                             <TextBlock Classes="secondary" Text="{Binding Note}" TextWrapping="Wrap"
                                                        IsVisible="{Binding Note, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                                         </StackPanel>
-                                        <Button Grid.Column="2" Classes="flat" Content="Delete" IsVisible="{Binding IsMine}" VerticalAlignment="Top"
+                                        <Button Grid.Column="2" Classes="flat" Content="{l:T 'Delete'}" IsVisible="{Binding IsMine}" VerticalAlignment="Top"
                                                 Command="{Binding $parent[UserControl].((vm:IssueDetailViewModel)DataContext).DeleteWorkLogCommand}" CommandParameter="{Binding}" />
                                     </Grid>
                                 </DataTemplate>
@@ -469,7 +470,7 @@
                         </ItemsControl>
                     </StackPanel>
                 </TabItem>
-                <TabItem Header="History">
+                <TabItem Header="{l:T 'History'}">
                     <ItemsControl ItemsSource="{Binding History}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="vm:HistoryRow">

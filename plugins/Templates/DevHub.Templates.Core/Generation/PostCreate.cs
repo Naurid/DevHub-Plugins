@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using DevHub.Templates.Core.Commands;
 using DevHub.Templates.Core.Rendering;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Templates.Core.Generation;
 
@@ -20,7 +21,7 @@ public static class PostCreate
         {
             CommandResult result;
             if (SafePath.Resolve(root, command.WorkingDirectory) is not { } folder)
-                result = new CommandResult(command, null, $"{command.Name}: its folder \"{command.WorkingDirectory}\" is outside the project.", []);
+                result = new CommandResult(command, null, L.T($"{command.Name}: its folder \"{command.WorkingDirectory}\" is outside the project."), []);
             else
                 result = await runner.RunAsync(command, folder, progress, ct);
 

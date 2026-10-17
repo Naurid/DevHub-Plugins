@@ -5,6 +5,7 @@
 -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:vm="using:DevHub.ViewModels.Scrum"
              xmlns:dlg="using:DevHub.ViewModels.Dialogs"
              xmlns:c="using:DevHub.Controls"
@@ -30,11 +31,11 @@
         <Border DockPanel.Dock="Top" Classes="pageHeader">
             <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
                 <ComboBox ItemsSource="{Binding Sprints}" SelectedItem="{Binding Sprint}" MinWidth="{DynamicResource Size.BoardSearch}"
-                          AutomationProperties.Name="Sprint" PlaceholderText="No sprint yet" />
+                          AutomationProperties.Name="{l:T 'Sprint'}" PlaceholderText="{l:T 'No sprint yet'}" />
                 <TextBlock Grid.Column="1" Classes="secondary" Text="{Binding SprintSummary}" VerticalAlignment="Center"
                            TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding SprintSummary}" />
-                <Button Grid.Column="2" Content="Copy as Markdown" Command="{Binding CopyMarkdownCommand}" IsEnabled="{Binding HasSprint}" />
-                <Button Grid.Column="3" Content="Save as Markdown…" Command="{Binding SaveMarkdownCommand}" IsEnabled="{Binding HasSprint}" />
+                <Button Grid.Column="2" Content="{l:T 'Copy as Markdown'}" Command="{Binding CopyMarkdownCommand}" IsEnabled="{Binding HasSprint}" />
+                <Button Grid.Column="3" Content="{l:T 'Save as Markdown…'}" Command="{Binding SaveMarkdownCommand}" IsEnabled="{Binding HasSprint}" />
             </Grid>
         </Border>
 
@@ -58,9 +59,9 @@
                                                 <Border Classes="note">
                                                     <Grid ColumnDefinitions="*,Auto">
                                                         <TextBox Text="{Binding Text, UpdateSourceTrigger=LostFocus}" TextWrapping="Wrap" AcceptsReturn="False"
-                                                                 Classes="flat" BorderThickness="0" Background="Transparent" AutomationProperties.Name="Note" />
+                                                                 Classes="flat" BorderThickness="0" Background="Transparent" AutomationProperties.Name="{l:T 'Note'}" />
                                                         <Button Grid.Column="1" Classes="flat" VerticalAlignment="Top" Command="{Binding RemoveCommand}"
-                                                                ToolTip.Tip="Remove this note" AutomationProperties.Name="Remove note">
+                                                                ToolTip.Tip="{l:T 'Remove this note'}" AutomationProperties.Name="{l:T 'Remove note'}">
                                                             <c:Icon Kind="delete" />
                                                         </Button>
                                                     </Grid>
@@ -81,23 +82,23 @@
 
                 <!-- Improvement actions. -->
                 <StackPanel Spacing="{DynamicResource Spacing.Small}">
-                    <TextBlock Classes="section" Text="Improvement actions" />
+                    <TextBlock Classes="section" Text="{l:T 'Improvement actions'}" />
                     <ItemsControl ItemsSource="{Binding Actions}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="vm:RetroActionRow">
                                 <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.RowBelow}">
-                                    <CheckBox IsChecked="{Binding Done}" ToolTip.Tip="Done" AutomationProperties.Name="{Binding Text, StringFormat='{}{0} done'}" />
-                                    <TextBox Grid.Column="1" Text="{Binding Text, UpdateSourceTrigger=LostFocus}" AutomationProperties.Name="Action" />
+                                    <CheckBox IsChecked="{Binding Done}" ToolTip.Tip="{l:T 'Done'}" AutomationProperties.Name="{Binding Text, StringFormat='{}{0} done'}" />
+                                    <TextBox Grid.Column="1" Text="{Binding Text, UpdateSourceTrigger=LostFocus}" AutomationProperties.Name="{l:T 'Action'}" />
                                     <ComboBox Grid.Column="2" ItemsSource="{Binding People}" SelectedItem="{Binding Owner}"
-                                              MinWidth="{DynamicResource Size.StatusPill}" AutomationProperties.Name="Owner" ToolTip.Tip="Who takes care of it" />
+                                              MinWidth="{DynamicResource Size.StatusPill}" AutomationProperties.Name="{l:T 'Owner'}" ToolTip.Tip="{l:T 'Who takes care of it'}" />
                                     <Panel Grid.Column="3">
                                         <Button Classes="flat" Content="{Binding IssueKey}" Command="{Binding OpenIssueCommand}" IsVisible="{Binding HasIssue}"
-                                                ToolTip.Tip="The issue that tracks this action" />
-                                        <Button Classes="flat" Content="Create Issue" Command="{Binding CreateIssueCommand}" IsVisible="{Binding !HasIssue}"
-                                                ToolTip.Tip="Track it as a task in the backlog" />
+                                                ToolTip.Tip="{l:T 'The issue that tracks this action'}" />
+                                        <Button Classes="flat" Content="{l:T 'Create Issue'}" Command="{Binding CreateIssueCommand}" IsVisible="{Binding !HasIssue}"
+                                                ToolTip.Tip="{l:T 'Track it as a task in the backlog'}" />
                                     </Panel>
-                                    <Button Grid.Column="4" Classes="flat" Command="{Binding RemoveCommand}" ToolTip.Tip="Remove this action"
-                                            AutomationProperties.Name="Remove action">
+                                    <Button Grid.Column="4" Classes="flat" Command="{Binding RemoveCommand}" ToolTip.Tip="{l:T 'Remove this action'}"
+                                            AutomationProperties.Name="{l:T 'Remove action'}">
                                         <c:Icon Kind="delete" />
                                     </Button>
                                 </Grid>
@@ -105,26 +106,26 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}">
-                        <TextBox Text="{Binding NewAction}" PlaceholderText="Add: what will the team do differently? (Enter)" AutomationProperties.Name="New action">
+                        <TextBox Text="{Binding NewAction}" PlaceholderText="{l:T 'Add: what will the team do differently? (Enter)'}" AutomationProperties.Name="{l:T 'New action'}">
                             <TextBox.KeyBindings>
                                 <KeyBinding Gesture="Enter" Command="{Binding AddActionCommand}" />
                             </TextBox.KeyBindings>
                         </TextBox>
-                        <Button Grid.Column="1" Content="Add" Command="{Binding AddActionCommand}" />
+                        <Button Grid.Column="1" Content="{l:T 'Add'}" Command="{Binding AddActionCommand}" />
                     </Grid>
                 </StackPanel>
 
                 <!-- Follow-up. -->
                 <StackPanel Spacing="{DynamicResource Spacing.Small}">
-                    <TextBlock Classes="section" Text="Follow-up" />
+                    <TextBlock Classes="section" Text="{l:T 'Follow-up'}" />
                     <TextBox Text="{Binding FollowUp, UpdateSourceTrigger=LostFocus}" AcceptsReturn="True" TextWrapping="Wrap"
-                             MinHeight="{DynamicResource Size.CommentEditor}" AutomationProperties.Name="Follow-up"
-                             PlaceholderText="How the actions are followed up: who checks, when (next planning, daily), what shows it worked" />
+                             MinHeight="{DynamicResource Size.CommentEditor}" AutomationProperties.Name="{l:T 'Follow-up'}"
+                             PlaceholderText="{l:T 'How the actions are followed up: who checks, when (next planning, daily), what shows it worked'}" />
                 </StackPanel>
 
                 <!-- Earlier actions. -->
                 <StackPanel Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding HasFollowUps}">
-                    <TextBlock Classes="section" Text="Still open from earlier retrospectives" />
+                    <TextBlock Classes="section" Text="{l:T 'Still open from earlier retrospectives'}" />
                     <ItemsControl ItemsSource="{Binding FollowUps}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="vm:FollowUpRow">

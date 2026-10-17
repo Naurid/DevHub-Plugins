@@ -8,6 +8,7 @@ using DevHub.Sdk.Core.Search;
 using DevHub.Sdk.Core.Settings;
 using DevHub.Services;
 using DevHub.ViewModels.Documents;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.ToolWindows;
 
@@ -30,7 +31,7 @@ public partial class RepositoriesViewModel : ToolWindowViewModelBase, IProjectFo
     private IReadOnlyList<GitRepository> _repositories = [];
 
     public override string Id => "repositories";
-    public override string Title => "Projects";
+    public override string Title => L.T("Projects");
     public override string IconKind => Controls.IconKind.Folder;
     public override ToolWindowSlot Slot => ToolWindowSlot.Left;
 
@@ -100,7 +101,7 @@ public partial class RepositoriesViewModel : ToolWindowViewModelBase, IProjectFo
     [RelayCommand]
     private async Task AddFolderAsync()
     {
-        var folder = await _dialogs.PickFolderAsync("Choose a folder to scan");
+        var folder = await _dialogs.PickFolderAsync(L.T("Choose a folder to scan"));
         if (!string.IsNullOrEmpty(folder) &&
             !ScanFolders.Contains(folder, StringComparer.OrdinalIgnoreCase))
         {
@@ -118,7 +119,7 @@ public partial class RepositoriesViewModel : ToolWindowViewModelBase, IProjectFo
     private async Task ScanAsync()
     {
         IsScanning = true;
-        _status.Show("Scanning…");
+        _status.Show(L.T("Scanning…"));
         try
         {
             _repositories = await _scanner.ScanAsync(ScanFolders.ToList());
@@ -126,9 +127,9 @@ public partial class RepositoriesViewModel : ToolWindowViewModelBase, IProjectFo
 
             _status.Show(_repositories.Count switch
             {
-                0 => "No git repositories found.",
-                1 => "Found 1 repository.",
-                _ => $"Found {_repositories.Count} repositories."
+                0 => L.T("No git repositories found."),
+                1 => L.T("Found 1 repository."),
+                _ => L.T($"Found {_repositories.Count} repositories.")
             });
         }
         finally
@@ -165,11 +166,11 @@ public partial class RepositoriesViewModel : ToolWindowViewModelBase, IProjectFo
         try
         {
             _launcher.Open(repo);
-            _status.Show($"Opened {repo.Name}.");
+            _status.Show(L.T($"Opened {repo.Name}."));
         }
         catch (Exception ex)
         {
-            _status.Show($"Couldn't open {repo.Name}: {ex.Message}");
+            _status.Show(L.T($"Couldn't open {repo.Name}: {ex.Message}"));
         }
     }
 
@@ -181,7 +182,7 @@ public partial class RepositoriesViewModel : ToolWindowViewModelBase, IProjectFo
         }
         catch (Exception ex)
         {
-            _status.Show($"Couldn't reveal {repo.Name}: {ex.Message}");
+            _status.Show(L.T($"Couldn't reveal {repo.Name}: {ex.Message}"));
         }
     }
 

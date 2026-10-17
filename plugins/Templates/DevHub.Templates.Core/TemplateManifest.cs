@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Templates.Core;
 

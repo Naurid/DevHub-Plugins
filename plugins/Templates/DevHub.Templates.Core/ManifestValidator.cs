@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Templates.Core;
 
@@ -65,35 +66,35 @@ public static partial class ManifestValidator
             var variable = manifest.Variables[i];
             var at = $"variables[{i}]";
             if (!VariableNamePattern().IsMatch(variable.Name))
-                add(at + ".name", "Start with a letter; letters and digits only (e.g. \"ProjectName\").");
+                add(at + ".name", L.T("Start with a letter; letters and digits only (e.g. \"ProjectName\")."));
             else if (BuiltInVariables.Contains(variable.Name))
-                add(at + ".name", $"\"{variable.Name}\" is built in; pick another name.");
+                add(at + ".name", L.T($"\"{variable.Name}\" is built in; pick another name."));
 
             switch (variable.Type)
             {
                 case VariableType.Choice when variable.Choices.Count == 0:
-                    add(at + ".choices", "A choice needs at least one option.");
+                    add(at + ".choices", L.T("A choice needs at least one option."));
                     break;
                 case VariableType.Choice when variable.Default is not null && !variable.Choices.Contains(variable.DefaultText):
-                    add(at + ".default", $"\"{variable.DefaultText}\" isn't one of the choices.");
+                    add(at + ".default", L.T($"\"{variable.DefaultText}\" isn't one of the choices."));
                     break;
                 case VariableType.Bool when variable.Default is not null && variable.DefaultText is not ("true" or "false"):
-                    add(at + ".default", "A bool's default is true or false.");
+                    add(at + ".default", L.T("A bool's default is true or false."));
                     break;
             }
 
             if (variable.Pattern is { } pattern)
             {
                 if (variable.Type != VariableType.String)
-                    add(at + ".pattern", "Only string variables can have a pattern.");
+                    add(at + ".pattern", L.T("Only string variables can have a pattern."));
                 else if (!IsValidRegex(pattern))
-                    add(at + ".pattern", "This isn't a valid regular expression.");
+                    add(at + ".pattern", L.T("This isn't a valid regular expression."));
                 else if (variable.Default is not null && !Regex.IsMatch(variable.DefaultText, pattern))
-                    add(at + ".default", "The default doesn't match the pattern.");
+                    add(at + ".default", L.T("The default doesn't match the pattern."));
             }
         }
         foreach (var duplicate in Duplicates(manifest.Variables.Select(v => v.Name)))
-            add("variables", $"\"{duplicate}\" is declared twice.");
+            add("variables", L.T($"\"{duplicate}\" is declared twice."));
     }
 
     private static void ValidateKind(TemplateManifest manifest, Action<string, string> add)
@@ -101,19 +102,19 @@ public static partial class ManifestValidator
         if (manifest.Kind == TemplateKind.Item)
         {
             if (manifest.RootFolder is not null)
-                add("rootFolder", "Item templates go into an existing folder; they have no root folder.");
+                add("rootFolder", L.T("Item templates go into an existing folder; they have no root folder."));
             if (manifest.BaseCommand is not null)
-                add("baseCommand", "Only project templates can have a base command.");
+                add("baseCommand", L.T("Only project templates can have a base command."));
             return;
         }
 
         if (manifest.RootFolder is null && !manifest.Variables.Any(v => v.Name == "Name"))
-            add("rootFolder", "The root folder defaults to {{Name}}: declare a Name variable or set rootFolder.");
+            add("rootFolder", L.T("The root folder defaults to {{Name}}: declare a Name variable or set rootFolder."));
         else if (manifest.RootFolder is { } root && (string.IsNullOrWhiteSpace(root) || root.Contains('/') || root.Contains('\\')))
-            add("rootFolder", "One folder name (placeholders allowed), no slashes.");
+            add("rootFolder", L.T("One folder name (placeholders allowed), no slashes."));
 
         if (manifest.BaseCommand is { } command && string.IsNullOrWhiteSpace(command.Command))
-            add("baseCommand.command", "Name the program to run, e.g. \"dotnet\".");
+            add("baseCommand.command", L.T("Name the program to run, e.g. \"dotnet\"."));
     }
 
     private static void ValidateSteps(TemplateManifest manifest, Action<string, string> add)
@@ -134,9 +135,9 @@ public static partial class ManifestValidator
                 case StepOp.Rename:
                     CheckPath(step.From, at + ".from", add);
                     if (string.IsNullOrWhiteSpace(step.To))
-                        add(at + ".to", "Give the new name.");
+                        add(at + ".to", L.T("Give the new name."));
                     else if (step.To.Contains('/') || step.To.Contains('\\') || step.To is "." or "..")
-                        add(at + ".to", "Rename takes a name, not a path (use move to change folders).");
+                        add(at + ".to", L.T("Rename takes a name, not a path (use move to change folders)."));
                     break;
             }
         }
@@ -149,13 +150,13 @@ public static partial class ManifestValidator
             var command = manifest.PostCreate[i];
             var at = $"postCreate[{i}]";
             if (string.IsNullOrWhiteSpace(command.Name))
-                add(at + ".name", "Give the command a name (shown before it runs).");
+                add(at + ".name", L.T("Give the command a name (shown before it runs)."));
             if (string.IsNullOrWhiteSpace(command.Command))
-                add(at + ".command", "Name the program to run, e.g. \"git\".");
+                add(at + ".command", L.T("Name the program to run, e.g. \"git\"."));
             if (command.WorkingDirectory != ".")
                 CheckPath(command.WorkingDirectory, at + ".workingDirectory", add);
             if (command.When is { } when && !manifest.Variables.Any(v => v.Name == when && v.Type == VariableType.Bool))
-                add(at + ".when", $"\"{when}\" isn't a bool variable of this template.");
+                add(at + ".when", L.T($"\"{when}\" isn't a bool variable of this template."));
         }
     }
 
@@ -163,13 +164,13 @@ public static partial class ManifestValidator
     private static void CheckPath(string? path, string field, Action<string, string> add)
     {
         if (string.IsNullOrWhiteSpace(path))
-            add(field, "Give a path.");
+            add(field, L.T("Give a path."));
         else if (path.StartsWith('/') || path.StartsWith('\\') || path.Contains(':'))
-            add(field, "Use a path relative to the project root, e.g. \"src/App\".");
+            add(field, L.T("Use a path relative to the project root, e.g. \"src/App\"."));
         else if (path.Contains('\\'))
-            add(field, "Use / between folders.");
+            add(field, L.T("Use / between folders."));
         else if (path.Split('/').Contains(".."))
-            add(field, "\"..\" isn't allowed: steps stay inside the project.");
+            add(field, L.T("\"..\" isn't allowed: steps stay inside the project."));
     }
 
     private static bool IsValidRegex(string pattern)

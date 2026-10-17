@@ -5,6 +5,7 @@
 -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:vm="using:DevHub.ViewModels.Git"
              xmlns:c="using:DevHub.Controls"
              x:Class="DevHub.Views.Git.SubmoduleListView"
@@ -21,20 +22,20 @@
     <DockPanel>
         <Border DockPanel.Dock="Top" Classes="paneHeader">
             <StackPanel Orientation="Horizontal">
-                <Button Classes="flat" Content="Update Submodules" Command="{Binding UpdateCommand}"
-                        ToolTip.Tip="Clone missing submodules and check each out at the commit this repository records" />
-                <Button Classes="flat" Content="Open" Command="{Binding OpenCommand}"
-                        ToolTip.Tip="Open the selected submodule as its own repository tab (Enter / double-click)" />
+                <Button Classes="flat" Content="{l:T 'Update Submodules'}" Command="{Binding UpdateCommand}"
+                        ToolTip.Tip="{l:T 'Clone missing submodules and check each out at the commit this repository records'}" />
+                <Button Classes="flat" Content="{l:T 'Open'}" Command="{Binding OpenCommand}"
+                        ToolTip.Tip="{l:T 'Open the selected submodule as its own repository tab (Enter / double-click)'}" />
             </StackPanel>
         </Border>
 
         <Panel>
-            <c:EmptyState IconKind="folder" Title="No submodules"
-                          Description="This repository doesn't include other repositories (no .gitmodules)."
+            <c:EmptyState IconKind="folder" Title="{l:T 'No submodules'}"
+                          Description="{l:T 'This repository doesn\'t include other repositories (no .gitmodules).'}"
                           IsVisible="{Binding !HasItems}" />
 
             <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding Selected}" Background="Transparent"
-                     AutomationProperties.Name="Submodules" IsVisible="{Binding HasItems}">
+                     AutomationProperties.Name="{l:T 'Submodules'}" IsVisible="{Binding HasItems}">
                 <ListBox.KeyBindings>
                     <KeyBinding Gesture="Enter" Command="{Binding OpenCommand}" />
                 </ListBox.KeyBindings>

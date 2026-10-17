@@ -4,6 +4,7 @@
 -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:docs="using:DevHub.ViewModels.Documents"
              xmlns:t="using:DevHub.ViewModels.Templates"
              xmlns:c="using:DevHub.Controls"
@@ -26,13 +27,13 @@
 
         <!-- The generation -->
         <Panel Background="{DynamicResource Brush.Bg.Editor}">
-            <c:EmptyState IconKind="template" Title="Add Files from Template"
-                          Description="Pick an item template on the left (a class, a script, a set of files), choose the folder, check the preview, then apply. Your files are only changed when you click Apply."
+            <c:EmptyState IconKind="template" Title="{l:T 'Add Files from Template'}"
+                          Description="{l:T 'Pick an item template on the left (a class, a script, a set of files), choose the folder, check the preview, then apply. Your files are only changed when you click Apply.'}"
                           IsVisible="{Binding !HasPage}" />
 
             <DockPanel Margin="{DynamicResource Padding.Document}" IsVisible="{Binding HasPage}">
                 <ItemsControl DockPanel.Dock="Top" ItemsSource="{Binding Steps}" Margin="{DynamicResource Margin.BlockBelow}"
-                              AutomationProperties.Name="Steps">
+                              AutomationProperties.Name="{l:T 'Steps'}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}" />

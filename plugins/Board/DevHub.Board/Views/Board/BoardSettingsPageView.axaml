@@ -1,19 +1,20 @@
 <!-- Settings → Board: who you are on boards, and card density. -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:vm="using:DevHub.ViewModels.Board"
              xmlns:c="using:DevHub.Controls"
              x:Class="DevHub.Views.Board.BoardSettingsPageView"
              x:DataType="vm:BoardSettingsPageViewModel">
     <StackPanel Spacing="{DynamicResource Spacing}">
-        <c:SettingsRow Label="Your name" Description="How you appear on boards (assignee, reporter, comments). Empty: your Windows user name.">
-            <TextBox Text="{Binding UserName}" PlaceholderText="{Binding DefaultName}" AutomationProperties.Name="Your name" />
+        <c:SettingsRow Label="{l:T 'Your name'}" Description="{l:T 'How you appear on boards (assignee, reporter, comments). Empty: your Windows user name.'}">
+            <TextBox Text="{Binding UserName}" PlaceholderText="{Binding DefaultName}" AutomationProperties.Name="{l:T 'Your name'}" />
         </c:SettingsRow>
-        <c:SettingsRow Label="Your email" Description="Optional. Matches you on a board someone else started, and to git authors.">
-            <TextBox Text="{Binding UserEmail}" PlaceholderText="you@example.com" AutomationProperties.Name="Your email" />
+        <c:SettingsRow Label="{l:T 'Your email'}" Description="{l:T 'Optional. Matches you on a board someone else started, and to git authors.'}">
+            <TextBox Text="{Binding UserEmail}" PlaceholderText="{l:T 'you@example.com'}" AutomationProperties.Name="{l:T 'Your email'}" />
         </c:SettingsRow>
-        <c:SettingsRow Label="Compact cards" Description="Smaller cards on boards.">
-            <CheckBox IsChecked="{Binding CompactCards}" AutomationProperties.Name="Compact cards" />
+        <c:SettingsRow Label="{l:T 'Compact cards'}" Description="{l:T 'Smaller cards on boards.'}">
+            <CheckBox IsChecked="{Binding CompactCards}" AutomationProperties.Name="{l:T 'Compact cards'}" />
         </c:SettingsRow>
     </StackPanel>
 </UserControl>

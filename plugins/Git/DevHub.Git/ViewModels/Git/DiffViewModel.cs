@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHub.Git.Core;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Git;
 
@@ -111,7 +112,7 @@ public partial class DiffViewModel : ViewModelBase
     /// What the pane says when there are no lines: the message, or a hint when nothing is
     /// selected. Empty while the first diff loads (a "Loading…" flash would only flicker).
     /// </summary>
-    public string? PlaceholderText => HasRows ? null : Message ?? (HasFile ? null : "Select a file to see its changes.");
+    public string? PlaceholderText => HasRows ? null : Message ?? (HasFile ? null : L.T("Select a file to see its changes."));
 
     public bool CanOpenInEditor => _openInEditor is not null;
     public bool CanOpenInTab => _openInTab is not null;
@@ -196,7 +197,7 @@ public partial class DiffViewModel : ViewModelBase
         var client = _client;
         return LoadCoreAsync(file,
             client is null ? null : ct => client.GetDiffAsync(file!.Change, file.IsStagedSide, ct),
-            file is null ? "" : file.IsConflicted ? "Conflict" : file.IsStagedSide ? "Staged" : "Unstaged",
+            file is null ? "" : file.IsConflicted ? L.T("Conflict") : file.IsStagedSide ? L.T("Staged") : L.T("Unstaged"),
             isLocalChange: true);
     }
 
@@ -206,7 +207,7 @@ public partial class DiffViewModel : ViewModelBase
         var client = _client;
         return LoadCoreAsync(file,
             client is null ? null : ct => client.GetCommitDiffAsync(commit, file!.Change, ct),
-            $"Commit {commit.ShortId}", isLocalChange: false, commitId: commit.Id);
+            L.T($"Commit {commit.ShortId}"), isLocalChange: false, commitId: commit.Id);
     }
 
     private async Task LoadCoreAsync(FileChangeViewModel? file, Func<CancellationToken, Task<FileDiff>>? load, string side,
@@ -239,7 +240,7 @@ public partial class DiffViewModel : ViewModelBase
             // Fire-and-forget caller: show the problem in the pane instead of losing it.
             Rows = [];
             SideRows = [];
-            Message = "Couldn't load the diff: " + ex.Message;
+            Message = L.T("Couldn't load the diff: ") + ex.Message;
         }
     }
 
@@ -304,7 +305,7 @@ public partial class DiffViewModel : ViewModelBase
             return;
         }
 
-        Subtitle = diff.IsRenamed ? $"{side} · renamed from {diff.OldPath}" : side;
+        Subtitle = diff.IsRenamed ? L.T($"{side} · renamed from {diff.OldPath}") : side;
         AddedText = diff.AddedCount > 0 ? $"+{diff.AddedCount}" : null;
         RemovedText = diff.RemovedCount > 0 ? $"−{diff.RemovedCount}" : null;
         var rows = BuildRows(diff);
@@ -312,12 +313,12 @@ public partial class DiffViewModel : ViewModelBase
         Rows = rows;
         Message = diff switch
         {
-            { IsDirectory: true } => "New folder, not tracked yet: git lists it as one entry. Its files show up one by one once the folder is staged.",
-            { IsBinary: true } => "Binary file: no text to compare.",
-            { ModeChange: { } mode, Hunks.Count: 0 } => $"Only the file mode changed ({mode}).",
-            { IsRenamed: true, Hunks.Count: 0 } => "Renamed without changes to the content.",
-            { IsTruncated: true } => $"Long diff: showing the first {DiffParser.DefaultMaxLines:N0} lines.",
-            { Hunks.Count: 0 } => "No changes to show.",
+            { IsDirectory: true } => L.T("New folder, not tracked yet: git lists it as one entry. Its files show up one by one once the folder is staged."),
+            { IsBinary: true } => L.T("Binary file: no text to compare."),
+            { ModeChange: { } mode, Hunks.Count: 0 } => L.T($"Only the file mode changed ({mode})."),
+            { IsRenamed: true, Hunks.Count: 0 } => L.T("Renamed without changes to the content."),
+            { IsTruncated: true } => L.T($"Long diff: showing the first {DiffParser.DefaultMaxLines:N0} lines."),
+            { Hunks.Count: 0 } => L.T("No changes to show."),
             _ => null,
         };
     }
@@ -334,7 +335,7 @@ public partial class DiffViewModel : ViewModelBase
                 var line = hunk.Lines[i];
                 rows.Add(DiffRowViewModel.ForLine(line, h, i));
                 if (line.NoNewlineAtEnd)
-                    rows.Add(DiffRowViewModel.ForNote("No newline at end of file"));
+                    rows.Add(DiffRowViewModel.ForNote(L.T("No newline at end of file")));
             }
         }
         return rows;

@@ -1,6 +1,7 @@
 using DevHub.Projects.Core;
 using DevHub.Sdk.Core.Settings;
 using DevHub.Services;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Dialogs.Settings;
 
@@ -13,9 +14,9 @@ public class OpenWithSettingsPageViewModel : SettingsPageViewModelBase
     private readonly ISettingsStore _store;
     private readonly IReadOnlyList<string> _availableIds;
 
-    public override string Title => "Open With";
+    public override string Title => L.T("Open With");
     public override int Order => 100;
-    public override string Keywords => "tools editor ide rider visual studio code unity hub language program executable";
+    public override string Keywords => L.T("tools editor ide rider visual studio code unity hub language program executable");
 
     public IReadOnlyList<LanguageToolRowViewModel> LanguageTools { get; }
 

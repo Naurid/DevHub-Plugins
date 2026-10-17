@@ -1,4 +1,5 @@
 using DevHub.Git.Core;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Services;
 
@@ -16,11 +17,11 @@ public sealed class TerminalLauncher(IStatusService status, GitExecutable? git =
         try
         {
             GitTerminal.Start(command);
-            status.Show($"Opened {command.Name} in {repositoryPath}.");
+            status.Show(L.T($"Opened {command.Name} in {repositoryPath}."));
         }
         catch (Exception ex)
         {
-            status.Show($"Couldn't open {command.Name}: {ex.Message}");
+            status.Show(L.T($"Couldn't open {command.Name}: {ex.Message}"));
         }
     }
 }

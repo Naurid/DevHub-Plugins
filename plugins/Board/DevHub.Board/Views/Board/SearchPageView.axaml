@@ -3,6 +3,7 @@
 -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:vm="using:DevHub.ViewModels.Board"
              xmlns:core="using:DevHub.Board.Core.Model"
              xmlns:c="using:DevHub.Controls"
@@ -25,20 +26,20 @@
         <Border DockPanel.Dock="Top" Classes="pageHeader">
             <StackPanel Spacing="{DynamicResource Spacing}">
                 <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
-                    <TextBox Classes="code" Text="{Binding Query}" AutomationProperties.Name="Query"
-                             PlaceholderText="type = bug AND assignee = currentUser() ORDER BY priority DESC">
+                    <TextBox Classes="code" Text="{Binding Query}" AutomationProperties.Name="{l:T 'Query'}"
+                             PlaceholderText="{l:T 'type = bug AND assignee = currentUser() ORDER BY priority DESC'}">
                         <TextBox.KeyBindings>
                             <KeyBinding Gesture="Enter" Command="{Binding RunCommand}" />
                         </TextBox.KeyBindings>
                     </TextBox>
-                    <Button Grid.Column="1" Classes="accent" Content="Search" Command="{Binding RunCommand}" />
-                    <Button Grid.Column="2" Classes="flat" ToolTip.Tip="Help and examples" AutomationProperties.Name="Query help">
+                    <Button Grid.Column="1" Classes="accent" Content="{l:T 'Search'}" Command="{Binding RunCommand}" />
+                    <Button Grid.Column="2" Classes="flat" ToolTip.Tip="{l:T 'Help and examples'}" AutomationProperties.Name="{l:T 'Query help'}">
                         <c:Icon Kind="info" />
                         <Button.Flyout>
                             <Flyout Placement="BottomEdgeAlignedRight">
                                 <StackPanel Spacing="{DynamicResource Spacing}" MaxWidth="{DynamicResource Size.IssuePanel}">
                                     <TextBlock Text="{Binding Help}" TextWrapping="Wrap" />
-                                    <TextBlock Classes="section" Text="Examples" />
+                                    <TextBlock Classes="section" Text="{l:T 'Examples'}" />
                                     <ItemsControl ItemsSource="{Binding Examples}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate x:DataType="x:String">
@@ -56,22 +57,22 @@
                 <TextBlock Text="{Binding Error}" Foreground="{DynamicResource Brush.Status.Error}" TextWrapping="Wrap"
                            IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                 <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
-                    <TextBlock Classes="secondary" Text="Saved:" VerticalAlignment="Center" />
-                    <ComboBox Grid.Column="1" ItemsSource="{Binding Filters}" SelectedItem="{Binding SelectedFilter}" PlaceholderText="Saved filters"
-                              AutomationProperties.Name="Saved filters">
+                    <TextBlock Classes="secondary" Text="{l:T 'Saved:'}" VerticalAlignment="Center" />
+                    <ComboBox Grid.Column="1" ItemsSource="{Binding Filters}" SelectedItem="{Binding SelectedFilter}" PlaceholderText="{l:T 'Saved filters'}"
+                              AutomationProperties.Name="{l:T 'Saved filters'}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate x:DataType="core:SavedFilter">
                                 <TextBlock Text="{Binding Name}" ToolTip.Tip="{Binding Query}" />
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
-                    <Button Grid.Column="2" Classes="flat" Content="Save…" Command="{Binding SaveFilterCommand}" />
-                    <Button Grid.Column="3" Classes="flat" Content="Delete" Command="{Binding DeleteFilterCommand}"
+                    <Button Grid.Column="2" Classes="flat" Content="{l:T 'Save…'}" Command="{Binding SaveFilterCommand}" />
+                    <Button Grid.Column="3" Classes="flat" Content="{l:T 'Delete'}" Command="{Binding DeleteFilterCommand}"
                             IsEnabled="{Binding SelectedFilter, Converter={x:Static ObjectConverters.IsNotNull}}" />
                     <TextBlock Grid.Column="4" Classes="secondary" Text="{Binding ResultText}" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                    <ToggleButton Grid.Column="5" Classes="chip" Content="As board" IsChecked="{Binding AsBoard}" />
-                    <Button Grid.Column="6" Classes="flat" Content="Edit All…" Command="{Binding BulkEditResultsCommand}"
-                            ToolTip.Tip="Change a field of every issue found" />
+                    <ToggleButton Grid.Column="5" Classes="chip" Content="{l:T 'As board'}" IsChecked="{Binding AsBoard}" />
+                    <Button Grid.Column="6" Classes="flat" Content="{l:T 'Edit All…'}" Command="{Binding BulkEditResultsCommand}"
+                            ToolTip.Tip="{l:T 'Change a field of every issue found'}" />
                 </Grid>
             </StackPanel>
         </Border>
@@ -79,7 +80,7 @@
         <Panel>
             <!-- As a list. -->
             <ListBox ItemsSource="{Binding Results}" IsVisible="{Binding !AsBoard}" Background="Transparent"
-                     AutomationProperties.Name="Results" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                     AutomationProperties.Name="{l:T 'Results'}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <ListBox.ItemTemplate>
                     <DataTemplate x:DataType="vm:SearchRow">
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing}">

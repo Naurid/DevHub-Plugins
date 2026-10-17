@@ -1,4 +1,5 @@
 using DevHub.Board.Core.Storage;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Board.Core;
 
@@ -68,7 +69,7 @@ public sealed class BoardSession : IDisposable
         var context = new OperationContext(null, time.GetUtcNow()) { NewId = newId ?? Model.BoardIds.New };
         var change = create.Build(context);
         var version = await store.WriteAsync(change, BoardFiles.NoBoard, ct);
-        var files = await store.LoadAsync(ct) ?? throw new BoardStoreException("The new board couldn't be read back.");
+        var files = await store.LoadAsync(ct) ?? throw new BoardStoreException(L.T("The new board couldn't be read back."));
         return new BoardSession(store, BoardSnapshot.Load(files with { Version = version }), create.Creator, time)
         {
             NewId = newId ?? Model.BoardIds.New,
@@ -138,14 +139,14 @@ public sealed class BoardSession : IDisposable
         try
         {
             if (!_undo.TryPop(out var step))
-                throw new BoardRuleException("There's nothing to undo.");
+                throw new BoardRuleException(L.T("There's nothing to undo."));
             foreach (var (path, written) in step.Written)
             {
                 var now = Snapshot.Files.GetValueOrDefault(path);
                 if (!(now is null && written is null) && (now is null || written is null || !now.AsSpan().SequenceEqual(written)))
                 {
                     _undo.Clear();
-                    throw new BoardRuleException("It can't be undone: the board changed since.");
+                    throw new BoardRuleException(L.T("It can't be undone: the board changed since."));
                 }
             }
             var change = new BoardChange("Undo: " + step.Message, step.Previous);
@@ -183,7 +184,7 @@ public sealed class BoardSession : IDisposable
 
     private async Task ReloadCoreAsync(CancellationToken ct)
     {
-        var files = await _store.LoadAsync(ct) ?? throw new BoardStoreException("The board isn't there any more.");
+        var files = await _store.LoadAsync(ct) ?? throw new BoardStoreException(L.T("The board isn't there any more."));
         if (files.Version == Snapshot.Version && files.Files.Count == Snapshot.Files.Count
             && files.Files.All(f => Snapshot.Files.TryGetValue(f.Key, out var mine) && mine.AsSpan().SequenceEqual(f.Value)))
             return;

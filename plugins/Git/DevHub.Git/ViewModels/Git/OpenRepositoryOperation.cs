@@ -1,6 +1,7 @@
 using DevHub.Git.Core;
 using DevHub.Services;
 using DevHub.ViewModels.Documents;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Git;
 
@@ -15,16 +16,16 @@ public sealed class OpenRepositoryOperation(IDialogService dialogs, IStatusServi
     {
         if (runner is null)
         {
-            status.Show("Git is not installed, so DevHub can't open repositories.");
+            status.Show(L.T("Git is not installed, so DevHub can't open repositories."));
             return;
         }
-        if (await dialogs.PickFolderAsync("Open which repository?") is not { } folder)
+        if (await dialogs.PickFolderAsync(L.T("Open which repository?")) is not { } folder)
             return;
 
         var client = new GitRepositoryClient(runner, folder);
         if (!await client.IsRepositoryAsync())
         {
-            status.Show($"{folder} isn't in a git repository. (Clone one, or run git init there.)");
+            status.Show(L.T($"{folder} isn't in a git repository. (Clone one, or run git init there.)"));
             return;
         }
         documents.OpenById(RepositoryDocumentFactory.IdFor(await client.GetTopLevelAsync()));

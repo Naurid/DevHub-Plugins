@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHub.Git.Core;
 using DevHub.ViewModels.Dialogs;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Git;
 
@@ -22,8 +23,8 @@ public sealed partial class TagDialogViewModel : DialogViewModelBase
         Target = target;
     }
 
-    public override string Title => "New Tag";
-    public override string OkText => "Create Tag";
+    public override string Title => L.T("New Tag");
+    public override string OkText => L.T("Create Tag");
     public override bool FitsContent => true;
     public override double Width => 460;
     public override double MinWidth => 360;
@@ -45,9 +46,9 @@ public sealed partial class TagDialogViewModel : DialogViewModelBase
     {
         var name = Name.Trim();
         Error = name.Length == 0 ? null
-            : name.Any(char.IsWhiteSpace) ? "Tag names can't contain spaces."
+            : name.Any(char.IsWhiteSpace) ? L.T("Tag names can't contain spaces.")
             : _existing.Any(t => string.Equals(t.Name, name, StringComparison.OrdinalIgnoreCase))
-                ? $"A tag named {name} already exists."
+                ? L.T($"A tag named {name} already exists.")
             : null;
     }
 
@@ -57,14 +58,14 @@ public sealed partial class TagDialogViewModel : DialogViewModelBase
         Validate();
         if (Name.Length == 0)
         {
-            Error = "Enter a name.";
+            Error = L.T("Enter a name.");
             return false;
         }
         if (Error is not null)
             return false;
         if (!await _client.IsValidTagNameAsync(Name))
         {
-            Error = "git doesn't allow that name (no \"..\", \"~\", \"^\", \":\", \"?\", \"*\", \"[\", \"\\\", a leading \"-\" or a trailing \".lock\").";
+            Error = L.T("git doesn't allow that name (no \"..\", \"~\", \"^\", \":\", \"?\", \"*\", \"[\", \"\\\", a leading \"-\" or a trailing \".lock\").");
             return false;
         }
         return true;

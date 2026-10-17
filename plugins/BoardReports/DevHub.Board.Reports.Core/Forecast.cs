@@ -5,6 +5,7 @@ using DevHub.Board.Core;
 using DevHub.Board.Core.Model;
 using DevHub.Board.Core.Storage;
 using DevHub.Sdk.Core.Charts;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.Board.Reports.Core;
 
@@ -28,13 +29,13 @@ public sealed record ScenarioForecast(string Name, double Velocity, int? Sprints
 {
     /// <summary>"3 sprints · 14 Nov 2026 · 5 days late" (or "never at this velocity").</summary>
     public string Text => Sprints is null
-        ? "not within a year at this velocity"
-        : $"{Sprints} sprint{(Sprints == 1 ? "" : "s")} · {Delivery:d MMM yyyy}" + DaysLate switch
+        ? L.T("not within a year at this velocity")
+        : (Sprints == 1 ? L.T($"1 sprint · {Delivery:d MMM yyyy}") : L.T($"{Sprints} sprints · {Delivery:d MMM yyyy}")) + DaysLate switch
         {
             null => "",
-            0 => " · on the target date",
-            > 0 and var late => $" · {late} days late",
-            var early => $" · {-early} days early",
+            0 => L.T(" · on the target date"),
+            > 0 and var late => L.T($" · {late} days late"),
+            var early => L.T($" · {-early} days early"),
         };
 }
 
@@ -60,7 +61,7 @@ public sealed record Forecast(
 public static class Forecasts
 {
     /// <summary>The scenarios' names, in order.</summary>
-    public static readonly IReadOnlyList<string> Names = ["Pessimistic", "Neutral", "Optimistic"];
+    public static readonly IReadOnlyList<string> Names = [L.T("Pessimistic"), L.T("Neutral"), L.T("Optimistic")];
 
     private const int MaxSprints = 26;
 
@@ -136,7 +137,7 @@ public static class Forecasts
             doneSeries.Add(timelines.Where(t => t.ExistedAt(at) && board.Project.Status(t.StatusAt(at))?.Category == StatusCategory.Done).Sum(t => t.PointsAt(at)));
             scopeSeries.Add(timelines.Where(t => t.ExistedAt(at)).Sum(t => t.PointsAt(at)));
         }
-        labels.Add("Now");
+        labels.Add(L.T("Now"));
         doneSeries.Add(done);
         scopeSeries.Add(total);
         var now = labels.Count - 1;
@@ -151,8 +152,8 @@ public static class Forecasts
 
         var series = new List<ChartSeries>
         {
-            new("Done", doneSeries) { Style = new SeriesStyle { Markers = true, Color = 1 } },
-            new("Scope", scopeSeries) { Style = new SeriesStyle { Color = 0 } },
+            new(L.T("Done"), doneSeries) { Style = new SeriesStyle { Markers = true, Color = 1 } },
+            new(L.T("Scope"), scopeSeries) { Style = new SeriesStyle { Color = 0 } },
         };
         var projections = new List<List<double?>>();
         for (var s = 0; s < scenarios.Count; s++)
@@ -168,10 +169,10 @@ public static class Forecasts
         }
         return new ChartData(labels, series)
         {
-            Title = "Release burnup and forecast",
-            XTitle = "Sprint end",
-            YTitle = "Story points",
-            Bands = [new ChartBand("Pessimistic to optimistic", projections[0], projections[2])],
+            Title = L.T("Release burnup and forecast"),
+            XTitle = L.T("Sprint end"),
+            YTitle = L.T("Story points"),
+            Bands = [new ChartBand(L.T("Pessimistic to optimistic"), projections[0], projections[2])],
         };
     }
 }
@@ -241,7 +242,7 @@ public sealed record SaveBaseline(string Name, string Scope, Forecast Forecast) 
 {
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
-        var name = Name.Trim().Length == 0 ? throw new BoardRuleException("Give the baseline a name.") : Name.Trim();
+        var name = Name.Trim().Length == 0 ? throw new BoardRuleException(L.T("Give the baseline a name.")) : Name.Trim();
         var change = new ChangeBuilder(board, context);
         var baseline = new ForecastBaseline
         {
@@ -254,7 +255,7 @@ public sealed record SaveBaseline(string Name, string Scope, Forecast Forecast) 
             Scenarios = Forecast.Scenarios.Select(s => new BaselineScenario { Name = s.Name, Velocity = s.Velocity, Sprints = s.Sprints, Delivery = s.Delivery }).ToList(),
         };
         change.Write(Baselines.Path, (List<ForecastBaseline>)[.. Baselines.All(board), baseline]);
-        return change.Build($"Baseline \"{name}\" saved");
+        return change.Build(L.T($"Baseline \"{name}\" saved"));
     }
 }
 
@@ -263,9 +264,9 @@ public sealed record DeleteBaseline(string BaselineId) : IBoardOperation
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
         var all = Baselines.All(board);
-        var gone = all.FirstOrDefault(b => b.Id == BaselineId) ?? throw new BoardRuleException("That baseline doesn't exist any more.");
+        var gone = all.FirstOrDefault(b => b.Id == BaselineId) ?? throw new BoardRuleException(L.T("That baseline doesn't exist any more."));
         var change = new ChangeBuilder(board, context);
         change.Write(Baselines.Path, all.Where(b => b.Id != BaselineId).ToList());
-        return change.Build($"Baseline \"{gone.Name}\" deleted");
+        return change.Build(L.T($"Baseline \"{gone.Name}\" deleted"));
     }
 }

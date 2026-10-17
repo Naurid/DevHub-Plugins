@@ -6,6 +6,7 @@
 -->
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:l="using:DevHub.Localization"
                     xmlns:vm="using:DevHub.ViewModels.Board"
                     xmlns:c="using:DevHub.Controls">
 
@@ -15,14 +16,14 @@
                 c:DoubleTap.Command="{Binding OpenCommand}" c:CardPick.Command="{Binding PickCommand}">
             <Border.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Open in Tab" Command="{Binding OpenCommand}" />
-                    <MenuItem Header="Assign to Me" Command="{Binding AssignToMeCommand}" IsVisible="{Binding CanAssign}" />
-                    <MenuItem Header="Move to Next Column" Command="{Binding NextColumnCommand}" IsVisible="{Binding CanMoveColumns}" />
-                    <MenuItem Header="Move to Previous Column" Command="{Binding PreviousColumnCommand}" IsVisible="{Binding CanMoveColumns}" />
-                    <MenuItem Header="Move to Top" Command="{Binding MoveToTopCommand}" IsVisible="{Binding CanRank}" />
-                    <MenuItem Header="Move to Bottom" Command="{Binding MoveToBottomCommand}" IsVisible="{Binding CanRank}" />
+                    <MenuItem Header="{l:T 'Open in Tab'}" Command="{Binding OpenCommand}" />
+                    <MenuItem Header="{l:T 'Assign to Me'}" Command="{Binding AssignToMeCommand}" IsVisible="{Binding CanAssign}" />
+                    <MenuItem Header="{l:T 'Move to Next Column'}" Command="{Binding NextColumnCommand}" IsVisible="{Binding CanMoveColumns}" />
+                    <MenuItem Header="{l:T 'Move to Previous Column'}" Command="{Binding PreviousColumnCommand}" IsVisible="{Binding CanMoveColumns}" />
+                    <MenuItem Header="{l:T 'Move to Top'}" Command="{Binding MoveToTopCommand}" IsVisible="{Binding CanRank}" />
+                    <MenuItem Header="{l:T 'Move to Bottom'}" Command="{Binding MoveToBottomCommand}" IsVisible="{Binding CanRank}" />
                     <Separator IsVisible="{Binding CanDelete}" />
-                    <MenuItem Header="Delete…" Command="{Binding DeleteCommand}" IsVisible="{Binding CanDelete}" />
+                    <MenuItem Header="{l:T 'Delete…'}" Command="{Binding DeleteCommand}" IsVisible="{Binding CanDelete}" />
                 </ContextMenu>
             </Border.ContextMenu>
             <Button Classes="cardButton" Command="{Binding SelectCommand}"
@@ -38,14 +39,14 @@
                                          AutomationProperties.Name="{Binding TypeName}" />
                         <TextBlock Grid.Column="1" Classes="small secondary key" Text="{Binding Key}" VerticalAlignment="Center" />
                         <TextBlock Grid.Column="3" Classes="small secondary" Text="{Binding Due}" IsVisible="{Binding ShowDue}"
-                                   Classes.overdue="{Binding IsOverdue}" VerticalAlignment="Center" ToolTip.Tip="Due" />
+                                   Classes.overdue="{Binding IsOverdue}" VerticalAlignment="Center" ToolTip.Tip="{l:T 'Due'}" />
                         <StackPanel Grid.Column="4" Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}" VerticalAlignment="Center">
                             <TextBlock Classes="small secondary" Text="{Binding CriteriaText}"
-                                       IsVisible="{Binding CriteriaText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" ToolTip.Tip="Acceptance criteria met" />
+                                       IsVisible="{Binding CriteriaText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" ToolTip.Tip="{l:T 'Acceptance criteria met'}" />
                             <TextBlock Classes="small secondary" Text="{Binding SubtaskText}"
-                                       IsVisible="{Binding SubtaskText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" ToolTip.Tip="Sub-tasks done" />
+                                       IsVisible="{Binding SubtaskText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" ToolTip.Tip="{l:T 'Sub-tasks done'}" />
                         </StackPanel>
-                        <c:Badge Grid.Column="5" Content="{Binding Points}" IsVisible="{Binding ShowPoints}" ToolTip.Tip="Story points" />
+                        <c:Badge Grid.Column="5" Content="{Binding Points}" IsVisible="{Binding ShowPoints}" ToolTip.Tip="{l:T 'Story points'}" />
                         <c:PriorityIcon Grid.Column="6" Kind="{Binding PriorityIcon}" IsVisible="{Binding ShowPriority}"
                                         ToolTip.Tip="{Binding PriorityName}" VerticalAlignment="Center" />
                         <c:Avatar Grid.Column="7" Text="{Binding AssigneeName}" IsVisible="{Binding ShowAssignee}"
@@ -63,14 +64,14 @@
               c:DoubleTap.Command="{Binding OpenCommand}" c:Tap.Command="{Binding SelectCommand}">
             <Grid.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Open in Tab" Command="{Binding OpenCommand}" />
-                    <MenuItem Header="Assign to Me" Command="{Binding AssignToMeCommand}" IsVisible="{Binding CanAssign}" />
-                    <MenuItem Header="Move to Next Column" Command="{Binding NextColumnCommand}" IsVisible="{Binding CanMoveColumns}" />
-                    <MenuItem Header="Move to Previous Column" Command="{Binding PreviousColumnCommand}" IsVisible="{Binding CanMoveColumns}" />
-                    <MenuItem Header="Move to Top" Command="{Binding MoveToTopCommand}" IsVisible="{Binding CanRank}" />
-                    <MenuItem Header="Move to Bottom" Command="{Binding MoveToBottomCommand}" IsVisible="{Binding CanRank}" />
+                    <MenuItem Header="{l:T 'Open in Tab'}" Command="{Binding OpenCommand}" />
+                    <MenuItem Header="{l:T 'Assign to Me'}" Command="{Binding AssignToMeCommand}" IsVisible="{Binding CanAssign}" />
+                    <MenuItem Header="{l:T 'Move to Next Column'}" Command="{Binding NextColumnCommand}" IsVisible="{Binding CanMoveColumns}" />
+                    <MenuItem Header="{l:T 'Move to Previous Column'}" Command="{Binding PreviousColumnCommand}" IsVisible="{Binding CanMoveColumns}" />
+                    <MenuItem Header="{l:T 'Move to Top'}" Command="{Binding MoveToTopCommand}" IsVisible="{Binding CanRank}" />
+                    <MenuItem Header="{l:T 'Move to Bottom'}" Command="{Binding MoveToBottomCommand}" IsVisible="{Binding CanRank}" />
                     <Separator IsVisible="{Binding CanDelete}" />
-                    <MenuItem Header="Delete…" Command="{Binding DeleteCommand}" IsVisible="{Binding CanDelete}" />
+                    <MenuItem Header="{l:T 'Delete…'}" Command="{Binding DeleteCommand}" IsVisible="{Binding CanDelete}" />
                 </ContextMenu>
             </Grid.ContextMenu>
             <c:IssueTypeIcon Kind="{Binding TypeIcon}" VerticalAlignment="Center" AutomationProperties.Name="{Binding TypeName}" />
@@ -90,7 +91,7 @@
                             VerticalAlignment="Center" />
             <Border Grid.Column="7" MinWidth="{DynamicResource Size.PointsColumn}">
                 <c:Badge Content="{Binding Points}" IsVisible="{Binding Points, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                         HorizontalAlignment="Right" ToolTip.Tip="Story points" />
+                         HorizontalAlignment="Right" ToolTip.Tip="{l:T 'Story points'}" />
             </Border>
         </Grid>
     </DataTemplate>

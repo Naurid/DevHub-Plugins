@@ -5,6 +5,7 @@
 -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:vm="using:DevHub.ViewModels.Git"
              xmlns:c="using:DevHub.Controls"
              x:Class="DevHub.Views.Git.BranchPopupView"
@@ -44,13 +45,13 @@
             CornerRadius="{DynamicResource Radius.Popup}"
             Padding="{DynamicResource Padding.Popup}">
         <DockPanel>
-            <c:SearchField DockPanel.Dock="Top" Text="{Binding Query}" PlaceholderText="Search branches"
+            <c:SearchField DockPanel.Dock="Top" Text="{Binding Query}" PlaceholderText="{l:T 'Search branches'}"
                            c:FocusOnLoad.IsEnabled="True" />
             <TextBlock DockPanel.Dock="Bottom" Classes="small secondary" Margin="{DynamicResource Padding.ListItem}"
-                       Text="↑↓ select · Enter check out · Esc close" />
+                       Text="{l:T '↑↓ select · Enter check out · Esc close'}" />
 
             <ListBox Classes="branches" ItemsSource="{Binding Rows}" SelectedItem="{Binding Selected}"
-                     Background="Transparent" AutomationProperties.Name="Branches">
+                     Background="Transparent" AutomationProperties.Name="{l:T 'Branches'}">
                 <ListBox.ItemTemplate>
                     <DataTemplate x:DataType="vm:BranchPopupRow">
                         <Panel>
@@ -65,7 +66,7 @@
                                                TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
                                     <TextBlock Grid.Column="2" Classes="small secondary" Text="{Binding SyncText}"
                                                VerticalAlignment="Center" />
-                                    <c:Badge Grid.Column="3" Classes="accent" Content="current" IsVisible="{Binding IsCurrent}" />
+                                    <c:Badge Grid.Column="3" Classes="accent" Content="{l:T 'current'}" IsVisible="{Binding IsCurrent}" />
                                 </Grid>
                             </Button>
                         </Panel>

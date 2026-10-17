@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.Input;
 using DevHub.ViewModels.Dialogs;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Git;
 
@@ -21,18 +22,16 @@ public enum NoRemoteChoice
 /// <param name="hostName">The hosting service's name ("GitHub"), or null when no hosting plugin is on.</param>
 public sealed partial class NoRemoteDialogViewModel(string branch, string? hostName = null) : DialogViewModelBase
 {
-    public override string Title => "No Remote to Push To";
-    public override string OkText => hostName is null ? "Add a Remote by URL…" : $"Publish to {hostName}…";
+    public override string Title => L.T("No Remote to Push To");
+    public override string OkText => hostName is null ? L.T("Add a Remote by URL…") : L.T($"Publish to {hostName}…");
     public override bool FitsContent => true;
     public override double Width => 460;
     public override double MinWidth => 380;
     public override double MinHeight => 0;
 
     public string Message { get; } = hostName is null
-        ? $"This repository has no remote yet, so there's nowhere to push {branch}. Add a remote that already exists " +
-          "(GitHub, GitLab, a server, a folder) by its URL."
-        : $"This repository has no remote yet, so there's nowhere to push {branch}. Create a repository on your {hostName} " +
-          "account and push there, or add a remote that already exists (GitHub, GitLab, a server, a folder) by its URL.";
+        ? L.T($"This repository has no remote yet, so there's nowhere to push {branch}. Add a remote that already exists (GitHub, GitLab, a server, a folder) by its URL.")
+        : L.T($"This repository has no remote yet, so there's nowhere to push {branch}. Create a repository on your {hostName} account and push there, or add a remote that already exists (GitHub, GitLab, a server, a folder) by its URL.");
 
     /// <summary>"Add a remote by URL…" as a second button: only when Publish is the main one.</summary>
     public bool CanAlsoAddRemote => hostName is not null;

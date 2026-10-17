@@ -5,6 +5,7 @@ using DevHub.Services;
 using DevHub.Templates.Core;
 using DevHub.Templates.Core.Generation;
 using DevHub.Templates.Core.Rendering;
+using DevHub.Sdk.Core.Localization;
 
 namespace DevHub.ViewModels.Templates;
 
@@ -48,9 +49,9 @@ public sealed partial class PreviewPageViewModel : ViewModelBase, Controls.ITree
         _save = save;
         _create = create;
         _back = back;
-        _commandName = commandName ?? "the command";
+        _commandName = commandName ?? L.T("the command");
         IsRaw = raw;
-        SaveText = saveIsCopy ? "Save to a Copy in Personal" : "Save to Template";
+        SaveText = saveIsCopy ? L.T("Save to a Copy in Personal") : L.T("Save to Template");
         Rebuild(null);
     }
 
@@ -81,9 +82,9 @@ public sealed partial class PreviewPageViewModel : ViewModelBase, Controls.ITree
     /// <summary>Add Files (an item template on an existing folder), not New Project.</summary>
     public bool IsItem => _item is not null;
 
-    public string Heading => IsItem ? $"Changes to {Path.GetFileName(TargetPath)}" : "Preview";
-    public string TargetText => IsItem ? $"In {TargetPath}" : $"Will be created as {TargetPath}";
-    public string CreateText => IsItem ? "Apply" : "Create";
+    public string Heading => IsItem ? L.T($"Changes to {Path.GetFileName(TargetPath)}") : L.T("Preview");
+    public string TargetText => IsItem ? L.T($"In {TargetPath}") : L.T($"Will be created as {TargetPath}");
+    public string CreateText => IsItem ? L.T("Apply") : L.T("Create");
 
     /// <summary>Item templates: the files the template would overwrite, each with its Overwrite choice.</summary>
     public ObservableCollection<ConflictRowViewModel> Conflicts { get; } = [];
@@ -108,8 +109,8 @@ public sealed partial class PreviewPageViewModel : ViewModelBase, Controls.ITree
     partial void OnShowUnchangedChanged(bool value) => Rebuild(SelectedNode?.Path);
 
     public string SaveToolTip => IsRaw
-        ? "A raw project skips the template's files and steps, so its edits can't become steps of the template."
-        : "Add these edits to the template's steps, so the next project is arranged this way too.";
+        ? L.T("A raw project skips the template's files and steps, so its edits can't become steps of the template.")
+        : L.T("Add these edits to the template's steps, so the next project is arranged this way too.");
 
     private int UnsavedEdits => _staged.Edits.Count - _savedEdits;
 
@@ -118,8 +119,8 @@ public sealed partial class PreviewPageViewModel : ViewModelBase, Controls.ITree
     {
         // In the selected folder (or the selected file's folder), else at the top.
         var parent = SelectedNode is { } node ? node.IsFolder ? node.Path : node.Parent : "";
-        var dialog = new NameDialogViewModel("New Folder", "Folder name", "", "Create",
-            parent.Length == 0 ? "In the project folder" : "In " + parent);
+        var dialog = new NameDialogViewModel(L.T("New Folder"), L.T("Folder name"), "", L.T("Create"),
+            parent.Length == 0 ? L.T("In the project folder") : L.T("In ") + parent);
         if (await _dialogs.ShowDialogAsync(dialog))
             Edit(new TemplateStep { Op = StepOp.CreateFolder, Path = Join(parent, dialog.Name) }, Join(parent, dialog.Name));
     }
@@ -131,7 +132,7 @@ public sealed partial class PreviewPageViewModel : ViewModelBase, Controls.ITree
     {
         if (SelectedNode is not { } node)
             return;
-        var dialog = new NameDialogViewModel("Rename", "New name", node.Name, "Rename", node.Path);
+        var dialog = new NameDialogViewModel(L.T("Rename"), L.T("New name"), node.Name, L.T("Rename"), node.Path);
         if (await _dialogs.ShowDialogAsync(dialog) && dialog.Name != node.Name)
             Edit(new TemplateStep { Op = StepOp.Rename, From = node.Path, To = dialog.Name }, Join(node.Parent, dialog.Name));
     }
@@ -229,8 +230,8 @@ public sealed partial class PreviewPageViewModel : ViewModelBase, Controls.ITree
         var wasSaved = _savedEdits > _staged.Edits.Count;
         _savedEdits = Math.Min(_savedEdits, _staged.Edits.Count);
         Message = wasSaved
-            ? "Undone here. It was already saved to the template, so it's still one of its steps (remove it in the template's editor)."
-            : $"Undone: {Describe(undone)}.";
+            ? L.T("Undone here. It was already saved to the template, so it's still one of its steps (remove it in the template's editor).")
+            : L.T($"Undone: {Describe(undone)}.");
         Rebuild(SelectedNode?.Path);
         SaveToTemplateCommand.NotifyCanExecuteChanged();
         UndoCommand.NotifyCanExecuteChanged();
@@ -238,7 +239,7 @@ public sealed partial class PreviewPageViewModel : ViewModelBase, Controls.ITree
 
     private static string Describe(TemplateStep edit) => edit.Op switch
     {
-        StepOp.CreateFolder => $"new folder {edit.Path}",
+        StepOp.CreateFolder => L.T($"new folder {edit.Path}"),
         StepOp.Delete => $"delete {edit.Path}",
         StepOp.Rename => $"rename {edit.From} to {edit.To}",
         _ => $"move {edit.From} to {edit.To}",
@@ -314,9 +315,9 @@ public sealed partial class PreviewPageViewModel : ViewModelBase, Controls.ITree
         var files = _staged.Tree.Entries.Where(e => !e.IsFolder).ToList();
         var fromTemplate = files.Count(f => f.Origin == EntryOrigin.Template);
         var moved = files.Count(f => f.IsMoved);
-        Summary = $"{Count(files.Count, "file")}: {fromTemplate} from the template, {files.Count - fromTemplate} from {_commandName}"
+        Summary = L.T($"{Count(files.Count, L.T("file"))}: {fromTemplate} from the template, {files.Count - fromTemplate} from {_commandName}")
                   + (moved > 0 ? $"; {moved} moved" : "")
-                  + (_staged.Edits.Count > 0 ? $"; {Count(_staged.Edits.Count, "edit")} of yours" : "");
+                  + (_staged.Edits.Count > 0 ? L.T($"; {Count(_staged.Edits.Count, L.T("edit"))} of yours") : "");
     }
 
     /// <summary>What changes (new, moved, a template's folder) and the folders they're in; the rest of the folder is left out.</summary>
@@ -342,16 +343,16 @@ public sealed partial class PreviewPageViewModel : ViewModelBase, Controls.ITree
     {
         var changes = _item!.Changes(Overwrite);
         Deleted = changes.Deleted;
-        var parts = new List<string> { $"{Count(changes.Added.Count, "new file")}" };
+        var parts = new List<string> { $"{Count(changes.Added.Count, L.T("new file"))}" };
         if (changes.Overwritten.Count > 0)
             parts.Add($"{changes.Overwritten.Count} overwritten");
         if (changes.Kept.Count > 0)
-            parts.Add($"{Count(changes.Kept.Count, "file")} of yours kept instead of the template's");
+            parts.Add($"{Count(changes.Kept.Count, L.T("file"))} of yours kept instead of the template's");
         if (changes.Moved.Count > 0)
-            parts.Add($"{Count(changes.Moved.Count, "file")} of yours moved");
+            parts.Add($"{Count(changes.Moved.Count, L.T("file"))} of yours moved");
         if (changes.Deleted.Count > 0)
-            parts.Add($"{Count(changes.Deleted.Count, "file")} of yours deleted");
-        Summary = string.Join("; ", parts) + (changes.IsEmpty ? ". Nothing would change." : ".");
+            parts.Add($"{Count(changes.Deleted.Count, L.T("file"))} of yours deleted");
+        Summary = string.Join("; ", parts) + (changes.IsEmpty ? L.T(". Nothing would change.") : ".");
     }
 
     private void OnExpandedChanged(PreviewNodeViewModel node)
@@ -388,7 +389,7 @@ public sealed partial class ConflictRowViewModel : ViewModelBase, IDisposable
     /// <summary>The row is replaced (the list was rebuilt): stop reporting.</summary>
     public void Dispose() => _changed = null;
 
-    public override string ToString() => Overwrite ? $"{Path}: overwrite" : $"{Path}: keep yours";
+    public override string ToString() => Overwrite ? $"{Path}: overwrite" : L.T($"{Path}: keep yours");
 }
 
 /// <summary>What Save to Template did: saved (the edits are now steps) or not, and a sentence about it.</summary>
@@ -428,7 +429,7 @@ public sealed partial class PreviewNodeViewModel : ViewModelBase
     public bool IsFromTemplate => Entry.Origin == EntryOrigin.Template && !IsFolder && !IsConflict;
     public bool IsConflict { get; }
     public bool IsMoved => Entry.IsMoved;
-    public string MovedText => IsMoved ? "moved from " + Entry.OriginalPath : "";
+    public string MovedText => IsMoved ? L.T("moved from ") + Entry.OriginalPath : "";
 
     public ObservableCollection<PreviewNodeViewModel> Children { get; } = [];
 
@@ -483,7 +484,7 @@ public sealed partial class NameDialogViewModel : Dialogs.DialogViewModelBase
     protected override Task<bool> ApplyChangesAsync()
     {
         Name = Name.Trim();
-        Error = Name.Length == 0 ? "Enter a name." : PathRenderer.NameProblem(Name);
+        Error = Name.Length == 0 ? L.T("Enter a name.") : PathRenderer.NameProblem(Name);
         return Task.FromResult(Error is null);
     }
 }
@@ -498,8 +499,8 @@ public sealed partial class MoveDialogViewModel : Dialogs.DialogViewModelBase
         _selectedFolder = Folders.FirstOrDefault();
     }
 
-    public override string Title => "Move";
-    public override string OkText => "Move";
+    public override string Title => L.T("Move");
+    public override string OkText => L.T("Move");
     public override double Width => 460;
     public override double Height => 420;
 
@@ -514,7 +515,7 @@ public sealed partial class MoveDialogViewModel : Dialogs.DialogViewModelBase
 /// <param name="Path">"" for the project folder itself.</param>
 public sealed record FolderChoice(string Path)
 {
-    public string Text => Path.Length == 0 ? "(the project folder)" : Path;
+    public string Text => Path.Length == 0 ? L.T("(the project folder)") : Path;
 
     public override string ToString() => Text;
 }

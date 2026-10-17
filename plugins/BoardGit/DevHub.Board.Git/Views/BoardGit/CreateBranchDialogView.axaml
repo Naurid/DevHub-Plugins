@@ -1,15 +1,16 @@
 <!-- Create Branch from an issue: name, check out, start the issue. -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
              xmlns:vm="using:DevHub.ViewModels.BoardGit"
              xmlns:c="using:DevHub.Controls"
              x:Class="DevHub.Views.BoardGit.CreateBranchDialogView"
              x:DataType="vm:CreateBranchDialogViewModel">
     <StackPanel Margin="{DynamicResource Padding.Dialog}" Spacing="{DynamicResource Spacing}">
-        <TextBlock Classes="secondary" Text="Branch name" />
-        <TextBox Classes="code" Text="{Binding Name}" AutomationProperties.Name="Branch name" c:FocusOnLoad.IsEnabled="True" />
+        <TextBlock Classes="secondary" Text="{l:T 'Branch name'}" />
+        <TextBox Classes="code" Text="{Binding Name}" AutomationProperties.Name="{l:T 'Branch name'}" c:FocusOnLoad.IsEnabled="True" />
         <TextBlock Classes="small secondary" Text="{Binding BaseText}" />
-        <CheckBox Content="Check out the new branch" IsChecked="{Binding Checkout}" />
+        <CheckBox Content="{l:T 'Check out the new branch'}" IsChecked="{Binding Checkout}" />
         <CheckBox Content="{Binding StartText}" IsChecked="{Binding StartIssue}" IsVisible="{Binding CanStart}" />
         <TextBlock Text="{Binding Error}" Foreground="{DynamicResource Brush.Status.Error}" TextWrapping="Wrap"
                    IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
