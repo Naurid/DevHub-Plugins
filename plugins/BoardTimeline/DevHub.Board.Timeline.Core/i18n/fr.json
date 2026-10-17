@@ -1,10 +1,10 @@
 {
   "Fixed": "Corrigés",
-  "Nothing is finished in this version yet.\n\n": "Rien n'est encore fini dans cette version.\n\n",
+  "Nothing is finished in this version yet.\n\n": "Aucun ticket n'est encore terminé dans cette version.\n\n",
   "That version doesn't exist any more.": "Cette version n'existe plus.",
-  "{0} is already released.": "{0} est déjà sortie.",
+  "{0} is already released.": "{0} est déjà publiée.",
   "Choose another version for the unfinished issues.": "Choisissez une autre version pour les tickets inachevés.",
   "no version": "aucune version",
-  "Version {0} released": "Version {0} sortie",
-  "Version {0} released, {1} unfinished issues moved to {2}": "Version {0} sortie, {1} tickets inachevés déplacés vers {2}"
+  "Version {0} released": "Version {0} publiée",
+  "Version {0} released, {1} unfinished issues moved to {2}": "Version {0} publiée, {1} tickets inachevés déplacés vers {2}"
 }

@@ -59,6 +59,9 @@ foreach (var project in projects)
         case "add":
             Keys.Add(project, args[2]);
             break;
+        case "typo":
+            Keys.Typography(project);
+            break;
         default:
             Console.Error.WriteLine($"unknown command {command}");
             return 2;
@@ -409,6 +412,31 @@ static class Keys
         Directory.CreateDirectory(Path.GetDirectoryName(FilePath(project))!);
         File.WriteAllText(FilePath(project), JsonSerializer.Serialize(map, Json).Replace("\r\n", "\n") + "\n");
         Console.WriteLine($"{Files.Rel(project)}: {added} keys added");
+    }
+
+    // French typography: a no-break space before : (and a narrow one before ; ? ! %), and inside « ». Without it
+    // the sign can wrap onto a line of its own. (The replacements are U+00A0 before :, U+202F before ; ? ! %.)
+    public static string French(string text) =>
+        text.Replace(" :", " :").Replace(" ;", " ;").Replace(" ?", " ?").Replace(" !", " !")
+            .Replace(" %", " %").Replace("« ", "« ").Replace(" »", " »");
+
+    public static void Typography(string project)
+    {
+        var map = Read(project);
+        if (map.Count == 0)
+            return;
+        var changed = 0;
+        foreach (var key in map.Keys.ToList())
+        {
+            var text = French(map[key]);
+            if (text != map[key])
+            {
+                map[key] = text;
+                changed++;
+            }
+        }
+        File.WriteAllText(FilePath(project), JsonSerializer.Serialize(map, Json).Replace("\r\n", "\n") + "\n");
+        Console.WriteLine($"{Files.Rel(project)}: {changed} texts set in French typography");
     }
 
     public static void Update(string project)

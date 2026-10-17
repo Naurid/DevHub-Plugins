@@ -27,12 +27,12 @@
   "Review": "Revue",
   "Issues": "Tickets",
   "Risk register": "Registre des risques",
-  "That risk id is taken.": "Cet identifiant de risque est déjà pris.",
+  "That risk id is taken.": "Cet identifiant de risque est déjà utilisé.",
   "That risk doesn't exist any more.": "Ce risque n'existe plus.",
   "Give the risk a title.": "Donnez un titre au risque.",
   "Probability and impact go from 1 to 5.": "La probabilité et l'impact vont de 1 à 5.",
   "The owner isn't on the board.": "Le responsable n'est pas sur le tableau.",
-  "{0} raised: {1}": "{0} signalé : {1}",
+  "{0} raised: {1}": "{0} ajouté\u00A0: {1}",
   "{0} changed": "{0} modifié",
   "{0} deleted": "{0} supprimé"
 }
