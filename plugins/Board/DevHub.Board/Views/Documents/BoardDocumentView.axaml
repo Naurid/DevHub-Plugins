@@ -14,6 +14,7 @@
         <StyleInclude Source="avares://DevHub.Board/Views/Board/BoardStyles.axaml" />
         <Style Selector="ListBox.pages > ListBoxItem">
             <Setter Property="Padding" Value="{DynamicResource Padding.Tab}" />
+            <Setter Property="Margin" Value="{DynamicResource Margin.InnerRight}" />
             <Setter Property="CornerRadius" Value="{DynamicResource Radius.Control}" />
         </Style>
     </UserControl.Styles>
@@ -42,9 +43,10 @@
                     <ListBox Grid.Column="1" Classes="pages" ItemsSource="{Binding Pages}" SelectedItem="{Binding SelectedPage}"
                              Background="Transparent" AutomationProperties.Name="Pages" VerticalAlignment="Center"
                              ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                        <!-- Wraps onto a second line when the pages don't fit beside the search box (a narrow window). -->
                         <ListBox.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}" />
+                                <WrapPanel Orientation="Horizontal" />
                             </ItemsPanelTemplate>
                         </ListBox.ItemsPanel>
                         <ListBox.ItemTemplate>

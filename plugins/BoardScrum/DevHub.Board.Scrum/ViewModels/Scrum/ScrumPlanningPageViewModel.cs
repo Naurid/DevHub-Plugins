@@ -128,7 +128,13 @@ public sealed class ScrumPlanningPageViewModel : PlanningPageViewModel
     {
         var dialog = new CompleteSprintDialogViewModel(Context.Snapshot, sprintId);
         if (await Context.Dialogs.ShowDialogAsync(dialog))
-            await Context.RunAsync(new CompleteSprint(sprintId, dialog.MoveTo) { NextSprint = dialog.NextSprintId });
+        {
+            if (await Context.RunAsync(new CompleteSprint(sprintId, dialog.MoveTo) { NextSprint = dialog.NextSprintId })
+                && await Context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Sprint Retrospective",
+                    "The sprint is closed. Hold its retrospective now: what went well, what to improve, and the actions the team takes?",
+                    "Open Retrospective", [], destructive: false)))
+                Host.ShowPage(RetrospectivePageProvider.PageId);
+        }
     }
 
     private async Task EditAsync(string sprintId)
@@ -136,9 +142,13 @@ public sealed class ScrumPlanningPageViewModel : PlanningPageViewModel
         var sprint = Context.Snapshot.Sprints.GetValueOrDefault(sprintId);
         if (sprint is null)
             return;
-        var dialog = new EditSprintDialogViewModel(sprint);
+        var dialog = new EditSprintDialogViewModel(sprint, Context.Snapshot);
         if (await Context.Dialogs.ShowDialogAsync(dialog))
-            await Context.RunAsync(new EditSprint(sprintId, dialog.Name, dialog.Goal, dialog.StartAt, dialog.EndAt, dialog.CapacityValue));
+            await Context.RunAsync(new EditSprint(sprintId, dialog.Name, dialog.Goal, dialog.StartAt, dialog.EndAt, dialog.CapacityValue)
+            {
+                Availability = dialog.Availability,
+                FocusFactor = dialog.FocusValue is 1 ? null : dialog.FocusValue,
+            });
     }
 
     private async Task DeleteAsync(string sprintId)

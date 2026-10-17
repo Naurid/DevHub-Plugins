@@ -100,4 +100,10 @@
     <x:Double x:Key="Size.ReportPie">220</x:Double>
     <!-- Board.Timeline: the key and summary column left of the roadmap bars. -->
     <x:Double x:Key="Size.TimelineLabels">300</x:Double>
+
+    <!-- Scrum: capacity planning, retrospectives; dialogs that scroll. -->
+    <x:Double x:Key="Size.NumberBox">80</x:Double>
+    <Thickness x:Key="Margin.RowBelow">0,0,0,4</Thickness>
+    <x:Double x:Key="Size.DialogContentMax">620</x:Double>
+    <x:Double x:Key="Size.RetroColumn">260</x:Double>
 </ResourceDictionary>

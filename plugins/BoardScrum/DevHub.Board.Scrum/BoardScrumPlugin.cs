@@ -25,6 +25,7 @@ public sealed class BoardScrumPlugin : IPlugin
     public void ConfigureServices(IServiceCollection services, PluginContext context)
     {
         services.AddSingleton<IBoardPageProvider, ScrumPlanningPageProvider>();
+        services.AddSingleton<IBoardPageProvider, RetrospectivePageProvider>();
         services.AddSingleton<IActionProvider, ScrumActionProvider>();
     }
 }

@@ -312,11 +312,71 @@ internal sealed class ShopDemo(string folder, string myName, DemoGit? git)
 
     private void Plan(DateTimeOffset when, DemoIssue issue, int sprint) => Do(when, _ada, new PlanIssue(issue.Id, _sprints[sprint], null, null));
 
-    private void StartSprint(int sprint, int day, string? goal = null) =>
-        Do(At(day, 10), _ada, new StartSprint(_sprints[sprint], At(day, 10), At(day + 13, 17)) { Goal = goal });
+    // The team was put together for this project: it focuses less at first (forming), then settles.
+    private static readonly double[] Focus = [0.5, 0.6, 0.7, 0.75, 0.75, 0.8];
 
-    private void CompleteSprint(int sprint, int day) =>
+    private void StartSprint(int sprint, int day, string? goal = null)
+    {
+        Do(At(day, 10), _ada, new StartSprint(_sprints[sprint], At(day, 10), At(day + 13, 17)) { Goal = goal });
+        // Who's available: everyone ten days, minus a holiday or a course here and there.
+        Do(At(day, 10.1), _ada, b =>
+        {
+            var s = b.Sprints[_sprints[sprint]];
+            IReadOnlyList<MemberDays> days =
+            [
+                new MemberDays { Person = _ada.Id, Days = 6 },   // also Product Owner of another product
+                new MemberDays { Person = _grace.Id, Days = 8 },
+                new MemberDays { Person = _alan.Id, Days = sprint == 1 ? 7 : 10 },
+                new MemberDays { Person = _katherine.Id, Days = 10 },
+                new MemberDays { Person = _edsger.Id, Days = sprint == 2 ? 5 : 10 },
+            ];
+            return new EditSprint(s.Id, s.Name, s.Goal, s.Start, s.End, s.Capacity) { Availability = days, FocusFactor = Focus[sprint] };
+        });
+    }
+
+    private void CompleteSprint(int sprint, int day)
+    {
         Do(At(day, 9.5), _ada, new CompleteSprint(_sprints[sprint], OpenIssuesGoTo.NextSprint) { NextSprint = _sprints[sprint + 1] });
+        if (sprint < Retros.Length)
+            Do(At(day, 11), _grace, Retros[sprint](this));
+    }
+
+    private static readonly Func<ShopDemo, SaveRetrospective>[] Retros =
+    [
+        d => new SaveRetrospective(new Retrospective
+        {
+            Sprint = d._sprints[0],
+            WentWell = [Note("Everyone met everyone: the kick-off and pairing helped"), Note("Sign-in works end to end")],
+            ToImprove = [Note("Roles were unclear for a week"), Note("Stories were too big to finish in a sprint")],
+            Problems = [Note("We committed to 21 points with no velocity to go on")],
+            Actions =
+            [
+                new RetroAction { Text = "Split stories over 5 points before planning", Owner = d._ada.Id, Done = true },
+                new RetroAction { Text = "Write down who decides what (PO, SM, team)", Owner = d._grace.Id, Done = true },
+            ],
+            FollowUp = "Checked at the start of the next planning by the Scrum Master.",
+        }),
+        d => new SaveRetrospective(new Retrospective
+        {
+            Sprint = d._sprints[1],
+            WentWell = [Note("Smaller stories: most of them were done"), Note("Reviews are faster")],
+            ToImprove = [Note("The test environment was down twice")],
+            Problems = [Note("No one owns the test environment")],
+            Actions = [new RetroAction { Text = "Name an owner for the test environment", Owner = d._edsger.Id }],
+            FollowUp = "Each daily: is the test environment up? The owner reports.",
+        }),
+        d => new SaveRetrospective(new Retrospective
+        {
+            Sprint = d._sprints[2],
+            WentWell = [Note("Velocity is stable"), Note("Search shipped early")],
+            ToImprove = [Note("Bugs found late, in QA")],
+            Problems = [Note("Acceptance criteria were written after the work started")],
+            Actions = [new RetroAction { Text = "Acceptance criteria before a story enters a sprint", Owner = d._ada.Id }],
+            FollowUp = "The Definition of Ready is checked at planning.",
+        }),
+    ];
+
+    private static RetroNote Note(string text) => new() { Text = text };
 
     /// <summary>
     /// Someone works an issue: assigned and In Progress at <paramref name="start"/> (a branch), commits, logged work,

@@ -1,0 +1,145 @@
+<!--
+  A sprint's retrospective: a sprint picker and export on top; three columns of notes (went well, to improve, problems);
+  the improvement actions (owner, done, an issue for each); how they're followed up; earlier sprints' open actions.
+  Everything saves as you go.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Scrum"
+             xmlns:dlg="using:DevHub.ViewModels.Dialogs"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Scrum.RetrospectivePageView"
+             x:DataType="vm:RetrospectivePageViewModel">
+    <UserControl.Styles>
+        <StyleInclude Source="avares://DevHub.Board/Views/Board/BoardStyles.axaml" />
+        <Style Selector="Border.retroColumn">
+            <Setter Property="Background" Value="{DynamicResource Brush.Board.Column}" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.Control}" />
+            <Setter Property="Padding" Value="{DynamicResource Padding.BoardColumn}" />
+        </Style>
+        <Style Selector="Border.note">
+            <Setter Property="Background" Value="{DynamicResource Brush.Board.Card}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.Control}" />
+            <Setter Property="Margin" Value="{DynamicResource Margin.Card}" />
+        </Style>
+    </UserControl.Styles>
+
+    <DockPanel>
+        <Border DockPanel.Dock="Top" Classes="pageHeader">
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                <ComboBox ItemsSource="{Binding Sprints}" SelectedItem="{Binding Sprint}" MinWidth="{DynamicResource Size.BoardSearch}"
+                          AutomationProperties.Name="Sprint" PlaceholderText="No sprint yet" />
+                <TextBlock Grid.Column="1" Classes="secondary" Text="{Binding SprintSummary}" VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding SprintSummary}" />
+                <Button Grid.Column="2" Content="Copy as Markdown" Command="{Binding CopyMarkdownCommand}" IsEnabled="{Binding HasSprint}" />
+                <Button Grid.Column="3" Content="Save as Markdown…" Command="{Binding SaveMarkdownCommand}" IsEnabled="{Binding HasSprint}" />
+            </Grid>
+        </Border>
+
+        <ScrollViewer IsEnabled="{Binding HasSprint}">
+            <StackPanel Margin="{DynamicResource Padding.Board}" Spacing="{DynamicResource Spacing.Large}">
+                <!-- Findings and problems. -->
+                <ItemsControl ItemsSource="{Binding Columns}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Rows="1" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:RetroColumnViewModel">
+                            <Border Classes="retroColumn" Margin="{DynamicResource Margin.RowEnd}" MinWidth="{DynamicResource Size.RetroColumn}">
+                                <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                                    <TextBlock Classes="columnName" Text="{Binding Title}" />
+                                    <ItemsControl ItemsSource="{Binding Notes}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="vm:RetroNoteRow">
+                                                <Border Classes="note">
+                                                    <Grid ColumnDefinitions="*,Auto">
+                                                        <TextBox Text="{Binding Text, UpdateSourceTrigger=LostFocus}" TextWrapping="Wrap" AcceptsReturn="False"
+                                                                 Classes="flat" BorderThickness="0" Background="Transparent" AutomationProperties.Name="Note" />
+                                                        <Button Grid.Column="1" Classes="flat" VerticalAlignment="Top" Command="{Binding RemoveCommand}"
+                                                                ToolTip.Tip="Remove this note" AutomationProperties.Name="Remove note">
+                                                            <c:Icon Kind="delete" />
+                                                        </Button>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                    <TextBox Text="{Binding NewText}" PlaceholderText="{Binding Hint}" AutomationProperties.Name="{Binding Title}">
+                                        <TextBox.KeyBindings>
+                                            <KeyBinding Gesture="Enter" Command="{Binding AddCommand}" />
+                                        </TextBox.KeyBindings>
+                                    </TextBox>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Improvement actions. -->
+                <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                    <TextBlock Classes="section" Text="Improvement actions" />
+                    <ItemsControl ItemsSource="{Binding Actions}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:RetroActionRow">
+                                <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.RowBelow}">
+                                    <CheckBox IsChecked="{Binding Done}" ToolTip.Tip="Done" AutomationProperties.Name="{Binding Text, StringFormat='{}{0} done'}" />
+                                    <TextBox Grid.Column="1" Text="{Binding Text, UpdateSourceTrigger=LostFocus}" AutomationProperties.Name="Action" />
+                                    <ComboBox Grid.Column="2" ItemsSource="{Binding People}" SelectedItem="{Binding Owner}"
+                                              MinWidth="{DynamicResource Size.StatusPill}" AutomationProperties.Name="Owner" ToolTip.Tip="Who takes care of it" />
+                                    <Panel Grid.Column="3">
+                                        <Button Classes="flat" Content="{Binding IssueKey}" Command="{Binding OpenIssueCommand}" IsVisible="{Binding HasIssue}"
+                                                ToolTip.Tip="The issue that tracks this action" />
+                                        <Button Classes="flat" Content="Create Issue" Command="{Binding CreateIssueCommand}" IsVisible="{Binding !HasIssue}"
+                                                ToolTip.Tip="Track it as a task in the backlog" />
+                                    </Panel>
+                                    <Button Grid.Column="4" Classes="flat" Command="{Binding RemoveCommand}" ToolTip.Tip="Remove this action"
+                                            AutomationProperties.Name="Remove action">
+                                        <c:Icon Kind="delete" />
+                                    </Button>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}">
+                        <TextBox Text="{Binding NewAction}" PlaceholderText="Add: what will the team do differently? (Enter)" AutomationProperties.Name="New action">
+                            <TextBox.KeyBindings>
+                                <KeyBinding Gesture="Enter" Command="{Binding AddActionCommand}" />
+                            </TextBox.KeyBindings>
+                        </TextBox>
+                        <Button Grid.Column="1" Content="Add" Command="{Binding AddActionCommand}" />
+                    </Grid>
+                </StackPanel>
+
+                <!-- Follow-up. -->
+                <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                    <TextBlock Classes="section" Text="Follow-up" />
+                    <TextBox Text="{Binding FollowUp, UpdateSourceTrigger=LostFocus}" AcceptsReturn="True" TextWrapping="Wrap"
+                             MinHeight="{DynamicResource Size.CommentEditor}" AutomationProperties.Name="Follow-up"
+                             PlaceholderText="How the actions are followed up: who checks, when (next planning, daily), what shows it worked" />
+                </StackPanel>
+
+                <!-- Earlier actions. -->
+                <StackPanel Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding HasFollowUps}">
+                    <TextBlock Classes="section" Text="Still open from earlier retrospectives" />
+                    <ItemsControl ItemsSource="{Binding FollowUps}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:FollowUpRow">
+                                <CheckBox IsChecked="{Binding Done}" Margin="{DynamicResource Margin.RowBelow}" AutomationProperties.Name="{Binding}">
+                                    <TextBlock TextWrapping="Wrap">
+                                        <Run Text="{Binding Text}" />
+                                        <Run Text="  " />
+                                        <Run Text="{Binding From}" Foreground="{DynamicResource Brush.Text.Secondary}" />
+                                    </TextBlock>
+                                </CheckBox>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>
