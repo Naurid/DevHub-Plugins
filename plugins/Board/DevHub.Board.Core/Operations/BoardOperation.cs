@@ -95,6 +95,12 @@ public sealed class ChangeBuilder(BoardSnapshot board, OperationContext context)
         }
         else
         {
+            // Every way into a Done status passes here (transition, drag, bulk edit, smart commit), so the
+            // Definition of Done is enforced in one place when the project says Block.
+            var project = Project;
+            if (project.Settings.DoneCheck == DoneCheck.Block && DoneReadiness.GoesDone(project, before, after)
+                && DoneReadiness.Missing(project, after) is { Count: > 0 } missing)
+                throw new BoardRuleException($"{after.Key} isn't done yet: {string.Join("; ", missing)}.");
             foreach (var field in IssueFields.Tracked)
                 AddFieldChange(after.Id, field, IssueFields.Get(before, field).Raw, IssueFields.Get(after, field).Raw);
             foreach (var id in before.Custom.Keys.Union(after.Custom.Keys).Distinct())

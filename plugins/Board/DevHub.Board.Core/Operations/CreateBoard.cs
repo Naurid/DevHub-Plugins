@@ -51,6 +51,8 @@ public sealed record CreateBoard(string Key, string Name, BoardPreset Preset, Bo
             People = [new BoardPerson { Id = BoardIds.IsValid(CreatorId) ? CreatorId! : context.NewId(), Name = Creator.Name.Trim(), Email = string.IsNullOrWhiteSpace(Creator.Email) ? null : Creator.Email.Trim() }],
             DefaultWorkflow = workflowId,
         };
+        if (Preset == BoardPreset.Scrum)
+            project = project with { CustomFields = BoardPresets.ScrumFields, DefinitionOfDone = BoardPresets.ScrumDefinitionOfDone };
 
         var workflow = new Workflow { Id = workflowId, Name = "Default", Statuses = statuses.Select(s => s.Id).ToList() };
         var board = new BoardDefinition
@@ -120,6 +122,23 @@ public static class BoardPresets
             new LinkType { Id = "clones", Outward = "clones", Inward = "is cloned by" },
         ],
     };
+
+    /// <summary>A Scrum board's custom fields: Business value, to prioritise the backlog by.</summary>
+    public static IReadOnlyList<FieldDefinition> ScrumFields { get; } =
+    [
+        new FieldDefinition { Id = "value", Name = "Business value", Type = FieldType.Number },
+    ];
+
+    /// <summary>A Scrum board's starting Definition of Done (edit it in Project Settings).</summary>
+    public static IReadOnlyList<DoneItem> ScrumDefinitionOfDone { get; } =
+    [
+        new DoneItem { Id = "standards", Text = "Code follows the team's standards" },
+        new DoneItem { Id = "tests", Text = "Unit tests written and passing" },
+        new DoneItem { Id = "review", Text = "Code reviewed" },
+        new DoneItem { Id = "docs", Text = "Documentation updated" },
+        new DoneItem { Id = "deployed", Text = "Deployed to the test environment" },
+        new DoneItem { Id = "accepted", Text = "Accepted by the Product Owner" },
+    ];
 
     /// <summary>A preset's statuses, board kind and columns (column name + the status ids it holds).</summary>
     public static (IReadOnlyList<Status> Statuses, BoardKind Kind, IReadOnlyList<(string Name, IReadOnlyList<string> Statuses)> Columns)

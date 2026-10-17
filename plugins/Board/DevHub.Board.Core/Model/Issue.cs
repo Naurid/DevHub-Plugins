@@ -62,6 +62,12 @@ public sealed record Issue
     public IReadOnlyList<Comment> Comments { get; init; } = [];
     public IReadOnlyList<Attachment> Attachments { get; init; } = [];
 
+    /// <summary>Acceptance criteria: what has to be true for the issue to be accepted, each ticked when it is.</summary>
+    public IReadOnlyList<CheckItem> Criteria { get; init; } = [];
+
+    /// <summary>The ids of the project's Definition of Done items ticked on this issue (<see cref="BoardProject.DefinitionOfDone"/>).</summary>
+    public IReadOnlyList<string> DoneChecks { get; init; } = [];
+
     public DateTimeOffset Created { get; init; }
     public DateTimeOffset Updated { get; init; }
 
@@ -129,4 +135,16 @@ public sealed record Attachment
     public DateTimeOffset Added { get; init; }
 
     [JsonExtensionData] public Dictionary<string, JsonElement>? Extra { get; init; }
+}
+
+/// <summary>A line with a check box: an acceptance criterion.</summary>
+public sealed record CheckItem
+{
+    public string Id { get; init; } = "";
+    public string Text { get; init; } = "";
+    public bool Done { get; init; }
+
+    [JsonExtensionData] public Dictionary<string, JsonElement>? Extra { get; init; }
+
+    public override string ToString() => Text;
 }

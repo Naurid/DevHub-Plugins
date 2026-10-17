@@ -57,6 +57,8 @@ public sealed partial class BoardContext : ObservableObject
     /// </summary>
     public async Task<bool> RunAsync(IBoardOperation operation)
     {
+        if (!await ConfirmDoneAsync(operation))
+            return false;
         try
         {
             var change = await Session.ApplyAsync(operation);
@@ -78,6 +80,33 @@ public sealed partial class BoardContext : ObservableObject
                 [e.Message], destructive: false, showCancel: false));
             return false;
         }
+    }
+
+    // With the Definition of Done check on Warn: tries the operation without writing and, when it would move
+    // issues to Done with unticked criteria or Definition of Done items, asks first (Block refuses in Core).
+    private async Task<bool> ConfirmDoneAsync(IBoardOperation operation)
+    {
+        var snapshot = Snapshot;
+        if (snapshot.Project.Settings.DoneCheck != DoneCheck.Warn)
+            return true;
+        IReadOnlyList<(Issue Issue, IReadOnlyList<string> Missing)> unfinished;
+        try
+        {
+            unfinished = DoneReadiness.Check(snapshot, operation.Apply(snapshot, new OperationContext(Me, DateTimeOffset.Now)));
+        }
+        catch (BoardRuleException)
+        {
+            return true;   // refused anyway: RunAsync says why
+        }
+        if (unfinished.Count == 0)
+            return true;
+        var text = unfinished.Count == 1
+            ? $"{unfinished[0].Issue.Key} \"{unfinished[0].Issue.Summary}\" isn't done by your Definition of Done yet. Move it to Done anyway?"
+            : $"{unfinished.Count} issues aren't done by your Definition of Done yet. Move them to Done anyway?";
+        var lines = unfinished.Count == 1
+            ? unfinished[0].Missing
+            : unfinished.Select(u => $"{u.Issue.Key}: {u.Missing.Count} not ticked").ToList();
+        return await _dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Not Done Yet", text, "Move to Done", lines, destructive: false));
     }
 
     public async Task UndoAsync()

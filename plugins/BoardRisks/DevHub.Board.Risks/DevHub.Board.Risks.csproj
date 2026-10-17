@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- Board.Risks: a risk register for each board with a probability × impact matrix and mitigation plans. Requires Board. -->
+
+    <PropertyGroup>
+        <RootNamespace>DevHub</RootNamespace>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Board\DevHub.Board\DevHub.Board.csproj" />
+        <ProjectReference Include="..\DevHub.Board.Risks.Core\DevHub.Board.Risks.Core.csproj" />
+    </ItemGroup>
+
+</Project>

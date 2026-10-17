@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- Charts: the chart maker (a tab to chart your own data in every Sdk chart type and style, and export it). Needs no other plugin. -->
+
+    <PropertyGroup>
+        <RootNamespace>DevHub</RootNamespace>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\DevHub.Charts.Core\DevHub.Charts.Core.csproj" />
+    </ItemGroup>
+
+</Project>

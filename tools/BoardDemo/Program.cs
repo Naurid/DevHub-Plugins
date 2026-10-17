@@ -5,6 +5,7 @@ using DevHub.Board.Core;
 using DevHub.Board.Core.Fields;
 using DevHub.Board.Core.Model;
 using DevHub.Board.Core.Storage;
+using DevHub.Board.Risks.Core;
 
 // Writes a demo board: seven weeks of a small team building a web shop, replayed through the same operations the
 // Board UI uses (so the change log, reports and history are real), and a git repository with branches and commits
@@ -167,6 +168,17 @@ internal sealed class ShopDemo(string folder, string myName, DemoGit? git)
         var t = At(0, 9);
         foreach (var person in new[] { _ada, _grace, _alan, _katherine, _edsger })
             Do(t, _me, new AddPerson(person.Name, person.Email) { Id = person.Id });
+        Do(t, _me, new SetPersonRole(_ada.Id, "Product Owner"));
+        Do(t, _me, new SetPersonRole(_grace.Id, "Scrum Master"));
+        foreach (var person in new[] { _me, _alan, _katherine, _edsger })
+            Do(t, _me, new SetPersonRole(person.Id, "Developer"));
+
+        // The risk register (Board.Risks): what the team saw coming at the kick-off.
+        Do(At(1, 11), _grace, new AddRisk("The team is new together: slow first sprints") { Probability = 4, Impact = 3, Category = "Team", Owner = _grace.Id });
+        Do(At(1, 11), _grace, new AddRisk("The payment provider changes its API") { Probability = 2, Impact = 5, Category = "External", Owner = _alan.Id });
+        Do(At(1, 11), _grace, new AddRisk("Nobody knows the search engine well") { Probability = 3, Impact = 4, Category = "Technical", Owner = _katherine.Id });
+        Do(At(1, 11), _grace, new AddRisk("A key developer leaves mid-project") { Probability = 1, Impact = 4, Category = "Team" });
+        Do(At(1, 11), _grace, new AddRisk("The launch date is fixed by marketing") { Probability = 5, Impact = 4, Category = "Schedule", Owner = _ada.Id });
 
         Do(t, _me, new AddComponent("Web", "The storefront: pages, styles, scripts") { Id = _web });
         Do(t, _me, new AddComponent("API", "The HTTP API behind the shop") { Id = _api });
@@ -176,7 +188,6 @@ internal sealed class ShopDemo(string folder, string myName, DemoGit? git)
 
         Do(t, _me, new AddIssueType("Spike", IssueTypeLevel.Standard, "task") { Id = "spike" });
         Do(t, _me, new AddCustomField("Platform", FieldType.Select) { Id = Platform, Options = ["Web", "iOS", "Android", "All"] });
-        Do(t, _me, new AddCustomField("Business value", FieldType.Number) { Id = Value });
         Do(t, _me, new AddCustomField("Customer", FieldType.Text) { Id = Customer });
 
         // A QA column (and status) between In Review and Done.
@@ -248,7 +259,7 @@ internal sealed class ShopDemo(string folder, string myName, DemoGit? git)
     }
 
     private DemoIssue Create(DateTimeOffset when, Person who, string type, string summary, string description, DemoIssue? parent,
-        double? points, string component, string? version, IReadOnlyList<(string, FieldValue)> extra, params string[] labels)
+        double? points, string component, string? version, IReadOnlyList<(string, FieldValue)> extra, string[]? criteria = null, params string[] labels)
     {
         var id = BoardIds.New();
         var fields = new List<(string Field, FieldValue Value)>();
@@ -266,14 +277,14 @@ internal sealed class ShopDemo(string folder, string myName, DemoGit? git)
         if (type is "story" or "bug")
             fields.Add((IssueFields.Custom(Platform), new FieldValue.Text(component == _mobile ? "All" : "Web")));
         fields.AddRange(extra);
-        Do(when, who, new CreateIssue(type, summary) { Id = id, Parent = parent?.Id, Description = description, Fields = fields });
+        Do(when, who, new CreateIssue(type, summary) { Id = id, Parent = parent?.Id, Description = description, Fields = fields, Criteria = criteria ?? [] });
         var area = component == _web ? "web" : component == _api ? "api" : component == _db ? "database" : component == _infra ? "infra" : component == _mobile ? "mobile" : "shop";
         return new DemoIssue(id, type, summary, area);
     }
 
     private DemoIssue Story(int day, string summary, double points, DemoIssue? epic, string component, string? version, int value, params string[] labels) =>
         Create(At(day, 10 + _random.Next(0, 6)), _ada, "story", summary, StoryText(summary), epic, points, component, version,
-            [(IssueFields.Custom(Value), new FieldValue.Text(value.ToString(CultureInfo.InvariantCulture)))], labels);
+            [(IssueFields.Custom(Value), new FieldValue.Text(value.ToString(CultureInfo.InvariantCulture)))], StoryCriteria(), labels);
 
     private DemoIssue Bug(DateTimeOffset when, Person reporter, string summary, string priority, string component, string? version, string? customer, string steps)
     {
@@ -286,14 +297,22 @@ internal sealed class ShopDemo(string folder, string myName, DemoGit? git)
     private DemoIssue Subtask(DateTimeOffset when, Person who, DemoIssue parent, string summary) =>
         Create(when, who, "subtask", summary, "", parent, null, "", null, []);
 
+    private static string[] StoryCriteria() =>
+    [
+        "Works on desktop and phone widths",
+        "Errors are explained in plain words",
+        "Covered by tests (unit + one end-to-end path)",
+    ];
+
+    /// <summary>Before Done: every acceptance criterion met and the Definition of Done ticked (standard issues).</summary>
+    private void TickEverything(DateTimeOffset when, Person who, DemoIssue issue)
+    {
+        Do(when, who, new TickAll(issue.Id));
+    }
+
     private static string StoryText(string summary) =>
         $"""
         As a customer I want **{summary.ToLowerInvariant()}**, so that shopping here is quick and pleasant.
-
-        ### Acceptance criteria
-        - Works on desktop and phone widths
-        - Errors are explained in plain words
-        - Covered by tests (unit + one end-to-end path)
 
         ### Notes
         See the design board for the latest mock-ups. Questions go in the comments below.
@@ -301,11 +320,71 @@ internal sealed class ShopDemo(string folder, string myName, DemoGit? git)
 
     private void Plan(DateTimeOffset when, DemoIssue issue, int sprint) => Do(when, _ada, new PlanIssue(issue.Id, _sprints[sprint], null, null));
 
-    private void StartSprint(int sprint, int day, string? goal = null) =>
-        Do(At(day, 10), _ada, new StartSprint(_sprints[sprint], At(day, 10), At(day + 13, 17)) { Goal = goal });
+    // The team was put together for this project: it focuses less at first (forming), then settles.
+    private static readonly double[] Focus = [0.5, 0.6, 0.7, 0.75, 0.75, 0.8];
 
-    private void CompleteSprint(int sprint, int day) =>
+    private void StartSprint(int sprint, int day, string? goal = null)
+    {
+        Do(At(day, 10), _ada, new StartSprint(_sprints[sprint], At(day, 10), At(day + 13, 17)) { Goal = goal });
+        // Who's available: everyone ten days, minus a holiday or a course here and there.
+        Do(At(day, 10.1), _ada, b =>
+        {
+            var s = b.Sprints[_sprints[sprint]];
+            IReadOnlyList<MemberDays> days =
+            [
+                new MemberDays { Person = _ada.Id, Days = 6 },   // also Product Owner of another product
+                new MemberDays { Person = _grace.Id, Days = 8 },
+                new MemberDays { Person = _alan.Id, Days = sprint == 1 ? 7 : 10 },
+                new MemberDays { Person = _katherine.Id, Days = 10 },
+                new MemberDays { Person = _edsger.Id, Days = sprint == 2 ? 5 : 10 },
+            ];
+            return new EditSprint(s.Id, s.Name, s.Goal, s.Start, s.End, s.Capacity) { Availability = days, FocusFactor = Focus[sprint] };
+        });
+    }
+
+    private void CompleteSprint(int sprint, int day)
+    {
         Do(At(day, 9.5), _ada, new CompleteSprint(_sprints[sprint], OpenIssuesGoTo.NextSprint) { NextSprint = _sprints[sprint + 1] });
+        if (sprint < Retros.Length)
+            Do(At(day, 11), _grace, Retros[sprint](this));
+    }
+
+    private static readonly Func<ShopDemo, SaveRetrospective>[] Retros =
+    [
+        d => new SaveRetrospective(new Retrospective
+        {
+            Sprint = d._sprints[0],
+            WentWell = [Note("Everyone met everyone: the kick-off and pairing helped"), Note("Sign-in works end to end")],
+            ToImprove = [Note("Roles were unclear for a week"), Note("Stories were too big to finish in a sprint")],
+            Problems = [Note("We committed to 21 points with no velocity to go on")],
+            Actions =
+            [
+                new RetroAction { Text = "Split stories over 5 points before planning", Owner = d._ada.Id, Done = true },
+                new RetroAction { Text = "Write down who decides what (PO, SM, team)", Owner = d._grace.Id, Done = true },
+            ],
+            FollowUp = "Checked at the start of the next planning by the Scrum Master.",
+        }),
+        d => new SaveRetrospective(new Retrospective
+        {
+            Sprint = d._sprints[1],
+            WentWell = [Note("Smaller stories: most of them were done"), Note("Reviews are faster")],
+            ToImprove = [Note("The test environment was down twice")],
+            Problems = [Note("No one owns the test environment")],
+            Actions = [new RetroAction { Text = "Name an owner for the test environment", Owner = d._edsger.Id }],
+            FollowUp = "Each daily: is the test environment up? The owner reports.",
+        }),
+        d => new SaveRetrospective(new Retrospective
+        {
+            Sprint = d._sprints[2],
+            WentWell = [Note("Velocity is stable"), Note("Search shipped early")],
+            ToImprove = [Note("Bugs found late, in QA")],
+            Problems = [Note("Acceptance criteria were written after the work started")],
+            Actions = [new RetroAction { Text = "Acceptance criteria before a story enters a sprint", Owner = d._ada.Id }],
+            FollowUp = "The Definition of Ready is checked at planning.",
+        }),
+    ];
+
+    private static RetroNote Note(string text) => new() { Text = text };
 
     /// <summary>
     /// Someone works an issue: assigned and In Progress at <paramref name="start"/> (a branch), commits, logged work,
@@ -343,6 +422,7 @@ internal sealed class ShopDemo(string folder, string myName, DemoGit? git)
                 Do(qa, _edsger, new TransitionIssue(issue.Id, Qa));
             if (estimate > 0)
                 Do(d.AddMinutes(-5), who, b => new LogWork(issue.Id, Spent(b, issue, 0.4 * spentFactor), reviewed) { Note = "Review fixes and tests", Remaining = RemainingAdjustment.Set, NewRemainingMinutes = 0 });
+            TickEverything(d.AddMinutes(-2), who, issue);
             Do(d, review is null ? who : _ada, new TransitionIssue(issue.Id, "done"));
             if (withGit)
                 Git(d.AddMinutes(1), who, (g, b) => g.Merge(BranchOf(b), who, $"Merge {BranchOf(b)}: {KeyOf(b, issue)} {issue.Summary}", delete: !keepBranch));
@@ -462,7 +542,7 @@ internal sealed class ShopDemo(string folder, string myName, DemoGit? git)
         var index = Story(29, "Search index with Postgres full-text", 5, _catalogue, _db, _v11, 8, "performance");
         var details = Story(29, "Product detail page", 5, _catalogue, _web, _v11, 9, "ux");
         _filters = Story(30, "Filter by price and brand", 3, _catalogue, _web, _v11, 6);
-        var upgrade = Create(At(30, 10), _edsger, "task", "Upgrade to .NET 10", "Move every project to net10.0 and the new LTS SDK.", null, 2, _infra, _v11, [], "tech-debt");
+        var upgrade = Create(At(30, 10), _edsger, "task", "Upgrade to .NET 10", "Move every project to net10.0 and the new LTS SDK.", null, 2, _infra, _v11, [], null, "tech-debt");
 
         foreach (var issue in new[] { search, index, details, _filters, upgrade })
             Plan(At(31, 9.8), issue, 2);
@@ -577,9 +657,9 @@ internal sealed class ShopDemo(string folder, string myName, DemoGit? git)
         Story(41, "Dark mode", 3, null, _web, null, 2, "ux");
         Story(42, "Mobile app: sign in", 5, _mobileApp, _mobile, null, 5, "mobile");
         Story(42, "Mobile app: product list", 5, _mobileApp, _mobile, null, 5, "mobile");
-        var audit = Create(At(42, 10), _ada, "task", "Accessibility audit of the storefront", "Keyboard paths, contrast, screen reader labels (WCAG 2.2 AA).", null, 3, _web, _v11, [], "accessibility");
+        var audit = Create(At(42, 10), _ada, "task", "Accessibility audit of the storefront", "Keyboard paths, contrast, screen reader labels (WCAG 2.2 AA).", null, 3, _web, _v11, [], null, "accessibility");
         Do(At(42, 10.1), _ada, new EditIssue(audit.Id, IssueFields.Due, new FieldValue.Date(Date(46))));   // overdue
-        Create(At(42, 11), _grace, "task", "Load test the API", "500 concurrent shoppers against the staging API; find the first bottleneck.", null, 3, _api, null, [], "performance");
+        Create(At(42, 11), _grace, "task", "Load test the API", "500 concurrent shoppers against the staging API; find the first bottleneck.", null, 3, _api, null, [], null, "performance");
         // A story nobody estimated yet ("Stories without points").
         Create(At(43, 15), _katherine, "story", "Gift cards", "Sell and redeem gift cards. Needs a talk with finance first.", null, null, _web, null, []);
     }
@@ -741,5 +821,20 @@ internal sealed class DemoGit
         process.WaitForExit();
         if (process.ExitCode != 0)
             throw new InvalidOperationException($"git {string.Join(' ', arguments)} failed: {error.Trim()} {output.Result.Trim()}");
+    }
+}
+
+/// <summary>The demo's shortcut: every acceptance criterion met and the whole Definition of Done ticked, in one change.</summary>
+internal sealed record TickAll(string IssueId) : IBoardOperation
+{
+    public BoardChange Apply(BoardSnapshot board, OperationContext context)
+    {
+        var issue = board.Issue(IssueId)!;
+        var change = new ChangeBuilder(board, context);
+        var dod = board.LevelOf(issue) == IssueTypeLevel.Standard ? board.Project.DefinitionOfDone.Select(d => d.Id).ToList() : [];
+        change.WriteIssue(issue, issue with { Criteria = issue.Criteria.Select(c => c with { Done = true }).ToList(), DoneChecks = dod });
+        foreach (var c in issue.Criteria.Where(c => !c.Done))
+            change.AddHistory(issue.Id, "criteria-met", null, c.Text);
+        return change.Build($"{issue.Key}: everything ticked");
     }
 }

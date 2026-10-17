@@ -1,0 +1,99 @@
+<!--
+  The chart maker: on the left the table (paste cells from Excel, Sheets or Word) and the chart's settings and series
+  styles; on the right the chart as it will be exported, with the file and export buttons above.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DevHub.ViewModels.Charts"
+             xmlns:charts="using:DevHub.Sdk.Core.Charts"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Charts.ChartMakerView"
+             x:DataType="vm:ChartMakerViewModel">
+    <UserControl.Styles>
+        <Style Selector="TextBlock.label">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+        </Style>
+    </UserControl.Styles>
+
+    <DockPanel>
+        <Border DockPanel.Dock="Top" Padding="{DynamicResource Padding.Dialog}" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,0,1">
+            <WrapPanel Orientation="Horizontal">
+                <Button Content="New" Command="{Binding NewCommand}" Margin="{DynamicResource Margin.RowEnd}" />
+                <Button Content="Open…" Command="{Binding OpenCommand}" Margin="{DynamicResource Margin.RowEnd}"
+                        ToolTip.Tip="A saved chart, or a CSV / tab-separated table" />
+                <Button Content="Save" Command="{Binding SaveCommand}" Margin="{DynamicResource Margin.RowEnd}" />
+                <Button Content="Save As…" Command="{Binding SaveAsCommand}" Margin="{DynamicResource Margin.RowEnd}" />
+                <Button Classes="flat" Content="Sample" Command="{Binding SampleCommand}" Margin="{DynamicResource Margin.RowEnd}"
+                        ToolTip.Tip="A small example to start from" />
+                <Button Classes="accent" Content="Save Image…" Command="{Binding SaveImageCommand}" Margin="{DynamicResource Margin.RowEnd}"
+                        ToolTip.Tip="A PNG for your document (light, sharp when printed)" />
+                <Button Content="Copy Image" Command="{Binding CopyImageCommand}" Margin="{DynamicResource Margin.RowEnd}" />
+                <Button Classes="flat" Content="Copy Table" Command="{Binding CopyTableCommand}" />
+            </WrapPanel>
+        </Border>
+
+        <!-- The table and the settings. -->
+        <ScrollViewer DockPanel.Dock="Left" Width="{DynamicResource Size.ChartMakerPanel}" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Margin="{DynamicResource Padding.Dialog}" Spacing="{DynamicResource Spacing.Small}">
+                <TextBlock Classes="label" Text="Table: first row the series, first column the labels" />
+                <TextBox Text="{Binding Table}" AcceptsReturn="True" AcceptsTab="True" TextWrapping="NoWrap" Classes="code"
+                         MinHeight="{DynamicResource Size.DescriptionEditor}" AutomationProperties.Name="Table" />
+                <CheckBox Content="Each row is a series" IsChecked="{Binding SeriesInRows}" />
+
+                <TextBlock Classes="label" Text="Chart type" />
+                <ComboBox ItemsSource="{Binding KindChoices}" SelectedItem="{Binding Kind}" HorizontalAlignment="Stretch" AutomationProperties.Name="Chart type" />
+                <CheckBox Content="Green, amber, red (risk matrix)" IsChecked="{Binding TrafficColors}" IsVisible="{Binding IsHeatmap}" />
+                <TextBlock Classes="label" Text="Title" />
+                <TextBox Text="{Binding ChartTitle}" AutomationProperties.Name="Title" />
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="{DynamicResource Spacing}">
+                    <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                        <TextBlock Classes="label" Text="Label axis" />
+                        <TextBox Text="{Binding XTitle}" PlaceholderText="e.g. Sprint" AutomationProperties.Name="Label axis title" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Spacing="{DynamicResource Spacing.Small}">
+                        <TextBlock Classes="label" Text="Value axis" />
+                        <TextBox Text="{Binding YTitle}" PlaceholderText="e.g. Story points" AutomationProperties.Name="Value axis title" />
+                    </StackPanel>
+                </Grid>
+                <TextBlock Classes="label" Text="After each value" />
+                <TextBox Text="{Binding ValueSuffix}" PlaceholderText="e.g. % or  pts" AutomationProperties.Name="Value suffix" />
+
+                <TextBlock Classes="section" Text="Series" IsVisible="{Binding HasChart}" />
+                <ItemsControl ItemsSource="{Binding Series}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:SeriesStyleRow">
+                            <StackPanel Spacing="{DynamicResource Spacing.Small}" Margin="{DynamicResource Margin.BlockBelow}">
+                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="{DynamicResource Spacing.Small}">
+                                    <ComboBox ItemsSource="{x:Static vm:SeriesStyleRow.Dashes}" SelectedItem="{Binding Dash}" HorizontalAlignment="Stretch"
+                                              ToolTip.Tip="Line" AutomationProperties.Name="Line" />
+                                    <ComboBox Grid.Column="1" ItemsSource="{x:Static vm:SeriesStyleRow.Kinds}" SelectedItem="{Binding Kind}" HorizontalAlignment="Stretch"
+                                              ToolTip.Tip="In a bars-and-lines chart: drawn as" AutomationProperties.Name="Drawn as" />
+                                    <ComboBox Grid.Column="2" ItemsSource="{x:Static vm:SeriesStyleRow.Colors}" SelectedItem="{Binding Color}" HorizontalAlignment="Stretch"
+                                              ToolTip.Tip="Color" AutomationProperties.Name="Color" />
+                                </Grid>
+                                <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}">
+                                    <CheckBox Content="Markers" IsChecked="{Binding Markers}" />
+                                    <CheckBox Content="Values" IsChecked="{Binding ValueLabels}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- The chart. -->
+        <Border BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1,0,0,0" Padding="{DynamicResource Padding.Dialog}">
+            <Panel>
+                <c:EmptyState IconKind="info" Title="Nothing to draw yet" Description="{Binding Problem}" IsVisible="{Binding !HasChart}" />
+                <DockPanel IsVisible="{Binding HasChart}">
+                    <TextBlock DockPanel.Dock="Top" Classes="header" Text="{Binding ChartTitle}" HorizontalAlignment="Center"
+                               Margin="{DynamicResource Margin.BlockBelow}"
+                               IsVisible="{Binding ChartTitle, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                    <c:Chart Kind="{Binding Kind.Kind, FallbackValue=Bar}" Data="{Binding Data}" />
+                </DockPanel>
+            </Panel>
+        </Border>
+    </DockPanel>
+</UserControl>

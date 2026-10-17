@@ -16,6 +16,10 @@ namespace DevHub.ViewModels.Dialogs;
 public sealed record NamedItem(string? Id, string Name, string? Icon = null)
 {
     public override string ToString() => Name;
+
+    /// <summary>A person, with their role when they have one ("Ada Lovelace · Scrum Master").</summary>
+    public static NamedItem Person(BoardPerson person) =>
+        new(person.Id, person.Role is null ? person.Name : $"{person.Name} · {person.Role}");
 }
 
 /// <summary>A store kind New Board offers ("In DevHub", "In a folder", "On the repository's devhub/board branch").</summary>
@@ -215,7 +219,7 @@ public sealed partial class CreateIssueDialogViewModel : DialogViewModelBase
                 ?? Types.FirstOrDefault(t => project.IssueType(t.Id)?.Level == IssueTypeLevel.Standard) ?? Types[0];
         Priorities = project.Priorities.Select(p => new NamedItem(p.Id, p.Name, p.Icon)).ToList();
         _priority = Priorities.FirstOrDefault(p => p.Id == project.DefaultPriorityId) ?? Priorities.FirstOrDefault();
-        People = [new NamedItem(null, "Unassigned"), .. project.People.Select(p => new NamedItem(p.Id, p.Name))];
+        People = [new NamedItem(null, "Unassigned"), .. project.People.Select(NamedItem.Person)];
         _assignee = People.FirstOrDefault(p => p.Id == defaults.Assignee) ?? People[0];
         Sprints = [new NamedItem(null, "Backlog"), .. snapshot.Sprints.Values.Where(s => s.State != SprintState.Closed)
             .OrderBy(s => s.Sequence).Select(s => new NamedItem(s.Id, s.Name))];
@@ -248,6 +252,9 @@ public sealed partial class CreateIssueDialogViewModel : DialogViewModelBase
     [ObservableProperty] private string _points = "";
     [ObservableProperty] private string _estimate = "";
     [ObservableProperty] private string _labels = "";
+
+    /// <summary>Acceptance criteria, one per line ("- " or "- [ ]" in front is fine).</summary>
+    [ObservableProperty] private string _criteria = "";
     [ObservableProperty] private DateTime? _start;
     [ObservableProperty] private DateTime? _due;
     [ObservableProperty] private bool _createTasks = true;
@@ -260,6 +267,15 @@ public sealed partial class CreateIssueDialogViewModel : DialogViewModelBase
     public bool ShowParent => Level != IssueTypeLevel.Epic;
     public string ParentLabel => Level == IssueTypeLevel.Subtask ? "Parent" : "Epic";
     public bool ShowPoints => Level != IssueTypeLevel.Subtask;
+    public bool ShowCriteria => Level != IssueTypeLevel.Epic;
+
+    private IReadOnlyList<string> CriteriaLines => ShowCriteria
+        ? Criteria.Replace("\r\n", "\n").Split('\n').Select(l => CriterionPrefix().Replace(l, "").Trim()).Where(l => l.Length > 0).ToList()
+        : [];
+
+    // "- ", "* ", "- [ ] ", "1. " in front of a pasted criterion.
+    [System.Text.RegularExpressions.GeneratedRegex(@"^\s*(?:[-*+]\s*(?:\[[ xX]?\]\s*)?|\d+[.)]\s*)")]
+    private static partial System.Text.RegularExpressions.Regex CriterionPrefix();
 
     // An epic's open "- [ ]" lines become its issues, of this type (Task, or the first standard type).
     private readonly IssueType? _taskType;
@@ -320,6 +336,7 @@ public sealed partial class CreateIssueDialogViewModel : DialogViewModelBase
         OnPropertyChanged(nameof(ShowParent));
         OnPropertyChanged(nameof(ParentLabel));
         OnPropertyChanged(nameof(ShowPoints));
+        OnPropertyChanged(nameof(ShowCriteria));
         OnPropertyChanged(nameof(HasTasks));
         OnPropertyChanged(nameof(TasksText));
         OnPropertyChanged(nameof(DescriptionHint));
@@ -389,6 +406,7 @@ public sealed partial class CreateIssueDialogViewModel : DialogViewModelBase
             Status = _defaults.Status is { } s && _context.Snapshot.WorkflowFor(Type.Id)?.Statuses.Contains(s) == true ? s : null,
             Fields = fields,
             RankAbove = _defaults.RankAbove,
+            Criteria = CriteriaLines,
         };
         IBoardOperation operation = tasks.Count == 0
             ? issue
@@ -418,6 +436,7 @@ public sealed partial class CreateIssueDialogViewModel : DialogViewModelBase
         Description = "";
         Points = "";
         Estimate = "";
+        Criteria = "";
         FocusSummary++;
         return false;   // stay open for the next one
     }
@@ -522,7 +541,7 @@ public sealed partial class BulkEditDialogViewModel : DialogViewModelBase
         Choices.Clear();
         IEnumerable<NamedItem> items = Field.Id switch
         {
-            IssueFields.Assignee => [new NamedItem(null, "Unassigned"), .. project.People.Select(p => new NamedItem(p.Id, p.Name))],
+            IssueFields.Assignee => [new NamedItem(null, "Unassigned"), .. project.People.Select(NamedItem.Person)],
             IssueFields.Priority => project.Priorities.Select(p => new NamedItem(p.Id, p.Name)),
             IssueFields.Parent => [new NamedItem(null, "No epic"), .. snapshot.Issues.Values.Where(i => snapshot.LevelOf(i) == IssueTypeLevel.Epic)
                 .OrderBy(i => i.Rank, StringComparer.Ordinal).Select(i => new NamedItem(i.Id, $"{i.Key} {i.Summary}"))],

@@ -13,15 +13,20 @@ public static class BoardExport
         "Key", "Type", "Summary", "Status", "Resolution", "Priority", "Assignee", "Reporter", "Parent", "Epic", "Sprint",
         "Story points", "Original estimate (minutes)", "Remaining estimate (minutes)", "Time spent (minutes)",
         "Labels", "Components", "Fix versions", "Start", "Due", "Created", "Updated", "Resolved", "Description",
+        "Acceptance criteria", "Definition of Done",
     ];
 
-    /// <summary>The issues (in rank order) as CSV, one row each; lists separated by "; ".</summary>
+    /// <summary>
+    /// The issues (in rank order) as CSV, one row each; lists separated by "; ". After <see cref="CsvColumns"/> comes a
+    /// column per custom field. Acceptance criteria are one per line ("[x] …" when met); Definition of Done is "4/6".
+    /// </summary>
     public static string ToCsv(BoardSnapshot board, IEnumerable<Issue>? issues = null)
     {
         var project = board.Project;
         string? Date(DateOnly? d) => d?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
         string? Time(DateTimeOffset? t) => t?.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
-        var rows = new List<IReadOnlyList<string?>> { CsvColumns };
+        IReadOnlyList<string?> header = [.. CsvColumns, .. project.CustomFields.Select(f => f.Name)];
+        var rows = new List<IReadOnlyList<string?>> { header };
         foreach (var i in (issues ?? board.Issues.Values).OrderBy(i => i.Rank, StringComparer.Ordinal))
         {
             rows.Add(
@@ -35,6 +40,10 @@ public static class BoardExport
                 string.Join("; ", i.Labels), string.Join("; ", i.Components.Select(c => project.Component(c)?.Name ?? c)),
                 string.Join("; ", i.FixVersions.Select(v => board.Versions.GetValueOrDefault(v)?.Name ?? v)),
                 Date(i.Start), Date(i.Due), Time(i.Created), Time(i.Updated), Time(i.Resolved), i.Description,
+                string.Join("\n", i.Criteria.Select(c => (c.Done ? "[x] " : "[ ] ") + c.Text)),
+                project.DefinitionOfDone.Count == 0 || board.LevelOf(i) != IssueTypeLevel.Standard ? null
+                    : $"{project.DefinitionOfDone.Count(d => i.DoneChecks.Contains(d.Id))}/{project.DefinitionOfDone.Count}",
+                .. project.CustomFields.Select(f => i.Custom.GetValueOrDefault(f.Id)),
             ]);
         }
         return Csv.Write(rows);

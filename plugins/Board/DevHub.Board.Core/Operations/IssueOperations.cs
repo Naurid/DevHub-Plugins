@@ -20,6 +20,9 @@ public sealed record CreateIssue(string Type, string Summary) : IBoardOperation
     /// <summary>Rank it directly above this issue instead of last.</summary>
     public string? RankAbove { get; init; }
 
+    /// <summary>Its acceptance criteria, one per line of text (empty lines are skipped).</summary>
+    public IReadOnlyList<string> Criteria { get; init; } = [];
+
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
         var project = board.Project;
@@ -65,6 +68,8 @@ public sealed record CreateIssue(string Type, string Summary) : IBoardOperation
         }
 
         var change = new ChangeBuilder(board, context);
+        var criteria = Criteria.Where(c => !string.IsNullOrWhiteSpace(c)).Select(c => new CheckItem { Id = change.NewId(), Text = Core.Criteria.RequireText(c) });
+        issue = issue with { Criteria = [.. criteria] };
         change.WriteProject(project with { NextNumber = project.NextNumber + 1 });
         change.WriteIssue(null, issue);
         return change.Build($"{issue.Key}: created \"{issue.Summary}\"");
@@ -246,6 +251,42 @@ public sealed record RankIssue(string IssueId, string? Above, string? Below) : I
     {
         var index = ordered.FindIndex(i => i.Id == id);
         return index >= 0 && index + 1 < ordered.Count ? ranks[ordered[index + 1].Id] : null;
+    }
+}
+
+/// <summary>
+/// Orders some issues by a number field (Business value, story points…), highest first unless
+/// <see cref="Ascending"/>; issues without a value go last. They swap places among their own ranks, so issues
+/// outside the list keep theirs. One change, undoable.
+/// </summary>
+public sealed record RankByField(IReadOnlyList<string> IssueIds, string Field, bool Ascending = false) : IBoardOperation
+{
+    public BoardChange Apply(BoardSnapshot board, OperationContext context)
+    {
+        var issues = IssueIds.Distinct().Select(id => board.Issue(id) ?? throw new BoardRuleException("An issue doesn't exist any more.")).ToList();
+        var slots = issues.Select(i => i.Rank).OrderBy(r => r, StringComparer.Ordinal).ToList();
+        if (slots.Distinct(StringComparer.Ordinal).Count() != slots.Count || slots.Any(r => !Rank.IsValid(r)))
+            throw new BoardRuleException("Some of these issues share a rank; drag one of them first, then sort again.");
+
+        double? Value(Issue issue) => IssueFields.Get(issue, Field) switch
+        {
+            FieldValue.Number n => n.Value,
+            var v when double.TryParse(v.Raw, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var d) => d,
+            _ => null,
+        };
+        var ordered = issues
+            .OrderBy(i => Value(i) is null)
+            .ThenBy(i => Ascending ? Value(i) : -Value(i))
+            .ThenBy(i => i.Rank, StringComparer.Ordinal)
+            .ToList();
+
+        var change = new ChangeBuilder(board, context);
+        for (var i = 0; i < ordered.Count; i++)
+        {
+            if (ordered[i].Rank != slots[i])
+                change.WriteIssue(ordered[i], ordered[i] with { Rank = slots[i] });
+        }
+        return change.Build($"{issues.Count} issue(s) ranked by {IssueFields.DisplayName(Field, board.Project)}");
     }
 }
 

@@ -39,8 +39,12 @@
                         <TextBlock Grid.Column="1" Classes="small secondary key" Text="{Binding Key}" VerticalAlignment="Center" />
                         <TextBlock Grid.Column="3" Classes="small secondary" Text="{Binding Due}" IsVisible="{Binding ShowDue}"
                                    Classes.overdue="{Binding IsOverdue}" VerticalAlignment="Center" ToolTip.Tip="Due" />
-                        <TextBlock Grid.Column="4" Classes="small secondary" Text="{Binding SubtaskText}" VerticalAlignment="Center"
-                                   IsVisible="{Binding SubtaskText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" ToolTip.Tip="Sub-tasks done" />
+                        <StackPanel Grid.Column="4" Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}" VerticalAlignment="Center">
+                            <TextBlock Classes="small secondary" Text="{Binding CriteriaText}"
+                                       IsVisible="{Binding CriteriaText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" ToolTip.Tip="Acceptance criteria met" />
+                            <TextBlock Classes="small secondary" Text="{Binding SubtaskText}"
+                                       IsVisible="{Binding SubtaskText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" ToolTip.Tip="Sub-tasks done" />
+                        </StackPanel>
                         <c:Badge Grid.Column="5" Content="{Binding Points}" IsVisible="{Binding ShowPoints}" ToolTip.Tip="Story points" />
                         <c:PriorityIcon Grid.Column="6" Kind="{Binding PriorityIcon}" IsVisible="{Binding ShowPriority}"
                                         ToolTip.Tip="{Binding PriorityName}" VerticalAlignment="Center" />

@@ -276,6 +276,37 @@
                         </ItemsControl>
                     </StackPanel>
 
+                    <!-- Definition of Done. -->
+                    <StackPanel Classes="section" IsVisible="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).IsDefinitionOfDone}">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Classes="header" Text="Definition of Done" />
+                            <Button Grid.Column="1" Content="Add Item…" Command="{Binding AddDoneItemCommand}" />
+                        </Grid>
+                        <TextBlock Classes="help" TextWrapping="Wrap"
+                                   Text="What every story, task and bug needs before it counts as done. Each issue ticks these in its view, next to its own acceptance criteria." />
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.BlockBelow}">
+                            <TextBlock Text="Moving to Done" VerticalAlignment="Center" />
+                            <ComboBox Grid.Column="1" ItemsSource="{Binding DoneCheckModes}" SelectedItem="{Binding DoneCheckMode}"
+                                      HorizontalAlignment="Left" AutomationProperties.Name="Moving to Done" />
+                        </Grid>
+                        <ItemsControl ItemsSource="{Binding DoneItems}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:NamedRow">
+                                    <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.BlockBelow}">
+                                        <TextBox Text="{Binding Name, UpdateSourceTrigger=LostFocus}" AutomationProperties.Name="Definition of Done item" />
+                                        <TextBlock Grid.Column="1" Classes="small secondary" Text="{Binding Detail}" VerticalAlignment="Center" />
+                                        <Button Grid.Column="2" Classes="flat" Content="Up" AutomationProperties.Name="Move up"
+                                                Command="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).Model.MoveDoneItemUpCommand}" CommandParameter="{Binding}" />
+                                        <Button Grid.Column="3" Classes="flat" Content="Down" AutomationProperties.Name="Move down"
+                                                Command="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).Model.MoveDoneItemDownCommand}" CommandParameter="{Binding}" />
+                                        <Button Grid.Column="4" Classes="flat" Content="Delete"
+                                                Command="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).Model.DeleteDoneItemCommand}" CommandParameter="{Binding}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+
                     <!-- Components. -->
                     <StackPanel Classes="section" IsVisible="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).IsComponents}">
                         <Grid ColumnDefinitions="*,Auto">
@@ -335,12 +366,14 @@
                         <ItemsControl ItemsSource="{Binding People}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="vm:NamedRow">
-                                    <Grid ColumnDefinitions="Auto,*,*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.BlockBelow}">
+                                    <Grid ColumnDefinitions="Auto,*,*,*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.BlockBelow}">
                                         <c:Avatar Text="{Binding Name}" Width="{DynamicResource Size.Avatar}" Height="{DynamicResource Size.Avatar}" VerticalAlignment="Center" />
                                         <TextBox Grid.Column="1" Text="{Binding Name, UpdateSourceTrigger=LostFocus}" AutomationProperties.Name="Name" />
                                         <TextBox Grid.Column="2" Text="{Binding Second, UpdateSourceTrigger=LostFocus}" PlaceholderText="Email" AutomationProperties.Name="Email" />
-                                        <TextBlock Grid.Column="3" Classes="small secondary" Text="{Binding Detail}" VerticalAlignment="Center" />
-                                        <Button Grid.Column="4" Classes="flat" Content="Remove…"
+                                        <TextBox Grid.Column="3" Text="{Binding Third, UpdateSourceTrigger=LostFocus}"
+                                                 PlaceholderText="Role: Product Owner, Scrum Master, Developer…" AutomationProperties.Name="Role" />
+                                        <TextBlock Grid.Column="4" Classes="small secondary" Text="{Binding Detail}" VerticalAlignment="Center" />
+                                        <Button Grid.Column="5" Classes="flat" Content="Remove…"
                                                 Command="{Binding $parent[UserControl].((vm:ProjectSettingsDocumentViewModel)DataContext).Model.RemovePersonCommand}" CommandParameter="{Binding}" />
                                     </Grid>
                                 </DataTemplate>

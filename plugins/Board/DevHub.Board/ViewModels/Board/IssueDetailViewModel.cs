@@ -112,8 +112,12 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
                 _sections.Add(section);
         }
         Sections = _sections;
+        Checks = new IssueChecksViewModel(context, issueId);
         Refresh();
     }
+
+    /// <summary>Acceptance criteria and Definition of Done.</summary>
+    public IssueChecksViewModel Checks { get; }
 
     public string IssueId { get; }
     public bool IsPanel { get; }
@@ -245,6 +249,7 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
         {
             _loading = false;
         }
+        Checks.Update(issue, _context.Snapshot);
         foreach (var section in _sections)
             section.Update(issue, _context.Snapshot);
     }
@@ -292,7 +297,7 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
         Priority = Priorities.FirstOrDefault(p => p.Id == issue.Priority);
 
         Fill(People, [new NamedItem(null, "Unassigned"), .. project.People.OrderBy(p => p.Name, StringComparer.CurrentCultureIgnoreCase)
-            .Select(p => new NamedItem(p.Id, p.Name))]);
+            .Select(NamedItem.Person)]);
         Assignee = People.FirstOrDefault(p => p.Id == issue.Assignee) ?? People[0];
         Reporter = People.FirstOrDefault(p => p.Id == issue.Reporter) ?? People[0];
         IsAssignedToMe = issue.Assignee is not null && issue.Assignee == _context.Me;
@@ -333,7 +338,7 @@ public sealed partial class IssueDetailViewModel : ViewModelBase, IDisposable, I
             IReadOnlyList<NamedItem> choices = field.Type switch
             {
                 FieldType.Select => [new NamedItem(null, "None"), .. field.Options.Select(o => new NamedItem(o, o))],
-                FieldType.Person => [new NamedItem(null, "Nobody"), .. project.People.Select(p => new NamedItem(p.Id, p.Name))],
+                FieldType.Person => [new NamedItem(null, "Nobody"), .. project.People.Select(NamedItem.Person)],
                 _ => [],
             };
             CustomFields.Add(new CustomFieldRow(field, issue.Custom.GetValueOrDefault(field.Id), choices, SaveCustomFieldAsync));

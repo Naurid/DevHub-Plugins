@@ -332,3 +332,20 @@ All milestones are in: Board, Board.Scrum, Board.Git, Board.Reports, Board.Timel
 - **M10 command tools (part of B12) are left for M10**; B12 added Find Action entries (Go to Issue, My Open Issues).
 
 Still open: multi-user merging (§10), sprint import, drawing dependency arrows on the timeline.
+
+## 12. Status (2026-10-17): Board for Scrum projects (DevHub roadmap BS)
+
+Built for running a course's Scrum project and writing its dossier, with the Board as a working tool (nothing simulated):
+- **Backlog quality:** acceptance criteria per issue (`Issue.Criteria`), a Definition of Done per project
+  (`BoardProject.DefinitionOfDone`, ticked per standard issue in `Issue.DoneChecks`) with `ProjectSettings.DoneCheck`
+  Off / Warn (the UI asks, after a dry run) / Block (refused in `ChangeBuilder.WriteIssue`); roles on people; a
+  Business value field in the Scrum preset and `RankByField`.
+- **Sprints:** availability per person and a focus factor on `Sprint`; `SprintCapacity` suggests a capacity from the
+  last sprints' points per focused day (none for a new team). Retrospectives in `retros/<sprint>.json` (Board.Scrum's
+  Retrospectives page).
+- **Reports:** release forecast with three velocities and a planned ramp-up, baselines in `reports/baselines.json`,
+  scope change, sprint plans, commitment reliability, throughput, capacity and load, lead time, WIP, defects; every
+  chart in a chosen chart type and exported through the Sdk's `IExportService`; "Open in Chart Maker" with the Charts
+  plugin.
+- **Board.Risks** (new plugin): `risks/<id>.json`, the probability × impact matrix (a traffic-colored heatmap).
+- These need DevHub's Sdk with the chart library (`ChartKind`, styles, bands, `IExportService`, `IChartMaker`).

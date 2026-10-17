@@ -55,9 +55,15 @@ public sealed record CreateSprint : IBoardOperation
     }
 }
 
-/// <summary>Changes a sprint's name, goal, dates and capacity.</summary>
+/// <summary>Changes a sprint's name, goal, dates and capacity (and, when given, who is available how many days).</summary>
 public sealed record EditSprint(string SprintId, string Name, string Goal, DateTimeOffset? Start, DateTimeOffset? End, double? Capacity) : IBoardOperation
 {
+    /// <summary>Each person's days; null keeps what the sprint has.</summary>
+    public IReadOnlyList<MemberDays>? Availability { get; init; }
+
+    /// <summary>0–1, saved with <see cref="Availability"/> (null there: no focus factor).</summary>
+    public double? FocusFactor { get; init; }
+
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
         var sprint = Sprints.Require(board, SprintId);
@@ -66,10 +72,70 @@ public sealed record EditSprint(string SprintId, string Name, string Goal, DateT
         Sprints.CheckDates(Start, End);
         if (Capacity is < 0)
             throw new BoardRuleException("Capacity can't be negative.");
+        var edited = sprint with { Name = name, Goal = Goal.Trim(), Start = Start, End = End, Capacity = Capacity };
+        if (Availability is not null)
+            edited = edited with { Availability = SprintCapacity.Check(board, Availability), FocusFactor = SprintCapacity.CheckFocus(FocusFactor) };
         var change = new ChangeBuilder(board, context);
-        change.Write(BoardPaths.Sprint(sprint.Id), sprint with { Name = name, Goal = Goal.Trim(), Start = Start, End = End, Capacity = Capacity });
+        change.Write(BoardPaths.Sprint(sprint.Id), edited);
         return change.Build($"Sprint {sprint.Name} changed");
     }
+}
+
+/// <summary>
+/// A sprint's capacity from the team's availability: working days in its dates, person-days, focused days (person-days ×
+/// focus factor) and a suggested capacity in story points from what the last sprints completed per focused day. A new
+/// team has no history yet (no suggestion): it plans its first sprints by hand, usually low.
+/// </summary>
+public static class SprintCapacity
+{
+    /// <summary>How many closed sprints the suggestion looks back on.</summary>
+    public const int History = 3;
+
+    /// <summary>Monday–Friday days from <paramref name="start"/> to <paramref name="end"/>, both included (0 without dates).</summary>
+    public static int WorkingDays(DateTimeOffset? start, DateTimeOffset? end)
+    {
+        if (start is not { } s || end is not { } e || e < s)
+            return 0;
+        var days = 0;
+        for (var d = s.Date; d <= e.Date; d = d.AddDays(1))
+        {
+            if (d.DayOfWeek is not (DayOfWeek.Saturday or DayOfWeek.Sunday))
+                days++;
+        }
+        return days;
+    }
+
+    /// <summary>Story points completed per focused day over the last closed sprints that recorded availability; null without any.</summary>
+    public static double? PointsPerFocusedDay(BoardSnapshot board, string? exceptSprint = null)
+    {
+        var recent = board.Sprints.Values
+            .Where(s => s.State == SprintState.Closed && s.Id != exceptSprint && s.FocusedDays > 0)
+            .OrderByDescending(s => s.Completed ?? s.End ?? DateTimeOffset.MinValue)
+            .Take(History).ToList();
+        var days = recent.Sum(s => s.FocusedDays);
+        return days > 0 ? recent.Sum(s => s.CompletedPoints) / days : null;
+    }
+
+    /// <summary>The capacity the history suggests for <paramref name="focusedDays"/>, rounded to half points; null without history.</summary>
+    public static double? Suggested(BoardSnapshot board, double focusedDays, string? exceptSprint = null) =>
+        PointsPerFocusedDay(board, exceptSprint) is { } rate && focusedDays > 0 ? Math.Round(rate * focusedDays * 2) / 2 : null;
+
+    internal static IReadOnlyList<MemberDays> Check(BoardSnapshot board, IReadOnlyList<MemberDays> availability)
+    {
+        foreach (var a in availability)
+        {
+            if (board.Project.Person(a.Person) is null)
+                throw new BoardRuleException("Someone in the availability isn't on the board.");
+            if (a.Days is < 0 or > 366 || !double.IsFinite(a.Days))
+                throw new BoardRuleException("Available days are a number from 0.");
+        }
+        if (availability.Select(a => a.Person).Distinct().Count() != availability.Count)
+            throw new BoardRuleException("Someone is in the availability twice.");
+        return availability.Where(a => a.Days > 0).ToList();
+    }
+
+    internal static double? CheckFocus(double? focus) =>
+        focus is null ? null : focus is > 0 and <= 1 ? focus : throw new BoardRuleException("The focus factor is between 1% and 100%.");
 }
 
 /// <summary>Starts a future sprint: dates and goal, and a record of what was committed (its issues and points).</summary>
