@@ -27,7 +27,7 @@ public sealed partial class BoardsToolWindowViewModel : ToolWindowViewModelBase,
     public override string Id => "Boards";
     public override string Title => "Boards";
     public override string IconKind => Controls.IconKind.Menu;
-    public override ToolWindowSlot Slot => ToolWindowSlot.Right;
+    public override ToolWindowSlot Slot => ToolWindowSlot.Left;
     public override int Order => 500;
 
     public ObservableCollection<RecentBoard> Recent { get; } = [];
