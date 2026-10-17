@@ -1,8 +1,13 @@
-<!-- The Reports page: the list of reports on the left, the chosen report (or the dashboard) on the right. -->
+<!--
+  The Reports page: the list of reports on the left; on the right the chosen report: its inputs (a sprint, the forecast's
+  scope and velocities, the scope change's period), what it shows and how to read it, its chart (in the chart type you
+  pick) with export buttons, and its list. Or the dashboard's gadgets.
+-->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:DevHub.ViewModels.Reports"
              xmlns:core="using:DevHub.Board.Core.Model"
+             xmlns:rc="using:DevHub.Board.Reports.Core"
              xmlns:c="using:DevHub.Controls"
              x:Class="DevHub.Views.Reports.ReportsPageView"
              x:DataType="vm:ReportsPageViewModel">
@@ -43,12 +48,106 @@
                     </ComboBox>
                     <Button Grid.Column="1" Content="Add Gadget…" Command="{Binding AddGadgetCommand}" IsVisible="{Binding IsDashboard}" />
                 </Grid>
+
+                <!-- Forecast and scope change inputs. -->
+                <Border Classes="listPanel" IsVisible="{Binding IsForecast}">
+                    <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Spacing}">
+                            <TextBlock Text="Scope" VerticalAlignment="Center" />
+                            <ComboBox Grid.Column="1" ItemsSource="{Binding Scopes}" SelectedItem="{Binding Scope}" HorizontalAlignment="Stretch"
+                                      AutomationProperties.Name="Scope" />
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto,*,Auto,*,Auto,*" ColumnSpacing="{DynamicResource Spacing}">
+                            <TextBlock Text="Pessimistic" VerticalAlignment="Center" />
+                            <TextBox Grid.Column="1" Text="{Binding Pessimistic}" PlaceholderText="from history" AutomationProperties.Name="Pessimistic velocity" />
+                            <TextBlock Grid.Column="2" Text="Neutral" VerticalAlignment="Center" />
+                            <TextBox Grid.Column="3" Text="{Binding Neutral}" PlaceholderText="from history" AutomationProperties.Name="Neutral velocity" />
+                            <TextBlock Grid.Column="4" Text="Optimistic" VerticalAlignment="Center" />
+                            <TextBox Grid.Column="5" Text="{Binding Optimistic}" PlaceholderText="from history" AutomationProperties.Name="Optimistic velocity" />
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Spacing}">
+                            <TextBlock Text="Planned per sprint" VerticalAlignment="Center"
+                                       ToolTip.Tip="A team that's still forming: the neutral velocity of each coming sprint, e.g. 5, 8, 12 (the last one goes on)" />
+                            <TextBox Grid.Column="1" Text="{Binding Planned}" PlaceholderText="optional ramp-up, e.g. 5, 8, 12"
+                                     AutomationProperties.Name="Planned velocity per sprint" />
+                        </Grid>
+                        <TextBlock Classes="small secondary" Text="{Binding VelocityHint}" TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding ForecastError}" Foreground="{DynamicResource Brush.Status.Error}" TextWrapping="Wrap"
+                                   IsVisible="{Binding ForecastError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                    </StackPanel>
+                </Border>
+                <Border Classes="listPanel" IsVisible="{Binding IsScope}">
+                    <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                        <TextBlock Text="Scope" VerticalAlignment="Center" />
+                        <ComboBox Grid.Column="1" ItemsSource="{Binding Scopes}" SelectedItem="{Binding Scope}" HorizontalAlignment="Stretch"
+                                  AutomationProperties.Name="Scope" />
+                        <TextBlock Grid.Column="2" Text="since" VerticalAlignment="Center" />
+                        <CalendarDatePicker Grid.Column="3" SelectedDate="{Binding ScopeFrom}" AutomationProperties.Name="Since" />
+                        <ComboBox Grid.Column="4" ItemsSource="{Binding Baselines}" SelectedItem="{Binding Baseline}" IsVisible="{Binding HasBaselines}"
+                                  PlaceholderText="or a baseline" AutomationProperties.Name="Since a baseline" />
+                    </Grid>
+                </Border>
+
                 <TextBlock Classes="secondary" Text="{Binding Summary}" TextWrapping="Wrap" />
                 <c:EmptyState IconKind="info" Title="Nothing to show yet" Description="{Binding Empty}"
                               IsVisible="{Binding Empty, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
-                <c:LineChart Data="{Binding Chart}" Height="{DynamicResource Size.ReportChart}" IsVisible="{Binding IsLine}" />
-                <c:BarChart Data="{Binding Chart}" Height="{DynamicResource Size.ReportChart}" IsVisible="{Binding IsBar}" />
+                <!-- The chart, its type and export. -->
+                <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}" IsVisible="{Binding HasChart}">
+                    <TextBlock Text="Chart" VerticalAlignment="Center" />
+                    <ComboBox Grid.Column="1" ItemsSource="{Binding ChartKindChoices}" SelectedItem="{Binding SelectedChartKind}"
+                              AutomationProperties.Name="Chart type" ToolTip.Tip="Show this report as another kind of chart" />
+                    <Button Grid.Column="3" Classes="flat" Content="Save Image…" Command="{Binding SaveChartCommand}" ToolTip.Tip="Save the chart as a PNG (light, for a report)" />
+                    <Button Grid.Column="4" Classes="flat" Content="Copy Image" Command="{Binding CopyChartCommand}" ToolTip.Tip="Copy the chart to paste into a document" />
+                    <Button Grid.Column="5" Classes="flat" Content="Export CSV…" Command="{Binding ExportTableCommand}" IsVisible="{Binding CanExportTable}"
+                            ToolTip.Tip="The report's numbers as a CSV file (Excel, Sheets)" />
+                    <Button Grid.Column="6" Classes="flat" Content="Copy Table" Command="{Binding CopyTableCommand}" IsVisible="{Binding CanExportTable}"
+                            ToolTip.Tip="Copy the numbers as a table to paste into Word or a spreadsheet" />
+                </Grid>
+                <c:Chart Kind="{Binding SelectedChartKind.Kind, FallbackValue=Line}" Data="{Binding Chart}" Height="{DynamicResource Size.ReportChart}"
+                         IsVisible="{Binding HasChart}" />
+                <TextBlock Classes="small secondary" Text="{Binding Explanation}" TextWrapping="Wrap"
+                           IsVisible="{Binding Explanation, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+                <!-- Forecast results and baselines. -->
+                <StackPanel Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding IsForecast}">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Classes="section" Text="Scenarios" />
+                        <TextBlock Grid.Column="1" Classes="small secondary" Text="{Binding TargetText}" VerticalAlignment="Center" />
+                    </Grid>
+                    <ItemsControl ItemsSource="{Binding ScenarioRows}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:ForecastRow">
+                                <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="{DynamicResource Spacing}" MinHeight="{DynamicResource Size.RowHeight}">
+                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" MinWidth="{DynamicResource Size.StatusPill}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1" Classes="secondary" Text="{Binding Velocity}" MinWidth="{DynamicResource Size.BoardSearch}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="2" Text="{Binding Result}" VerticalAlignment="Center" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                        <TextBlock Classes="section" Text="Baselines" VerticalAlignment="Center" />
+                        <ComboBox Grid.Column="1" ItemsSource="{Binding Baselines}" SelectedItem="{Binding Baseline}" IsVisible="{Binding HasBaselines}"
+                                  AutomationProperties.Name="Baseline" />
+                        <Button Grid.Column="2" Classes="flat" Content="Delete" Command="{Binding DeleteBaselineCommand}" IsVisible="{Binding HasBaselines}" />
+                        <Button Grid.Column="3" Content="Save Baseline…" Command="{Binding SaveBaselineCommand}"
+                                ToolTip.Tip="Keep today's forecast, to compare after a change of scope" />
+                    </Grid>
+                    <TextBlock Classes="secondary" Text="{Binding CompareText}" TextWrapping="Wrap"
+                               IsVisible="{Binding CompareText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                    <ItemsControl ItemsSource="{Binding CompareRows}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:ForecastRow">
+                                <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="{DynamicResource Spacing}" MinHeight="{DynamicResource Size.RowHeight}">
+                                    <TextBlock Text="{Binding Name}" MinWidth="{DynamicResource Size.StatusPill}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Velocity}" MinWidth="{DynamicResource Size.BoardSearch}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="2" Classes="secondary" Text="{Binding Result}" VerticalAlignment="Center" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
 
                 <TextBlock Classes="section" Text="{Binding RowsTitle}" IsVisible="{Binding HasRows}" />
                 <ItemsControl ItemsSource="{Binding Rows}">
@@ -57,7 +156,8 @@
                             <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}" MinHeight="{DynamicResource Size.RowHeight}">
                                 <TextBlock Classes="secondary" Text="{Binding Key}" VerticalAlignment="Center" MinWidth="{DynamicResource Size.IssueKey}" />
                                 <TextBlock Grid.Column="1" Text="{Binding Summary}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
-                                <ProgressBar Grid.Column="2" Value="{Binding Fraction}" Maximum="1" Width="{DynamicResource Size.StatusPill}" VerticalAlignment="Center" />
+                                <ProgressBar Grid.Column="2" Value="{Binding Fraction}" Maximum="1" Width="{DynamicResource Size.StatusPill}" VerticalAlignment="Center"
+                                             IsVisible="{Binding HasFraction}" />
                                 <TextBlock Grid.Column="3" Classes="small secondary" Text="{Binding Detail}" VerticalAlignment="Center" />
                             </Grid>
                         </DataTemplate>

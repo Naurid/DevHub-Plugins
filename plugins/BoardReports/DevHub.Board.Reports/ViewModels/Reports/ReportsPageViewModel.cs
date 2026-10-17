@@ -8,26 +8,35 @@ using DevHub.Board.Core.Fields;
 using DevHub.Board.Core.Model;
 using DevHub.Board.Core.Search;
 using DevHub.Board.Reports.Core;
+using BaselineStore = DevHub.Board.Reports.Core.Baselines;
 using DevHub.Sdk.Core.Charts;
 using DevHub.Sdk.Core.Settings;
+using DevHub.Sdk.Core.Tables;
+using DevHub.Services;
 using DevHub.ViewModels.Board;
 using DevHub.ViewModels.Dialogs;
 
 namespace DevHub.ViewModels.Reports;
 
 /// <summary>The Reports page of every board.</summary>
-public sealed class ReportsPageProvider(ISettingsStore settings) : IBoardPageProvider
+public sealed class ReportsPageProvider(ISettingsStore settings, IExportService export) : IBoardPageProvider
 {
     public string Id => "reports";
     public string Title => "Reports";
     public int Order => 700;
-    public BoardPageViewModel Create(BoardPageHost host) => new ReportsPageViewModel(host, settings);
+    public BoardPageViewModel Create(BoardPageHost host) => new ReportsPageViewModel(host, settings, export);
 }
 
-/// <summary>A report in the list on the left.</summary>
-public sealed record ReportKind(string Id, string Name, string Description, bool NeedsSprint)
+/// <summary>A report in the list on the left, with the chart type it starts with.</summary>
+public sealed record ReportKind(string Id, string Name, string Description, bool NeedsSprint, ChartKind DefaultChart = ChartKind.Line, string? Group = null)
 {
     public override string ToString() => Name;
+}
+
+/// <summary>A chart type in the picker.</summary>
+public sealed record ChartKindItem(ChartKind Kind)
+{
+    public override string ToString() => ChartKinds.Name(Kind);
 }
 
 /// <summary>A gadget as shown: title, a chart or a list of issues.</summary>
@@ -43,35 +52,59 @@ public sealed partial class GadgetViewModel(int index, string title, ReportsPage
     public override string ToString() => Title;
 }
 
-/// <summary>A row of the sprint report or epic progress.</summary>
+/// <summary>A row of a report's list (sprint report, epic progress, scope changes, sprint plans).</summary>
 public sealed record ReportRow(string Key, string Summary, string Detail, double Fraction)
 {
+    public bool HasFraction => Fraction >= 0;
     public override string ToString() => $"{Key} {Summary} {Detail}";
 }
 
+/// <summary>A forecast scenario's line, or a baseline comparison's.</summary>
+public sealed record ForecastRow(string Name, string Velocity, string Result)
+{
+    public override string ToString() => $"{Name}: {Velocity}, {Result}";
+}
+
 /// <summary>
-/// Reports for the board: pick one on the left (sprint reports pick a sprint), the chart and its numbers on the right.
-/// The Dashboard is a column of gadgets you add and remove (kept per board in Board.Reports' settings).
+/// Reports for the board: pick one on the left (sprint reports pick a sprint), the chart and its numbers on the right,
+/// with what it means for steering. Each chart can be shown as another fitting chart type (remembered per report) and
+/// exported (PNG, copy, CSV). The Forecast has its own inputs (scope, three velocities, a planned ramp-up) and baselines;
+/// the Dashboard is a column of gadgets you add and remove (kept per board in Board.Reports' settings).
 /// </summary>
 public sealed partial class ReportsPageViewModel : BoardPageViewModel, ICardHost
 {
     private readonly ISettingsStore _settings;
+    private readonly IExportService _export;
+    private TableData _table = TableData.Empty;
+    private Forecast? _forecast;
+    private bool _refreshing;
 
-    public ReportsPageViewModel(BoardPageHost host, ISettingsStore settings) : base(host)
+    public ReportsPageViewModel(BoardPageHost host, ISettingsStore settings, IExportService export) : base(host)
     {
         _settings = settings;
+        _export = export;
         Kinds =
         [
             new("dashboard", "Dashboard", "Gadgets you choose: your issues, issues by a field, saved searches.", false),
+            new("forecast", "Release forecast", "When the remaining scope will be done: pessimistic, neutral and optimistic velocity.", false, ChartKind.Line),
+            new("scope", "Scope change", "Issues added, re-estimated or dropped since a baseline or over a period.", false, ChartKind.Bar),
+            new("plans", "Sprint plans", "Every sprint: dates, goal, capacity, team days, planned and completed points, stories.", false, ChartKind.Combo),
             new("burndown", "Burndown", "Points left in a sprint, day by day, against the ideal line.", true),
             new("burnup", "Burnup", "Points done and the sprint's scope, day by day: scope changes show.", true),
             new("sprint", "Sprint report", "What a sprint finished, what it didn't, what was added and removed.", true),
-            new("velocity", "Velocity", "Points committed and completed in the last sprints.", false),
-            new("flow", "Cumulative flow", "Issues per status category each day of the last 30 days.", false),
+            new("velocity", "Velocity", "Points committed and completed in the last sprints.", false, ChartKind.Bar),
+            new("reliability", "Commitment reliability", "Completed points as a share of committed points, per sprint.", false, ChartKind.Bar),
+            new("throughput", "Throughput", "Issues and points finished per sprint.", false, ChartKind.Combo),
+            new("capacity", "Capacity and load", "Capacity, points taken on and points completed, per sprint.", false, ChartKind.Combo),
+            new("leadtime", "Lead time", "Days from created to done for issues resolved in the last 90 days.", false),
             new("control", "Control chart", "Cycle time (first In Progress to resolved) of issues resolved in the last 90 days.", false),
-            new("epics", "Epic progress", "Every epic's done and remaining issues and points.", false),
+            new("flow", "Cumulative flow", "Issues per status category each day of the last 30 days.", false, ChartKind.StackedArea),
+            new("wip", "Work in progress", "Issues in progress each day of the last 30 days.", false, ChartKind.Area),
+            new("defects", "Defects", "Bugs found and fixed in each sprint.", false, ChartKind.Bar),
+            new("epics", "Epic progress", "Every epic's done and remaining issues and points.", false, ChartKind.HorizontalBar),
         ];
         _kind = Kinds[1];
+        LoadForecastSettings();
         Refresh();
     }
 
@@ -86,28 +119,39 @@ public sealed partial class ReportsPageViewModel : BoardPageViewModel, ICardHost
     [ObservableProperty] private Sprint? _sprint;
     [ObservableProperty] private bool _showSprints;
     [ObservableProperty] private bool _isDashboard;
+    [ObservableProperty] private bool _isForecast;
+    [ObservableProperty] private bool _isScope;
 
     [ObservableProperty] private ChartData _chart = ChartData.Empty;
-    [ObservableProperty] private bool _isLine;
-    [ObservableProperty] private bool _isBar;
+    [ObservableProperty] private bool _hasChart;
+    public ObservableCollection<ChartKindItem> ChartKindChoices { get; } = [];
+    [ObservableProperty] private ChartKindItem? _selectedChartKind;
     [ObservableProperty] private string _summary = "";
+    [ObservableProperty] private string _explanation = "";
     [ObservableProperty] private string? _empty;
     public ObservableCollection<ReportRow> Rows { get; } = [];
     public bool HasRows => Rows.Count > 0;
     [ObservableProperty] private string _rowsTitle = "";
+    [ObservableProperty] private bool _canExportTable;
 
     public ObservableCollection<GadgetViewModel> Gadgets { get; } = [];
 
     public override void OnBoardChanged() => Refresh();
 
     partial void OnKindChanged(ReportKind value) => Refresh();
+
     partial void OnSprintChanged(Sprint? value)
     {
         if (!_refreshing)
             Refresh();
     }
 
-    private bool _refreshing;
+    partial void OnSelectedChartKindChanged(ChartKindItem? value)
+    {
+        if (_refreshing || value is null)
+            return;
+        _settings.UpdateSection<BoardReportsSettings>(s => s.ChartKinds[Kind.Id] = value.Kind.ToString());
+    }
 
     public void Refresh()
     {
@@ -125,26 +169,56 @@ public sealed partial class ReportsPageViewModel : BoardPageViewModel, ICardHost
             Sprint = Sprints.FirstOrDefault(s => s.Id == keep) ?? Sprints.FirstOrDefault(s => s.State == SprintState.Active) ?? Sprints.FirstOrDefault();
             ShowSprints = Kind.NeedsSprint;
             IsDashboard = Kind.Id == "dashboard";
+            IsForecast = Kind.Id == "forecast";
+            IsScope = Kind.Id == "scope";
             Rows.Clear();
             Empty = null;
             Chart = ChartData.Empty;
-            IsLine = IsBar = false;
+            _table = TableData.Empty;
             Summary = Kind.Description;
+            Explanation = Kpis.Explain(Kind.Id);
+            RowsTitle = "";
 
-            OnPropertyChanged(nameof(HasRows));
             switch (Kind.Id)
             {
                 case "dashboard":
                     BuildDashboard(board);
                     break;
+                case "forecast":
+                    BuildForecast(board);
+                    break;
+                case "scope":
+                    BuildScopeChange(board);
+                    break;
+                case "plans":
+                {
+                    Chart = Kpis.CapacityLoad(board);
+                    _table = Kpis.SprintPlans(board);
+                    RowsTitle = "Sprints";
+                    foreach (var row in _table.Rows)
+                    {
+                        var detail = string.Join(" · ", new[]
+                        {
+                            row[2].Length > 0 ? $"{row[2]} – {row[3]}" : null,
+                            row[5].Length > 0 ? $"capacity {row[5]}" : null,
+                            row[7].Length > 0 ? $"{row[7]} focused days" : null,
+                            row[8].Length > 0 ? $"{(row[1] == nameof(SprintState.Future) ? "planned" : "committed")} {row[8]}" : null,
+                            row[9].Length > 0 ? $"completed {row[9]}" : null,
+                        }.OfType<string>());
+                        Rows.Add(new ReportRow(row[0], row[4], detail, double.TryParse(row[8], NumberStyles.Float, CultureInfo.InvariantCulture, out var planned) && planned > 0
+                            && double.TryParse(row[9], NumberStyles.Float, CultureInfo.InvariantCulture, out var done) ? Math.Min(1, done / planned) : -1));
+                    }
+                    if (Rows.Count == 0)
+                        Empty = "No sprint yet (sprints come with the Board.Scrum plugin).";
+                    break;
+                }
                 case "burndown" or "burnup" or "sprint" when Sprint is null:
                     Empty = "No sprint has started yet (sprints come with the Board.Scrum plugin).";
                     break;
                 case "burndown" or "burnup":
                 {
                     var chart = BoardReports.Sprint(board, Sprint!, now);
-                    Chart = Kind.Id == "burndown" ? chart.Burndown : chart.Burnup;
-                    IsLine = true;
+                    Chart = (Kind.Id == "burndown" ? chart.Burndown : chart.Burnup) with { Title = $"{Kind.Name}: {Sprint!.Name}", YTitle = "Story points" };
                     Summary = $"{Sprint!.Name}: {N(chart.Completed)} of {N(chart.Scope)} points done · {N(chart.Committed)} committed at the start";
                     break;
                 }
@@ -166,23 +240,60 @@ public sealed partial class ReportsPageViewModel : BoardPageViewModel, ICardHost
                     break;
                 }
                 case "velocity":
-                    Chart = BoardReports.Velocity(board);
-                    IsBar = true;
-                    Summary = BoardReports.AverageVelocity(board) is { } v
-                        ? $"Average of the last sprints: {N(v)} points"
+                    Chart = BoardReports.Velocity(board) with { Title = "Velocity", XTitle = "Sprint", YTitle = "Story points" };
+                    if (BoardReports.AverageVelocity(board) is { } v)
+                        Chart = Chart with { References = [new ChartReference("Average", Math.Round(v, 1))] };
+                    Summary = BoardReports.AverageVelocity(board) is { } average
+                        ? $"Average of the last sprints: {N(average)} points"
                         : "No sprint has been completed yet.";
                     if (Chart.Labels.Count == 0)
                         Empty = "Velocity appears after the first completed sprint.";
                     break;
+                case "reliability":
+                {
+                    Chart = Kpis.CommitmentReliability(board);
+                    var sprints = Kpis.Closed(board).Where(s => s.CommittedPoints > 0).ToList();
+                    Summary = sprints.Count == 0 ? "No sprint has been completed yet."
+                        : $"{100 * sprints.Sum(s => s.CompletedPoints) / sprints.Sum(s => s.CommittedPoints):0}% of committed points completed over {sprints.Count} sprints";
+                    if (Chart.Labels.Count == 0)
+                        Empty = "Appears after the first completed sprint.";
+                    break;
+                }
+                case "throughput":
+                    Chart = Kpis.Throughput(board);
+                    if (Chart.Labels.Count == 0)
+                        Empty = "Appears after the first completed sprint.";
+                    break;
+                case "capacity":
+                    Chart = Kpis.CapacityLoad(board);
+                    if (Chart.Labels.Count == 0)
+                        Empty = "No sprint yet (sprints come with the Board.Scrum plugin).";
+                    break;
+                case "leadtime":
+                {
+                    var leads = Kpis.LeadTimes(board, now);
+                    Chart = Kpis.LeadTimeChart(leads);
+                    Summary = leads.Count == 0 ? "No issue was resolved in the last 90 days."
+                        : $"{leads.Count} issues · average {leads.Average(l => l.Days):0.#} days · median {Median(leads.Select(l => l.Days)):0.#} days";
+                    if (leads.Count == 0)
+                        Empty = Summary;
+                    break;
+                }
                 case "flow":
-                    Chart = BoardReports.CumulativeFlow(board, now);
-                    IsLine = true;
+                    Chart = BoardReports.CumulativeFlow(board, now) with { Title = "Cumulative flow", YTitle = "Issues" };
+                    break;
+                case "wip":
+                    Chart = Kpis.WorkInProgress(board, now);
+                    break;
+                case "defects":
+                    Chart = Kpis.Defects(board);
+                    if (Chart.Labels.Count == 0)
+                        Empty = "Appears after the first completed sprint.";
                     break;
                 case "control":
                 {
                     var cycles = BoardReports.CycleTimes(board, now);
-                    Chart = BoardReports.ControlChart(cycles);
-                    IsLine = true;
+                    Chart = BoardReports.ControlChart(cycles) with { Title = "Control chart", YTitle = "Days" };
                     Summary = cycles.Count == 0 ? "No issue was resolved in the last 90 days."
                         : $"{cycles.Count} issues · average {cycles.Average(c => c.Days):0.#} days · median {Median(cycles.Select(c => c.Days)):0.#} days";
                     if (cycles.Count == 0)
@@ -190,14 +301,30 @@ public sealed partial class ReportsPageViewModel : BoardPageViewModel, ICardHost
                     break;
                 }
                 case "epics":
+                {
                     RowsTitle = "Epics";
-                    foreach (var e in BoardReports.Epics(board))
+                    var epics = BoardReports.Epics(board);
+                    foreach (var e in epics)
                         Rows.Add(new ReportRow(e.Epic.Key, e.Epic.Summary,
                             $"{e.DoneIssues}/{e.Issues} issues · {N(e.DonePoints)}/{N(e.Points)} points", e.Fraction));
+                    Chart = new ChartData(epics.Select(e => e.Epic.Summary).ToList(),
+                    [
+                        new ChartSeries("Done", epics.Select(e => (double?)e.DonePoints).ToList()),
+                        new ChartSeries("Remaining", epics.Select(e => (double?)(e.Points - e.DonePoints)).ToList()),
+                    ]) { Title = "Epic progress", YTitle = "Story points" };
                     if (Rows.Count == 0)
                         Empty = "The board has no epics.";
                     break;
+                }
             }
+
+            if (_table.Rows.Count == 0)
+                _table = Rows.Count > 0
+                    ? new TableData(["Key", "Summary", "Detail"], Rows.Select(r => (IReadOnlyList<string>)[r.Key, r.Summary, r.Detail]).ToList()) { Title = Kind.Name }
+                    : Chart.ToTable(Chart.XTitle ?? "");
+            HasChart = Chart.Labels.Count > 0 && Empty is null && !IsDashboard;
+            CanExportTable = _table.Rows.Count > 0 && !IsDashboard;
+            FillChartKinds();
         }
         finally
         {
@@ -206,12 +333,262 @@ public sealed partial class ReportsPageViewModel : BoardPageViewModel, ICardHost
         }
     }
 
+    // The chart types that fit this report's data, the remembered one (or the report's own) selected.
+    private void FillChartKinds()
+    {
+        ChartKindChoices.Clear();
+        foreach (var kind in ChartKinds.Fitting(Chart))
+            ChartKindChoices.Add(new ChartKindItem(kind));
+        var saved = _settings.LoadSection<BoardReportsSettings>().ChartKinds.GetValueOrDefault(Kind.Id);
+        var wanted = Enum.TryParse<ChartKind>(saved, out var k) ? k : Kind.DefaultChart;
+        SelectedChartKind = ChartKindChoices.FirstOrDefault(c => c.Kind == wanted) ?? ChartKindChoices.FirstOrDefault(c => c.Kind == Kind.DefaultChart) ?? ChartKindChoices.FirstOrDefault();
+    }
+
     private static string N(double value) => value.ToString("0.##", CultureInfo.CurrentCulture);
 
     private static double Median(IEnumerable<double> values)
     {
         var sorted = values.Order().ToList();
         return sorted.Count == 0 ? 0 : sorted.Count % 2 == 1 ? sorted[sorted.Count / 2] : (sorted[sorted.Count / 2 - 1] + sorted[sorted.Count / 2]) / 2;
+    }
+
+    // ---- Export -------------------------------------------------------------------------------------------
+
+    private string ExportName => $"{Kind.Name} {Context.Project.Key}{(Kind.NeedsSprint && Sprint is not null ? " " + Sprint.Name : "")}";
+
+    [RelayCommand]
+    private Task SaveChartAsync() => _export.SaveChartAsync(SelectedChartKind?.Kind ?? Kind.DefaultChart, Chart, ExportName);
+
+    [RelayCommand]
+    private Task CopyChartAsync() => _export.CopyChartAsync(SelectedChartKind?.Kind ?? Kind.DefaultChart, Chart);
+
+    [RelayCommand]
+    private Task ExportTableAsync() => _export.SaveTableAsync(_table, ExportName);
+
+    [RelayCommand]
+    private Task CopyTableAsync() => _export.CopyTableAsync(_table);
+
+    // ---- Forecast and scope change ------------------------------------------------------------------------
+
+    public ObservableCollection<NamedItem> Scopes { get; } = [];
+    [ObservableProperty] private NamedItem? _scope;
+    [ObservableProperty] private string _pessimistic = "";
+    [ObservableProperty] private string _neutral = "";
+    [ObservableProperty] private string _optimistic = "";
+    [ObservableProperty] private string _planned = "";
+    [ObservableProperty] private string _velocityHint = "";
+    [ObservableProperty] private string _targetText = "";
+    [ObservableProperty] private string? _forecastError;
+    public ObservableCollection<ForecastRow> ScenarioRows { get; } = [];
+
+    public ObservableCollection<ForecastBaseline> Baselines { get; } = [];
+    [ObservableProperty] private ForecastBaseline? _baseline;
+    public bool HasBaselines => Baselines.Count > 0;
+    public ObservableCollection<ForecastRow> CompareRows { get; } = [];
+    [ObservableProperty] private string _compareText = "";
+    [ObservableProperty] private DateTime? _scopeFrom;
+
+    partial void OnScopeChanged(NamedItem? value) => InputsChanged();
+    partial void OnPessimisticChanged(string value) => InputsChanged();
+    partial void OnNeutralChanged(string value) => InputsChanged();
+    partial void OnOptimisticChanged(string value) => InputsChanged();
+    partial void OnPlannedChanged(string value) => InputsChanged();
+
+    partial void OnBaselineChanged(ForecastBaseline? value)
+    {
+        if (_refreshing)
+            return;
+        if (value is not null)
+            ScopeFrom = value.Taken.LocalDateTime.Date;
+        Refresh();
+    }
+
+    partial void OnScopeFromChanged(DateTime? value)
+    {
+        if (!_refreshing && IsScope)
+            Refresh();
+    }
+
+    private bool _loadingInputs;
+
+    private void InputsChanged()
+    {
+        if (_loadingInputs || _refreshing)
+            return;
+        _settings.UpdateSection<BoardReportsSettings>(s => s.Forecasts[Context.Location.Key] = new ForecastSettings
+        {
+            Scope = Scope?.Id ?? "backlog",
+            Pessimistic = Pessimistic,
+            Neutral = Neutral,
+            Optimistic = Optimistic,
+            Planned = Planned,
+        });
+        Refresh();
+    }
+
+    private void LoadForecastSettings()
+    {
+        _loadingInputs = true;
+        var saved = _settings.LoadSection<BoardReportsSettings>().Forecasts.GetValueOrDefault(Context.Location.Key) ?? new ForecastSettings();
+        FillScopes();
+        Scope = Scopes.FirstOrDefault(s => s.Id == saved.Scope) ?? Scopes[0];
+        Pessimistic = saved.Pessimistic;
+        Neutral = saved.Neutral;
+        Optimistic = saved.Optimistic;
+        Planned = saved.Planned;
+        ScopeFrom = DateTime.Today.AddDays(-30);
+        _loadingInputs = false;
+    }
+
+    // The scopes a forecast can be made for: everything open, a version, an epic, a saved filter.
+    private void FillScopes()
+    {
+        var board = Context.Snapshot;
+        var keep = Scope?.Id;
+        Scopes.Clear();
+        Scopes.Add(new NamedItem("backlog", "The whole backlog"));
+        foreach (var v in board.Versions.Values.Where(v => !v.Archived && !v.Released).OrderBy(v => v.Release ?? DateOnly.MaxValue))
+            Scopes.Add(new NamedItem("version:" + v.Id, "Version " + v.Name));
+        foreach (var e in board.Issues.Values.Where(i => board.LevelOf(i) == IssueTypeLevel.Epic && !board.IsDone(i)).OrderBy(i => i.Rank, StringComparer.Ordinal))
+            Scopes.Add(new NamedItem("epic:" + e.Id, $"Epic {e.Key} {e.Summary}"));
+        foreach (var f in board.Filters.Values.OrderBy(f => f.Name, StringComparer.CurrentCultureIgnoreCase))
+            Scopes.Add(new NamedItem("filter:" + f.Id, "Filter " + f.Name));
+        if (keep is not null && Scopes.FirstOrDefault(s => s.Id == keep) is { } same)
+            Scope = same;
+    }
+
+    /// <summary>The issues of the chosen scope (all of them, done included: the forecast counts what's left) and its target date.</summary>
+    private (IReadOnlyList<Issue> Issues, DateOnly? Target) ScopeIssues(BoardSnapshot board)
+    {
+        var id = Scope?.Id ?? "backlog";
+        var all = board.Issues.Values;
+        if (id.StartsWith("version:", StringComparison.Ordinal) && board.Versions.GetValueOrDefault(id[8..]) is { } version)
+            return (all.Where(i => i.FixVersions.Contains(version.Id)).ToList(), version.Release);
+        if (id.StartsWith("epic:", StringComparison.Ordinal) && board.Issue(id[5..]) is { } epic)
+            return (all.Where(i => board.EpicOf(i)?.Id == epic.Id).ToList(), epic.Due);
+        if (id.StartsWith("filter:", StringComparison.Ordinal) && board.Filters.GetValueOrDefault(id[7..]) is { } filter)
+        {
+            try
+            {
+                return (QueryCompiler.Compile(filter.Query, Context.QueryContext()).Run(all).ToList(), null);
+            }
+            catch (QueryException)
+            {
+                return ([], null);
+            }
+        }
+        return (all.ToList(), null);
+    }
+
+    private static double? Number(string text) =>
+        double.TryParse(text.Trim().Replace(',', '.'), NumberStyles.Float, CultureInfo.InvariantCulture, out var v) && v >= 0 ? v : null;
+
+    private void BuildForecast(BoardSnapshot board)
+    {
+        FillScopes();
+        ScenarioRows.Clear();
+        ForecastError = null;
+        var history = ScenarioVelocities.FromHistory(board);
+        VelocityHint = history is { } h
+            ? $"From the last sprints: {N(h.Pessimistic)} lowest, {N(h.Neutral)} average, {N(h.Optimistic)} highest (leave a box empty to use it)."
+            : "No sprint has finished yet: type the velocities you expect (a new team usually starts low).";
+        var planned = Planned.Split([',', ';', ' '], StringSplitOptions.RemoveEmptyEntries).Select(Number).ToList();
+        if (planned.Any(p => p is null))
+        {
+            ForecastError = "Planned velocities are numbers separated by commas (e.g. 5, 8, 12).";
+            return;
+        }
+        double? Pick(string text, double? fallback) => text.Trim().Length == 0 ? fallback : Number(text);
+        var neutral = Pick(Neutral, history?.Neutral ?? planned.LastOrDefault());
+        var pessimistic = Pick(Pessimistic, history?.Pessimistic ?? neutral * 0.7);
+        var optimistic = Pick(Optimistic, history?.Optimistic ?? neutral * 1.3);
+        if (neutral is not > 0 || pessimistic is null || optimistic is null)
+        {
+            ForecastError = "Type a neutral velocity (points per sprint) to forecast.";
+            Empty = "No velocity to forecast with yet.";
+            return;
+        }
+        var (issues, target) = ScopeIssues(board);
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        _forecast = Forecasts.Build(board, issues, new ScenarioVelocities(pessimistic.Value, neutral.Value, optimistic.Value), today, target,
+            planned.Count > 0 ? planned.Select(p => p!.Value).ToList() : null);
+        Chart = _forecast.Chart;
+        foreach (var s in _forecast.Scenarios)
+            ScenarioRows.Add(new ForecastRow(s.Name, $"{N(s.Velocity)} points per sprint", s.Text));
+        TargetText = target is { } t ? $"Target: {t:d MMM yyyy}" : "No target date (versions have release dates, epics due dates)";
+        Summary = $"{N(_forecast.Remaining)} of {N(_forecast.ScopePoints)} points left" +
+                  (_forecast.Unestimated > 0 ? $" · {_forecast.Unestimated} open issues not estimated (counted as 0)" : "") +
+                  $" · next sprint starts {_forecast.NextSprintStart:d MMM}, {_forecast.SprintDays} days each";
+        _table = new TableData(["Scenario", "Velocity", "Sprints", "Delivery", "Days late (+) or early (−)"],
+            _forecast.Scenarios.Select(s => (IReadOnlyList<string>)[s.Name, N(s.Velocity), s.Sprints?.ToString(CultureInfo.InvariantCulture) ?? "",
+                s.Delivery?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? "", s.DaysLate?.ToString(CultureInfo.InvariantCulture) ?? ""]).ToList()) { Title = "Release forecast" };
+        FillBaselines(board);
+    }
+
+    private void FillBaselines(BoardSnapshot board)
+    {
+        var keep = Baseline?.Id;
+        Baselines.Clear();
+        foreach (var b in BaselineStore.All(board).Where(b => b.Scope == (Scope?.Id ?? "backlog")).OrderByDescending(b => b.Taken))
+            Baselines.Add(b);
+        Baseline = Baselines.FirstOrDefault(b => b.Id == keep) ?? Baselines.FirstOrDefault();
+        OnPropertyChanged(nameof(HasBaselines));
+        CompareRows.Clear();
+        CompareText = "";
+        if (Baseline is not { } baseline || _forecast is null)
+            return;
+        CompareText = $"Since \"{baseline.Name}\" ({baseline.Taken.LocalDateTime:d MMM}): scope {N(baseline.ScopePoints)} → {N(_forecast.ScopePoints)} points, " +
+                      $"left {N(baseline.ScopePoints - baseline.DonePoints)} → {N(_forecast.Remaining)}";
+        foreach (var (name, before, now, moved) in BaselineStore.Compare(baseline, _forecast))
+            CompareRows.Add(new ForecastRow(name, $"{before} → {now}", moved switch
+            {
+                null => "",
+                0 => "same date",
+                > 0 => $"{moved} days later",
+                _ => $"{-moved} days earlier",
+            }));
+    }
+
+    [RelayCommand]
+    private async Task SaveBaselineAsync()
+    {
+        if (_forecast is null)
+            return;
+        var dialog = new TextInputDialogViewModel("Save Baseline", "Name", $"Before {DateTime.Today:d MMM}", "Save")
+        {
+            Explanation = "A baseline keeps today's forecast, to compare the dates after a change of scope (Scope change report).",
+        };
+        if (await Context.Dialogs.ShowDialogAsync(dialog))
+            await Context.RunAsync(new SaveBaseline(dialog.Text, Scope?.Id ?? "backlog", _forecast));
+    }
+
+    [RelayCommand]
+    private async Task DeleteBaselineAsync()
+    {
+        if (Baseline is { } baseline && await Context.Dialogs.ShowDialogAsync(new ConfirmDialogViewModel("Delete Baseline",
+                $"Delete the baseline \"{baseline.Name}\"?", "Delete", [baseline.Name])))
+            await Context.RunAsync(new DeleteBaseline(baseline.Id));
+    }
+
+    private void BuildScopeChange(BoardSnapshot board)
+    {
+        FillScopes();
+        FillBaselines(board);
+        var from = new DateTimeOffset(ScopeFrom ?? DateTime.Today.AddDays(-30));
+        var (issues, _) = ScopeIssues(board);
+        var changes = Kpis.ScopeChanges(board, issues, from, DateTimeOffset.Now);
+        Chart = Kpis.ScopeChangeChart(board, changes);
+        RowsTitle = "Changes";
+        foreach (var c in changes)
+            Rows.Add(new ReportRow(c.Issue.Key, c.Issue.Summary, $"{c.What} · {(c.Points >= 0 ? "+" : "")}{N(c.Points)} points · {c.At.LocalDateTime:d MMM}", -1));
+        var added = changes.Where(c => c.Points > 0).Sum(c => c.Points);
+        var removed = -changes.Where(c => c.Points < 0).Sum(c => c.Points);
+        Summary = $"{Scope?.Name}, since {from.LocalDateTime:d MMM yyyy}: +{N(added)} points added, −{N(removed)} removed, net {(added - removed >= 0 ? "+" : "")}{N(added - removed)}";
+        if (changes.Count == 0)
+            Empty = "No issue was added, re-estimated or dropped in this period.";
+        _table = new TableData(["Key", "Summary", "Epic", "Change", "Points", "When"],
+            changes.Select(c => (IReadOnlyList<string>)[c.Issue.Key, c.Issue.Summary, board.EpicOf(c.Issue)?.Key ?? "", c.What,
+                c.Points.ToString("0.##", CultureInfo.InvariantCulture), c.At.LocalDateTime.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)]).ToList()) { Title = "Scope change" };
     }
 
     // ---- Dashboard ----------------------------------------------------------------------------------------
