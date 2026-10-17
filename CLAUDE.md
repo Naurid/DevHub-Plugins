@@ -35,6 +35,7 @@ plugins/<Name>/                  one plugin; grouped ones have a UI project and 
   HelloWorld/                                   the sample plugin (one project)
   (plugin.json sits next to the UI project: id, name, description, category, apiVersion, requires)
 tests/                           DevHub.<X>.Core.Tests (xUnit), DevHub.TestKit (TempGitRepo, [GitFact])
+tools/BoardDemo/                 writes a demo board + repository with every Board feature in use (README.md); never shipped
 docs/                            GIT_CLIENT_PLAN.md (Git plugin), BOARD_PLAN.md (Board plugins), TEMPLATE_FORMAT.md (the template spec)
 build/                           Get-PluginVersion, Pack-Plugin, Publish-Plugins, Test-Plugins (README.md)
 Directory.Build.props            project kinds (plugin / .Core / test) and their Sdk references
