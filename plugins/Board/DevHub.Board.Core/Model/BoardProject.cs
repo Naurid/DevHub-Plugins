@@ -29,6 +29,9 @@ public sealed record BoardProject
     public IReadOnlyList<Component> Components { get; init; } = [];
     public IReadOnlyList<BoardPerson> People { get; init; } = [];
 
+    /// <summary>The Definition of Done: what every standard issue needs before it counts as done (ticked per issue).</summary>
+    public IReadOnlyList<DoneItem> DefinitionOfDone { get; init; } = [];
+
     /// <summary>The priority new issues get; null = the middle one.</summary>
     public string? DefaultPriority { get; init; }
 
@@ -62,6 +65,9 @@ public sealed record ProjectSettings
 
     /// <summary>How many days "1w" is in time tracking.</summary>
     public double DaysPerWeek { get; init; } = 5;
+
+    /// <summary>What happens when an issue goes to a Done status with unticked criteria or Definition of Done items.</summary>
+    public DoneCheck DoneCheck { get; init; } = DoneCheck.Warn;
 
     [JsonExtensionData] public Dictionary<string, JsonElement>? Extra { get; init; }
 }
@@ -199,7 +205,30 @@ public sealed record BoardPerson
     public string Name { get; init; } = "";
     public string? Email { get; init; }
 
+    /// <summary>Their role on the team ("Product Owner", "Scrum Master", "Developer"…); free text.</summary>
+    public string? Role { get; init; }
+
     [JsonExtensionData] public Dictionary<string, JsonElement>? Extra { get; init; }
 
     public override string ToString() => Name;
+}
+
+/// <summary>One item of the Definition of Done ("Code reviewed", "Unit tests pass").</summary>
+public sealed record DoneItem
+{
+    public string Id { get; init; } = "";
+    public string Text { get; init; } = "";
+
+    [JsonExtensionData] public Dictionary<string, JsonElement>? Extra { get; init; }
+
+    public override string ToString() => Text;
+}
+
+/// <summary>Moving an issue to Done while criteria or Definition of Done items are unticked: allowed, asked, or refused.</summary>
+[JsonConverter(typeof(JsonStringEnumConverter<DoneCheck>))]
+public enum DoneCheck
+{
+    Off,
+    Warn,
+    Block,
 }

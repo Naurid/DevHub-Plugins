@@ -176,7 +176,6 @@ internal sealed class ShopDemo(string folder, string myName, DemoGit? git)
 
         Do(t, _me, new AddIssueType("Spike", IssueTypeLevel.Standard, "task") { Id = "spike" });
         Do(t, _me, new AddCustomField("Platform", FieldType.Select) { Id = Platform, Options = ["Web", "iOS", "Android", "All"] });
-        Do(t, _me, new AddCustomField("Business value", FieldType.Number) { Id = Value });
         Do(t, _me, new AddCustomField("Customer", FieldType.Text) { Id = Customer });
 
         // A QA column (and status) between In Review and Done.

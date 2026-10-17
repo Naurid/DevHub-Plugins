@@ -134,7 +134,7 @@ public class ExportTests
 
         var rows = Csv.Read(BoardExport.ToCsv(board.Snapshot));
 
-        Assert.Equal(BoardExport.CsvColumns, rows[0]);
+        Assert.Equal([.. BoardExport.CsvColumns, "Business value"], rows[0]);
         var row = rows.Single(r => r[0] == story.Key);
         Assert.Equal(("Story", "Login, form", "To Do", epic.Key, "3"), (row[1], row[2], row[3], row[9], row[11]));
     }

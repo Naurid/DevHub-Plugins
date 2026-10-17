@@ -20,6 +20,9 @@ public sealed record CreateIssue(string Type, string Summary) : IBoardOperation
     /// <summary>Rank it directly above this issue instead of last.</summary>
     public string? RankAbove { get; init; }
 
+    /// <summary>Its acceptance criteria, one per line of text (empty lines are skipped).</summary>
+    public IReadOnlyList<string> Criteria { get; init; } = [];
+
     public BoardChange Apply(BoardSnapshot board, OperationContext context)
     {
         var project = board.Project;
@@ -65,6 +68,8 @@ public sealed record CreateIssue(string Type, string Summary) : IBoardOperation
         }
 
         var change = new ChangeBuilder(board, context);
+        var criteria = Criteria.Where(c => !string.IsNullOrWhiteSpace(c)).Select(c => new CheckItem { Id = change.NewId(), Text = Core.Criteria.RequireText(c) });
+        issue = issue with { Criteria = [.. criteria] };
         change.WriteProject(project with { NextNumber = project.NextNumber + 1 });
         change.WriteIssue(null, issue);
         return change.Build($"{issue.Key}: created \"{issue.Summary}\"");

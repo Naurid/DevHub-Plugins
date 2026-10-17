@@ -48,9 +48,10 @@ public static class QueryCompiler
     /// <summary>Field names offered by completion, in a friendly order.</summary>
     public static IReadOnlyList<string> FieldNames { get; } =
     [
-        "assignee", "comment", "component", "created", "description", "due", "epic", "fixVersion", "key", "labels",
-        "originalEstimate", "parent", "points", "priority", "project", "remainingEstimate", "reporter", "resolution",
-        "resolved", "sprint", "status", "statusCategory", "summary", "text", "timeSpent", "type", "updated",
+        "assignee", "comment", "component", "created", "criteria", "description", "due", "epic", "fixVersion", "key",
+        "labels", "openCriteria", "openDone", "originalEstimate", "parent", "points", "priority", "project",
+        "remainingEstimate", "reporter", "resolution", "resolved", "sprint", "status", "statusCategory", "summary",
+        "text", "timeSpent", "type", "updated",
     ];
 
     /// <summary>Functions offered by completion.</summary>
@@ -305,6 +306,15 @@ public static class QueryCompiler
                 return new Field("comment", FieldKind.Text, Texts: i => i.Comments.Select(c => c.Body));
             case "text":
                 return new Field("text", FieldKind.Text, Texts: i => [i.Summary, i.Description, .. i.Comments.Select(c => c.Body)]);
+            // Acceptance criteria: their text, and how many are still unticked ("openCriteria > 0"); "openDone" counts
+            // unticked Definition of Done items (standard issues only, like the done check).
+            case "criteria" or "acceptancecriteria":
+                return new Field("criteria", FieldKind.Text, Texts: i => i.Criteria.Select(c => c.Text));
+            case "opencriteria":
+                return new Field("openCriteria", FieldKind.Number, Number: i => i.Criteria.Count(c => !c.Done));
+            case "opendone" or "opendod":
+                return new Field("openDone", FieldKind.Number, Number: i => context.Board.LevelOf(i) == IssueTypeLevel.Standard
+                    ? context.Board.Project.DefinitionOfDone.Count(d => !i.DoneChecks.Contains(d.Id)) : 0);
             case "points" or "storypoints" or "storypointestimate" or "sp":
                 return new Field("points", FieldKind.Number, Number: i => i.StoryPoints);
             case "originalestimate":
