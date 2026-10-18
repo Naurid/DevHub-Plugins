@@ -12,7 +12,8 @@ plugins/<Name>/          one plugin: plugin.json, <Name>.csproj, its plugin clas
 plugins/<Name>/DevHub.X/       or grouped: the UI project with plugin.json (Git, GitHub, Projects, Templates)…
 plugins/<Name>/DevHub.X.Core/  …and its logic, no UI (tested in tests/)
 tests/                   DevHub.X.Core.Tests (xUnit; real git / dotnet / cargo / go in temp folders), DevHub.TestKit
-docs/                    GIT_CLIENT_PLAN.md (Git plugin), TEMPLATE_FORMAT.md (the template spec)
+docs/                    plugins/ (the plugin reference), diagrams/ (architecture), GIT_CLIENT_PLAN.md, BOARD_PLAN.md,
+                         DIAGRAMS_PLAN.md, TEMPLATE_FORMAT.md (the template spec)
 DevHub-Plugins.sln       every plugin and test project
 build/Get-PluginVersion.ps1   a plugin's version, from git (changes anywhere in plugins/<Name>/ count)
 build/Pack-Plugin.ps1    builds one plugin and packs <id>-<version>.zip (plugin.json, its DLLs and files)

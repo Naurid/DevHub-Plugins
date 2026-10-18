@@ -1,0 +1,955 @@
+{
+  "schemaVersion": 1,
+  "kind": "class",
+  "title": "Board data model (the files of a board)",
+  "project": "../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "yftkt3",
+      "type": "package",
+      "x": 30,
+      "y": 40,
+      "width": 855,
+      "height": 677,
+      "rotation": 0,
+      "text": "board.json",
+      "props": {
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "d4mbcd",
+      "type": "class",
+      "x": 60,
+      "y": 90,
+      "width": 205,
+      "height": 121,
+      "rotation": 0,
+      "text": "BoardProject",
+      "parentId": "yftkt3",
+      "props": {
+        "attributes": "+ Key : string\n+ Name : string\n+ NextNumber : int\n+ DefaultWorkflow : string?\n+ DefaultPriority : string?",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "8cxxgh",
+      "type": "class",
+      "x": 420,
+      "y": 90,
+      "width": 184,
+      "height": 104,
+      "rotation": 0,
+      "text": "IssueType",
+      "parentId": "yftkt3",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Level : IssueTypeLevel\n+ Workflow : string?",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "ahs748",
+      "type": "class",
+      "x": 420,
+      "y": 250,
+      "width": 205,
+      "height": 87,
+      "rotation": 0,
+      "text": "Status",
+      "parentId": "yftkt3",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Category : StatusCategory",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "wxmvch",
+      "type": "enumeration",
+      "x": 720,
+      "y": 250,
+      "width": 135,
+      "height": 102,
+      "rotation": 0,
+      "text": "StatusCategory",
+      "parentId": "yftkt3",
+      "props": {
+        "attributes": "ToDo\nInProgress\nDone",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "rbqciv",
+      "type": "enumeration",
+      "x": 720,
+      "y": 90,
+      "width": 135,
+      "height": 102,
+      "rotation": 0,
+      "text": "IssueTypeLevel",
+      "parentId": "yftkt3",
+      "props": {
+        "attributes": "Epic\nStandard\nSubtask",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "3c6ii9",
+      "type": "class",
+      "x": 60,
+      "y": 300,
+      "width": 136,
+      "height": 104,
+      "rotation": 0,
+      "text": "BoardPerson",
+      "parentId": "yftkt3",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Email : string?\n+ Role : string?",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "66j6cx",
+      "type": "class",
+      "x": 60,
+      "y": 460,
+      "width": 177,
+      "height": 87,
+      "rotation": 0,
+      "text": "Component",
+      "parentId": "yftkt3",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Description : string?",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "vutbia",
+      "type": "class",
+      "x": 420,
+      "y": 400,
+      "width": 246,
+      "height": 104,
+      "rotation": 0,
+      "text": "FieldDefinition",
+      "parentId": "yftkt3",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Type : FieldType\n+ Options : IReadOnlyList<string>",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "k5s4at",
+      "type": "class",
+      "x": 420,
+      "y": 560,
+      "width": 122,
+      "height": 70,
+      "rotation": 0,
+      "text": "DoneItem",
+      "parentId": "yftkt3",
+      "props": {
+        "attributes": "+ Id : string\n+ Text : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "xgmf76",
+      "type": "class",
+      "x": 60,
+      "y": 600,
+      "width": 177,
+      "height": 87,
+      "rotation": 0,
+      "text": "ProjectSettings",
+      "parentId": "yftkt3",
+      "props": {
+        "attributes": "+ HoursPerDay : double\n+ DaysPerWeek : double\n+ DoneCheck : DoneCheck",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "dg9hzy",
+      "type": "package",
+      "x": 1010,
+      "y": 40,
+      "width": 313,
+      "height": 337,
+      "rotation": 0,
+      "text": "workflows/<id>.json",
+      "props": {
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "h2sau7",
+      "type": "class",
+      "x": 1040,
+      "y": 90,
+      "width": 253,
+      "height": 104,
+      "rotation": 0,
+      "text": "Workflow",
+      "parentId": "dg9hzy",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Statuses : IReadOnlyList<string>\n+ AnyToAny : bool",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "w74tu5",
+      "type": "class",
+      "x": 1040,
+      "y": 260,
+      "width": 167,
+      "height": 87,
+      "rotation": 0,
+      "text": "WorkflowTransition",
+      "parentId": "dg9hzy",
+      "props": {
+        "attributes": "+ From : string?\n+ To : string\n+ Name : string?",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "98m628",
+      "type": "package",
+      "x": 1410,
+      "y": 40,
+      "width": 568,
+      "height": 451,
+      "rotation": 0,
+      "text": "boards/<id>.json",
+      "props": {
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "qx8wny",
+      "type": "class",
+      "x": 1440,
+      "y": 90,
+      "width": 267,
+      "height": 155,
+      "rotation": 0,
+      "text": "BoardDefinition",
+      "parentId": "98m628",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Kind : BoardKind\n+ Filter : string\n+ Swimlanes : SwimlaneMode\n+ HideDoneAfterDays : int?\n+ CardFields : IReadOnlyList<string>",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "8qusww",
+      "type": "class",
+      "x": 1440,
+      "y": 340,
+      "width": 253,
+      "height": 121,
+      "rotation": 0,
+      "text": "BoardColumn",
+      "parentId": "98m628",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Statuses : IReadOnlyList<string>\n+ WipLimit : int?\n+ WipMinimum : int?",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "qr7my8",
+      "type": "class",
+      "x": 1760,
+      "y": 340,
+      "width": 129,
+      "height": 87,
+      "rotation": 0,
+      "text": "QuickFilter",
+      "parentId": "98m628",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Query : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "r93jia",
+      "type": "enumeration",
+      "x": 1820,
+      "y": 90,
+      "width": 128,
+      "height": 85,
+      "rotation": 0,
+      "text": "BoardKind",
+      "parentId": "98m628",
+      "props": {
+        "attributes": "Kanban\nScrum",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "pv7vwq",
+      "type": "enumeration",
+      "x": 1820,
+      "y": 200,
+      "width": 128,
+      "height": 136,
+      "rotation": 0,
+      "text": "SwimlaneMode",
+      "parentId": "98m628",
+      "props": {
+        "attributes": "None\nAssignee\nEpic\nPriority\nType",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "rynkca",
+      "type": "package",
+      "x": 30,
+      "y": 850,
+      "width": 1018,
+      "height": 470,
+      "rotation": 0,
+      "text": "issues/<id>.json",
+      "props": {
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "hcrfys",
+      "type": "class",
+      "x": 60,
+      "y": 900,
+      "width": 315,
+      "height": 342,
+      "rotation": 0,
+      "text": "Issue",
+      "parentId": "rynkca",
+      "props": {
+        "attributes": "+ Id : string\n+ Key : string\n+ Type : string\n+ Summary : string\n+ Description : string\n+ Status : string\n+ Resolution : string?\n+ Priority : string?\n+ Parent : string?\n+ Assignee : string?\n+ Reporter : string?\n+ Labels : IReadOnlyList<string>\n+ StoryPoints : double?\n+ Start : DateOnly?\n+ Due : DateOnly?\n+ Sprint : string?\n+ Rank : string\n+ Custom : SortedDictionary<string, string>",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "f8f97i",
+      "type": "class",
+      "x": 520,
+      "y": 900,
+      "width": 191,
+      "height": 70,
+      "rotation": 0,
+      "text": "TimeTracking",
+      "parentId": "rynkca",
+      "props": {
+        "attributes": "+ OriginalMinutes : int?\n+ RemainingMinutes : int?",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "rznwxr",
+      "type": "class",
+      "x": 520,
+      "y": 1040,
+      "width": 198,
+      "height": 104,
+      "rotation": 0,
+      "text": "WorkLog",
+      "parentId": "rynkca",
+      "props": {
+        "attributes": "+ Author : string?\n+ Started : DateTimeOffset\n+ Minutes : int\n+ Note : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "nrjwg3",
+      "type": "class",
+      "x": 520,
+      "y": 1220,
+      "width": 136,
+      "height": 70,
+      "rotation": 0,
+      "text": "IssueLink",
+      "parentId": "rynkca",
+      "props": {
+        "attributes": "+ Type : string\n+ Target : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "8w8k5k",
+      "type": "class",
+      "x": 820,
+      "y": 900,
+      "width": 198,
+      "height": 87,
+      "rotation": 0,
+      "text": "Comment",
+      "parentId": "rynkca",
+      "props": {
+        "attributes": "+ Author : string?\n+ Created : DateTimeOffset\n+ Body : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "fz6w78",
+      "type": "class",
+      "x": 820,
+      "y": 1060,
+      "width": 184,
+      "height": 87,
+      "rotation": 0,
+      "text": "Attachment",
+      "parentId": "rynkca",
+      "props": {
+        "attributes": "+ FileName : string\n+ Size : long\n+ Added : DateTimeOffset",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "fe9bft",
+      "type": "class",
+      "x": 820,
+      "y": 1220,
+      "width": 122,
+      "height": 70,
+      "rotation": 0,
+      "text": "CheckItem",
+      "parentId": "rynkca",
+      "props": {
+        "attributes": "+ Text : string\n+ Done : bool",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "8mj5j3",
+      "type": "package",
+      "x": 1210,
+      "y": 850,
+      "width": 223,
+      "height": 201,
+      "rotation": 0,
+      "text": "history/<id>.jsonl",
+      "props": {
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "9mjew2",
+      "type": "class",
+      "x": 1240,
+      "y": 900,
+      "width": 163,
+      "height": 121,
+      "rotation": 0,
+      "text": "HistoryEntry",
+      "parentId": "8mj5j3",
+      "props": {
+        "attributes": "+ At : DateTimeOffset\n+ Who : string?\n+ Field : string\n+ From : string?\n+ To : string?",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "kmm2gq",
+      "type": "package",
+      "x": 1210,
+      "y": 1100,
+      "width": 548,
+      "height": 235,
+      "rotation": 0,
+      "text": "sprints/<id>.json",
+      "props": {
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "75uwyh",
+      "type": "class",
+      "x": 1240,
+      "y": 1150,
+      "width": 191,
+      "height": 155,
+      "rotation": 0,
+      "text": "Sprint",
+      "parentId": "kmm2gq",
+      "props": {
+        "attributes": "+ Name : string\n+ Goal : string\n+ State : SprintState\n+ Start : DateTimeOffset?\n+ End : DateTimeOffset?\n+ Capacity : double?\n+ FocusFactor : double?",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "jtkmhf",
+      "type": "enumeration",
+      "x": 1600,
+      "y": 1150,
+      "width": 128,
+      "height": 102,
+      "rotation": 0,
+      "text": "SprintState",
+      "parentId": "kmm2gq",
+      "props": {
+        "attributes": "Future\nActive\nClosed",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "xdpmmi",
+      "type": "package",
+      "x": 1610,
+      "y": 850,
+      "width": 230,
+      "height": 201,
+      "rotation": 0,
+      "text": "versions/<id>.json",
+      "props": {
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "zzq2bw",
+      "type": "class",
+      "x": 1640,
+      "y": 900,
+      "width": 170,
+      "height": 121,
+      "rotation": 0,
+      "text": "FixVersion",
+      "parentId": "xdpmmi",
+      "props": {
+        "attributes": "+ Name : string\n+ Description : string\n+ Start : DateOnly?\n+ Release : DateOnly?\n+ Released : bool",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "ejkwuy",
+      "type": "note",
+      "x": 60,
+      "y": 1600,
+      "width": 700,
+      "height": 80,
+      "rotation": 0,
+      "text": "Every file has \"schema\": 1. References are ids (an issue's Status, Assignee, Parent, Sprint), never copies. history/<id>.jsonl is append-only: one line per change. Attachments: attachments/<issue id>/<file>; risks/<id>.json (Board.Risks), retros/<sprint>.json (Board.Scrum).",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "fivbaf",
+      "type": "composition",
+      "from": "d4mbcd",
+      "to": "8cxxgh",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "j8tkta",
+      "type": "composition",
+      "from": "d4mbcd",
+      "to": "ahs748",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "3y5tst",
+      "type": "composition",
+      "from": "d4mbcd",
+      "to": "3c6ii9",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "5ipjax",
+      "type": "composition",
+      "from": "d4mbcd",
+      "to": "66j6cx",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "wadt6w",
+      "type": "composition",
+      "from": "d4mbcd",
+      "to": "vutbia",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "fsahur",
+      "type": "composition",
+      "from": "d4mbcd",
+      "to": "k5s4at",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "ucp533",
+      "type": "composition",
+      "from": "d4mbcd",
+      "to": "xgmf76",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "1"
+      }
+    },
+    {
+      "id": "655n8y",
+      "type": "association",
+      "from": "ahs748",
+      "to": "wxmvch",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1"
+      }
+    },
+    {
+      "id": "72ty4h",
+      "type": "association",
+      "from": "8cxxgh",
+      "to": "rbqciv",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1"
+      }
+    },
+    {
+      "id": "4iydez",
+      "type": "composition",
+      "from": "h2sau7",
+      "to": "w74tu5",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "u25cpp",
+      "type": "association",
+      "from": "h2sau7",
+      "to": "ahs748",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "8agr9d",
+      "type": "composition",
+      "from": "qx8wny",
+      "to": "8qusww",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "4mf2v2",
+      "type": "composition",
+      "from": "qx8wny",
+      "to": "qr7my8",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "hbwc2y",
+      "type": "association",
+      "from": "qx8wny",
+      "to": "r93jia",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1"
+      }
+    },
+    {
+      "id": "3umvs7",
+      "type": "association",
+      "from": "qx8wny",
+      "to": "pv7vwq",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1"
+      }
+    },
+    {
+      "id": "8sspni",
+      "type": "association",
+      "from": "8qusww",
+      "to": "ahs748",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "birjjf",
+      "type": "composition",
+      "from": "hcrfys",
+      "to": "f8f97i",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "1"
+      }
+    },
+    {
+      "id": "4bcazr",
+      "type": "composition",
+      "from": "f8f97i",
+      "to": "rznwxr",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "ji2iuy",
+      "type": "composition",
+      "from": "hcrfys",
+      "to": "nrjwg3",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "8xath6",
+      "type": "composition",
+      "from": "hcrfys",
+      "to": "8w8k5k",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "893msk",
+      "type": "composition",
+      "from": "hcrfys",
+      "to": "fz6w78",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "qs3vk3",
+      "type": "composition",
+      "from": "hcrfys",
+      "to": "fe9bft",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "htenme",
+      "type": "composition",
+      "from": "hcrfys",
+      "to": "9mjew2",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "m2pd8f",
+      "type": "association",
+      "from": "hcrfys",
+      "to": "ahs748",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1"
+      }
+    },
+    {
+      "id": "w3mi5i",
+      "type": "association",
+      "from": "hcrfys",
+      "to": "75uwyh",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "0..1"
+      }
+    },
+    {
+      "id": "ugqv6n",
+      "type": "association",
+      "from": "hcrfys",
+      "to": "zzq2bw",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "d39fkb",
+      "type": "association",
+      "from": "75uwyh",
+      "to": "jtkmhf",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1"
+      }
+    },
+    {
+      "id": "vxfss3",
+      "type": "noteLink",
+      "from": "ejkwuy",
+      "to": "hcrfys",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 30,
+    "y": 40,
+    "width": 1948,
+    "height": 1640,
+    "left": 30,
+    "top": 40,
+    "right": 1978,
+    "bottom": 1680,
+    "center": {
+      "x": 1004,
+      "y": 860,
+      "length": 1321.9742811416568
+    }
+  }
+}

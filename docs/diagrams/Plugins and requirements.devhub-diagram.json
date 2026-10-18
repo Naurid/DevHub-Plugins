@@ -1,0 +1,446 @@
+{
+  "schemaVersion": 1,
+  "kind": "package",
+  "title": "Plugins and their requirements",
+  "project": "../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "v67a5g",
+      "type": "package",
+      "x": 30,
+      "y": 50,
+      "width": 310,
+      "height": 150,
+      "rotation": 0,
+      "text": "Projects",
+      "props": {
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96",
+        "bold": "true"
+      }
+    },
+    {
+      "id": "viiqcp",
+      "type": "package",
+      "x": 60,
+      "y": 100,
+      "width": 250,
+      "height": 70,
+      "rotation": 0,
+      "text": "Projects (devhub.projects)",
+      "parentId": "v67a5g",
+      "props": {
+        "fill": "#383574F0",
+        "line": "#3574F0"
+      }
+    },
+    {
+      "id": "j6s3p7",
+      "type": "package",
+      "x": 390,
+      "y": 50,
+      "width": 310,
+      "height": 150,
+      "rotation": 0,
+      "text": "Templates",
+      "props": {
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96",
+        "bold": "true"
+      }
+    },
+    {
+      "id": "4i55sg",
+      "type": "package",
+      "x": 420,
+      "y": 100,
+      "width": 250,
+      "height": 70,
+      "rotation": 0,
+      "text": "Templates (devhub.templates)",
+      "parentId": "j6s3p7",
+      "props": {
+        "fill": "#383574F0",
+        "line": "#3574F0"
+      }
+    },
+    {
+      "id": "r4q9hu",
+      "type": "package",
+      "x": 750,
+      "y": 50,
+      "width": 600,
+      "height": 150,
+      "rotation": 0,
+      "text": "Version control",
+      "props": {
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96",
+        "bold": "true"
+      }
+    },
+    {
+      "id": "7ggtqh",
+      "type": "package",
+      "x": 780,
+      "y": 100,
+      "width": 250,
+      "height": 70,
+      "rotation": 0,
+      "text": "Git (devhub.git)",
+      "parentId": "r4q9hu",
+      "props": {
+        "fill": "#383574F0",
+        "line": "#3574F0"
+      }
+    },
+    {
+      "id": "g9tw4f",
+      "type": "package",
+      "x": 1070,
+      "y": 100,
+      "width": 250,
+      "height": 70,
+      "rotation": 0,
+      "text": "GitHub (devhub.github)",
+      "parentId": "r4q9hu",
+      "props": {
+        "fill": "#383574F0",
+        "line": "#3574F0"
+      }
+    },
+    {
+      "id": "pz8q95",
+      "type": "package",
+      "x": 30,
+      "y": 330,
+      "width": 890,
+      "height": 270,
+      "rotation": 0,
+      "text": "Planning",
+      "props": {
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96",
+        "bold": "true"
+      }
+    },
+    {
+      "id": "vf4v2v",
+      "type": "package",
+      "x": 60,
+      "y": 380,
+      "width": 250,
+      "height": 70,
+      "rotation": 0,
+      "text": "Board (devhub.board)",
+      "parentId": "pz8q95",
+      "props": {}
+    },
+    {
+      "id": "xvxh7w",
+      "type": "package",
+      "x": 350,
+      "y": 380,
+      "width": 250,
+      "height": 70,
+      "rotation": 0,
+      "text": "Board Scrum (devhub.board.scrum)",
+      "parentId": "pz8q95",
+      "props": {}
+    },
+    {
+      "id": "8pwc6u",
+      "type": "package",
+      "x": 640,
+      "y": 380,
+      "width": 250,
+      "height": 70,
+      "rotation": 0,
+      "text": "Board Git (devhub.board.git)",
+      "parentId": "pz8q95",
+      "props": {}
+    },
+    {
+      "id": "46v4ys",
+      "type": "package",
+      "x": 60,
+      "y": 500,
+      "width": 250,
+      "height": 70,
+      "rotation": 0,
+      "text": "Board Reports (devhub.board.reports)",
+      "parentId": "pz8q95",
+      "props": {}
+    },
+    {
+      "id": "xjixjk",
+      "type": "package",
+      "x": 350,
+      "y": 500,
+      "width": 250,
+      "height": 70,
+      "rotation": 0,
+      "text": "Board Timeline (devhub.board.timeline)",
+      "parentId": "pz8q95",
+      "props": {}
+    },
+    {
+      "id": "2fb452",
+      "type": "package",
+      "x": 640,
+      "y": 500,
+      "width": 250,
+      "height": 70,
+      "rotation": 0,
+      "text": "Board Risks (devhub.board.risks)",
+      "parentId": "pz8q95",
+      "props": {}
+    },
+    {
+      "id": "pdwdns",
+      "type": "package",
+      "x": 1010,
+      "y": 330,
+      "width": 600,
+      "height": 390,
+      "rotation": 0,
+      "text": "Tools",
+      "props": {
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96",
+        "bold": "true"
+      }
+    },
+    {
+      "id": "ic6cbx",
+      "type": "package",
+      "x": 1040,
+      "y": 380,
+      "width": 250,
+      "height": 70,
+      "rotation": 0,
+      "text": "Diagrams (devhub.diagrams)",
+      "parentId": "pdwdns",
+      "props": {}
+    },
+    {
+      "id": "958rpc",
+      "type": "package",
+      "x": 1330,
+      "y": 380,
+      "width": 250,
+      "height": 70,
+      "rotation": 0,
+      "text": "Charts (devhub.charts)",
+      "parentId": "pdwdns",
+      "props": {}
+    },
+    {
+      "id": "6uww9g",
+      "type": "package",
+      "x": 1040,
+      "y": 500,
+      "width": 250,
+      "height": 70,
+      "rotation": 0,
+      "text": "UML Diagrams (devhub.diagrams.uml)",
+      "parentId": "pdwdns",
+      "props": {}
+    },
+    {
+      "id": "2rsmfh",
+      "type": "package",
+      "x": 1330,
+      "y": 500,
+      "width": 250,
+      "height": 70,
+      "rotation": 0,
+      "text": "Database Diagrams (devhub.diagrams.database)",
+      "parentId": "pdwdns",
+      "props": {}
+    },
+    {
+      "id": "f6kuz5",
+      "type": "package",
+      "x": 1040,
+      "y": 620,
+      "width": 250,
+      "height": 70,
+      "rotation": 0,
+      "text": "Business Diagrams (devhub.diagrams.business)",
+      "parentId": "pdwdns",
+      "props": {}
+    },
+    {
+      "id": "hrryfj",
+      "type": "package",
+      "x": 1330,
+      "y": 620,
+      "width": 250,
+      "height": 70,
+      "rotation": 0,
+      "text": "Mood Boards (devhub.moodboard)",
+      "parentId": "pdwdns",
+      "props": {}
+    },
+    {
+      "id": "iqz5a3",
+      "type": "note",
+      "x": 60,
+      "y": 760,
+      "width": 760,
+      "height": 90,
+      "rotation": 0,
+      "text": "Blue: bundled with DevHub's installer, then updated from the marketplace. «requires»: switched on (and installed) together, loads first. First-run presets: Git client = Projects, Git, GitHub; Project templates = Projects, Templates; Planning = the Board plugins, Charts and the Diagrams plugins.",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "57wh45",
+      "type": "dependency",
+      "from": "g9tw4f",
+      "to": "7ggtqh",
+      "text": "«requires»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "7rvs64",
+      "type": "dependency",
+      "from": "4i55sg",
+      "to": "viiqcp",
+      "text": "«requires»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "rn52yy",
+      "type": "dependency",
+      "from": "xvxh7w",
+      "to": "vf4v2v",
+      "text": "«requires»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "h7m2u6",
+      "type": "dependency",
+      "from": "8pwc6u",
+      "to": "vf4v2v",
+      "text": "«requires»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "63wf94",
+      "type": "dependency",
+      "from": "8pwc6u",
+      "to": "7ggtqh",
+      "text": "«requires»",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "z3iw2p",
+      "type": "dependency",
+      "from": "46v4ys",
+      "to": "vf4v2v",
+      "text": "«requires»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "r675j6",
+      "type": "dependency",
+      "from": "xjixjk",
+      "to": "vf4v2v",
+      "text": "«requires»",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "zbpvbf",
+      "type": "dependency",
+      "from": "2fb452",
+      "to": "vf4v2v",
+      "text": "«requires»",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "rzpw7q",
+      "type": "dependency",
+      "from": "6uww9g",
+      "to": "ic6cbx",
+      "text": "«requires»",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "7x66wr",
+      "type": "dependency",
+      "from": "2rsmfh",
+      "to": "ic6cbx",
+      "text": "«requires»",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "xxafse",
+      "type": "dependency",
+      "from": "f6kuz5",
+      "to": "ic6cbx",
+      "text": "«requires»",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "9c6i9h",
+      "type": "dependency",
+      "from": "hrryfj",
+      "to": "ic6cbx",
+      "text": "«requires»",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "tx88jr",
+      "type": "noteLink",
+      "from": "iqz5a3",
+      "to": "pz8q95",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 30,
+    "y": 50,
+    "width": 1580,
+    "height": 800,
+    "left": 30,
+    "top": 50,
+    "right": 1610,
+    "bottom": 850,
+    "center": {
+      "x": 820,
+      "y": 450,
+      "length": 935.3608929178085
+    }
+  }
+}
