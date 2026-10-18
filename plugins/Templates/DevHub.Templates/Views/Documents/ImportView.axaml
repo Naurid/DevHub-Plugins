@@ -100,7 +100,7 @@
                     </StackPanel>
                     <ProgressBar DockPanel.Dock="Top" IsIndeterminate="True" Height="2" MinHeight="2" IsVisible="{Binding IsBusy}" />
                     <Border BorderBrush="{DynamicResource Brush.Border.Control}" BorderThickness="1" CornerRadius="{DynamicResource Radius.Control}">
-                        <TreeView ItemsSource="{Binding Nodes}" Background="Transparent" AutomationProperties.Name="{l:T 'Import preview'}">
+                        <TreeView ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding Nodes}" Background="Transparent" AutomationProperties.Name="{l:T 'Import preview'}">
                             <TreeView.Styles>
                                 <Style Selector="TreeViewItem" x:DataType="docs:ImportNodeViewModel">
                                     <Setter Property="AutomationProperties.Name" Value="{Binding Name}" />

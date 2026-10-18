@@ -44,7 +44,7 @@
                     <c:EmptyState IconKind="folder" Title="{l:T 'No files'}"
                                   Description="{l:T 'This template adds no files of its own (fine for a raw command, or a template made of steps).'}"
                                   IsVisible="{Binding IsEmpty}" />
-                    <TreeView ItemsSource="{Binding Nodes}" SelectedItem="{Binding SelectedNode}" Background="Transparent"
+                    <TreeView ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding Nodes}" SelectedItem="{Binding SelectedNode}" Background="Transparent"
                               AutomationProperties.Name="{l:T 'Template files'}" IsVisible="{Binding !IsEmpty}">
                         <TreeView.KeyBindings>
                             <KeyBinding Gesture="Enter" Command="{Binding OpenCommand}" />
