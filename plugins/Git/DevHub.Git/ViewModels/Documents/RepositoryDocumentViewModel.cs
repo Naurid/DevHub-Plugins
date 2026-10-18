@@ -17,9 +17,10 @@ namespace DevHub.ViewModels.Documents;
 /// </summary>
 /// <remarks>
 /// G1: status (branch, ahead/behind, changed files, merge/rebase in progress), refreshed when the
-/// tab opens, when it becomes active, and whenever the repository changes on disk (a
-/// <see cref="RepositoryWatcher"/>, so background tabs stay current too). Everything here only
-/// reads the repository.
+/// tab opens, when it becomes active, and when the repository changes on disk (a
+/// <see cref="RepositoryWatcher"/>): an edited file refreshes the status only, a moved branch everything, files git
+/// ignores nothing at all. A tab in the background only remembers what changed and catches up when it's shown.
+/// Everything here only reads the repository.
 /// </remarks>
 public sealed partial class RepositoryDocumentViewModel : DocumentViewModelBase, IDisposable
 {
@@ -114,6 +115,7 @@ public sealed partial class RepositoryDocumentViewModel : DocumentViewModelBase,
 
         // One git status per open tab is cheap, and it gives every tab its dirty dot at startup.
         _refreshTask = RefreshAsync();
+        _ = LoadIgnoredAsync();
     }
 
     public override string Id => IdPrefix + Path;
@@ -297,20 +299,37 @@ public sealed partial class RepositoryDocumentViewModel : DocumentViewModelBase,
     /// <summary>Git → New Branch…: from the current commit.</summary>
     public Task NewBranchAsync() => _branchOperations.NewBranchAsync();
 
-    /// <summary>Re-reads the repository status. Called on open, activation, file changes and Git → Refresh.</summary>
-    public Task RefreshAsync()
+    /// <summary>Re-reads everything (status, branches, remotes, tags, stashes…). Called on open, after git operations and Git → Refresh.</summary>
+    public Task RefreshAsync() => RefreshAsync(everything: true);
+
+    /// <param name="everything">False: the status only (a file was edited: one git process instead of six or seven).</param>
+    private Task RefreshAsync(bool everything)
     {
         if (_client is null || _disposed)
             return Task.CompletedTask;
 
-        // A newer refresh replaces an older one still running.
+        // A newer refresh replaces an older one still running, and takes over what it still had to do.
         // (Not disposed: the superseded refresh may still be using its token.)
+        if (!_refreshTask.IsCompleted)
+            everything |= _refreshingEverything;
+        _refreshingEverything = everything;
         _refreshCts?.Cancel();
         var cts = _refreshCts = new CancellationTokenSource();
-        return _refreshTask = RefreshCoreAsync(_client, cts.Token);
+        return _refreshTask = RefreshCoreAsync(_client, everything, cts.Token);
     }
 
-    private async Task RefreshCoreAsync(GitRepositoryClient client, CancellationToken ct)
+    private bool _refreshingEverything;
+    private RepoStatus? _lastStatus;
+    private DateTime _ignoredLearnt;
+
+    private static bool SameStatus(RepoStatus a, RepoStatus b) =>
+        a.CommitId == b.CommitId && a.Branch == b.Branch && a.Ahead == b.Ahead && a.Behind == b.Behind
+        && a.Changes.SequenceEqual(b.Changes);
+
+    // What changed while the tab was in the background: refreshed when it comes to the front.
+    private RepositoryChange _stale;
+
+    private async Task RefreshCoreAsync(GitRepositoryClient client, bool everything, CancellationToken ct)
     {
         try
         {
@@ -330,48 +349,17 @@ public sealed partial class RepositoryDocumentViewModel : DocumentViewModelBase,
             };
             Conflicts.Update(operation, status);
 
-            var branches = await client.GetBranchesAsync(ct);
-            _branchOperations.Branches = branches;
-            BranchPopup.Update(branches);
-            var remotes = await client.GetRemoteDetailsAsync(ct);
-            var selectedKey = SelectedNode?.Key;
-            var rebuilt = _branchTree.Update(BranchesGroup, RemotesGroup, branches, remotes, Remote.ManageRemotesCommand, Remote.FetchCommand);
-            ApplyBranchDecorations();
-            if (rebuilt && SelectedNode is not RepositorySection && selectedKey is not null)
+            if (everything)
+                await RefreshRefsAsync(client, status, ct);
+            else if (_lastStatus is { } before && SameStatus(before, status)
+                     && DateTime.UtcNow - _ignoredLearnt > TimeSpan.FromSeconds(30))
             {
-                // The rows are new objects: select the same branch / folder again.
-                var again = SidebarBranchTree.Descendants(BranchesGroup).Concat(SidebarBranchTree.Descendants(RemotesGroup))
-                    .FirstOrDefault(n => n.Key == selectedKey);
-                // Only re-select: don't jump All Commits back to the branch on every refresh.
-                _restoringNode = true;
-                try
-                {
-                    SelectedNode = again ?? SelectedSection;
-                }
-                finally
-                {
-                    _restoringNode = false;
-                }
+                // Files changed but the status didn't: they're ignored files in a folder git's list didn't have yet
+                // (a first build's obj/). Asking again keeps the next builds from refreshing at all.
+                _ignoredLearnt = DateTime.UtcNow;
+                _ = LoadIgnoredAsync();
             }
-
-            var tags = await client.GetTagsAsync(ct);
-            _commitOperations.Tags = tags;
-            Tags.Update(tags);
-            TagsSection.Count = tags.Count;
-
-            var stashes = await client.GetStashesAsync(ct);
-            Stashes.Update(stashes);
-            StashesSection.Count = stashes.Count;
-
-            // No .gitmodules: no git call at all (most repositories).
-            var submodules = await client.GetSubmodulesAsync(ct);
-            Submodules.Update(submodules);
-            SubmodulesSection.Count = submodules.Count;
-
-            // History only changes when HEAD, a branch or a tag moves (commit, checkout, fetch, tag…), not on file edits.
-            _historySignature = status.CommitId + "|" + string.Join(",", branches.Select(b => b.Ref + ":" + b.CommitId))
-                                + "|" + string.Join(",", tags.Select(t => t.Name + ":" + t.CommitId));
-            _ = CommitLog.RefreshIfChangedAsync(_historySignature);
+            _lastStatus = status;
 
             LocalChanges.Update(status);
             LocalChangesSection.Count = status.Changes.Count;
@@ -390,12 +378,79 @@ public sealed partial class RepositoryDocumentViewModel : DocumentViewModelBase,
         }
     }
 
+    /// <summary>Branches, remotes, tags, stashes, submodules and the history: what only changes when refs move.</summary>
+    private async Task RefreshRefsAsync(GitRepositoryClient client, RepoStatus status, CancellationToken ct)
+    {
+        var branches = await client.GetBranchesAsync(ct);
+        _branchOperations.Branches = branches;
+        BranchPopup.Update(branches);
+        var remotes = await client.GetRemoteDetailsAsync(ct);
+        var selectedKey = SelectedNode?.Key;
+        var rebuilt = _branchTree.Update(BranchesGroup, RemotesGroup, branches, remotes, Remote.ManageRemotesCommand, Remote.FetchCommand);
+        ApplyBranchDecorations();
+        if (rebuilt && SelectedNode is not RepositorySection && selectedKey is not null)
+        {
+            // The rows are new objects: select the same branch / folder again.
+            var again = SidebarBranchTree.Descendants(BranchesGroup).Concat(SidebarBranchTree.Descendants(RemotesGroup))
+                .FirstOrDefault(n => n.Key == selectedKey);
+            // Only re-select: don't jump All Commits back to the branch on every refresh.
+            _restoringNode = true;
+            try
+            {
+                SelectedNode = again ?? SelectedSection;
+            }
+            finally
+            {
+                _restoringNode = false;
+            }
+        }
+
+        var tags = await client.GetTagsAsync(ct);
+        _commitOperations.Tags = tags;
+        Tags.Update(tags);
+        TagsSection.Count = tags.Count;
+
+        var stashes = await client.GetStashesAsync(ct);
+        Stashes.Update(stashes);
+        StashesSection.Count = stashes.Count;
+
+        // No .gitmodules: no git call at all (most repositories).
+        var submodules = await client.GetSubmodulesAsync(ct);
+        Submodules.Update(submodules);
+        SubmodulesSection.Count = submodules.Count;
+
+        // History only changes when HEAD, a branch or a tag moves (commit, checkout, fetch, tag…), not on file edits.
+        _historySignature = status.CommitId + "|" + string.Join(",", branches.Select(b => b.Ref + ":" + b.CommitId))
+                            + "|" + string.Join(",", tags.Select(t => t.Name + ":" + t.CommitId));
+        _ = CommitLog.RefreshIfChangedAsync(_historySignature);
+    }
+
     protected override void OnActivationChanged(bool isActive)
     {
         // Skip when a refresh is already running (e.g. the one started when the tab was created):
-        // starting another would only cancel it and run git twice.
-        if (isActive && _refreshTask.IsCompleted)
-            _ = RefreshAsync();
+        // starting another would only cancel it and run git twice. Otherwise catch up on what changed while the tab was
+        // in the background (everything after a branch moved, the status after an edit), and check the status anyway
+        // (a change the watcher can't see, like a file on a network drive).
+        if (!isActive || !_refreshTask.IsCompleted)
+            return;
+        var missed = _stale;
+        _stale = RepositoryChange.None;
+        _ = RefreshAsync(everything: missed.HasFlag(RepositoryChange.Refs));
+    }
+
+    /// <summary>What git ignores, for the watchers (a build's output doesn't refresh anything). Asked again when a .gitignore changes.</summary>
+    private async Task LoadIgnoredAsync()
+    {
+        if (_client is null || _disposed)
+            return;
+        try
+        {
+            RepositoryWatcher.SetIgnored(Path, await _client.GetIgnoredAsync());
+        }
+        catch (Exception ex) when (ex is not OutOfMemoryException)
+        {
+            // Without the list every change counts, as before: slower, never wrong.
+        }
     }
 
     /// <summary>Ctrl+K (JetBrains' Commit): shows Local Changes with the cursor in the commit message.</summary>
@@ -427,8 +482,19 @@ public sealed partial class RepositoryDocumentViewModel : DocumentViewModelBase,
         OpenDocument?.Invoke(DiffDocumentFactory.IdFor(Path, file.Change.Path, file.IsStagedSide));
 
     // Raised on a background thread; ViewModel properties must change on the UI thread.
-    private void OnRepositoryChanged(object? sender, EventArgs e) =>
-        Dispatcher.UIThread.Post(() => _ = RefreshAsync());
+    // The tab in front refreshes what can have changed; one in the background remembers it for when it's shown.
+    private void OnRepositoryChanged(object? sender, RepositoryChangedEventArgs e) =>
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (e.Change.HasFlag(RepositoryChange.Ignores))
+                _ = LoadIgnoredAsync();
+            if (!IsActive)
+            {
+                _stale |= e.Change;
+                return;
+            }
+            _ = RefreshAsync(everything: e.Change.HasFlag(RepositoryChange.Refs));
+        });
 
     public void Dispose()
     {

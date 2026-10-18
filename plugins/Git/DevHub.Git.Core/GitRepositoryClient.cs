@@ -53,15 +53,35 @@ public sealed partial class GitRepositoryClient(GitRunner runner, string reposit
         return StatusParser.Parse(result.StandardOutput);
     }
 
+    private string? _gitDir;
+
+    /// <summary>
+    /// What git ignores in the work tree, relative with "/" (folders end in "/" and stand for everything in them):
+    /// the repository watcher skips changes there (a build's <c>bin/</c>, <c>obj/</c>, <c>node_modules/</c>).
+    /// </summary>
+    public async Task<IReadOnlyList<string>> GetIgnoredAsync(CancellationToken ct = default)
+    {
+        var result = await runner.RunAsync(RepositoryPath,
+            ["ls-files", "--others", "--ignored", "--exclude-standard", "--directory", "-z"],
+            new GitRunOptions { ReadOnly = true, AllowFailure = true }, ct);
+        return result.Succeeded
+            ? result.StandardOutput.Split('\0', StringSplitOptions.RemoveEmptyEntries)
+            : [];
+    }
+
     /// <summary>
     /// Merge / rebase / cherry-pick / revert in progress, detected from the marker files git
     /// leaves in the .git folder (status --porcelain doesn't report it).
     /// </summary>
     public async Task<RepositoryOperation> GetOperationAsync(CancellationToken ct = default)
     {
-        var result = await runner.RunAsync(RepositoryPath, ["rev-parse", "--absolute-git-dir"],
-            new GitRunOptions { ReadOnly = true }, ct);
-        var gitDir = result.StandardOutput.Trim();
+        // The .git folder doesn't move: asked once (it used to be a git process per refresh).
+        if (_gitDir is not { } gitDir)
+        {
+            var result = await runner.RunAsync(RepositoryPath, ["rev-parse", "--absolute-git-dir"],
+                new GitRunOptions { ReadOnly = true }, ct);
+            gitDir = _gitDir = result.StandardOutput.Trim();
+        }
 
         if (Directory.Exists(Path.Combine(gitDir, "rebase-merge")) || Directory.Exists(Path.Combine(gitDir, "rebase-apply")))
             return RepositoryOperation.Rebasing;
