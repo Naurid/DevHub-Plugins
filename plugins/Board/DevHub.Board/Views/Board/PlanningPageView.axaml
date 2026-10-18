@@ -12,6 +12,10 @@
              x:Class="DevHub.Views.Board.PlanningPageView"
              x:DataType="vm:PlanningPageViewModel">
 
+    <UserControl.KeyBindings>
+        <KeyBinding Gesture="Escape" Command="{Binding ClearSelectionCommand}" />
+    </UserControl.KeyBindings>
+
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -99,6 +103,8 @@
                         </ItemsControl>
                         <Button Content="{l:T 'Edit Selected…'}" Command="{Binding BulkEditCommand}" Margin="{DynamicResource Margin.RowEnd}"
                                 ToolTip.Tip="{l:T 'Change a field of every selected issue (Ctrl+click, Shift+click to select)'}" />
+                        <Button Content="{l:T 'Clear Selection'}" Command="{Binding ClearSelectionCommand}" IsVisible="{Binding HasSelection}"
+                                Margin="{DynamicResource Margin.RowEnd}" ToolTip.Tip="{l:T 'Unselect every issue (Esc)'}" />
                         <Button Content="{Binding RankByValueText}" Command="{Binding RankByValueCommand}" IsVisible="{Binding CanRankByValue}"
                                 ToolTip.Tip="{l:T 'Order each list by this field, highest first (Undo in the board menu takes it back)'}" />
                     </WrapPanel>

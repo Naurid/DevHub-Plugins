@@ -320,7 +320,7 @@ public class DatabaseSampleTests
     public void Merise_sample_generates_tables_sqlite_accepts()
     {
         var model = new MeriseModel();
-        var mcd = model.Samples.Single().Create();
+        var mcd = model.Samples.First().Create();
         Assert.Empty(model.Check(mcd));
         var schema = Mld.ToSchema(mcd);
         Assert.Equal(4, schema.Tables.Count);       // Patient, Doctor, Department, consults
@@ -337,9 +337,67 @@ public class DatabaseSampleTests
     public void Erd_sample_has_its_relationships()
     {
         var model = new ErdModel();
-        var erd = model.Samples.Single().Create();
+        var erd = model.Samples.First().Create();
         Assert.Equal(4, erd.Nodes.Count);
         Assert.Equal(3, erd.Edges.Count);
         Assert.Empty(model.Check(erd));
+    }
+}
+
+public class DatabaseShowcaseTests
+{
+    private static void RunInSqlite(string sql)
+    {
+        SQLitePCL.Batteries.Init();
+        using var db = new SqliteConnection("Data Source=:memory:");
+        db.Open();
+        using var command = db.CreateCommand();
+        command.CommandText = "PRAGMA foreign_keys = ON;\n" + sql;
+        command.ExecuteNonQuery();
+    }
+
+    [Fact]
+    public void Merise_showcase_uses_every_rule()
+    {
+        var model = new MeriseModel();
+        var mcd = model.Samples.Last().Create();
+        Assert.DoesNotContain(model.Check(mcd), p => p.Severity != ProblemSeverity.Info);
+        var schema = Mld.ToSchema(mcd);
+        // Junction (n–n), ternary, a foreign key from 1–n, a reflexive one by role, the chosen 1–1 side.
+        Assert.Equal(["studentNumber", "courseCode"], schema.Table("enrols_in")!.PrimaryKey.Select(c => c.Name));
+        Assert.Equal(3, schema.Table("is_scheduled")!.PrimaryKey.Count);
+        Assert.Equal("Teacher", schema.Table("Course")!.Column("teacherId")!.RefTable);
+        Assert.NotNull(schema.Table("Teacher")!.Column("mentor_teacherId"));
+        Assert.True(schema.Table("Teacher")!.Column("officeCode")!.Unique);
+        foreach (var dialect in Enum.GetValues<SqlDialect>())
+            Assert.Contains("CREATE TABLE", SqlWriter.Write(schema, dialect));
+        RunInSqlite(SqlWriter.Write(schema, SqlDialect.Sqlite));
+    }
+
+    [Fact]
+    public void Erd_showcase_has_no_problems_and_runs()
+    {
+        var model = new ErdModel();
+        var erd = model.Samples.Last().Create();
+        Assert.Empty(model.Check(erd));
+        var schema = ErdModel.ToSchema(erd);
+        Assert.Equal(2, schema.Table("order_line")!.PrimaryKey.Count);
+        RunInSqlite(SqlWriter.Write(schema, SqlDialect.Sqlite));
+    }
+}
+
+public class DatabaseShowcaseCoverageTests
+{
+    [Fact]
+    public void Showcases_use_every_shape_and_line()
+    {
+        foreach (IDiagramKindModel model in new IDiagramKindModel[] { new MeriseModel(), new ErdModel() })
+        {
+            var d = model.Samples.Last().Create();
+            Assert.Empty(model.NodeTypes.Select(t => t.Type).Except(d.Nodes.Select(n => n.Type)));
+            Assert.Empty(model.EdgeTypes.Select(t => t.Type).Except(d.Edges.Select(e => e.Type)));
+        }
+        var ends = new ErdModel().Samples.Last().Create().Edges.SelectMany(e => new[] { e.Prop("fromEnd"), e.Prop("toEnd") }).ToHashSet();
+        Assert.Superset(ErdModel.Ends.ToHashSet(), ends);
     }
 }

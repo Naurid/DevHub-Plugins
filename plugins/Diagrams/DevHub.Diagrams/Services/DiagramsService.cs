@@ -82,6 +82,17 @@ public sealed class DiagramsService(IEnumerable<IDiagramKind> kinds, IServicePro
             diagram.Title = name;
             MeasureSurface.FitAll(diagram, kind);
             sample.Arrange?.Invoke(diagram).Apply(diagram);
+            if (sample.Assets.Count > 0)
+            {
+                var assets = DiagramFile.NameOf(path) + ".assets";
+                Directory.CreateDirectory(Path.Combine(folder, assets));
+                foreach (var (file, bytes) in sample.Assets)
+                    await File.WriteAllBytesAsync(Path.Combine(folder, assets, file), bytes);
+                foreach (var n in diagram.Nodes)
+                    foreach (var key in n.Props.Keys.ToList())
+                        if (n.Props[key].StartsWith(DiagramSample.AssetsToken, StringComparison.Ordinal))
+                            n.Props[key] = assets + "/" + n.Props[key][DiagramSample.AssetsToken.Length..];
+            }
         }
         if (projectFolder is not null)
             diagram.Project = ProjectLinks.Relative(path, projectFolder);

@@ -89,14 +89,45 @@ public abstract partial class PlanningPageViewModel : BoardPageViewModel, IItems
 
     private void OnListSelectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
-        if (_rebuilding || _filling)
+        if (_rebuilding || _filling || _clearing)
             return;
+        // One list at a time: selecting in a sprint drops what was selected in the others (a selection is what a drag
+        // or Edit Selected acts on, and those work on one list).
+        if (e.NewItems is { Count: > 0 } && sender is ObservableCollection<IssueItemViewModel> changed)
+            ClearLists(Lists.Where(l => !ReferenceEquals(l.Selected, changed)));
         OnPropertyChanged(nameof(SelectedIssues));
+        OnPropertyChanged(nameof(HasSelection));
         // The issue panel opens on a tap (Tap.Command in the row), not on selection: selection happens on press,
         // and opening the panel then would move the lists under a drag that's just starting.
     }
 
     private bool _filling;
+    private bool _clearing;
+
+    public bool HasSelection => Lists.Any(l => l.Selected.Count > 0);
+
+    /// <summary>Unselects every issue (Esc, or Clear Selection).</summary>
+    [RelayCommand]
+    private void ClearSelection()
+    {
+        ClearLists(Lists);
+        OnPropertyChanged(nameof(SelectedIssues));
+        OnPropertyChanged(nameof(HasSelection));
+    }
+
+    private void ClearLists(IEnumerable<IssueListViewModel> lists)
+    {
+        _clearing = true;
+        try
+        {
+            foreach (var list in lists.ToList())
+                list.Selected.Clear();
+        }
+        finally
+        {
+            _clearing = false;
+        }
+    }
 
     public override void Dispose()
     {

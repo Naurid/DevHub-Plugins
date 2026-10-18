@@ -5,6 +5,7 @@ using DevHub.Diagrams;
 using DevHub.Integration;
 using DevHub.Sdk.Core.Localization;
 using DevHub.Sdk.Core.Plugins;
+using DevHub.ViewModels.Dialogs.Settings;
 using DevHub.ViewModels.Documents;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -33,6 +34,7 @@ public sealed class DiagramsPlugin : IPlugin
         services.AddSingleton<IProjectDiagrams>(sp => sp.GetRequiredService<DiagramsService>());
         services.AddSingleton<IDocumentFactory, DiagramDocumentFactory>();
         services.AddSingleton<IActionProvider, DiagramActionProvider>();
+        services.AddTransient<SettingsPageViewModelBase, DiagramsSettingsPageViewModel>();
     }
 }
 

@@ -66,7 +66,7 @@ public sealed class UseCaseModel : IDiagramKindModel
 
     public IReadOnlyList<IDiagramTextExporter> TextExporters { get; } = [new UseCasePlantUml()];
 
-    public IReadOnlyList<DiagramSample> Samples => UmlSamples.UseCase;
+    public IReadOnlyList<DiagramSample> Samples => [.. UmlSamples.UseCase, .. UmlShowcase.UseCase];
 
     public Diagram Create(string title)
     {

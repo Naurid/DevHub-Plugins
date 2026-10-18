@@ -210,14 +210,13 @@ public sealed class MeriseKind : DiagramKindBase
 
     public override void DrawEdge(IDiagramSurface s, Diagram d, DiagramEdge e, IReadOnlyList<DPoint> path)
     {
-        if (e.Type != MeriseModel.Leg)
-        {
-            s.Polyline(path, PenOf(s, e, StrokeDash.Dashed));
-            return;
-        }
         if (path.Count < 2)
             return;
-        s.Polyline(path, PenOf(s, e));
+        var pen = PenOf(s, e, e.Type == MeriseModel.Leg ? StrokeDash.Solid : StrokeDash.Dashed);
+        s.Polyline(path, pen);
+        DrawEnds(s, e, path, LineEnd.None, LineEnd.None, pen.Color);
+        if (e.Type != MeriseModel.Leg)
+            return;
         // The cardinality sits by the entity, the role by the association.
         var entityAtStart = d.Node(e.From)?.Type == MeriseModel.Entity;
         EndLabel(s, e.Prop("card", "0,n"), path, atStart: entityAtStart, side: 1);
@@ -370,17 +369,26 @@ public sealed class ErdKind : DiagramKindBase
             return;
         if (e.Type != ErdModel.Relationship)
         {
-            s.Polyline(path, PenOf(s, e, StrokeDash.Dashed));
+            var note = PenOf(s, e, StrokeDash.Dashed);
+            s.Polyline(path, note);
+            DrawEnds(s, e, path, LineEnd.None, LineEnd.None, note.Color);
             return;
         }
         var pen = PenOf(s, e);
         s.Polyline(path, pen);
         if (Notation(d) == ErdModel.NotationMerise)
-            DrawEnd(s, path[^1], path[^2], LineEnd.Open, pen.Color);
+            DrawEnds(s, e, path, LineEnd.None, LineEnd.Open, pen.Color);
         else
         {
-            CrowsFoot(s, path[0], path[1], e.Prop("fromEnd", "zeroOrMany"), pen);
-            CrowsFoot(s, path[^1], path[^2], e.Prop("toEnd", "one"), pen);
+            // Crow's feet, unless an arrowhead was chosen for that end.
+            if (HasArrow(e, atStart: true))
+                DrawEnd(s, path[0], path[1], StartOf(e, LineEnd.None), pen.Color);
+            else
+                CrowsFoot(s, path[0], path[1], e.Prop("fromEnd", "zeroOrMany"), pen);
+            if (HasArrow(e, atStart: false))
+                DrawEnd(s, path[^1], path[^2], EndOf(e, LineEnd.None), pen.Color);
+            else
+                CrowsFoot(s, path[^1], path[^2], e.Prop("toEnd", "one"), pen);
         }
         if (e.Text.Length > 0)
             Label(s, e.Text, Routing.LabelPoint(path, e.LabelAt), 10.5, s.Style.MutedText, italic: true);

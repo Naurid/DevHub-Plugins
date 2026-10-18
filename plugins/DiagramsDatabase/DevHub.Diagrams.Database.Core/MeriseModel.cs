@@ -111,7 +111,7 @@ public sealed class MeriseModel : IDiagramKindModel
         new DataDictionaryExporter(),
     ];
 
-    public IReadOnlyList<DiagramSample> Samples => DatabaseSamples.Merise;
+    public IReadOnlyList<DiagramSample> Samples => [.. DatabaseSamples.Merise, .. DatabaseShowcase.Merise];
 
     public Diagram Create(string title)
     {

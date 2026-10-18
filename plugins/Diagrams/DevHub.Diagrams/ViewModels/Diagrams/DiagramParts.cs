@@ -64,6 +64,14 @@ public sealed partial class PropertyFieldViewModel : ObservableObject
         }
     }
 
+    /// <summary>The colour picker's swatches (built when the picker first opens).</summary>
+    public IReadOnlyList<ColorSwatch> Palette => _palette ??= ColorSwatch.Palette.Select(hex => new ColorSwatch(hex, v => Value = v)).ToList();
+    private IReadOnlyList<ColorSwatch>? _palette;
+
+    /// <summary>Back to the diagram's colour.</summary>
+    [RelayCommand]
+    private void ClearColor() => Value = "";
+
     /// <summary>The colour as a brush-friendly string (for the swatch next to a colour field).</summary>
     public string Swatch => Value.StartsWith('#') && (Value.Length == 7 || Value.Length == 9) ? Value : "#00000000";
 
@@ -137,4 +145,48 @@ public static class PenColors
 public static class ZoomLevels
 {
     public static string Text(double zoom) => L.T($"{Math.Round(zoom * 100)} %");
+}
+
+/// <summary>A colour in the picker: clicking it sets the field.</summary>
+public sealed class ColorSwatch(string hex, Action<string> pick)
+{
+    public string Hex { get; } = hex;
+    public RelayCommand PickCommand { get; } = new(() => pick(hex));
+    public override string ToString() => Hex;
+
+    /// <summary>12 hues from red round to pink, 5 shades each (light to dark), then a row of greys.</summary>
+    public static IReadOnlyList<string> Palette { get; } = Build();
+
+    private static List<string> Build()
+    {
+        var colours = new List<string>();
+        double[] lightness = [0.88, 0.72, 0.55, 0.42, 0.28];
+        foreach (var l in lightness)
+            for (var hue = 0; hue < 360; hue += 30)
+                colours.Add(Hsl(hue, l > 0.8 ? 0.7 : 0.75, l));
+        for (var i = 0; i < 12; i++)
+        {
+            var v = (int)Math.Round(255 * (1 - i / 11.0));
+            colours.Add($"#{v:X2}{v:X2}{v:X2}");
+        }
+        return colours;
+    }
+
+    private static string Hsl(double h, double s, double l)
+    {
+        var c = (1 - Math.Abs(2 * l - 1)) * s;
+        var x = c * (1 - Math.Abs(h / 60 % 2 - 1));
+        var m = l - c / 2;
+        var (r, g, b) = h switch
+        {
+            < 60 => (c, x, 0.0),
+            < 120 => (x, c, 0.0),
+            < 180 => (0.0, c, x),
+            < 240 => (0.0, x, c),
+            < 300 => (x, 0.0, c),
+            _ => (c, 0.0, x),
+        };
+        static int B(double v) => (int)Math.Round(Math.Clamp(v, 0, 1) * 255);
+        return $"#{B(r + m):X2}{B(g + m):X2}{B(b + m):X2}";
+    }
 }

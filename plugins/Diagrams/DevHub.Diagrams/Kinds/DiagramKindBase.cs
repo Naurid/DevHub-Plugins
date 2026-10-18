@@ -50,12 +50,58 @@ public abstract class DiagramKindBase : IDiagramKind
         new(L.T("Bold"), "bold", FieldKind.Toggle),
     ];
 
-    /// <summary>Colour and width of a line.</summary>
+    /// <summary>Colour, width, dash and arrowheads of a line (empty choices keep what the notation draws).</summary>
     public static IReadOnlyList<PropertyField> LineStyleFields { get; } =
     [
         new(L.T("Line colour"), "line", FieldKind.Color, L.T("Empty: the diagram's colour")),
         new(L.T("Line width"), "width", FieldKind.Number, "1.2"),
+        new(L.T("Dash"), "dash", FieldKind.Choice) { Choices = DashChoices },
+        new(L.T("Arrow at the start"), "startArrow", FieldKind.Choice) { Choices = ArrowChoices },
+        new(L.T("Arrow at the end"), "endArrow", FieldKind.Choice) { Choices = ArrowChoices },
     ];
+
+    public static IReadOnlyList<FieldChoice> DashChoices =>
+    [
+        new("", L.T("As the notation draws it")), new("solid", L.T("Solid")), new("dashed", L.T("Dashed")), new("dotted", L.T("Dotted")),
+    ];
+
+    public static IReadOnlyList<FieldChoice> ArrowChoices =>
+    [
+        new("", L.T("As the notation draws it")), new("none", L.T("None")), new("open", L.T("Open arrow")),
+        new("filled", L.T("Filled arrow")), new("hollow", L.T("Hollow triangle")), new("diamond", L.T("Hollow diamond")),
+        new("filledDiamond", L.T("Filled diamond")), new("circle", L.T("Circle")), new("cross", L.T("Cross")),
+    ];
+
+    /// <summary>The line's own arrowhead at its start, or <paramref name="notation"/> when it has none set.</summary>
+    public static LineEnd StartOf(DiagramEdge e, LineEnd notation) => ArrowOf(e.Prop("startArrow")) ?? notation;
+
+    /// <summary>The line's own arrowhead at its end, or <paramref name="notation"/> when it has none set.</summary>
+    public static LineEnd EndOf(DiagramEdge e, LineEnd notation) => ArrowOf(e.Prop("endArrow")) ?? notation;
+
+    /// <summary>Whether the user chose an arrowhead for that end (kinds drawing their own ends, like crow's feet, give way).</summary>
+    public static bool HasArrow(DiagramEdge e, bool atStart) => ArrowOf(e.Prop(atStart ? "startArrow" : "endArrow")) is not null;
+
+    private static LineEnd? ArrowOf(string value) => value switch
+    {
+        "none" => LineEnd.None,
+        "open" => LineEnd.Open,
+        "filled" => LineEnd.Filled,
+        "hollow" => LineEnd.Hollow,
+        "diamond" => LineEnd.HollowDiamond,
+        "filledDiamond" => LineEnd.FilledDiamond,
+        "circle" => LineEnd.Circle,
+        "cross" => LineEnd.Cross,
+        _ => null,
+    };
+
+    /// <summary>The line's own dash, or <paramref name="notation"/>.</summary>
+    public static StrokeDash DashOf(DiagramEdge e, StrokeDash notation) => e.Prop("dash") switch
+    {
+        "solid" => StrokeDash.Solid,
+        "dashed" => StrokeDash.Dashed,
+        "dotted" => StrokeDash.Dotted,
+        _ => notation,
+    };
 
     /// <summary>A shape's fill: its own, or <paramref name="fallback"/> (default: the diagram's).</summary>
     public static Color FillOf(IDiagramSurface s, DiagramNode n, Color? fallback = null) =>
@@ -77,7 +123,7 @@ public abstract class DiagramKindBase : IDiagramKind
     /// <summary>A line's pen: its own colour and width over the diagram's.</summary>
     public static DPen PenOf(IDiagramSurface s, DiagramEdge e, StrokeDash dash = StrokeDash.Solid) =>
         new(TryColor(e.Prop("line")) ?? s.Style.Line,
-            double.TryParse(e.Prop("width"), out var w) && w is > 0 and <= 20 ? w : 1.2, dash);
+            double.TryParse(e.Prop("width"), out var w) && w is > 0 and <= 20 ? w : 1.2, DashOf(e, dash));
 
     /// <summary>"#RRGGBB" (or #AARRGGBB, or a colour name) as a colour, or null.</summary>
     public static Color? TryColor(string text) =>
@@ -133,8 +179,8 @@ public abstract class DiagramKindBase : IDiagramKind
         var look = Look(edge);
         var pen = PenOf(s, edge, look.Dash);
         s.Polyline(path, pen);
-        DrawEnd(s, path[^1], path[^2], look.End, pen.Color);
-        DrawEnd(s, path[0], path[1], look.Start, pen.Color);
+        DrawEnd(s, path[^1], path[^2], EndOf(edge, look.End), pen.Color);
+        DrawEnd(s, path[0], path[1], StartOf(edge, look.Start), pen.Color);
         if (edge.Text.Length > 0)
             Label(s, edge.Text, Routing.LabelPoint(path, edge.LabelAt));
     }
@@ -173,6 +219,15 @@ public abstract class DiagramKindBase : IDiagramKind
     }
 
     /// <summary>An arrowhead or line end at <paramref name="tip"/>, pointing away from <paramref name="from"/>.</summary>
+    /// <summary>Both ends of a line: the notation's arrowheads unless the line has its own (Arrow at the start / end).</summary>
+    public static void DrawEnds(IDiagramSurface s, DiagramEdge e, IReadOnlyList<DPoint> path, LineEnd start, LineEnd end, Color color)
+    {
+        if (path.Count < 2)
+            return;
+        DrawEnd(s, path[^1], path[^2], EndOf(e, end), color);
+        DrawEnd(s, path[0], path[1], StartOf(e, start), color);
+    }
+
     public static void DrawEnd(IDiagramSurface s, DPoint tip, DPoint from, LineEnd end, Color? color = null)
     {
         if (end == LineEnd.None)

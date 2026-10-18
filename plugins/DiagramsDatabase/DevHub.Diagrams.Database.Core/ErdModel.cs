@@ -60,7 +60,7 @@ public sealed class ErdModel : IDiagramKindModel
         new ErdMldText(),
     ];
 
-    public IReadOnlyList<DiagramSample> Samples => DatabaseSamples.Erd;
+    public IReadOnlyList<DiagramSample> Samples => [.. DatabaseSamples.Erd, .. DatabaseShowcase.Erd];
 
     public Diagram Create(string title)
     {
