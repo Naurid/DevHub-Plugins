@@ -11,6 +11,9 @@
     <x:Double x:Key="Size.DiagramProblemsMax">140</x:Double>
     <x:Double x:Key="Size.DiagramSwatch">18</x:Double>
     <x:Double x:Key="Size.DiagramMultiline">120</x:Double>
+    <x:Double x:Key="Size.DiagramSliderValue">32</x:Double>
+    <Thickness x:Key="Padding.DiagramMember">6,4</Thickness>
+    <Thickness x:Key="Padding.DiagramRowButton">4,0</Thickness>
     <Thickness x:Key="Margin.DiagramMinimap">0,0,12,12</Thickness>
     <Thickness x:Key="Padding.DiagramPanel">10,8</Thickness>
     <Thickness x:Key="Margin.DiagramSection">0,8,0,0</Thickness>

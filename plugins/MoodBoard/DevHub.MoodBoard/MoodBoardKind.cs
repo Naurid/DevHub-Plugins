@@ -20,7 +20,7 @@ public sealed class MoodBoardKind : DiagramKindBase
     private const double MaxPictureSide = 320;
 
     public override IDiagramKindModel Model { get; } = new MoodBoardModel();
-    public override string IconKind => Icons.Palette;
+    public override string IconKind => KindIcon("moodboard");
     public override int Order => 90;
     public override bool HasPen => true;
 
@@ -36,8 +36,8 @@ public sealed class MoodBoardKind : DiagramKindBase
         [
             new(L.T("Caption"), "@text"),
             new(L.T("Picture file"), "src", Hint: L.T("Stored beside the board; drop or paste a picture to replace")),
-            new(L.T("Opacity (0–1)"), "opacity", FieldKind.Number) { Default = "1" },
-            new(L.T("Rounded corners"), "radius", FieldKind.Number) { Default = "0" },
+            new(L.T("Opacity"), "opacity", FieldKind.Number) { Default = "1", Minimum = 0.1, Maximum = 1, Step = 0.05 },
+            new(L.T("Rounded corners"), "radius", FieldKind.Number) { Default = "0", Minimum = 0, Maximum = 48, Step = 1 },
             new(L.T("Border"), "line", FieldKind.Color),
         ],
         MoodBoardModel.Swatch => [new(L.T("Name"), "@text"), new(L.T("Colour"), "color", FieldKind.Color, L.T("#RRGGBB"))],
@@ -45,12 +45,12 @@ public sealed class MoodBoardKind : DiagramKindBase
         MoodBoardModel.TextBox =>
         [
             new(L.T("Text"), "@text", FieldKind.MultilineText),
-            new(L.T("Text size"), "fontSize", FieldKind.Number) { Default = "16" },
+            new(L.T("Text size"), "fontSize", FieldKind.Number) { Default = "16", Minimum = 8, Maximum = 72, Step = 1 },
             new(L.T("Bold"), "bold", FieldKind.Toggle),
             new(L.T("Text colour"), "textColor", FieldKind.Color),
             new(L.T("Background"), "fill", FieldKind.Color),
         ],
-        MoodBoardModel.Stroke => [new(L.T("Colour"), "line", FieldKind.Color), new(L.T("Width"), "width", FieldKind.Number) { Default = "3" }],
+        MoodBoardModel.Stroke => [new(L.T("Colour"), "line", FieldKind.Color), new(L.T("Width"), "width", FieldKind.Number) { Default = "3", Minimum = 1, Maximum = 24, Step = 0.5 }],
         MoodBoardModel.Frame => [new(L.T("Title"), "@text"), .. StyleFields],
         _ => [new(L.T("Label"), "@text", FieldKind.MultilineText), .. StyleFields],
     };

@@ -23,6 +23,28 @@
         <KeyBinding Gesture="Ctrl+OemMinus" Command="{Binding ZoomOutCommand}" />
     </UserControl.KeyBindings>
 
+    <UserControl.Resources>
+        <!-- A cell of a member row (Rows fields): a text box, a box with suggestions, a drop-down or a check box. -->
+        <DataTemplate x:Key="RowCell" x:DataType="vm:RowCellViewModel">
+            <Panel Width="{Binding Width}" ToolTip.Tip="{Binding Label}">
+                <TextBox Text="{Binding Value, UpdateSourceTrigger=LostFocus}" IsVisible="{Binding IsText}"
+                         PlaceholderText="{Binding Placeholder}" AutomationProperties.Name="{Binding Label}" />
+                <AutoCompleteBox Text="{Binding Value, Mode=TwoWay}" ItemsSource="{Binding Suggestions}" IsVisible="{Binding IsSuggest}"
+                                 FilterMode="StartsWith" MinimumPrefixLength="0" PlaceholderText="{Binding Placeholder}"
+                                 AutomationProperties.Name="{Binding Label}" />
+                <ComboBox ItemsSource="{Binding Choices}" SelectedItem="{Binding Choice}" IsVisible="{Binding IsChoice}"
+                          HorizontalAlignment="Stretch" AutomationProperties.Name="{Binding Label}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="dg:FieldChoice">
+                            <TextBlock Text="{Binding Label}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <CheckBox Content="{Binding Label}" IsChecked="{Binding IsOn}" IsVisible="{Binding IsToggle}" />
+            </Panel>
+        </DataTemplate>
+    </UserControl.Resources>
+
     <UserControl.Styles>
         <Style Selector="Button.paletteItem">
             <Setter Property="HorizontalAlignment" Value="Stretch" />
@@ -254,6 +276,15 @@
                                                     <TextBlock Classes="secondary small" Text="{Binding Label}" IsVisible="{Binding !IsToggle}" />
                                                     <TextBox Text="{Binding Value, UpdateSourceTrigger=LostFocus}" IsVisible="{Binding IsText}"
                                                              PlaceholderText="{Binding Hint}" AutomationProperties.Name="{Binding Label}" />
+                                                    <!-- A number with a range (line width, text size): a slider, its value beside it. -->
+                                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing}" IsVisible="{Binding IsSlider}">
+                                                        <Slider Minimum="{Binding SliderMinimum}" Maximum="{Binding SliderMaximum}" Value="{Binding SliderValue}"
+                                                                SmallChange="{Binding SliderStep}" LargeChange="{Binding SliderStep}"
+                                                                TickFrequency="{Binding SliderStep}" IsSnapToTickEnabled="True"
+                                                                AutomationProperties.Name="{Binding Label}" />
+                                                        <TextBlock Grid.Column="1" Text="{Binding SliderText}" VerticalAlignment="Center"
+                                                                   MinWidth="{DynamicResource Size.DiagramSliderValue}" TextAlignment="Right" />
+                                                    </Grid>
                                                     <TextBox Text="{Binding Value, UpdateSourceTrigger=LostFocus}" IsVisible="{Binding IsNumber}"
                                                              PlaceholderText="{Binding Hint}" AutomationProperties.Name="{Binding Label}" />
                                                     <TextBox Classes="code" Text="{Binding Value, UpdateSourceTrigger=LostFocus}" IsVisible="{Binding IsMultiline}"
@@ -271,6 +302,44 @@
                                                         </ComboBox.ItemTemplate>
                                                     </ComboBox>
                                                     <CheckBox Content="{Binding Label}" IsChecked="{Binding IsOn}" IsVisible="{Binding IsToggle}" />
+                                                    <!-- Rows (class attributes, operations): one small form per row; a drop-down for the
+                                                         visibility, a box with suggestions for the type, check boxes for static and
+                                                         abstract. Saved back as the same text lines. -->
+                                                    <StackPanel Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding IsRows}">
+                                                        <ItemsControl ItemsSource="{Binding Rows}">
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate x:DataType="vm:RowItemViewModel">
+                                                                    <Border Margin="{DynamicResource Margin.ListGap}" Padding="{DynamicResource Padding.DiagramMember}"
+                                                                            CornerRadius="{DynamicResource Radius.Control}" BorderThickness="1"
+                                                                            BorderBrush="{DynamicResource Brush.Border.Control}">
+                                                                        <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                                                                            <!-- Top line: the first cell (the visibility) and the row's buttons. -->
+                                                                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}">
+                                                                                <ContentControl Content="{Binding Header}" ContentTemplate="{StaticResource RowCell}"
+                                                                                                HorizontalContentAlignment="Stretch" />
+                                                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                                                    <Button Classes="flat" Padding="{DynamicResource Padding.DiagramRowButton}" Content="↑" Command="{Binding UpCommand}"
+                                                                                            ToolTip.Tip="{l:T 'Move up'}" AutomationProperties.Name="{l:T 'Move up'}" />
+                                                                                    <Button Classes="flat" Padding="{DynamicResource Padding.DiagramRowButton}" Content="↓" Command="{Binding DownCommand}"
+                                                                                            ToolTip.Tip="{l:T 'Move down'}" AutomationProperties.Name="{l:T 'Move down'}" />
+                                                                                    <c:ActionButton IconKind="close" Command="{Binding RemoveCommand}"
+                                                                                                    ToolTip.Tip="{l:T 'Remove'}" AutomationProperties.Name="{l:T 'Remove'}" />
+                                                                                </StackPanel>
+                                                                            </Grid>
+                                                                            <ItemsControl ItemsSource="{Binding Rest}" ItemTemplate="{StaticResource RowCell}">
+                                                                                <ItemsControl.ItemsPanel>
+                                                                                    <ItemsPanelTemplate>
+                                                                                        <WrapPanel ItemSpacing="{DynamicResource Spacing.Small}" LineSpacing="{DynamicResource Spacing.Small}" />
+                                                                                    </ItemsPanelTemplate>
+                                                                                </ItemsControl.ItemsPanel>
+                                                                            </ItemsControl>
+                                                                        </StackPanel>
+                                                                    </Border>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+                                                        <Button Classes="flat" HorizontalAlignment="Left" Content="{Binding AddRowText}" Command="{Binding AddRowCommand}" />
+                                                    </StackPanel>
                                                     <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Spacing}" IsVisible="{Binding IsColor}">
                                                         <!-- The swatch opens the colour picker: a palette, the code, back to the default. -->
                                                         <Button Classes="flat" Padding="2" ToolTip.Tip="{l:T 'Choose a colour'}"

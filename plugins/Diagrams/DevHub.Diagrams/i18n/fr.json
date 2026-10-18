@@ -186,5 +186,8 @@
   "Where images go": "Où vont les images",
   "Every diagram image goes here, named after the diagram.": "Toutes les images de diagrammes vont ici, au nom du diagramme.",
   "Subfolder": "Sous-dossier",
-  "A folder inside the diagram folder, e.g. images. Empty: right next to the diagram.": "Un dossier dans celui du diagramme, par ex. images. Vide\u00A0: juste à côté du diagramme."
+  "A folder inside the diagram folder, e.g. images. Empty: right next to the diagram.": "Un dossier dans celui du diagramme, par ex. images. Vide\u00A0: juste à côté du diagramme.",
+  "Move up": "Monter",
+  "Move down": "Descendre",
+  "Remove": "Retirer"
 }

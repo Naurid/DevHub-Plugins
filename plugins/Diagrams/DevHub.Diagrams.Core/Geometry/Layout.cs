@@ -105,6 +105,33 @@ public static class Layout
         return null;
     }
 
+    /// <summary>
+    /// What a click at <paramref name="p"/> lands on, in the order the diagram is drawn: a shape, then a line, then the
+    /// innermost container (a package, a boundary, a lane): lines inside a container are picked before the container.
+    /// </summary>
+    public static (DiagramNode? Node, DiagramEdge? Edge) HitAt(Diagram diagram, DPoint p, Func<DiagramNode, NodeShape> shapeOf,
+        Func<DiagramNode, bool> isContainer, Func<DiagramEdge, IReadOnlyList<DPoint>> pathOf, double tolerance)
+    {
+        if (NodeAt(diagram, p, shapeOf, isContainer) is { } shape)
+            return (shape, null);
+        if (EdgeAt(diagram, p, pathOf, tolerance) is { } edge)
+            return (null, edge);
+        DiagramNode? inner = null;
+        var innerDepth = -1;
+        foreach (var n in diagram.Nodes.Where(isContainer))
+        {
+            if (!Shapes.Hit(shapeOf(n), n.Bounds, p))
+                continue;
+            var depth = 0;
+            var seen = new HashSet<string>();
+            for (var parent = n.ParentId; parent is not null && seen.Add(parent); parent = diagram.Node(parent)?.ParentId)
+                depth++;
+            if (depth >= innerDepth)
+                (inner, innerDepth) = (n, depth);
+        }
+        return (inner, null);
+    }
+
     /// <summary>The line nearest a point within <paramref name="tolerance"/>, or null.</summary>
     public static DiagramEdge? EdgeAt(Diagram diagram, DPoint p, Func<DiagramEdge, IReadOnlyList<DPoint>> pathOf, double tolerance = 5)
     {

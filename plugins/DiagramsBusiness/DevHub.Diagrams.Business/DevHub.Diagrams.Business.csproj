@@ -9,6 +9,11 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <!-- The diagram kinds' icons (light and _dark). -->
+        <AvaloniaResource Include="Assets/**" />
+    </ItemGroup>
+
+    <ItemGroup>
         <ProjectReference Include="..\..\Diagrams\DevHub.Diagrams\DevHub.Diagrams.csproj" />
         <ProjectReference Include="..\DevHub.Diagrams.Business.Core\DevHub.Diagrams.Business.Core.csproj" />
     </ItemGroup>

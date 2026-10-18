@@ -37,7 +37,7 @@ public static class DiagramRenderer
         {
             if (hidden?.Contains(e.Id) == true)
                 continue;
-            kind.DrawEdge(s, diagram, e, kind.Model.PathOf(diagram, e));
+            kind.DrawEdge(TextColorSurface.For(s, e.Props), diagram, e, kind.Model.PathOf(diagram, e));
         }
 
         foreach (var n in diagram.Nodes)
@@ -58,7 +58,7 @@ public static class DiagramRenderer
     public static void DrawNode(IDiagramSurface s, Diagram diagram, IDiagramKind kind, DiagramNode n)
     {
         using (s.Rotate(n.Center, n.Rotation))
-            kind.DrawNode(s, diagram, n);
+            kind.DrawNode(TextColorSurface.For(s, n.Props), diagram, n);
     }
 
     /// <summary>"SHOP-12" in a pill at the shape's top right, coloured by the issue's status.</summary>

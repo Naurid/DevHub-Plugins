@@ -6,7 +6,7 @@ using DevHub.Services;
 namespace DevHub.Diagrams;
 
 /// <summary>What a property field edits (the properties panel shows the matching editor).</summary>
-public enum FieldKind { Text, MultilineText, Choice, Toggle, Color, Number }
+public enum FieldKind { Text, MultilineText, Choice, Toggle, Color, Number, Rows }
 
 /// <summary>An option of a choice field: stored <paramref name="Value"/>, shown <paramref name="Label"/> (translated).</summary>
 public sealed record FieldChoice(string Value, string Label);
@@ -21,6 +21,48 @@ public sealed record PropertyField(string Label, string Key, FieldKind Kind = Fi
 
     /// <summary>The value when the detail isn't set.</summary>
     public string Default { get; init; } = "";
+
+    /// <summary>A number field with <see cref="Maximum"/> above <see cref="Minimum"/> is a slider.</summary>
+    public double Minimum { get; init; }
+
+    public double Maximum { get; init; }
+
+    /// <summary>The slider's step (0: any value).</summary>
+    public double Step { get; init; }
+
+    /// <summary>With <see cref="FieldKind.Rows"/>: how the text splits into rows of cells (class attributes: visibility,
+    /// name, type, static…), edited as a small form per row and stored back as the same text.</summary>
+    public IRowCodec? Rows { get; init; }
+}
+
+/// <summary>A cell of a row in a <see cref="FieldKind.Rows"/> field.</summary>
+/// <param name="Kind">Text, Choice (a drop-down), Toggle (a check box) or Number.</param>
+/// <param name="Width">Its width in the row (0: the rest of the line).</param>
+public sealed record RowColumn(string Key, string Label, FieldKind Kind = FieldKind.Text, double Width = 0)
+{
+    public IReadOnlyList<FieldChoice> Choices { get; init; } = [];
+
+    /// <summary>Values offered while typing (types: int, String … and the diagram's classes).</summary>
+    public Func<Diagram, IReadOnlyList<string>>? Suggestions { get; init; }
+
+    /// <summary>Shown in the empty box.</summary>
+    public string Placeholder { get; init; } = "";
+}
+
+/// <summary>Turns a field's text into rows of cells and back (one line per row).</summary>
+public interface IRowCodec
+{
+    IReadOnlyList<RowColumn> Columns { get; }
+
+    /// <summary>"Add …" (the button under the rows).</summary>
+    string AddText { get; }
+
+    /// <summary>The cells of a new row.</summary>
+    IReadOnlyDictionary<string, string> NewRow();
+
+    IReadOnlyList<IReadOnlyDictionary<string, string>> Parse(string text);
+
+    string Format(IEnumerable<IReadOnlyDictionary<string, string>> rows);
 }
 
 /// <summary>A command a kind adds to the editor's toolbar / menu ("Generate MLD", "Palette from Image").</summary>
