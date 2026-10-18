@@ -7,7 +7,7 @@ DevHub's text is English with French translations (`L` in `DevHub.Sdk.Core.Local
 
 ```
 dotnet run --project tools/I18n -- keys src          # add new keys to each project's i18n/fr.json (empty French)
-dotnet run --project tools/I18n -- check src         # fail on a key without French, or French missing a {0}
+dotnet run --project tools/I18n -- check src         # fail on a key without French, French missing a {0}, or a translated id
 ```
 
 A folder with a `.csproj` is one project; any other folder means every project under it (tests and tools left out).

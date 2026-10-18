@@ -49,6 +49,7 @@ foreach (var project in projects)
             break;
         case "check":
             failed |= !Keys.Check(project);
+            failed |= !CSharp.CheckIds(project);
             break;
         case "export":
             Keys.Export(project);
@@ -112,6 +113,37 @@ static class CSharp
         "ArgumentException", "ArgumentNullException", "ArgumentOutOfRangeException", "InvalidOperationException",
         "NotSupportedException", "NotImplementedException", "KeyNotFoundException", "UnreachableException", "ObjectDisposedException",
     ];
+
+    // Members that are ids: saved in settings or built into other ids, so they must read the same in every language.
+    private static readonly HashSet<string> IdMembers = ["Id", "IdPrefix", "SectionId"];
+
+    /// <summary>Fails on an id that goes through L.T (a tool window's Id, an action's id): it would change with the language.</summary>
+    public static bool CheckIds(string project)
+    {
+        var ok = true;
+        foreach (var file in Files.Sources(project, ".cs"))
+        {
+            var tree = CSharpSyntaxTree.ParseText(File.ReadAllText(file), path: file);
+            foreach (var node in tree.GetRoot().DescendantNodes())
+            {
+                SyntaxNode? value = node switch
+                {
+                    PropertyDeclarationSyntax p when IdMembers.Contains(p.Identifier.Text) => (SyntaxNode?)p.ExpressionBody ?? p.AccessorList,
+                    ObjectCreationExpressionSyntax { Type: var t, ArgumentList.Arguments: [var first, ..] } when t.ToString() == "AppAction" => first,
+                    _ => null,
+                };
+                if (value?.DescendantNodesAndSelf().OfType<InvocationExpressionSyntax>().FirstOrDefault(IsTranslation) is not { } call)
+                    continue;
+                var line = call.GetLocation().GetLineSpan().StartLinePosition;
+                Console.WriteLine($"{Files.Rel(file)}:{line.Line + 1}: an id is translated ({call}): ids are saved and must not change with the language");
+                ok = false;
+            }
+        }
+        return ok;
+    }
+
+    private static bool IsTranslation(InvocationExpressionSyntax call) =>
+        call.Expression is MemberAccessExpressionSyntax { Expression: IdentifierNameSyntax { Identifier.Text: "L" }, Name.Identifier.Text: "T" or "F" };
 
     public static IEnumerable<Candidate> Candidates(string project)
     {
