@@ -52,7 +52,7 @@ public sealed class StateModel : IDiagramKindModel
 
     public IReadOnlyList<IDiagramTextExporter> TextExporters { get; } = [new StatePlantUml(), new StateMermaid()];
 
-    public IReadOnlyList<DiagramSample> Samples => UmlSamples.State;
+    public IReadOnlyList<DiagramSample> Samples => [.. UmlSamples.State, .. UmlShowcase.State];
 
     public Diagram Create(string title)
     {
@@ -247,6 +247,8 @@ public sealed class StructureModel(string kind) : IDiagramKindModel
     public IReadOnlyList<IDiagramRule> Rules { get; } = [];
 
     public IReadOnlyList<IDiagramTextExporter> TextExporters => [new StructurePlantUml()];
+
+    public IReadOnlyList<DiagramSample> Samples => UmlShowcase.Structure(kind);
 
     public Diagram Create(string title) => new() { Kind = kind, Title = title };
 }

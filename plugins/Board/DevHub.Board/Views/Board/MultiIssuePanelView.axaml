@@ -1,0 +1,54 @@
+<!--
+  The issue panel with several issues selected: the fields bulk edit can change, each showing the shared value or
+  "—" where the issues differ. Drop-downs apply at once; text fields when they lose focus.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
+             xmlns:vm="using:DevHub.ViewModels.Board"
+             xmlns:dlg="using:DevHub.ViewModels.Dialogs"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Board.MultiIssuePanelView"
+             x:DataType="vm:MultiIssuePanelViewModel">
+    <DockPanel>
+        <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" Margin="{DynamicResource Padding.BoardHeader}">
+            <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                <TextBlock Text="{Binding Title}" FontWeight="SemiBold" FontSize="{DynamicResource FontSize.Header}" />
+                <TextBlock Classes="small secondary" Text="{Binding Keys}" TextWrapping="Wrap" />
+            </StackPanel>
+            <c:ActionButton Grid.Column="1" IconKind="close" VerticalAlignment="Top" Command="{Binding CloseCommand}"
+                            ToolTip.Tip="{l:T 'Close'}" AutomationProperties.Name="{l:T 'Close the panel'}" />
+        </Grid>
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Spacing="{DynamicResource Spacing}" Margin="{DynamicResource Padding.BoardHeader}">
+                <TextBlock Classes="small secondary" TextWrapping="Wrap"
+                           Text="{l:T 'A change here applies to every selected issue (one Undo). — means the issues differ; leaving it keeps each one as it is.'}" />
+                <ItemsControl ItemsSource="{Binding Fields}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:MultiFieldViewModel">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Spacing}"
+                                  Margin="{DynamicResource Margin.ListGap}" ToolTip.Tip="{Binding Hint}">
+                                <TextBlock Classes="secondary" Text="{Binding Label}" VerticalAlignment="Center" Width="{DynamicResource Size.IssueFieldLabel}" TextTrimming="CharacterEllipsis" />
+                                <ComboBox Grid.Column="1" ItemsSource="{Binding Choices}" SelectedItem="{Binding Choice}" IsVisible="{Binding IsChoice}"
+                                          HorizontalAlignment="Stretch" AutomationProperties.Name="{Binding Label}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate x:DataType="dlg:NamedItem">
+                                            <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                                <TextBox Grid.Column="1" Text="{Binding Text, UpdateSourceTrigger=LostFocus}" IsVisible="{Binding IsText}"
+                                         PlaceholderText="{Binding Placeholder}" AutomationProperties.Name="{Binding Label}" />
+                                <TextBox Grid.Column="1" Text="{Binding Text, UpdateSourceTrigger=LostFocus}" IsVisible="{Binding IsMultiline}"
+                                         AcceptsReturn="True" TextWrapping="Wrap" MinHeight="{DynamicResource Size.DescriptionEditor}"
+                                         PlaceholderText="{Binding Placeholder}" AutomationProperties.Name="{Binding Label}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Button Classes="flat" HorizontalAlignment="Left" Content="{l:T 'More Changes…'}" Command="{Binding MoreChangesCommand}"
+                        ToolTip.Tip="{l:T 'Add labels or acceptance criteria, tick the Definition of Done'}" />
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>

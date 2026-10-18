@@ -1,0 +1,35 @@
+<!-- Settings → Diagrams: where exported images go. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
+             xmlns:vm="using:DevHub.ViewModels.Dialogs.Settings"
+             xmlns:dg="using:DevHub.Diagrams"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Dialogs.Settings.DiagramsSettingsPageView"
+             x:DataType="vm:DiagramsSettingsPageViewModel">
+    <StackPanel Spacing="{DynamicResource Spacing}">
+        <TextBlock Classes="header" Text="{l:T 'Exported images'}" />
+        <c:SettingsRow Label="{l:T 'Save as PNG / SVG puts them'}"
+                       Description="{l:T 'Copy Image and the text exports are not affected.'}">
+            <ComboBox ItemsSource="{Binding Places}" SelectedItem="{Binding Place}" HorizontalAlignment="Stretch"
+                      AutomationProperties.Name="{l:T 'Where images go'}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="dg:FieldChoice">
+                        <TextBlock Text="{Binding Label}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </c:SettingsRow>
+        <c:SettingsRow Label="{l:T 'Folder'}" Description="{l:T 'Every diagram image goes here, named after the diagram.'}" IsVisible="{Binding IsFolder}">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}">
+                <TextBox Text="{Binding ExportFolder}" AutomationProperties.Name="{l:T 'Folder'}" />
+                <Button Grid.Column="1" Content="{l:T 'Browse…'}" Command="{Binding BrowseCommand}" />
+            </Grid>
+        </c:SettingsRow>
+        <c:SettingsRow Label="{l:T 'Subfolder'}" Description="{l:T 'A folder inside the diagram folder, e.g. images. Empty: right next to the diagram.'}"
+                       IsVisible="{Binding IsBeside}">
+            <TextBox Text="{Binding BesideSubfolder}" PlaceholderText="images" AutomationProperties.Name="{l:T 'Subfolder'}" />
+        </c:SettingsRow>
+        <TextBlock Classes="small secondary" Text="{Binding WhereText}" TextWrapping="Wrap" />
+    </StackPanel>
+</UserControl>

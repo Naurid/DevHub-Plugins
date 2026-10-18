@@ -241,3 +241,23 @@ public class DiagramCoreTests
         }
     }
 }
+
+public class DiagramsSettingsTests
+{
+    [Fact]
+    public void Exported_images_go_where_the_settings_say()
+    {
+        var diagram = Path.Combine("C:", "Shop", "docs", "diagrams", "Login" + DiagramFile.Extension);
+        Assert.Null(new DiagramsSettings().TargetFor(diagram, "Login", "png"));
+        Assert.Equal(Path.Combine("C:", "Shop", "docs", "diagrams", "Login.png"),
+            new DiagramsSettings { ExportPlace = ExportPlace.BesideDiagram }.TargetFor(diagram, "Login", "png"));
+        Assert.Equal(Path.Combine("C:", "Shop", "docs", "diagrams", "images", "Login.svg"),
+            new DiagramsSettings { ExportPlace = ExportPlace.BesideDiagram, BesideSubfolder = "images" }.TargetFor(diagram, "Login", "svg"));
+        // Characters a file name can't hold are dropped.
+        Assert.Equal(Path.Combine("D:", "Pictures", "Login.png"),
+            new DiagramsSettings { ExportPlace = ExportPlace.Folder, ExportFolder = Path.Combine("D:", "Pictures") }.TargetFor(diagram, "Log:in", "png"));
+        // A folder setting without a folder, or an unsaved diagram beside nothing, falls back to asking.
+        Assert.Null(new DiagramsSettings { ExportPlace = ExportPlace.Folder }.TargetFor(diagram, "Login", "png"));
+        Assert.Null(new DiagramsSettings { ExportPlace = ExportPlace.BesideDiagram }.TargetFor(null, "Login", "png"));
+    }
+}

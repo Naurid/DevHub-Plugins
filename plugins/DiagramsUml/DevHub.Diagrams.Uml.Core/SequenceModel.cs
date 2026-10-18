@@ -60,7 +60,7 @@ public sealed class SequenceModel : IDiagramKindModel
 
     public IReadOnlyList<IDiagramTextExporter> TextExporters { get; } = [new SequencePlantUml(), new SequenceMermaid()];
 
-    public IReadOnlyList<DiagramSample> Samples => UmlSamples.Sequence;
+    public IReadOnlyList<DiagramSample> Samples => [.. UmlSamples.Sequence, .. UmlShowcase.Sequence];
 
     public Diagram Create(string title) => new() { Kind = KindId, Title = title };
 

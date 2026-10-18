@@ -524,6 +524,9 @@ public sealed partial class BulkEditDialogViewModel : DialogViewModelBase
             .. (context.Snapshot.Sprints.Count > 0 ? [new NamedItem(IssueFields.Sprint, L.T("Sprint"))] : Array.Empty<NamedItem>()),
             new NamedItem(IssueFields.FixVersions, L.T("Fix versions")), new NamedItem(IssueFields.Components, L.T("Components")),
             new NamedItem(IssueFields.Start, L.T("Start date")), new NamedItem(IssueFields.Due, L.T("Due date")),
+            new NamedItem(IssueFields.OriginalEstimate, L.T("Original estimate")), new NamedItem(IssueFields.RemainingEstimate, L.T("Remaining estimate")),
+            new NamedItem(IssueFields.Reporter, L.T("Reporter")), new NamedItem(IssueFields.Description, L.T("Description (replace)")),
+            .. project.CustomFields.Select(f => new NamedItem(IssueFields.Custom(f.Id), f.Name)),
         ];
         _field = Fields[0];
         UpdateChoices();
@@ -547,12 +550,30 @@ public sealed partial class BulkEditDialogViewModel : DialogViewModelBase
 
     partial void OnFieldChanged(NamedItem value) => UpdateChoices();
 
-    private void UpdateChoices()
+    /// <summary>The bulk edit's field id for the status (it isn't an issue field: it moves issues through the workflow).</summary>
+    public const string Status = StatusField;
+
+    /// <summary>
+    /// Sets one field on the issues, as the dialog would: the same rules, one Undo. Used by the issue panel's
+    /// multi-selection view. False (and <see cref="Error"/> set) when it can't.
+    /// </summary>
+    public async Task<bool> ApplyFieldAsync(string fieldId, string? choiceId, string text)
     {
-        var snapshot = _context.Snapshot;
+        if (Fields.FirstOrDefault(f => f.Id == fieldId) is not { } field)
+            return false;
+        Field = field;
+        if (ShowChoices)
+            Choice = Choices.FirstOrDefault(c => c.Id == choiceId);
+        Text = text;
+        return await ApplyChangesAsync();
+    }
+
+    /// <summary>The choices a field offers (empty for a typed field).</summary>
+    public static IReadOnlyList<NamedItem> ChoicesFor(BoardContext context, string fieldId)
+    {
+        var snapshot = context.Snapshot;
         var project = snapshot.Project;
-        Choices.Clear();
-        IEnumerable<NamedItem> items = Field.Id switch
+        IEnumerable<NamedItem> items = fieldId switch
         {
             StatusField => project.Statuses.Select(s => new NamedItem(s.Id, s.Name)),
             IssueFields.Type => project.IssueTypes.Select(t => new NamedItem(t.Id, t.Name)),
@@ -562,28 +583,49 @@ public sealed partial class BulkEditDialogViewModel : DialogViewModelBase
                 .OrderBy(i => i.Rank, StringComparer.Ordinal).Select(i => new NamedItem(i.Id, $"{i.Key} {i.Summary}"))],
             IssueFields.Sprint => [new NamedItem(null, L.T("Backlog")), .. snapshot.Sprints.Values.Where(s => s.State != SprintState.Closed)
                 .OrderBy(s => s.Sequence).Select(s => new NamedItem(s.Id, s.Name))],
+            IssueFields.Reporter => [new NamedItem(null, L.T("Nobody")), .. project.People.Select(NamedItem.Person)],
             DoneField => [new NamedItem("tick", L.T("Tick every item")), new NamedItem("clear", L.T("Clear every tick"))],
+            _ when CustomOf(context, fieldId) is { Type: FieldType.Select } select =>
+                [new NamedItem(null, L.T("None")), .. select.Options.Select(o => new NamedItem(o, o))],
+            _ when CustomOf(context, fieldId) is { Type: FieldType.Person } =>
+                [new NamedItem(null, L.T("Nobody")), .. project.People.Select(NamedItem.Person)],
             _ => [],
         };
-        foreach (var item in items)
+        return items.ToList();
+    }
+
+    /// <summary>How to fill a field in (the tooltip / hint under it).</summary>
+    public static string HintFor(string fieldId) => fieldId switch
+    {
+        StatusField => L.T("Issues whose workflow doesn't allow the move stay where they are."),
+        IssueFields.Type => L.T("A type of the same level (story, task, bug…); an epic stays an epic."),
+        IssueFields.StoryPoints => L.T("A number; empty clears it."),
+        AddCriteriaField => L.T("One criterion per line; added to every selected issue, after the ones it has."),
+        DoneField => L.T("Ticks or clears the Definition of Done items on every selected issue (not epics or sub-tasks)."),
+        AddLabelsField => L.T("Labels separated by spaces, added to the ones each issue has."),
+        IssueFields.Labels => L.T("Labels separated by spaces, replacing the ones each issue has; empty clears them."),
+        IssueFields.FixVersions => L.T("Version names separated by commas; empty clears them."),
+        IssueFields.Components => L.T("Component names separated by commas; empty clears them."),
+        IssueFields.Start or IssueFields.Due => L.T("A date like 2026-10-31; empty clears it."),
+        IssueFields.OriginalEstimate or IssueFields.RemainingEstimate => L.T("Time like 2h, 1d 4h, 30m or 0; empty clears it."),
+        IssueFields.Description => L.T("Replaces the description of every selected issue; empty clears it."),
+        _ when fieldId.StartsWith(IssueFields.CustomPrefix, StringComparison.Ordinal) => L.T("Empty clears it."),
+        _ => "",
+    };
+
+    /// <summary>The custom field a bulk field id names, or null.</summary>
+    public static FieldDefinition? CustomOf(BoardContext context, string fieldId) =>
+        fieldId.StartsWith(IssueFields.CustomPrefix, StringComparison.Ordinal) ? context.Project.CustomField(fieldId[IssueFields.CustomPrefix.Length..]) : null;
+
+    private void UpdateChoices()
+    {
+        Choices.Clear();
+        foreach (var item in ChoicesFor(_context, Field.Id!))
             Choices.Add(item);
         ShowChoices = Choices.Count > 0;
-        MultiLine = Field.Id == AddCriteriaField;
+        MultiLine = Field.Id is AddCriteriaField or IssueFields.Description;
         Choice = Choices.FirstOrDefault();
-        Hint = Field.Id switch
-        {
-            StatusField => L.T("Issues whose workflow doesn't allow the move stay where they are."),
-            IssueFields.Type => L.T("A type of the same level (story, task, bug…); an epic stays an epic."),
-            IssueFields.StoryPoints => L.T("A number; empty clears it."),
-            AddCriteriaField => L.T("One criterion per line; added to every selected issue, after the ones it has."),
-            DoneField => L.T("Ticks or clears the Definition of Done items on every selected issue (not epics or sub-tasks)."),
-            AddLabelsField => L.T("Labels separated by spaces, added to the ones each issue has."),
-            IssueFields.Labels => L.T("Labels separated by spaces, replacing the ones each issue has; empty clears them."),
-            IssueFields.FixVersions => L.T("Version names separated by commas; empty clears them."),
-            IssueFields.Components => L.T("Component names separated by commas; empty clears them."),
-            IssueFields.Start or IssueFields.Due => L.T("A date like 2026-10-31; empty clears it."),
-            _ => "",
-        };
+        Hint = HintFor(Field.Id!);
     }
 
     protected override async Task<bool> ApplyChangesAsync()
@@ -709,6 +751,32 @@ public sealed partial class BulkEditDialogViewModel : DialogViewModelBase
                     return new FieldValue.Date(date);
                 Error = L.T("A date looks like 2026-10-31.");
                 return null;
+            case IssueFields.OriginalEstimate:
+            case IssueFields.RemainingEstimate:
+                if (text.Length == 0)
+                    return new FieldValue.Minutes(null);
+                if (text is "0" or "0m" or "0h")
+                    return new FieldValue.Minutes(0);
+                if (WorkDuration.TryParse(text, _context.Project.Settings, out var minutes))
+                    return new FieldValue.Minutes(minutes);
+                Error = L.T("A time looks like 2h, 1d 4h, 30m or 0.");
+                return null;
+            case IssueFields.Description:
+                return new FieldValue.Text(Text.Length == 0 ? null : Text);
+            case { } custom when CustomOf(_context, custom) is { Type: not (FieldType.Select or FieldType.Person) } definition:
+                if (text.Length == 0)
+                    return new FieldValue.Text(null);
+                if (definition.Type == FieldType.Number && !double.TryParse(text.Replace(',', '.'), NumberStyles.Float, CultureInfo.InvariantCulture, out _))
+                {
+                    Error = L.T($"{definition.Name} is a number.");
+                    return null;
+                }
+                if (definition.Type == FieldType.Date && !DateOnly.TryParseExact(text, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
+                {
+                    Error = L.T("A date looks like 2026-10-31.");
+                    return null;
+                }
+                return new FieldValue.Text(text);
             default:
                 return new FieldValue.Text(Choice?.Id);
         }

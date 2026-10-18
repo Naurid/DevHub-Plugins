@@ -170,6 +170,14 @@ public sealed record DiagramSample(string Name, string Description, Func<Diagram
 {
     /// <summary>Lays the sample out again once its shapes are sized to their text (a mind map's tree), or null.</summary>
     public Func<Diagram, IDiagramOperation>? Arrange { get; init; }
+
+    /// <summary>
+    /// Files the sample needs (pictures), by file name: written to <c>&lt;diagram&gt;.assets/</c> beside it; a <c>src</c>
+    /// starting with <c>{assets}/</c> points there.
+    /// </summary>
+    public IReadOnlyDictionary<string, byte[]> Assets { get; init; } = new Dictionary<string, byte[]>();
+
+    public const string AssetsToken = "{assets}/";
 }
 
 /// <summary>Writes a sample diagram in a few lines: shapes by centre or box, lines by type (refused lines throw).</summary>

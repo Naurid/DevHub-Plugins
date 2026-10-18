@@ -436,7 +436,9 @@ public sealed class MindMapKind : DiagramKindBase
             var u = 1 - t;
             points.Add(start * (u * u * u) + c1 * (3 * u * u * t) + c2 * (3 * u * t * t) + end * (t * t * t));
         }
-        s.Polyline(points, new DPen(colour, width));
+        var pen = new DPen(colour, width, DashOf(e, StrokeDash.Solid));
+        s.Polyline(points, pen);
+        DrawEnds(s, e, points, LineEnd.None, LineEnd.None, colour);
         if (e.Text.Length > 0)
             Label(s, e.Text, points[10], 10.5, s.Style.MutedText);
     }

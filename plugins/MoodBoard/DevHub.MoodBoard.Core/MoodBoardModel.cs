@@ -56,6 +56,8 @@ public sealed class MoodBoardModel : IDiagramKindModel
 
     public IReadOnlyList<IDiagramTextExporter> TextExporters { get; } = [new SwatchCss(), new LinkList()];
 
+    public IReadOnlyList<DiagramSample> Samples => MoodBoardShowcase.Samples;
+
     public Diagram Create(string title) => new() { Kind = KindId, Title = title };
 }
 

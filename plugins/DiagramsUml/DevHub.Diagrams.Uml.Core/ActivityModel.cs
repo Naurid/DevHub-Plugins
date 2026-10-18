@@ -69,7 +69,7 @@ public sealed class ActivityModel : IDiagramKindModel
 
     public IReadOnlyList<IDiagramTextExporter> TextExporters { get; } = [new ActivityPlantUml(), new ActivityMermaid()];
 
-    public IReadOnlyList<DiagramSample> Samples => UmlSamples.Activity;
+    public IReadOnlyList<DiagramSample> Samples => [.. UmlSamples.Activity, .. UmlShowcase.Activity];
 
     public Diagram Create(string title)
     {

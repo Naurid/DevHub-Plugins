@@ -9,6 +9,7 @@ using DevHub.Diagrams.Core;
 using DevHub.Diagrams.Rendering;
 using DevHub.Integration;
 using DevHub.Sdk.Core.Localization;
+using DevHub.Sdk.Core.Settings;
 using DevHub.Services;
 using DevHub.ViewModels.Dialogs;
 using DevHub.ViewModels.Documents;
@@ -32,11 +33,13 @@ public sealed partial class DiagramDocumentViewModel : DocumentViewModelBase, ID
     private List<string> _selection = [];
     private DateTime _writtenAt;
     private bool _loaded;
+    private readonly ISettingsStore _settings;
     private CancellationTokenSource? _checkSoon;
 
     public DiagramDocumentViewModel(string path, DiagramsService service, IDialogService dialogs, IExportService export,
-        IStatusService status, IThemeService theme, IIssueLinks? issues = null)
+        IStatusService status, IThemeService theme, ISettingsStore settings, IIssueLinks? issues = null)
     {
+        _settings = settings;
         FilePath = Path.GetFullPath(path);
         _service = service;
         Dialogs = dialogs;
@@ -701,13 +704,44 @@ public sealed partial class DiagramDocumentViewModel : DocumentViewModelBase, ID
         : DiagramStyle.Light;
 
     [RelayCommand]
-    private Task SaveImageAsync() => Export.SaveImageAsync(DiagramRenderer.Png(Diagram, Kind, ExportStyle, ExportPart, folder: Folder), Title);
+    private Task SaveImageAsync()
+    {
+        var png = DiagramRenderer.Png(Diagram, Kind, ExportStyle, ExportPart, folder: Folder);
+        return SaveExportAsync(png, "png", () => Export.SaveImageAsync(png, Title));
+    }
 
     [RelayCommand]
     private Task CopyImageAsync() => Export.CopyImageAsync(DiagramRenderer.Png(Diagram, Kind, ExportStyle, ExportPart, folder: Folder));
 
     [RelayCommand]
-    private Task SaveSvgAsync() => Export.SaveTextAsync(DiagramRenderer.Svg(Diagram, Kind, ExportStyle, ExportPart, Folder), Title, "svg", L.T("SVG image"));
+    private Task SaveSvgAsync()
+    {
+        var svg = DiagramRenderer.Svg(Diagram, Kind, ExportStyle, ExportPart, Folder);
+        return SaveExportAsync(System.Text.Encoding.UTF8.GetBytes(svg), "svg", () => Export.SaveTextAsync(svg, Title, "svg", L.T("SVG image")));
+    }
+
+    /// <summary>
+    /// Writes an exported image where Settings → Diagrams says (beside the diagram, or one folder), replacing the
+    /// previous one; asks with a save dialog when the setting is "ask every time".
+    /// </summary>
+    private async Task SaveExportAsync(byte[] bytes, string extension, Func<Task> ask)
+    {
+        if (_settings.LoadSection<DiagramsSettings>().TargetFor(FilePath, Title, extension) is not { } target)
+        {
+            await ask();
+            return;
+        }
+        try
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(target)!);
+            await File.WriteAllBytesAsync(target, bytes);
+            Status.Show(L.T($"Saved {Path.GetFileName(target)} in {Path.GetDirectoryName(target)} (Settings → Diagrams sets where)."));
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException or ArgumentException)
+        {
+            Status.Show(L.T($"The image couldn't be saved in {Path.GetDirectoryName(target)}: {e.Message}"));
+        }
+    }
 
     // ---- Project link ----
 

@@ -216,7 +216,7 @@ public sealed class ActivityKind : DiagramKindBase
         var shown = guard.StartsWith('[') ? guard : $"[{guard}]";
         var pen = PenOf(s, e);
         s.Polyline(path, pen);
-        DrawEnd(s, path[^1], path[^2], LineEnd.Open, pen.Color);
+        DrawEnds(s, e, path, LineEnd.None, LineEnd.Open, pen.Color);
         Label(s, shown, Routing.LabelPoint(path, e.LabelAt), 10.5);
     }
 
@@ -554,8 +554,7 @@ public sealed class SequenceKind : DiagramKindBase
         var dash = e.Type is SequenceModel.Reply or SequenceModel.CreateMessage || e.Type == SequenceModel.NoteLink ? StrokeDash.Dashed : StrokeDash.Solid;
         var pen = PenOf(s, e, dash);
         s.Polyline(path, pen);
-        if (e.Type != SequenceModel.NoteLink)
-            DrawEnd(s, path[^1], path[^2], e.Type == SequenceModel.Sync ? LineEnd.Filled : LineEnd.Open, pen.Color);
+        DrawEnds(s, e, path, LineEnd.None, e.Type == SequenceModel.NoteLink ? LineEnd.None : e.Type == SequenceModel.Sync ? LineEnd.Filled : LineEnd.Open, pen.Color);
         if (e.Text.Length == 0)
             return;
         // The message's name just above its line (beside a self-message).

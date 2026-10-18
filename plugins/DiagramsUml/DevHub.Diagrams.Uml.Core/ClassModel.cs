@@ -157,7 +157,7 @@ public sealed class ClassModel(bool objects = false) : IDiagramKindModel
 
     public IReadOnlyList<IDiagramTextExporter> TextExporters => objects ? [] : [new ClassPlantUml(), new ClassMermaid()];
 
-    public IReadOnlyList<DiagramSample> Samples => objects ? [] : UmlSamples.Class;
+    public IReadOnlyList<DiagramSample> Samples => objects ? UmlShowcase.Object : [.. UmlSamples.Class, .. UmlShowcase.Class];
 
     public Diagram Create(string title) => new() { Kind = Id, Title = title };
 

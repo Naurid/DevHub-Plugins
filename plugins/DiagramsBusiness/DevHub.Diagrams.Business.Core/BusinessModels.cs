@@ -52,7 +52,7 @@ public sealed class FlowchartModel : IDiagramKindModel
 
     public IReadOnlyList<IDiagramTextExporter> TextExporters { get; } = [new FlowchartMermaid()];
 
-    public IReadOnlyList<DiagramSample> Samples => BusinessSamples.Flowchart;
+    public IReadOnlyList<DiagramSample> Samples => [.. BusinessSamples.Flowchart, .. BusinessShowcase.Flowchart];
 
     public Diagram Create(string title)
     {
@@ -181,7 +181,7 @@ public sealed class BpmnModel : IDiagramKindModel
 
     public IReadOnlyList<IDiagramTextExporter> TextExporters { get; } = [new BpmnOutline()];
 
-    public IReadOnlyList<DiagramSample> Samples => BusinessSamples.Bpmn;
+    public IReadOnlyList<DiagramSample> Samples => [.. BusinessSamples.Bpmn, .. BusinessShowcase.Bpmn];
 
     public Diagram Create(string title)
     {
@@ -357,7 +357,7 @@ public sealed class MindMapModel : IDiagramKindModel
 
     public IReadOnlyList<IDiagramTextExporter> TextExporters { get; } = [new MindMapOutline(), new MindMapMermaid()];
 
-    public IReadOnlyList<DiagramSample> Samples => BusinessSamples.MindMap;
+    public IReadOnlyList<DiagramSample> Samples => [.. BusinessSamples.MindMap, .. BusinessShowcase.MindMap];
 
     public Diagram Create(string title)
     {

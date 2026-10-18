@@ -272,7 +272,10 @@ public class MoodBoardTests
 
 public class SampleTests
 {
-    public static TheoryData<string> Kinds => new() { "usecase", "activity", "class", "sequence", "state", "flowchart", "bpmn", "mindmap" };
+    public static TheoryData<string> Kinds => new()
+    {
+        "usecase", "activity", "class", "object", "sequence", "state", "component", "deployment", "package", "flowchart", "bpmn", "mindmap", "moodboard",
+    };
 
     private static IDiagramKindModel Model(string id) => id switch
     {
@@ -283,8 +286,26 @@ public class SampleTests
         "state" => new StateModel(),
         "flowchart" => new FlowchartModel(),
         "bpmn" => new BpmnModel(),
+        "object" => new ClassModel(objects: true),
+        "component" => new StructureModel(StructureModel.ComponentKind),
+        "deployment" => new StructureModel(StructureModel.DeploymentKind),
+        "package" => new StructureModel(StructureModel.PackageKind),
+        "moodboard" => new MoodBoardModel(),
         _ => new MindMapModel(),
     };
+
+    [Theory]
+    [MemberData(nameof(Kinds))]
+    public void Showcase_uses_every_shape_and_line(string kind)
+    {
+        var model = Model(kind);
+        var showcase = model.Samples.Single(s => s.Name == "Showcase: everything").Create();
+        Assert.Empty(model.NodeTypes.Select(t => t.Type).Except(showcase.Nodes.Select(n => n.Type)));
+        Assert.Empty(model.EdgeTypes.Select(t => t.Type).Except(showcase.Edges.Select(e => e.Type)));
+        // Formatting: a styled shape and a line with its own arrowheads or dash.
+        Assert.Contains(showcase.Nodes, n => n.Props.ContainsKey("fill") || n.Props.ContainsKey("line"));
+        Assert.Contains(showcase.Edges, e => e.Props.ContainsKey("startArrow") || e.Props.ContainsKey("endArrow") || e.Props.ContainsKey("dash"));
+    }
 
     [Theory]
     [MemberData(nameof(Kinds))]
@@ -312,12 +333,28 @@ public class MindMapSampleTests
     [Fact]
     public void Mind_map_sample_keeps_its_words_and_arranges_after_fitting()
     {
-        var sample = new MindMapModel().Samples.Single();
+        var sample = new MindMapModel().Samples.First();
         var d = sample.Create();
         Assert.Contains(d.Nodes, n => n.Text == "Students");
         Assert.DoesNotContain(d.Nodes, n => n.Text is "Topic" or "Idea");
         Assert.NotNull(sample.Arrange);
         sample.Arrange!(d).Apply(d);
         Assert.Equal(4, MindMapModel.ChildrenOf(d, d.Nodes.Single(n => n.Type == MindMapModel.Central)).Count());
+    }
+}
+
+public class PngTests
+{
+    [Fact]
+    public void Showcase_pictures_are_real_pngs()
+    {
+        var sample = new MoodBoardModel().Samples.Single();
+        Assert.Equal(2, sample.Assets.Count);
+        foreach (var bytes in sample.Assets.Values)
+        {
+            Assert.Equal(new byte[] { 0x89, 0x50, 0x4E, 0x47 }, bytes[..4]);
+            Assert.Equal("IEND", System.Text.Encoding.ASCII.GetString(bytes, bytes.Length - 8, 4));
+        }
+        Assert.Contains(sample.Create().Nodes, n => n.Prop("src") == DiagramSample.AssetsToken + "sunset.png");
     }
 }

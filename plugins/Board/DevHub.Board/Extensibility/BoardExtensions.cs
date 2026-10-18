@@ -50,6 +50,9 @@ public sealed partial class BoardPageHost : ObservableObject
     /// <summary>Shows an issue in the tab's issue panel.</summary>
     public Action<string?> SelectIssue { get; init; } = _ => { };
 
+    /// <summary>Shows several selected issues in the panel (fields shared or "—"); fewer than two puts it away.</summary>
+    public Action<IReadOnlyList<string>> SelectIssues { get; init; } = _ => { };
+
     /// <summary>Opens an issue in its own tab.</summary>
     public Action<string> OpenIssue { get; init; } = _ => { };
 

@@ -272,9 +272,43 @@
                                                     </ComboBox>
                                                     <CheckBox Content="{Binding Label}" IsChecked="{Binding IsOn}" IsVisible="{Binding IsToggle}" />
                                                     <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Spacing}" IsVisible="{Binding IsColor}">
-                                                        <Border Width="{DynamicResource Size.DiagramSwatch}" Height="{DynamicResource Size.DiagramSwatch}"
-                                                                CornerRadius="{DynamicResource Radius.Control}" Background="{Binding Swatch}"
-                                                                BorderBrush="{DynamicResource Brush.Border.Control}" BorderThickness="1" />
+                                                        <!-- The swatch opens the colour picker: a palette, the code, back to the default. -->
+                                                        <Button Classes="flat" Padding="2" ToolTip.Tip="{l:T 'Choose a colour'}"
+                                                                AutomationProperties.Name="{l:T 'Choose a colour'}">
+                                                            <Border Width="{DynamicResource Size.DiagramSwatch}" Height="{DynamicResource Size.DiagramSwatch}"
+                                                                    CornerRadius="{DynamicResource Radius.Control}" Background="{Binding Swatch}"
+                                                                    BorderBrush="{DynamicResource Brush.Border.Control}" BorderThickness="1" />
+                                                            <Button.Flyout>
+                                                                <Flyout Placement="BottomEdgeAlignedLeft">
+                                                                    <StackPanel Spacing="{DynamicResource Spacing}">
+                                                                        <TextBlock Classes="secondary" Text="{Binding Label}" />
+                                                                        <ItemsControl ItemsSource="{Binding Palette}">
+                                                                            <ItemsControl.ItemsPanel>
+                                                                                <ItemsPanelTemplate>
+                                                                                    <UniformGrid Columns="12" />
+                                                                                </ItemsPanelTemplate>
+                                                                            </ItemsControl.ItemsPanel>
+                                                                            <ItemsControl.ItemTemplate>
+                                                                                <DataTemplate x:DataType="vm:ColorSwatch">
+                                                                                    <Button Classes="flat" Padding="1" Command="{Binding PickCommand}"
+                                                                                            ToolTip.Tip="{Binding Hex}" AutomationProperties.Name="{Binding Hex}">
+                                                                                        <Border Width="{DynamicResource Size.DiagramSwatch}" Height="{DynamicResource Size.DiagramSwatch}"
+                                                                                                CornerRadius="{DynamicResource Radius.Control}" Background="{Binding Hex}"
+                                                                                                BorderBrush="{DynamicResource Brush.Border.Control}" BorderThickness="1" />
+                                                                                    </Button>
+                                                                                </DataTemplate>
+                                                                            </ItemsControl.ItemTemplate>
+                                                                        </ItemsControl>
+                                                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                                                                            <TextBox Classes="code" Text="{Binding Value, UpdateSourceTrigger=LostFocus}"
+                                                                                     PlaceholderText="#RRGGBB" AutomationProperties.Name="{l:T 'Colour code'}" />
+                                                                            <Button Grid.Column="1" Content="{l:T 'Default'}" Command="{Binding ClearColorCommand}"
+                                                                                    ToolTip.Tip="{l:T 'Back to the default colour'}" />
+                                                                        </Grid>
+                                                                    </StackPanel>
+                                                                </Flyout>
+                                                            </Button.Flyout>
+                                                        </Button>
                                                         <TextBox Grid.Column="1" Classes="code" Text="{Binding Value, UpdateSourceTrigger=LostFocus}"
                                                                  PlaceholderText="#RRGGBB" AutomationProperties.Name="{Binding Label}" />
                                                     </Grid>

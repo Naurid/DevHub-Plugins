@@ -114,9 +114,14 @@
                         CloseOnContentClick="False" CloseOnSelection="False"
                         PaneIcon="info" PaneTitle="{l:T 'Issue'}">
                 <c:SidePane.Pane>
-                    <Border IsVisible="{Binding HasIssuePanel}">
-                        <ContentControl Content="{Binding IssuePanel}" />
-                    </Border>
+                    <Panel>
+                        <Border IsVisible="{Binding HasIssuePanel}">
+                            <ContentControl Content="{Binding IssuePanel}" />
+                        </Border>
+                        <Border IsVisible="{Binding HasMultiPanel}">
+                            <ContentControl Content="{Binding MultiPanel}" />
+                        </Border>
+                    </Panel>
                 </c:SidePane.Pane>
                 <ContentControl Content="{Binding Page}" />
             </c:SidePane>
