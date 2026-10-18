@@ -13,7 +13,7 @@ policy; tested in `tests/DevHub.Projects.Core.Tests`).
   project's external tool. Right-click a project: Open in DevHub (with Git), Open in External Tool, Open in
   Explorer, Add Files from Template… (with Templates), New Diagram… (with Diagrams). A folder: Remove Folder. With
   Diagrams, each project has a Diagrams group (open, show in Explorer, delete, refresh).
-- **Add Folder…** (toolbar, Projects menu, Welcome): a folder to scan. Folders are scanned at startup and after adding
+- **Add Folder…** (the tool window's header, Projects menu, Welcome): a folder to scan. Folders are scanned at startup and after adding
   one; **Rescan** (**F5**) scans again.
 - **Language detection** from marker files at the repository's top: Unity, C#, Rust, Go, Tauri, JavaScript,
   TypeScript, Python, Java/Kotlin, C/C++.
@@ -25,8 +25,8 @@ policy; tested in `tests/DevHub.Projects.Core.Tests`).
 
 | Id | Text | Shortcut | Where |
 |---|---|---|---|
-| `Repositories.AddFolder` | Add Folder… | | Projects menu, toolbar, Welcome |
-| `Repositories.Rescan` | Rescan | F5 | Projects menu, toolbar |
+| `Repositories.AddFolder` | Add Folder… | | tool window header, Projects menu, Welcome |
+| `Repositories.Rescan` | Rescan | F5 | tool window header, Projects menu |
 
 The tool window's own toggle (Alt+1) comes from the shell.
 
