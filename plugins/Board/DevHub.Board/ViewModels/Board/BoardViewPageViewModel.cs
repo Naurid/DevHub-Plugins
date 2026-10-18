@@ -337,10 +337,21 @@ public sealed partial class BoardViewPageViewModel : BoardPageViewModel, IItemsD
     [RelayCommand]
     private void ClearFilters()
     {
-        foreach (var q in QuickFilters)
-            q.IsOn = false;
-        foreach (var a in Assignees)
-            a.IsOn = false;
+        // Every toggle off first, then one rebuild: a rebuild replaces the toggle lists, so rebuilding after each
+        // one changed the list being walked (two people filtered + Clear filters crashed).
+        _rebuilding = true;
+        try
+        {
+            foreach (var q in QuickFilters.ToList())
+                q.IsOn = false;
+            foreach (var a in Assignees.ToList())
+                a.IsOn = false;
+        }
+        finally
+        {
+            _rebuilding = false;
+        }
+        Rebuild();
     }
 
     // ---- Drag and drop ------------------------------------------------------------------------------------
