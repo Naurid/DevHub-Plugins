@@ -25,11 +25,12 @@
                       Description="{l:T 'DevHub runs the git command-line tool. Install Git for Windows (git-scm.com), then restart DevHub.'}"
                       IsVisible="{Binding !IsGitAvailable}" />
 
-        <!-- The sidebar docks next to the section while both fit (its width is shared by all repository
-             tabs); in a narrow window it folds into a rail and opens over the section, so the diff keeps
-             a readable width. -->
+        <!-- The sidebar always stays docked next to the section (its width is shared by all repository tabs):
+             at least MinPaneWidth, with the section's own list (MinContentWidth: the changes list) beside it. The
+             window doesn't get narrower than both (RepositoryDocumentViewModel.MinWidth); in a narrow tab the
+             section's diff goes first (its panes HideContentWhenNarrow), never the sidebar or the lists. -->
         <c:SidePane IsVisible="{Binding IsGitAvailable}" PaneWidth="{Binding Layout.SidebarWidth}"
-                    MinPaneWidth="200" MaxPaneFraction="0.4" MinContentWidth="600"
+                    MinPaneWidth="200" MaxPaneFraction="0.4" MinContentWidth="260" HideContentWhenNarrow="True"
                     PaneIcon="vcs" PaneTitle="{l:T 'Repository sidebar'}">
             <c:SidePane.Pane>
             <Border Background="{DynamicResource Brush.Bg.Panel}">

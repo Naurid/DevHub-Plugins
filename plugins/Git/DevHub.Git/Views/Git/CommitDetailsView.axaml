@@ -26,9 +26,9 @@
         </Border>
 
         <DockPanel IsVisible="{Binding HasCommit}">
-            <!-- Message + files (left), resizable. -->
+            <!-- Message + files (left), resizable. Narrower than both, the diff is hidden (the files stay). -->
             <c:SidePane PaneWidth="{Binding Layout.CommitFilesWidth}" MinPaneWidth="200" MinContentWidth="340"
-                        PaneIcon="commit" PaneTitle="{l:T 'Changed files'}">
+                        HideContentWhenNarrow="True" PaneIcon="commit" PaneTitle="{l:T 'Changed files'}">
                 <c:SidePane.Pane>
                     <Border
                             Background="{DynamicResource Brush.Bg.Panel}">

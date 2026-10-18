@@ -123,6 +123,12 @@ public sealed partial class RepositoryDocumentViewModel : DocumentViewModelBase,
     /// <summary>The sidebar runs edge to edge (Fork-style), so no editor-area padding.</summary>
     public override bool FillsEditorArea => true;
 
+    /// <summary>
+    /// The sidebar (200) and the changes list (260) side by side, with their splitters: the window stops there, and
+    /// below MinWidth + the diff's 340 the diff is hidden rather than either list folding (RepositoryDocumentView).
+    /// </summary>
+    public override double MinWidth => 200 + 260 + 2;
+
     /// <summary>Repository root folder.</summary>
     public string Path { get; }
 

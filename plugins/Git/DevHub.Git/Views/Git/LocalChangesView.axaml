@@ -23,9 +23,10 @@
     </UserControl.Styles>
 
     <!-- Left column, resizable: Unstaged, Staged, commit box. Stays visible without changes (Fork does too), so
-         Amend works on a clean tree. The diff keeps at least MinContentWidth; narrower, the list folds into a rail. -->
+         Amend works on a clean tree. The diff keeps at least MinContentWidth; narrower, the diff is hidden and the
+         list takes the width (it never folds into a rail: next to the sidebar, that rail couldn't be reached). -->
     <c:SidePane PaneWidth="{Binding Layout.ChangesListWidth}" MinPaneWidth="260" MaxPaneFraction="0.7"
-                MinContentWidth="340" PaneIcon="commit" PaneTitle="{l:T 'Local changes'}">
+                MinContentWidth="340" HideContentWhenNarrow="True" PaneIcon="commit" PaneTitle="{l:T 'Local changes'}">
         <c:SidePane.Pane>
         <Border Background="{DynamicResource Brush.Bg.Panel}">
             <Grid RowDefinitions="Auto,*,Auto,*,Auto">
