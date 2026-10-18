@@ -32,9 +32,14 @@ public sealed partial class MultiIssuePanelViewModel : ViewModelBase
             BulkEditDialogViewModel.Status, IssueFields.Type, IssueFields.Priority, IssueFields.Assignee, IssueFields.StoryPoints,
             IssueFields.Parent, .. (sprints ? [IssueFields.Sprint] : Array.Empty<string>()), IssueFields.Labels,
             IssueFields.FixVersions, IssueFields.Components, IssueFields.Start, IssueFields.Due,
+            IssueFields.OriginalEstimate, IssueFields.RemainingEstimate, IssueFields.Reporter,
+            .. context.Project.CustomFields.Select(f => IssueFields.Custom(f.Id)), IssueFields.Description,
         ];
         foreach (var id in fields)
-            Fields.Add(new MultiFieldViewModel(this, id, LabelOf(id), BulkEditDialogViewModel.ChoicesFor(context, id), BulkEditDialogViewModel.HintFor(id)));
+            Fields.Add(new MultiFieldViewModel(this, id, LabelOf(context, id), BulkEditDialogViewModel.ChoicesFor(context, id), BulkEditDialogViewModel.HintFor(id))
+            {
+                IsMultiline = id == IssueFields.Description,
+            });
         Show(issueIds);
     }
 
@@ -76,8 +81,13 @@ public sealed partial class MultiIssuePanelViewModel : ViewModelBase
     [RelayCommand]
     private Task MoreChangesAsync() => _context.Dialogs.ShowDialogAsync(new BulkEditDialogViewModel(_context, IssueIds));
 
-    private static string LabelOf(string fieldId) => fieldId switch
+    private static string LabelOf(BoardContext context, string fieldId) => fieldId switch
     {
+        IssueFields.OriginalEstimate => L.T("Original estimate"),
+        IssueFields.RemainingEstimate => L.T("Remaining estimate"),
+        IssueFields.Reporter => L.T("Reporter"),
+        IssueFields.Description => L.T("Description"),
+        _ when BulkEditDialogViewModel.CustomOf(context, fieldId) is { } custom => custom.Name,
         BulkEditDialogViewModel.Status => L.T("Status"),
         IssueFields.Type => L.T("Type"),
         IssueFields.Priority => L.T("Priority"),
@@ -108,6 +118,11 @@ public sealed partial class MultiIssuePanelViewModel : ViewModelBase
             IssueFields.Labels => string.Join(" ", issue.Labels),
             IssueFields.FixVersions => string.Join(", ", issue.FixVersions.Select(v => snapshot.Versions.TryGetValue(v, out var version) ? version.Name : v)),
             IssueFields.Components => string.Join(", ", issue.Components.Select(c => snapshot.Project.Components.FirstOrDefault(x => x.Id == c)?.Name ?? c)),
+            IssueFields.OriginalEstimate => issue.Time.OriginalMinutes is { } o ? WorkDuration.Format(o, snapshot.Project.Settings) : "",
+            IssueFields.RemainingEstimate => issue.Time.RemainingMinutes is { } r ? WorkDuration.Format(r, snapshot.Project.Settings) : "",
+            IssueFields.Reporter => issue.Reporter,
+            IssueFields.Description => issue.Description,
+            _ when fieldId.StartsWith(IssueFields.CustomPrefix, StringComparison.Ordinal) => issue.Custom.GetValueOrDefault(fieldId[IssueFields.CustomPrefix.Length..]),
             IssueFields.Start => issue.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? "",
             _ => issue.Due?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? "",
         };
@@ -137,7 +152,10 @@ public sealed partial class MultiFieldViewModel : ObservableObject
     public string Label { get; }
     public string Hint { get; }
     public bool IsChoice => _choices.Count > 0;
-    public bool IsText => !IsChoice;
+    public bool IsText => !IsChoice && !IsMultiline;
+
+    /// <summary>A long text (the description).</summary>
+    public bool IsMultiline { get; init; }
 
     public ObservableCollection<NamedItem> Choices { get; } = [];
 

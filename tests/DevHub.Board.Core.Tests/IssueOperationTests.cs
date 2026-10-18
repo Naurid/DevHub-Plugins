@@ -361,6 +361,32 @@ public class IssueOperationTests
     }
 
     [Fact]
+    public void Bulk_edit_sets_estimates_reporter_description_and_custom_fields()
+    {
+        using var board = TestBoard.Create();
+        board.Apply(new AddCustomField("Team", FieldType.Select) { Id = "team", Options = ["Platform", "Apps"] });
+        var a = board.Create("story", "A");
+        var b = board.Create("task", "B");
+        var me = board.Session.CurrentPersonId!;
+
+        board.Apply(new BulkEdit([a.Id, b.Id], [
+            (IssueFields.OriginalEstimate, new FieldValue.Minutes(240)), (IssueFields.Reporter, new FieldValue.Text(me)),
+            (IssueFields.Description, new FieldValue.Text("Shared text")), (IssueFields.Custom("team"), new FieldValue.Text("Apps")),
+        ]));
+        Assert.All(new[] { board.Get(a.Id), board.Get(b.Id) }, i =>
+        {
+            Assert.Equal(240, i.Time.OriginalMinutes);
+            Assert.Equal(240, i.Time.RemainingMinutes);   // a remaining estimate starts from the original one
+            Assert.Equal(me, i.Reporter);
+            Assert.Equal("Shared text", i.Description);
+            Assert.Equal("Apps", i.Custom["team"]);
+        });
+
+        board.Apply(new BulkEdit([a.Id, b.Id], [(IssueFields.RemainingEstimate, new FieldValue.Minutes(60))]));
+        Assert.All(new[] { board.Get(a.Id), board.Get(b.Id) }, i => Assert.Equal((240, 60), (i.Time.OriginalMinutes!.Value, i.Time.RemainingMinutes!.Value)));
+    }
+
+    [Fact]
     public void Sub_tasks_follow_their_parent_into_a_sprint()
     {
         using var board = TestBoard.Create();

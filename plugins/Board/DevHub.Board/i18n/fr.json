@@ -701,5 +701,11 @@
   "Close the panel": "Fermer le panneau",
   "A change here applies to every selected issue (one Undo). — means the issues differ; leaving it keeps each one as it is.": "Une modification ici s'applique à tous les tickets sélectionnés (une seule annulation). — signifie que les tickets diffèrent\u202F; laisser tel quel garde la valeur de chacun.",
   "More Changes…": "Autres modifications…",
-  "Add labels or acceptance criteria, tick the Definition of Done": "Ajouter des étiquettes ou des critères d'acceptation, cocher la Definition of Done"
+  "Add labels or acceptance criteria, tick the Definition of Done": "Ajouter des étiquettes ou des critères d'acceptation, cocher la Definition of Done",
+  "Description (replace)": "Description (remplacer)",
+  "Time like 2h, 1d 4h, 30m or 0; empty clears it.": "Une durée comme 2h, 1d 4h, 30m ou 0\u202F; vide l'efface.",
+  "Replaces the description of every selected issue; empty clears it.": "Remplace la description de chaque ticket sélectionné\u202F; vide l'efface.",
+  "Empty clears it.": "Vide l'efface.",
+  "A time looks like 2h, 1d 4h, 30m or 0.": "Format de durée\u00A0: 2h, 1d 4h, 30m ou 0.",
+  "{0} is a number.": "{0} est un nombre."
 }

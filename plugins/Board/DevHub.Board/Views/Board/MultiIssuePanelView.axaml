@@ -39,6 +39,9 @@
                                 </ComboBox>
                                 <TextBox Grid.Column="1" Text="{Binding Text, UpdateSourceTrigger=LostFocus}" IsVisible="{Binding IsText}"
                                          PlaceholderText="{Binding Placeholder}" AutomationProperties.Name="{Binding Label}" />
+                                <TextBox Grid.Column="1" Text="{Binding Text, UpdateSourceTrigger=LostFocus}" IsVisible="{Binding IsMultiline}"
+                                         AcceptsReturn="True" TextWrapping="Wrap" MinHeight="{DynamicResource Size.DescriptionEditor}"
+                                         PlaceholderText="{Binding Placeholder}" AutomationProperties.Name="{Binding Label}" />
                             </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
