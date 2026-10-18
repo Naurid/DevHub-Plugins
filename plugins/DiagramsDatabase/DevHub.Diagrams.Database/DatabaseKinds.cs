@@ -73,7 +73,7 @@ public sealed class MeriseKind : DiagramKindBase
     private const double Row = 16;
 
     public override IDiagramKindModel Model { get; } = new MeriseModel();
-    public override string IconKind => Icons.Template;
+    public override string IconKind => KindIcon("merise");
     public override int Order => 70;
 
     public override IReadOnlyList<PropertyField> NodeFields(DiagramNode n) => n.Type switch
@@ -256,7 +256,7 @@ public sealed class ErdKind : DiagramKindBase
     private const double Header = 28;
 
     public override IDiagramKindModel Model { get; } = new ErdModel();
-    public override string IconKind => Icons.Menu;
+    public override string IconKind => KindIcon("erd");
     public override int Order => 71;
 
     public override bool MultilineText(DiagramNode n) => false;

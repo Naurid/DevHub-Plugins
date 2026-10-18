@@ -441,7 +441,8 @@ public sealed class DiagramCanvas : Control
         if (point.Properties.IsRightButtonPressed)
         {
             // Right-click selects what's under the pointer (the context menu acts on it), then opens the menu.
-            var under = (string?)Layout.NodeAt(diagram, _pressWorld, ShapeOf)?.Id ?? Layout.EdgeAt(diagram, _pressWorld, PathOf, 6 / Zoom)?.Id;
+            var hit = HitAt(host, _pressWorld);
+            var under = hit.Node?.Id ?? hit.Edge?.Id;
             if (under is not null && !host.Selection.Contains(under))
                 host.Select([under]);
             return;
@@ -452,7 +453,8 @@ public sealed class DiagramCanvas : Control
 
         if (e.ClickCount == 2)
         {
-            var target = (string?)Layout.NodeAt(diagram, _pressWorld, ShapeOf)?.Id ?? Layout.EdgeAt(diagram, _pressWorld, PathOf, 6 / Zoom)?.Id;
+            var hit = HitAt(host, _pressWorld);
+            var target = hit.Node?.Id ?? hit.Edge?.Id;
             if (target is not null)
             {
                 host.Select([target]);
@@ -515,7 +517,8 @@ public sealed class DiagramCanvas : Control
         if (host.Selection.Count == 1 && diagram.Edge(host.Selection[0]) is { } selectedEdge && TryStartWaypoint(host, selectedEdge, e))
             return;
 
-        var node = Layout.NodeAt(diagram, _pressWorld, ShapeOf);
+        // Shapes, then lines, then containers: a line inside a package is picked, not the package.
+        var (node, hitEdge) = HitAt(host, _pressWorld);
         if (node is not null)
         {
             if (e.KeyModifiers.HasFlag(KeyModifiers.Alt) && host.DefaultEdgeType is not null)
@@ -541,7 +544,7 @@ public sealed class DiagramCanvas : Control
             return;
         }
 
-        if (Layout.EdgeAt(diagram, _pressWorld, PathOf, 6 / Zoom) is { } edge)
+        if (hitEdge is { } edge)
         {
             if (ctrl)
                 host.Select([edge.Id], add: true);
@@ -556,6 +559,10 @@ public sealed class DiagramCanvas : Control
             host.Select([]);
         Start(Drag.Rubber, e);
     }
+
+    /// <summary>What a press at a point lands on, as drawn: a shape, a line, then the innermost container.</summary>
+    private (DiagramNode? Node, DiagramEdge? Edge) HitAt(IDiagramCanvasHost host, DPoint at) =>
+        Layout.HitAt(host.Diagram, at, ShapeOf, host.Kind.Model.IsContainer, PathOf, 6 / Zoom);
 
     private bool TryStartWaypoint(IDiagramCanvasHost host, DiagramEdge edge, PointerPressedEventArgs e)
     {

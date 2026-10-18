@@ -26,9 +26,30 @@ public sealed class UndoStack(Diagram diagram, int limit = 500)
 
     public bool IsDirty => _savedLost || _savedAt != _done.Count;
 
+    // The step the last Do with a merge key made, and when (a slider drag merges into one step).
+    private string? _mergeKey;
+    private DateTime _mergedAt;
+
+    /// <summary>How long after a change another one with the same merge key still joins its step.</summary>
+    public static readonly TimeSpan MergeWindow = TimeSpan.FromSeconds(1.5);
+
     /// <exception cref="DiagramRuleException">Not allowed; the diagram is unchanged.</exception>
-    public void Do(IDiagramOperation operation)
+    /// <param name="mergeKey">Changes with the same key in a row (a slider being dragged) make one Undo step.</param>
+    public void Do(IDiagramOperation operation, string? mergeKey = null)
     {
+        var now = DateTime.UtcNow;
+        if (mergeKey is not null && mergeKey == _mergeKey && now - _mergedAt < MergeWindow && _done.Count > 0 && _undone.Count == 0
+            && _savedAt != _done.Count)
+        {
+            // Same step: keep its undo (back to before the drag), apply the new value.
+            operation.Apply(Diagram);
+            _done[^1] = (_done[^1].Undo, operation);
+            _mergedAt = now;
+            Changed?.Invoke(this, EventArgs.Empty);
+            return;
+        }
+        _mergeKey = mergeKey;
+        _mergedAt = now;
         var undo = operation.Apply(Diagram);
         _done.Add((undo, operation));
         if (_undone.Count > 0 && _savedAt > _done.Count - 1)
@@ -46,6 +67,7 @@ public sealed class UndoStack(Diagram diagram, int limit = 500)
 
     public void Undo()
     {
+        _mergeKey = null;
         if (_done.Count == 0)
             return;
         var step = _done[^1];
@@ -57,6 +79,7 @@ public sealed class UndoStack(Diagram diagram, int limit = 500)
 
     public void Redo()
     {
+        _mergeKey = null;
         if (_undone.Count == 0)
             return;
         var step = _undone.Pop();

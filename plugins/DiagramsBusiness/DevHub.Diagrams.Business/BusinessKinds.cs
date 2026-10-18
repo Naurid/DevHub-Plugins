@@ -11,7 +11,7 @@ namespace DevHub.Diagrams.Business;
 public sealed class FlowchartKind : DiagramKindBase
 {
     public override IDiagramKindModel Model { get; } = new FlowchartModel();
-    public override string IconKind => Icons.Merge;
+    public override string IconKind => KindIcon("flowchart");
     public override int Order => 80;
 
     protected override EdgeLook Look(DiagramEdge e) => e.Type == FlowchartModel.NoteLink ? new(StrokeDash.Dashed) : new(End: LineEnd.Filled);
@@ -79,7 +79,7 @@ public sealed class BpmnKind : DiagramKindBase
     private const double Band = 30;
 
     public override IDiagramKindModel Model { get; } = new BpmnModel();
-    public override string IconKind => Icons.Run;
+    public override string IconKind => KindIcon("bpmn");
     public override int Order => 81;
 
     protected override EdgeLook Look(DiagramEdge e) => e.Type switch
@@ -359,7 +359,7 @@ public sealed class BpmnKind : DiagramKindBase
 public sealed class MindMapKind : DiagramKindBase
 {
     public override IDiagramKindModel Model { get; } = new MindMapModel();
-    public override string IconKind => Icons.Fetch;
+    public override string IconKind => KindIcon("mindmap");
     public override int Order => 82;
 
     public override IReadOnlyList<KindCommand> Commands =>

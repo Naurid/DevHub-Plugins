@@ -55,6 +55,26 @@ public sealed record ClassMember(char Visibility, string Name, string? Parameter
             mods.Contains("abstract"));
     }
 
+    /// <summary>The line <see cref="Parse"/> reads back: <c>+ static name(arg : int) : Type = default</c>.</summary>
+    public string ToLine()
+    {
+        var w = new System.Text.StringBuilder();
+        if (Visibility != '\0')
+            w.Append(Visibility).Append(' ');
+        if (IsStatic)
+            w.Append("static ");
+        if (IsAbstract)
+            w.Append("abstract ");
+        w.Append(Name.Trim());
+        if (Parameters is not null)
+            w.Append('(').Append(Parameters.Trim()).Append(')');
+        if (Type.Trim().Length > 0)
+            w.Append(" : ").Append(Type.Trim());
+        if (Default.Trim().Length > 0)
+            w.Append(" = ").Append(Default.Trim());
+        return w.ToString();
+    }
+
     /// <summary>The lines of a compartment (attributes or operations), one per line.</summary>
     public static IEnumerable<string> Lines(string text) =>
         text.Replace("\r", "").Split('\n').Select(l => l.TrimEnd()).Where(l => l.Trim().Length > 0);

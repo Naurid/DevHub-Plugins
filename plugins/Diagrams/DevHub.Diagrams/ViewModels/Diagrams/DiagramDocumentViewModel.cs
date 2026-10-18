@@ -158,7 +158,10 @@ public sealed partial class DiagramDocumentViewModel : DocumentViewModelBase, ID
     public string UndoText => _stack.UndoName is { } name ? L.T($"Undo: {name}") : L.T("Undo");
     public string RedoText => _stack.RedoName is { } name ? L.T($"Redo: {name}") : L.T("Redo");
 
-    public bool Do(IDiagramOperation operation)
+    public bool Do(IDiagramOperation operation) => Do(operation, null);
+
+    /// <param name="mergeKey">Changes with the same key in a row (a slider dragged) make one Undo step.</param>
+    private bool Do(IDiagramOperation operation, string? mergeKey)
     {
         if (IsReadOnly)
         {
@@ -167,7 +170,7 @@ public sealed partial class DiagramDocumentViewModel : DocumentViewModelBase, ID
         }
         try
         {
-            _stack.Do(operation);
+            _stack.Do(operation, mergeKey);
             return true;
         }
         catch (DiagramRuleException e)
@@ -417,26 +420,38 @@ public sealed partial class DiagramDocumentViewModel : DocumentViewModelBase, ID
 
     private void SelectionChanged()
     {
-        Fields.Clear();
+        string? id = null;
+        IReadOnlyList<PropertyField> fields = [];
         if (_selection.Count == 1 && Diagram.Node(_selection[0]) is { } node)
         {
             SelectionTitle = Kind.Model.NodeType(node.Type)?.Name ?? node.Type;
-            foreach (var f in Kind.NodeFields(node))
-                Fields.Add(Field(node.Id, f));
+            (id, fields) = (node.Id, Kind.NodeFields(node));
         }
         else if (_selection.Count == 1 && Diagram.Edge(_selection[0]) is { } edge)
         {
             SelectionTitle = Kind.Model.EdgeType(edge.Type)?.Name ?? edge.Type;
-            foreach (var f in Kind.EdgeFields(edge))
-                Fields.Add(Field(edge.Id, f));
+            (id, fields) = (edge.Id, Kind.EdgeFields(edge));
         }
         else if (_selection.Count > 1)
             SelectionTitle = L.T($"{_selection.Count} selected");
         else
         {
             SelectionTitle = Kind.Model.Name;
-            foreach (var f in Kind.DiagramFields)
-                Fields.Add(Field(null, f));
+            fields = Kind.DiagramFields;
+        }
+        // The same element with the same fields (an edit, an Undo): keep the editors, so typing and tabbing between
+        // them isn't interrupted; they read their values again.
+        if (_fieldsFor == id && Fields.Count == fields.Count && Fields.Select(f => f.Field.Key).SequenceEqual(fields.Select(f => f.Key)) && Fields.Count > 0)
+        {
+            foreach (var f in Fields)
+                f.Refresh();
+        }
+        else
+        {
+            Fields.Clear();
+            foreach (var f in fields)
+                Fields.Add(Field(id, f));
+            _fieldsFor = id;
         }
         OnPropertyChanged(nameof(HasSelection));
         OnPropertyChanged(nameof(HasSingleNode));
@@ -453,7 +468,9 @@ public sealed partial class DiagramDocumentViewModel : DocumentViewModelBase, ID
         UnlinkIssueCommand.NotifyCanExecuteChanged();
     }
 
-    private PropertyFieldViewModel Field(string? id, PropertyField f) => new(f, () => Read(id, f), value => Write(id, f, value));
+    private string? _fieldsFor;
+
+    private PropertyFieldViewModel Field(string? id, PropertyField f) => new(f, () => Read(id, f), value => Write(id, f, value), () => Diagram);
 
     private string Read(string? id, PropertyField f)
     {
@@ -497,7 +514,23 @@ public sealed partial class DiagramDocumentViewModel : DocumentViewModelBase, ID
             (_, "@width" or "@height" or "@rotation" or "@routing") => new Batch(f.Label, []),
             _ => new SetProps(id, new Dictionary<string, string?> { [f.Key] = value }, f.Label),
         };
-        if (Do(op) && id is not null && Diagram.Node(id) is { } node && Kind.Fit(node, MeasureSurface.Instance) is { } fit && fit != node.Bounds)
+        // A slider being dragged changes the value many times: one Undo step for the whole drag.
+        var mergeKey = f.Maximum > f.Minimum ? $"{id}|{f.Key}" : null;
+        if (op is SetProps && id is not null && Diagram.Node(id) is { } shape)
+        {
+            // The resize the new value needs (a class grows with its text size) goes in the same step.
+            var before = shape.Props.GetValueOrDefault(f.Key);
+            shape.Props[f.Key] = value;
+            var fits = Kind.Fit(shape, MeasureSurface.Instance);
+            if (before is null)
+                shape.Props.Remove(f.Key);
+            else
+                shape.Props[f.Key] = before;
+            if (fits is { } bounds && bounds != shape.Bounds)
+                op = new Batch(f.Label, [op, new SetBounds(id, bounds)]);
+            Do(op, mergeKey);
+        }
+        else if (Do(op, mergeKey) && id is not null && Diagram.Node(id) is { } node && Kind.Fit(node, MeasureSurface.Instance) is { } fit && fit != node.Bounds)
             Do(new SetBounds(id, fit));
         if (id is null && f.Key == "courseColours")
             Redraw?.Invoke(this, false);

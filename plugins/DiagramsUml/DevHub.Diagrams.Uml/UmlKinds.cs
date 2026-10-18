@@ -11,7 +11,7 @@ namespace DevHub.Diagrams.Uml;
 public sealed class UseCaseKind : DiagramKindBase
 {
     public override IDiagramKindModel Model { get; } = new UseCaseModel();
-    public override string IconKind => Icons.Run;
+    public override string IconKind => KindIcon("usecase");
     public override int Order => 10;
 
     protected override EdgeLook Look(DiagramEdge e) => e.Type switch
@@ -113,7 +113,7 @@ public sealed class UseCaseKind : DiagramKindBase
 public sealed class ActivityKind : DiagramKindBase
 {
     public override IDiagramKindModel Model { get; } = new ActivityModel();
-    public override string IconKind => Icons.Merge;
+    public override string IconKind => KindIcon("activity");
     public override int Order => 20;
 
     protected override EdgeLook Look(DiagramEdge e) => e.Type == ActivityModel.NoteLink ? new(StrokeDash.Dashed) : new(End: LineEnd.Open);
@@ -237,10 +237,15 @@ public sealed class ClassKind(bool objects = false) : DiagramKindBase
     private const double Pad = 6;
 
     public override IDiagramKindModel Model { get; } = new ClassModel(objects);
-    public override string IconKind => objects ? Icons.Copy : Icons.Template;
+    public override string IconKind => KindIcon(objects ? "object" : "class");
     public override int Order => objects ? 35 : 30;
 
     public override bool MultilineText(DiagramNode n) => false;
+
+    // The member forms (one per kind of compartment; they hold no state).
+    private static readonly ClassMemberCodec AttributeRows = new(operations: false);
+    private static readonly ClassMemberCodec OperationRows = new(operations: true);
+    private static readonly ObjectValueCodec ObjectValues = new();
 
     protected override EdgeLook Look(DiagramEdge e) => e.Type switch
     {
@@ -261,9 +266,8 @@ public sealed class ClassKind(bool objects = false) : DiagramKindBase
             new(L.T("Name"), "@text"),
             new(L.T("Abstract (name in italics)"), "abstract", FieldKind.Toggle),
             new(L.T("Stereotype"), "stereotype", Hint: L.T("e.g. entity, controller")),
-            new(L.T("Attributes"), "attributes", FieldKind.MultilineText,
-                L.T("One per line: + name : Type = default. + public, # protected, - private; \"static\" underlines, \"abstract\" italicises.")),
-            new(L.T("Operations"), "operations", FieldKind.MultilineText, L.T("One per line: + name(arg : Type) : Return.")),
+            new(L.T("Attributes"), "attributes", FieldKind.Rows) { Rows = AttributeRows },
+            new(L.T("Operations"), "operations", FieldKind.Rows) { Rows = OperationRows },
             new(L.T("Properties"), "properties", Hint: L.T("e.g. author=Joe, status=tested")),
             new(L.T("Show attributes"), "showAttributes", FieldKind.Toggle) { Default = "true" },
             new(L.T("Show operations"), "showOperations", FieldKind.Toggle) { Default = "true" },
@@ -272,15 +276,15 @@ public sealed class ClassKind(bool objects = false) : DiagramKindBase
         ClassModel.Interface or ClassModel.DataType =>
         [
             new(L.T("Name"), "@text"),
-            new(L.T("Attributes"), "attributes", FieldKind.MultilineText, L.T("One per line: + name : Type")),
-            new(L.T("Operations"), "operations", FieldKind.MultilineText, L.T("One per line: + name(arg : Type) : Return.")),
+            new(L.T("Attributes"), "attributes", FieldKind.Rows) { Rows = AttributeRows },
+            new(L.T("Operations"), "operations", FieldKind.Rows) { Rows = OperationRows },
             .. StyleFields,
         ],
         ClassModel.Enumeration => [new(L.T("Name"), "@text"), new(L.T("Values"), "attributes", FieldKind.MultilineText, L.T("One value per line.")), .. StyleFields],
         ClassModel.Instance =>
         [
             new(L.T("Name : Class"), "@text"),
-            new(L.T("Values"), "values", FieldKind.MultilineText, L.T("One per line: attribute = value")),
+            new(L.T("Values"), "values", FieldKind.Rows) { Rows = ObjectValues },
             .. StyleFields,
         ],
         _ => base.NodeFields(n),
@@ -319,6 +323,18 @@ public sealed class ClassKind(bool objects = false) : DiagramKindBase
 
     private static bool Shows(DiagramNode n, string key) => n.Prop(key, "true") != "false";
 
+    // Attributes and operations follow the shape's text colour and size (its size is the name's; members a point smaller).
+    private static double MemberSize(DiagramNode n) =>
+        double.TryParse(n.Prop("fontSize"), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var size)
+        && size is >= 6 and <= 96 ? size - 1 : 12;
+
+    private static DText MemberStyle(DiagramNode n, bool italic = false, bool underline = false) =>
+        new(MemberSize(n), Italic: italic, Underline: underline, Color: TryColor(n.Prop("textColor")), Align: TextAlign.Left);
+
+    private static double LineOf(DiagramNode n) => Math.Ceiling(MemberSize(n) * LineHeight / 12);
+
+    private static double NameHeight(DiagramNode n) => Math.Ceiling((MemberSize(n) + 1) * 18 / 13);
+
     public override void DrawNode(IDiagramSurface s, Diagram d, DiagramNode n)
     {
         var r = n.Bounds;
@@ -345,8 +361,8 @@ public sealed class ClassKind(bool objects = false) : DiagramKindBase
                     y += 4;
                     foreach (var v in values)
                     {
-                        s.Text(v.Trim(), new DRect(r.X + Pad, y, r.Width - Pad * 2, LineHeight), new DText(12, Align: TextAlign.Left), wrap: false);
-                        y += LineHeight;
+                        s.Text(v.Trim(), new DRect(r.X + Pad, y, r.Width - Pad * 2, LineOf(n)), MemberStyle(n), wrap: false);
+                        y += LineOf(n);
                     }
                 }
                 return;
@@ -373,8 +389,8 @@ public sealed class ClassKind(bool objects = false) : DiagramKindBase
             y += 15;
         }
         var name = TextOf(n, new DText(13, Bold: true, Italic: italic));
-        s.Text(n.Text, new DRect(r.X, y, r.Width, 18), name, wrap: false);
-        y += 18;
+        s.Text(n.Text, new DRect(r.X, y, r.Width, NameHeight(n)), name, wrap: false);
+        y += NameHeight(n);
         if (n.Prop("properties") is { Length: > 0 } props)
         {
             s.Text("{" + props.Trim('{', '}') + "}", new DRect(r.X, y, r.Width, 15), new DText(10.5, Color: s.Style.MutedText), wrap: false);
@@ -393,9 +409,9 @@ public sealed class ClassKind(bool objects = false) : DiagramKindBase
             y += 3;
             foreach (var row in rows)
             {
-                s.Text(row.Text, new DRect(r.X + Pad, y, r.Width - Pad * 2, LineHeight),
-                    new DText(12, Italic: row.Italic, Underline: row.Underline, Align: TextAlign.Left), wrap: false);
-                y += LineHeight;
+                s.Text(row.Text, new DRect(r.X + Pad, y, r.Width - Pad * 2, LineOf(n)),
+                    MemberStyle(n, row.Italic, row.Underline), wrap: false);
+                y += LineOf(n);
             }
             y += rows.Count == 0 ? 8 : 3;
         }
@@ -411,13 +427,13 @@ public sealed class ClassKind(bool objects = false) : DiagramKindBase
         {
             var values = ClassMember.Lines(n.Prop("values")).ToList();
             foreach (var v in values)
-                width = Math.Max(width, m.Measure(v.Trim(), new DText(12)).Width + Pad * 3);
-            height = 18 + Pad * 2 + (values.Count > 0 ? 8 + values.Count * LineHeight : 0);
+                width = Math.Max(width, m.Measure(v.Trim(), MemberStyle(n)).Width + Pad * 3);
+            height = NameHeight(n) + Pad * 2 + (values.Count > 0 ? 8 + values.Count * LineOf(n) : 0);
         }
         else
         {
             var (stereotype, _) = Header(n);
-            height = Pad + (stereotype is null ? 0 : 15) + 18 + (n.Prop("properties").Length > 0 ? 15 : 0) + Pad - 2;
+            height = Pad + (stereotype is null ? 0 : 15) + NameHeight(n) + (n.Prop("properties").Length > 0 ? 15 : 0) + Pad - 2;
             var compartments = new List<List<Row>>();
             if (n.Type == ClassModel.Enumeration || Shows(n, "showAttributes"))
                 compartments.Add(Rows(n.Prop("attributes"), n.Type == ClassModel.Enumeration));
@@ -426,8 +442,8 @@ public sealed class ClassKind(bool objects = false) : DiagramKindBase
             foreach (var rows in compartments)
             {
                 foreach (var row in rows)
-                    width = Math.Max(width, m.Measure(row.Text, new DText(12)).Width + Pad * 3);
-                height += 3 + rows.Count * LineHeight + (rows.Count == 0 ? 8 : 3);
+                    width = Math.Max(width, m.Measure(row.Text, MemberStyle(n)).Width + Pad * 3);
+                height += 3 + rows.Count * LineOf(n) + (rows.Count == 0 ? 8 : 3);
             }
         }
         var fit = n.Bounds with { Width = Math.Max(Math.Ceiling(width), 110), Height = Math.Ceiling(height) };
@@ -451,7 +467,7 @@ public sealed class ClassKind(bool objects = false) : DiagramKindBase
 public sealed class SequenceKind : DiagramKindBase
 {
     public override IDiagramKindModel Model { get; } = new SequenceModel();
-    public override string IconKind => Icons.Push;
+    public override string IconKind => KindIcon("sequence");
     public override int Order => 40;
 
     public override IReadOnlyList<PropertyField> NodeFields(DiagramNode n) => n.Type switch
@@ -569,7 +585,7 @@ public sealed class SequenceKind : DiagramKindBase
 public sealed class StateKind : DiagramKindBase
 {
     public override IDiagramKindModel Model { get; } = new StateModel();
-    public override string IconKind => Icons.Refresh;
+    public override string IconKind => KindIcon("state");
     public override int Order => 50;
 
     protected override EdgeLook Look(DiagramEdge e) => e.Type == StateModel.NoteLink ? new(StrokeDash.Dashed) : new(End: LineEnd.Open);
@@ -655,12 +671,7 @@ public sealed class StateKind : DiagramKindBase
 public sealed class StructureKind(string kind) : DiagramKindBase
 {
     public override IDiagramKindModel Model { get; } = new StructureModel(kind);
-    public override string IconKind => kind switch
-    {
-        StructureModel.DeploymentKind => Icons.Terminal,
-        StructureModel.PackageKind => Icons.Folder,
-        _ => Icons.ExternalTools,
-    };
+    public override string IconKind => KindIcon(kind);
     public override int Order => kind switch { StructureModel.ComponentKind => 60, StructureModel.DeploymentKind => 61, _ => 62 };
 
     protected override EdgeLook Look(DiagramEdge e) => e.Type switch

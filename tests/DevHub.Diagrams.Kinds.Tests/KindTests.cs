@@ -40,6 +40,10 @@ public class UmlTests
         Assert.True(ClassMember.Parse("_- count : int_")!.IsStatic);
         Assert.True(ClassMember.Parse("+ abstract draw()")!.IsAbstract);
         Assert.Null(ClassMember.Parse("  "));
+
+        // The forms write lines back the same way the parser reads them.
+        foreach (var line in new[] { "+ size : Area = (100,100)", "# static display(x : int = 0) : void", "- abstract draw()", "count : int", "+ static abstract make(a : int, b : String) : Shape" })
+            Assert.Equal(line, ClassMember.Parse(line)!.ToLine());
     }
 
     [Fact]

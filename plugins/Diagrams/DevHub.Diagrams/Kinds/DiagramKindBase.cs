@@ -19,6 +19,9 @@ public abstract class DiagramKindBase : IDiagramKind
 {
     public abstract IDiagramKindModel Model { get; }
     public abstract string IconKind { get; }
+
+    /// <summary>An icon the kind's plugin ships in <c>Assets/Icons/</c> (<c>name.svg</c> and <c>name_dark.svg</c>).</summary>
+    protected string KindIcon(string name) => $"avares://{GetType().Assembly.GetName().Name}/Assets/Icons/{name}";
     public virtual int Order => 100;
     public virtual bool HasPen => false;
     public virtual IReadOnlyList<KindCommand> Commands => [];
@@ -46,7 +49,7 @@ public abstract class DiagramKindBase : IDiagramKind
         new(L.T("Fill colour"), "fill", FieldKind.Color, L.T("Empty: the diagram's colour")),
         new(L.T("Line colour"), "line", FieldKind.Color, L.T("Empty: the diagram's colour")),
         new(L.T("Text colour"), "textColor", FieldKind.Color, L.T("Empty: the diagram's colour")),
-        new(L.T("Text size"), "fontSize", FieldKind.Number, "13"),
+        new(L.T("Text size"), "fontSize", FieldKind.Number) { Default = "13", Minimum = 8, Maximum = 36, Step = 1 },
         new(L.T("Bold"), "bold", FieldKind.Toggle),
     ];
 
@@ -54,7 +57,8 @@ public abstract class DiagramKindBase : IDiagramKind
     public static IReadOnlyList<PropertyField> LineStyleFields { get; } =
     [
         new(L.T("Line colour"), "line", FieldKind.Color, L.T("Empty: the diagram's colour")),
-        new(L.T("Line width"), "width", FieldKind.Number, "1.2"),
+        new(L.T("Line width"), "width", FieldKind.Number) { Default = "1.2", Minimum = 0.5, Maximum = 8, Step = 0.1 },
+        new(L.T("Text colour"), "textColor", FieldKind.Color, L.T("Empty: the diagram's colour")),
         new(L.T("Dash"), "dash", FieldKind.Choice) { Choices = DashChoices },
         new(L.T("Arrow at the start"), "startArrow", FieldKind.Choice) { Choices = ArrowChoices },
         new(L.T("Arrow at the end"), "endArrow", FieldKind.Choice) { Choices = ArrowChoices },

@@ -261,3 +261,54 @@ public class DiagramsSettingsTests
         Assert.Null(new DiagramsSettings { ExportPlace = ExportPlace.BesideDiagram }.TargetFor(null, "Login", "png"));
     }
 }
+
+public class InteractionTests
+{
+    private static NodeShape Rect(DiagramNode n) => NodeShape.Rectangle;
+
+    [Fact]
+    public void A_slider_drag_is_one_undo_step()
+    {
+        var d = new Diagram { Kind = "test" };
+        d.Nodes.Add(new DiagramNode { Id = "a", Type = "box", Width = 50, Height = 50 });
+        var stack = new UndoStack(d);
+        foreach (var width in new[] { "1.5", "2", "3", "4" })
+            stack.Do(new SetProps("a", new Dictionary<string, string?> { ["width"] = width }), mergeKey: "a|width");
+        Assert.Equal("4", d.Node("a")!.Prop("width"));
+        stack.Undo();
+        Assert.Equal("", d.Node("a")!.Prop("width"));
+        Assert.False(stack.CanUndo);
+        stack.Redo();
+        Assert.Equal("4", d.Node("a")!.Prop("width"));
+
+        // Another field, or no key, is a new step.
+        stack.Do(new SetProps("a", new Dictionary<string, string?> { ["fontSize"] = "20" }), mergeKey: "a|fontSize");
+        stack.Do(new SetProps("a", new Dictionary<string, string?> { ["fill"] = "#FF0000" }));
+        stack.Undo();
+        stack.Undo();
+        Assert.Equal(("4", ""), (d.Node("a")!.Prop("width"), d.Node("a")!.Prop("fontSize")));
+    }
+
+    [Fact]
+    public void Clicks_inside_a_container_pick_shapes_then_lines_then_the_innermost_container()
+    {
+        var d = new Diagram { Kind = "test" };
+        d.Nodes.Add(new DiagramNode { Id = "pkg", Type = "package", X = 0, Y = 0, Width = 400, Height = 300 });
+        d.Nodes.Add(new DiagramNode { Id = "sub", Type = "package", X = 200, Y = 150, Width = 180, Height = 130, ParentId = "pkg" });
+        d.Nodes.Add(new DiagramNode { Id = "a", Type = "class", X = 20, Y = 20, Width = 60, Height = 40, ParentId = "pkg" });
+        d.Nodes.Add(new DiagramNode { Id = "b", Type = "class", X = 220, Y = 20, Width = 60, Height = 40, ParentId = "pkg" });
+        // The package was added last: it's on top in the list, as after "Bring to Front".
+        var pkg = d.Nodes[0];
+        d.Nodes.RemoveAt(0);
+        d.Nodes.Add(pkg);
+        d.Edges.Add(new DiagramEdge { Id = "ab", Type = "line", From = "a", To = "b" });
+        bool IsContainer(DiagramNode n) => n.Type == "package";
+        IReadOnlyList<DPoint> PathOf(DiagramEdge e) => [new(80, 40), new(220, 40)];
+
+        Assert.Equal("ab", Layout.HitAt(d, new DPoint(150, 41), Rect, IsContainer, PathOf, 6).Edge?.Id);
+        Assert.Equal("a", Layout.HitAt(d, new DPoint(30, 30), Rect, IsContainer, PathOf, 6).Node?.Id);
+        Assert.Equal("sub", Layout.HitAt(d, new DPoint(300, 250), Rect, IsContainer, PathOf, 6).Node?.Id);
+        Assert.Equal("pkg", Layout.HitAt(d, new DPoint(100, 200), Rect, IsContainer, PathOf, 6).Node?.Id);
+        Assert.Equal((null, null), (Layout.HitAt(d, new DPoint(600, 600), Rect, IsContainer, PathOf, 6).Node, Layout.HitAt(d, new DPoint(600, 600), Rect, IsContainer, PathOf, 6).Edge));
+    }
+}
