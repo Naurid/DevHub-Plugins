@@ -6,7 +6,7 @@
   "props": {},
   "nodes": [
     {
-      "id": "yw49nu",
+      "id": "v67a5g",
       "type": "package",
       "x": 30,
       "y": 50,
@@ -15,13 +15,13 @@
       "rotation": 0,
       "text": "Projects",
       "props": {
-        "fill": "#F4F5F7",
+        "fill": "#1A8C8F96",
         "line": "#8C8F96",
         "bold": "true"
       }
     },
     {
-      "id": "8mfaiw",
+      "id": "viiqcp",
       "type": "package",
       "x": 60,
       "y": 100,
@@ -29,15 +29,14 @@
       "height": 70,
       "rotation": 0,
       "text": "Projects (devhub.projects)",
-      "parentId": "yw49nu",
+      "parentId": "v67a5g",
       "props": {
-        "fill": "#DCEBFF",
-        "line": "#3574F0",
-        "textColor": "#1F3F7A"
+        "fill": "#383574F0",
+        "line": "#3574F0"
       }
     },
     {
-      "id": "c4udsc",
+      "id": "j6s3p7",
       "type": "package",
       "x": 390,
       "y": 50,
@@ -46,13 +45,13 @@
       "rotation": 0,
       "text": "Templates",
       "props": {
-        "fill": "#F4F5F7",
+        "fill": "#1A8C8F96",
         "line": "#8C8F96",
         "bold": "true"
       }
     },
     {
-      "id": "5s6gkm",
+      "id": "4i55sg",
       "type": "package",
       "x": 420,
       "y": 100,
@@ -60,15 +59,14 @@
       "height": 70,
       "rotation": 0,
       "text": "Templates (devhub.templates)",
-      "parentId": "c4udsc",
+      "parentId": "j6s3p7",
       "props": {
-        "fill": "#DCEBFF",
-        "line": "#3574F0",
-        "textColor": "#1F3F7A"
+        "fill": "#383574F0",
+        "line": "#3574F0"
       }
     },
     {
-      "id": "f3m9qh",
+      "id": "r4q9hu",
       "type": "package",
       "x": 750,
       "y": 50,
@@ -77,13 +75,13 @@
       "rotation": 0,
       "text": "Version control",
       "props": {
-        "fill": "#F4F5F7",
+        "fill": "#1A8C8F96",
         "line": "#8C8F96",
         "bold": "true"
       }
     },
     {
-      "id": "ftpe4e",
+      "id": "7ggtqh",
       "type": "package",
       "x": 780,
       "y": 100,
@@ -91,15 +89,14 @@
       "height": 70,
       "rotation": 0,
       "text": "Git (devhub.git)",
-      "parentId": "f3m9qh",
+      "parentId": "r4q9hu",
       "props": {
-        "fill": "#DCEBFF",
-        "line": "#3574F0",
-        "textColor": "#1F3F7A"
+        "fill": "#383574F0",
+        "line": "#3574F0"
       }
     },
     {
-      "id": "nx52uw",
+      "id": "g9tw4f",
       "type": "package",
       "x": 1070,
       "y": 100,
@@ -107,15 +104,14 @@
       "height": 70,
       "rotation": 0,
       "text": "GitHub (devhub.github)",
-      "parentId": "f3m9qh",
+      "parentId": "r4q9hu",
       "props": {
-        "fill": "#DCEBFF",
-        "line": "#3574F0",
-        "textColor": "#1F3F7A"
+        "fill": "#383574F0",
+        "line": "#3574F0"
       }
     },
     {
-      "id": "m57udx",
+      "id": "pz8q95",
       "type": "package",
       "x": 30,
       "y": 330,
@@ -124,13 +120,13 @@
       "rotation": 0,
       "text": "Planning",
       "props": {
-        "fill": "#F4F5F7",
+        "fill": "#1A8C8F96",
         "line": "#8C8F96",
         "bold": "true"
       }
     },
     {
-      "id": "v4e4q6",
+      "id": "vf4v2v",
       "type": "package",
       "x": 60,
       "y": 380,
@@ -138,11 +134,11 @@
       "height": 70,
       "rotation": 0,
       "text": "Board (devhub.board)",
-      "parentId": "m57udx",
+      "parentId": "pz8q95",
       "props": {}
     },
     {
-      "id": "9pk4kr",
+      "id": "xvxh7w",
       "type": "package",
       "x": 350,
       "y": 380,
@@ -150,11 +146,11 @@
       "height": 70,
       "rotation": 0,
       "text": "Board Scrum (devhub.board.scrum)",
-      "parentId": "m57udx",
+      "parentId": "pz8q95",
       "props": {}
     },
     {
-      "id": "294izi",
+      "id": "8pwc6u",
       "type": "package",
       "x": 640,
       "y": 380,
@@ -162,11 +158,11 @@
       "height": 70,
       "rotation": 0,
       "text": "Board Git (devhub.board.git)",
-      "parentId": "m57udx",
+      "parentId": "pz8q95",
       "props": {}
     },
     {
-      "id": "zg54qb",
+      "id": "46v4ys",
       "type": "package",
       "x": 60,
       "y": 500,
@@ -174,11 +170,11 @@
       "height": 70,
       "rotation": 0,
       "text": "Board Reports (devhub.board.reports)",
-      "parentId": "m57udx",
+      "parentId": "pz8q95",
       "props": {}
     },
     {
-      "id": "tftdq2",
+      "id": "xjixjk",
       "type": "package",
       "x": 350,
       "y": 500,
@@ -186,11 +182,11 @@
       "height": 70,
       "rotation": 0,
       "text": "Board Timeline (devhub.board.timeline)",
-      "parentId": "m57udx",
+      "parentId": "pz8q95",
       "props": {}
     },
     {
-      "id": "itgjwb",
+      "id": "2fb452",
       "type": "package",
       "x": 640,
       "y": 500,
@@ -198,11 +194,11 @@
       "height": 70,
       "rotation": 0,
       "text": "Board Risks (devhub.board.risks)",
-      "parentId": "m57udx",
+      "parentId": "pz8q95",
       "props": {}
     },
     {
-      "id": "zxyx9a",
+      "id": "pdwdns",
       "type": "package",
       "x": 1010,
       "y": 330,
@@ -211,13 +207,13 @@
       "rotation": 0,
       "text": "Tools",
       "props": {
-        "fill": "#F4F5F7",
+        "fill": "#1A8C8F96",
         "line": "#8C8F96",
         "bold": "true"
       }
     },
     {
-      "id": "7cyz9d",
+      "id": "ic6cbx",
       "type": "package",
       "x": 1040,
       "y": 380,
@@ -225,11 +221,11 @@
       "height": 70,
       "rotation": 0,
       "text": "Diagrams (devhub.diagrams)",
-      "parentId": "zxyx9a",
+      "parentId": "pdwdns",
       "props": {}
     },
     {
-      "id": "2jh8yr",
+      "id": "958rpc",
       "type": "package",
       "x": 1330,
       "y": 380,
@@ -237,11 +233,11 @@
       "height": 70,
       "rotation": 0,
       "text": "Charts (devhub.charts)",
-      "parentId": "zxyx9a",
+      "parentId": "pdwdns",
       "props": {}
     },
     {
-      "id": "cw7swx",
+      "id": "6uww9g",
       "type": "package",
       "x": 1040,
       "y": 500,
@@ -249,11 +245,11 @@
       "height": 70,
       "rotation": 0,
       "text": "UML Diagrams (devhub.diagrams.uml)",
-      "parentId": "zxyx9a",
+      "parentId": "pdwdns",
       "props": {}
     },
     {
-      "id": "y7dsz2",
+      "id": "2rsmfh",
       "type": "package",
       "x": 1330,
       "y": 500,
@@ -261,11 +257,11 @@
       "height": 70,
       "rotation": 0,
       "text": "Database Diagrams (devhub.diagrams.database)",
-      "parentId": "zxyx9a",
+      "parentId": "pdwdns",
       "props": {}
     },
     {
-      "id": "aiq6i6",
+      "id": "f6kuz5",
       "type": "package",
       "x": 1040,
       "y": 620,
@@ -273,11 +269,11 @@
       "height": 70,
       "rotation": 0,
       "text": "Business Diagrams (devhub.diagrams.business)",
-      "parentId": "zxyx9a",
+      "parentId": "pdwdns",
       "props": {}
     },
     {
-      "id": "z2nkwe",
+      "id": "hrryfj",
       "type": "package",
       "x": 1330,
       "y": 620,
@@ -285,11 +281,11 @@
       "height": 70,
       "rotation": 0,
       "text": "Mood Boards (devhub.moodboard)",
-      "parentId": "zxyx9a",
+      "parentId": "pdwdns",
       "props": {}
     },
     {
-      "id": "qksbag",
+      "id": "iqz5a3",
       "type": "note",
       "x": 60,
       "y": 760,
@@ -302,130 +298,130 @@
   ],
   "edges": [
     {
-      "id": "zp7zx8",
+      "id": "57wh45",
       "type": "dependency",
-      "from": "nx52uw",
-      "to": "ftpe4e",
+      "from": "g9tw4f",
+      "to": "7ggtqh",
       "text": "«requires»",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "m83hb9",
+      "id": "7rvs64",
       "type": "dependency",
-      "from": "5s6gkm",
-      "to": "8mfaiw",
+      "from": "4i55sg",
+      "to": "viiqcp",
       "text": "«requires»",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "eq6zpu",
+      "id": "rn52yy",
       "type": "dependency",
-      "from": "9pk4kr",
-      "to": "v4e4q6",
+      "from": "xvxh7w",
+      "to": "vf4v2v",
       "text": "«requires»",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "66jqfn",
+      "id": "h7m2u6",
       "type": "dependency",
-      "from": "294izi",
-      "to": "v4e4q6",
+      "from": "8pwc6u",
+      "to": "vf4v2v",
       "text": "«requires»",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "axf2ge",
+      "id": "63wf94",
       "type": "dependency",
-      "from": "294izi",
-      "to": "ftpe4e",
+      "from": "8pwc6u",
+      "to": "7ggtqh",
       "text": "«requires»",
       "routing": "orthogonal",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "4yguqy",
+      "id": "z3iw2p",
       "type": "dependency",
-      "from": "zg54qb",
-      "to": "v4e4q6",
+      "from": "46v4ys",
+      "to": "vf4v2v",
       "text": "«requires»",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "c65yqi",
+      "id": "r675j6",
       "type": "dependency",
-      "from": "tftdq2",
-      "to": "v4e4q6",
+      "from": "xjixjk",
+      "to": "vf4v2v",
       "text": "«requires»",
       "routing": "orthogonal",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "6cdxag",
+      "id": "zbpvbf",
       "type": "dependency",
-      "from": "itgjwb",
-      "to": "v4e4q6",
+      "from": "2fb452",
+      "to": "vf4v2v",
       "text": "«requires»",
       "routing": "orthogonal",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "mn26u8",
+      "id": "rzpw7q",
       "type": "dependency",
-      "from": "cw7swx",
-      "to": "7cyz9d",
+      "from": "6uww9g",
+      "to": "ic6cbx",
       "text": "«requires»",
       "routing": "orthogonal",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "nmgjfg",
+      "id": "7x66wr",
       "type": "dependency",
-      "from": "y7dsz2",
-      "to": "7cyz9d",
+      "from": "2rsmfh",
+      "to": "ic6cbx",
       "text": "«requires»",
       "routing": "orthogonal",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "y85nch",
+      "id": "xxafse",
       "type": "dependency",
-      "from": "aiq6i6",
-      "to": "7cyz9d",
+      "from": "f6kuz5",
+      "to": "ic6cbx",
       "text": "«requires»",
       "routing": "orthogonal",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "cszw7n",
+      "id": "9c6i9h",
       "type": "dependency",
-      "from": "z2nkwe",
-      "to": "7cyz9d",
+      "from": "hrryfj",
+      "to": "ic6cbx",
       "text": "«requires»",
       "routing": "orthogonal",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "8ktmu3",
+      "id": "tx88jr",
       "type": "noteLink",
-      "from": "qksbag",
-      "to": "m57udx",
+      "from": "iqz5a3",
+      "to": "pz8q95",
       "text": "",
       "routing": "straight",
       "waypoints": [],

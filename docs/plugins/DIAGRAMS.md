@@ -26,9 +26,17 @@ property fields, commands). Tests: `tests/DevHub.Diagrams.Core.Tests`, `DevHub.D
 - **The canvas**: pan and zoom, grid, select (rubber band), move with guides and snapping, resize, connect (lines
   routed straight or at right angles around shapes), bends, in-place text, align and arrange, copy / paste, Undo /
   Redo, a minimap. Containers (system boundaries, swimlanes, packages, pools, frames) take shapes inside them.
+- **Line labels** can be dragged anywhere (the selected line's label has a dashed frame). A label keeps its place
+  along the line and its distance from it, so it follows when the shapes move; each drag is one Undo step.
 - **Palette** (the kind's shapes and lines), **Properties** (the kind's fields; fill, line and text colour, text size,
-  bold, line width, dash and arrowheads on every shape and line), **Problems** (the kind's notation rules: errors,
-  warnings, hints; click one to select what it's about).
+  bold, line width, dash and arrowheads on every shape and line, and a **Label background** on lines), **Problems**
+  (the kind's notation rules: errors, warnings, hints; click one to select what it's about).
+- **Colours**: every colour picker has **Transparent** (no fill, no label background) and **Default**. A shape with its
+  own fill and no text colour gets text that contrasts with the fill, so light fills stay readable in the dark theme;
+  see-through fills (#AARRGGBB) read well in both themes.
+- **Packages**: an empty package has its name in its body, wrapped; one with shapes inside has it in its tab, which
+  grows up to the package's width. A name that still doesn't fit ends in "…" and shows in full on hover and above the
+  package while it's selected.
 - **Export**: PNG, SVG, copy image, and the kind's text exports. Settings → Diagrams decides where images go: ask
   every time, next to the diagram (optionally in a subfolder), or one folder; exporting again replaces the image so
   documents linking to it stay current.
@@ -102,7 +110,10 @@ Diagram: `docs/diagrams/Diagram kinds`.
    (position in New Diagram), `DrawNode` / `DrawEdge` on an `IDiagramSurface` (Avalonia, SVG and measuring surfaces
    share it), `NodeFields` / `EdgeFields` / `DiagramFields` (`PropertyField`s: text, multiline, choice, toggle,
    colour, number or slider, rows), `Fit` (size a shape to its text), `Commands` (`KindCommand`s run against an
-   `IDiagramEditor`), and the pen, paste and file-drop hooks for kinds that need them.
+   `IDiagramEditor`), and the pen, paste and file-drop hooks for kinds that need them. Draw line labels with
+   `Label(s, text, LabelAnchor(d, e, path), …, edge: e)` so they take the line's label background and drag; a kind
+   that places labels its own way (above a sequence message, on a mind map branch) overrides **`LabelAnchor`**. A kind
+   that cuts a text short (`Folder`'s "…") reports it through **`HiddenText`**, which the canvas shows on hover.
 3. Register it: `services.AddSingleton<IDiagramKind, MyKind>()`, and require `devhub.diagrams`.
 
 Every change to a diagram is an **`IDiagramOperation`** (`Apply` returns its undo), run through `IDiagramEditor.Do` as

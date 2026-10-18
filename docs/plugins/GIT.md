@@ -33,6 +33,9 @@ restored tab. The tab title shows a dot while there are uncommitted changes.
   confirmed). Each runs in the status bar with its progress and Cancel; failures are explained (authentication, SSH
   host key, network, rejected, diverged…).
 - **Open Terminal** (**Alt+F12**): Git Bash in the repository, else Windows Terminal, else PowerShell.
+- **Narrow windows**: the sidebar (at least 200 px) and the changes list (at least 260 px) always stay side by side;
+  when there's no room left for the diff, the diff is hidden (also in commit details), and the window doesn't get
+  narrower than the two lists plus the open tool windows.
 
 **Around the tabs**: the title-bar branch widget (the front tab's branch; click for the branch popup), the **Git
 Console** tool window (bottom: every git command DevHub ran, with its duration, exit code and output).

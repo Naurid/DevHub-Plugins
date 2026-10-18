@@ -6,7 +6,7 @@
   "props": {},
   "nodes": [
     {
-      "id": "d26y85",
+      "id": "v6gnri",
       "type": "component",
       "x": 80,
       "y": 120,
@@ -15,13 +15,12 @@
       "rotation": 0,
       "text": "Projects",
       "props": {
-        "fill": "#DCEBFF",
-        "line": "#3574F0",
-        "textColor": "#1F3F7A"
+        "fill": "#383574F0",
+        "line": "#3574F0"
       }
     },
     {
-      "id": "3z9unq",
+      "id": "qms8vm",
       "type": "component",
       "x": 80,
       "y": 330,
@@ -30,13 +29,12 @@
       "rotation": 0,
       "text": "Templates",
       "props": {
-        "fill": "#DCEBFF",
-        "line": "#3574F0",
-        "textColor": "#1F3F7A"
+        "fill": "#383574F0",
+        "line": "#3574F0"
       }
     },
     {
-      "id": "6frqie",
+      "id": "mfgr6n",
       "type": "component",
       "x": 80,
       "y": 560,
@@ -47,7 +45,7 @@
       "props": {}
     },
     {
-      "id": "fhugyp",
+      "id": "7e3bv5",
       "type": "component",
       "x": 80,
       "y": 790,
@@ -58,7 +56,7 @@
       "props": {}
     },
     {
-      "id": "khbvq6",
+      "id": "3vh23z",
       "type": "component",
       "x": 1060,
       "y": 120,
@@ -67,13 +65,12 @@
       "rotation": 0,
       "text": "Git",
       "props": {
-        "fill": "#DCEBFF",
-        "line": "#3574F0",
-        "textColor": "#1F3F7A"
+        "fill": "#383574F0",
+        "line": "#3574F0"
       }
     },
     {
-      "id": "vxzm5s",
+      "id": "recswu",
       "type": "component",
       "x": 1060,
       "y": 330,
@@ -82,13 +79,12 @@
       "rotation": 0,
       "text": "GitHub",
       "props": {
-        "fill": "#DCEBFF",
-        "line": "#3574F0",
-        "textColor": "#1F3F7A"
+        "fill": "#383574F0",
+        "line": "#3574F0"
       }
     },
     {
-      "id": "s2dqp5",
+      "id": "rgdyuw",
       "type": "component",
       "x": 1060,
       "y": 520,
@@ -99,7 +95,7 @@
       "props": {}
     },
     {
-      "id": "s86cg3",
+      "id": "paf8vp",
       "type": "component",
       "x": 1060,
       "y": 680,
@@ -110,7 +106,7 @@
       "props": {}
     },
     {
-      "id": "air5ub",
+      "id": "u7y52s",
       "type": "component",
       "x": 1060,
       "y": 840,
@@ -121,7 +117,7 @@
       "props": {}
     },
     {
-      "id": "mevmv3",
+      "id": "8fmz8v",
       "type": "package",
       "x": 470,
       "y": 60,
@@ -130,13 +126,13 @@
       "rotation": 0,
       "text": "DevHub.Integration (in DevHub.Sdk)",
       "props": {
-        "fill": "#F4F5F7",
+        "fill": "#1A8C8F96",
         "line": "#8C8F96",
         "bold": "true"
       }
     },
     {
-      "id": "xhvf98",
+      "id": "rsw28f",
       "type": "provided",
       "x": 659,
       "y": 109,
@@ -144,11 +140,11 @@
       "height": 22,
       "rotation": 0,
       "text": "IProjectOpener",
-      "parentId": "mevmv3",
+      "parentId": "8fmz8v",
       "props": {}
     },
     {
-      "id": "xvsu78",
+      "id": "b68pyc",
       "type": "provided",
       "x": 659,
       "y": 179,
@@ -156,11 +152,11 @@
       "height": 22,
       "rotation": 0,
       "text": "IProjectFileEditor",
-      "parentId": "mevmv3",
+      "parentId": "8fmz8v",
       "props": {}
     },
     {
-      "id": "mwsxcz",
+      "id": "u3cib7",
       "type": "provided",
       "x": 659,
       "y": 249,
@@ -168,11 +164,11 @@
       "height": 22,
       "rotation": 0,
       "text": "IProjectFolders",
-      "parentId": "mevmv3",
+      "parentId": "8fmz8v",
       "props": {}
     },
     {
-      "id": "7ed8xg",
+      "id": "vbif8r",
       "type": "provided",
       "x": 659,
       "y": 319,
@@ -180,11 +176,11 @@
       "height": 22,
       "rotation": 0,
       "text": "IAddFilesFromTemplate",
-      "parentId": "mevmv3",
+      "parentId": "8fmz8v",
       "props": {}
     },
     {
-      "id": "44ziqw",
+      "id": "scwnrs",
       "type": "provided",
       "x": 659,
       "y": 389,
@@ -192,11 +188,11 @@
       "height": 22,
       "rotation": 0,
       "text": "IProjectCatalog",
-      "parentId": "mevmv3",
+      "parentId": "8fmz8v",
       "props": {}
     },
     {
-      "id": "vrcgwx",
+      "id": "hjyu73",
       "type": "provided",
       "x": 659,
       "y": 459,
@@ -204,11 +200,11 @@
       "height": 22,
       "rotation": 0,
       "text": "IProjectDiagrams",
-      "parentId": "mevmv3",
+      "parentId": "8fmz8v",
       "props": {}
     },
     {
-      "id": "7thahv",
+      "id": "gf5vmq",
       "type": "provided",
       "x": 659,
       "y": 529,
@@ -216,11 +212,11 @@
       "height": 22,
       "rotation": 0,
       "text": "IIssueLinks",
-      "parentId": "mevmv3",
+      "parentId": "8fmz8v",
       "props": {}
     },
     {
-      "id": "ppve7d",
+      "id": "2jt8td",
       "type": "provided",
       "x": 659,
       "y": 599,
@@ -228,11 +224,11 @@
       "height": 22,
       "rotation": 0,
       "text": "IRepositoryEvents",
-      "parentId": "mevmv3",
+      "parentId": "8fmz8v",
       "props": {}
     },
     {
-      "id": "rdbyy4",
+      "id": "jung2k",
       "type": "provided",
       "x": 659,
       "y": 669,
@@ -240,11 +236,11 @@
       "height": 22,
       "rotation": 0,
       "text": "ICommitMessageSuggester",
-      "parentId": "mevmv3",
+      "parentId": "8fmz8v",
       "props": {}
     },
     {
-      "id": "j8wdy8",
+      "id": "yw8fu4",
       "type": "provided",
       "x": 659,
       "y": 739,
@@ -252,11 +248,11 @@
       "height": 22,
       "rotation": 0,
       "text": "IGitDecorator",
-      "parentId": "mevmv3",
+      "parentId": "8fmz8v",
       "props": {}
     },
     {
-      "id": "canfyt",
+      "id": "dqq8ta",
       "type": "provided",
       "x": 659,
       "y": 809,
@@ -264,11 +260,11 @@
       "height": 22,
       "rotation": 0,
       "text": "IGitHubApi",
-      "parentId": "mevmv3",
+      "parentId": "8fmz8v",
       "props": {}
     },
     {
-      "id": "afdrgc",
+      "id": "qnyc7t",
       "type": "provided",
       "x": 659,
       "y": 879,
@@ -276,11 +272,11 @@
       "height": 22,
       "rotation": 0,
       "text": "IChartMaker",
-      "parentId": "mevmv3",
+      "parentId": "8fmz8v",
       "props": {}
     },
     {
-      "id": "3pbmvh",
+      "id": "wrbqw4",
       "type": "package",
       "x": 1360,
       "y": 60,
@@ -289,12 +285,12 @@
       "rotation": 0,
       "text": "DevHub.Git (the Git plugin's own)",
       "props": {
-        "fill": "#F4F5F7",
+        "fill": "#1A8C8F96",
         "line": "#8C8F96"
       }
     },
     {
-      "id": "dwkibw",
+      "id": "x6tmq6",
       "type": "provided",
       "x": 1479,
       "y": 139,
@@ -302,11 +298,11 @@
       "height": 22,
       "rotation": 0,
       "text": "IRemoteHost",
-      "parentId": "3pbmvh",
+      "parentId": "wrbqw4",
       "props": {}
     },
     {
-      "id": "xp7neg",
+      "id": "38xeqt",
       "type": "note",
       "x": 470,
       "y": 1000,
@@ -319,330 +315,330 @@
   ],
   "edges": [
     {
-      "id": "37bzpf",
+      "id": "6musn6",
       "type": "realization",
-      "from": "khbvq6",
-      "to": "xhvf98",
+      "from": "3vh23z",
+      "to": "rsw28f",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "gne4ap",
+      "id": "qj4veb",
       "type": "dependency",
-      "from": "d26y85",
-      "to": "xhvf98",
+      "from": "v6gnri",
+      "to": "rsw28f",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "297sya",
+      "id": "hnnvp5",
       "type": "dependency",
-      "from": "3z9unq",
-      "to": "xhvf98",
+      "from": "qms8vm",
+      "to": "rsw28f",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "z9k4vx",
+      "id": "9w8an5",
       "type": "realization",
-      "from": "d26y85",
-      "to": "xvsu78",
+      "from": "v6gnri",
+      "to": "b68pyc",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "c5y6q6",
+      "id": "iugkgr",
       "type": "dependency",
-      "from": "khbvq6",
-      "to": "xvsu78",
+      "from": "3vh23z",
+      "to": "b68pyc",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "cebt38",
+      "id": "8gi2tq",
       "type": "dependency",
-      "from": "3z9unq",
-      "to": "xvsu78",
+      "from": "qms8vm",
+      "to": "b68pyc",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "sqgv3c",
+      "id": "ahb3uk",
       "type": "realization",
-      "from": "d26y85",
-      "to": "mwsxcz",
+      "from": "v6gnri",
+      "to": "u3cib7",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "cnx4k8",
+      "id": "vtjaxv",
       "type": "dependency",
-      "from": "khbvq6",
-      "to": "mwsxcz",
+      "from": "3vh23z",
+      "to": "u3cib7",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "8xjhn7",
+      "id": "nt6ujm",
       "type": "dependency",
-      "from": "3z9unq",
-      "to": "mwsxcz",
+      "from": "qms8vm",
+      "to": "u3cib7",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "qubrn4",
+      "id": "dnfwfq",
       "type": "realization",
-      "from": "3z9unq",
-      "to": "7ed8xg",
+      "from": "qms8vm",
+      "to": "vbif8r",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "sy85hw",
+      "id": "kd8ijh",
       "type": "dependency",
-      "from": "khbvq6",
-      "to": "7ed8xg",
+      "from": "3vh23z",
+      "to": "vbif8r",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "9gm9db",
+      "id": "t2u75i",
       "type": "dependency",
-      "from": "d26y85",
-      "to": "7ed8xg",
+      "from": "v6gnri",
+      "to": "vbif8r",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "j6u6w8",
+      "id": "uc28ge",
       "type": "realization",
-      "from": "d26y85",
-      "to": "44ziqw",
+      "from": "v6gnri",
+      "to": "scwnrs",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "5xhrxb",
+      "id": "yriee2",
       "type": "dependency",
-      "from": "6frqie",
-      "to": "44ziqw",
+      "from": "mfgr6n",
+      "to": "scwnrs",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "9tbuam",
+      "id": "g59kh8",
       "type": "realization",
-      "from": "6frqie",
-      "to": "vrcgwx",
+      "from": "mfgr6n",
+      "to": "hjyu73",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "472wa7",
+      "id": "93zsjr",
       "type": "dependency",
-      "from": "d26y85",
-      "to": "vrcgwx",
+      "from": "v6gnri",
+      "to": "hjyu73",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "ntn4pb",
+      "id": "i84czq",
       "type": "dependency",
-      "from": "s86cg3",
-      "to": "vrcgwx",
+      "from": "paf8vp",
+      "to": "hjyu73",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "retxev",
+      "id": "zt7w3k",
       "type": "realization",
-      "from": "s86cg3",
-      "to": "7thahv",
+      "from": "paf8vp",
+      "to": "gf5vmq",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "4i24pq",
+      "id": "ajsacs",
       "type": "dependency",
-      "from": "6frqie",
-      "to": "7thahv",
+      "from": "mfgr6n",
+      "to": "gf5vmq",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "8hkyyd",
+      "id": "ye4p8g",
       "type": "realization",
-      "from": "khbvq6",
-      "to": "ppve7d",
+      "from": "3vh23z",
+      "to": "2jt8td",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "gga96z",
+      "id": "rcc43m",
       "type": "dependency",
-      "from": "s2dqp5",
-      "to": "ppve7d",
+      "from": "rgdyuw",
+      "to": "2jt8td",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "draq2q",
+      "id": "ryeyba",
       "type": "realization",
-      "from": "s2dqp5",
-      "to": "rdbyy4",
+      "from": "rgdyuw",
+      "to": "jung2k",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "8p3utn",
+      "id": "283nah",
       "type": "dependency",
-      "from": "khbvq6",
-      "to": "rdbyy4",
+      "from": "3vh23z",
+      "to": "jung2k",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "akq8ek",
+      "id": "252747",
       "type": "realization",
-      "from": "s2dqp5",
-      "to": "j8wdy8",
+      "from": "rgdyuw",
+      "to": "yw8fu4",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "syx6ja",
+      "id": "c64tx6",
       "type": "dependency",
-      "from": "khbvq6",
-      "to": "j8wdy8",
+      "from": "3vh23z",
+      "to": "yw8fu4",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "e72spn",
+      "id": "dbs9ne",
       "type": "realization",
-      "from": "vxzm5s",
-      "to": "canfyt",
+      "from": "recswu",
+      "to": "dqq8ta",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "py4hv9",
+      "id": "yscdaw",
       "type": "dependency",
-      "from": "s2dqp5",
-      "to": "canfyt",
+      "from": "rgdyuw",
+      "to": "dqq8ta",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "v3tb7w",
+      "id": "9c48a5",
       "type": "dependency",
-      "from": "s86cg3",
-      "to": "canfyt",
+      "from": "paf8vp",
+      "to": "dqq8ta",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "5gkkiz",
+      "id": "zuknsf",
       "type": "realization",
-      "from": "fhugyp",
-      "to": "afdrgc",
+      "from": "7e3bv5",
+      "to": "qnyc7t",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "79k7n4",
+      "id": "std2fh",
       "type": "dependency",
-      "from": "air5ub",
-      "to": "afdrgc",
+      "from": "u7y52s",
+      "to": "qnyc7t",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "rhkhir",
+      "id": "wz6555",
       "type": "realization",
-      "from": "vxzm5s",
-      "to": "dwkibw",
+      "from": "recswu",
+      "to": "x6tmq6",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "p6ctk4",
+      "id": "knhhba",
       "type": "dependency",
-      "from": "khbvq6",
-      "to": "dwkibw",
+      "from": "3vh23z",
+      "to": "x6tmq6",
       "text": "",
       "routing": "straight",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "mm4zbk",
+      "id": "hj48rj",
       "type": "noteLink",
-      "from": "xp7neg",
-      "to": "mevmv3",
+      "from": "38xeqt",
+      "to": "8fmz8v",
       "text": "",
       "routing": "straight",
       "waypoints": [],

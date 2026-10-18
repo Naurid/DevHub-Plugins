@@ -6,7 +6,7 @@
   "props": {},
   "nodes": [
     {
-      "id": "337eag",
+      "id": "vkjk8g",
       "type": "lane",
       "x": 40,
       "y": 40,
@@ -19,7 +19,7 @@
       }
     },
     {
-      "id": "by2q2h",
+      "id": "kzize6",
       "type": "lane",
       "x": 660,
       "y": 40,
@@ -29,11 +29,11 @@
       "text": "DevHub (Settings → Plugins → Marketplace)",
       "props": {
         "vertical": "true",
-        "fill": "#FFF8EC"
+        "fill": "#1AD98C1F"
       }
     },
     {
-      "id": "jwq4up",
+      "id": "tty47u",
       "type": "start",
       "x": 327,
       "y": 97,
@@ -41,11 +41,11 @@
       "height": 26,
       "rotation": 0,
       "text": "",
-      "parentId": "337eag",
+      "parentId": "vkjk8g",
       "props": {}
     },
     {
-      "id": "i6b6ii",
+      "id": "q2q95e",
       "type": "action",
       "x": 150,
       "y": 165,
@@ -53,11 +53,11 @@
       "height": 50,
       "rotation": 0,
       "text": "Push or merge to main (or a plugin's <id>/vN tag)",
-      "parentId": "337eag",
+      "parentId": "vkjk8g",
       "props": {}
     },
     {
-      "id": "igbimv",
+      "id": "59tnv5",
       "type": "action",
       "x": 150,
       "y": 245,
@@ -65,11 +65,11 @@
       "height": 50,
       "rotation": 0,
       "text": "CI: build with -warnaserror, tests, vulnerable packages",
-      "parentId": "337eag",
+      "parentId": "vkjk8g",
       "props": {}
     },
     {
-      "id": "nze69y",
+      "id": "nm9bfb",
       "type": "action",
       "x": 140,
       "y": 325,
@@ -77,11 +77,11 @@
       "height": 50,
       "rotation": 0,
       "text": "Next plugin: its version from git (Get-PluginVersion.ps1)",
-      "parentId": "337eag",
+      "parentId": "vkjk8g",
       "props": {}
     },
     {
-      "id": "h6dufs",
+      "id": "nv448j",
       "type": "decision",
       "x": 323,
       "y": 413,
@@ -89,11 +89,11 @@
       "height": 34,
       "rotation": 0,
       "text": "",
-      "parentId": "337eag",
+      "parentId": "vkjk8g",
       "props": {}
     },
     {
-      "id": "igukpt",
+      "id": "6qzznt",
       "type": "action",
       "x": 130,
       "y": 495,
@@ -101,15 +101,14 @@
       "height": 56,
       "rotation": 0,
       "text": "Pack <id>-<version>.zip (Pack-Plugin.ps1: required plugins' DLLs left out)",
-      "parentId": "337eag",
+      "parentId": "vkjk8g",
       "props": {
-        "fill": "#DCEBFF",
-        "line": "#3574F0",
-        "textColor": "#1F3F7A"
+        "fill": "#383574F0",
+        "line": "#3574F0"
       }
     },
     {
-      "id": "35w3xb",
+      "id": "qejkm6",
       "type": "action",
       "x": 170,
       "y": 585,
@@ -117,11 +116,11 @@
       "height": 50,
       "rotation": 0,
       "text": "Create the GitHub release with the zip",
-      "parentId": "337eag",
+      "parentId": "vkjk8g",
       "props": {}
     },
     {
-      "id": "35qu6b",
+      "id": "cbxq23",
       "type": "action",
       "x": 130,
       "y": 665,
@@ -129,11 +128,11 @@
       "height": 50,
       "rotation": 0,
       "text": "Replace its entry in index.json (version, URL, SHA-256, size)",
-      "parentId": "337eag",
+      "parentId": "vkjk8g",
       "props": {}
     },
     {
-      "id": "vdkchs",
+      "id": "pewtxs",
       "type": "decision",
       "x": 323,
       "y": 753,
@@ -141,11 +140,11 @@
       "height": 34,
       "rotation": 0,
       "text": "",
-      "parentId": "337eag",
+      "parentId": "vkjk8g",
       "props": {}
     },
     {
-      "id": "3d4rr2",
+      "id": "bcmux4",
       "type": "decision",
       "x": 323,
       "y": 833,
@@ -153,11 +152,11 @@
       "height": 34,
       "rotation": 0,
       "text": "",
-      "parentId": "337eag",
+      "parentId": "vkjk8g",
       "props": {}
     },
     {
-      "id": "yxbafb",
+      "id": "x6u5vb",
       "type": "action",
       "x": 740,
       "y": 825,
@@ -165,11 +164,11 @@
       "height": 50,
       "rotation": 0,
       "text": "Refresh: read index.json from every source",
-      "parentId": "by2q2h",
+      "parentId": "kzize6",
       "props": {}
     },
     {
-      "id": "yz7q3c",
+      "id": "xiwpk9",
       "type": "action",
       "x": 720,
       "y": 905,
@@ -177,11 +176,11 @@
       "height": 50,
       "rotation": 0,
       "text": "Install: plan the requirements (same plugin API, no circles)",
-      "parentId": "by2q2h",
+      "parentId": "kzize6",
       "props": {}
     },
     {
-      "id": "y8vd5v",
+      "id": "za9ubm",
       "type": "action",
       "x": 730,
       "y": 985,
@@ -189,11 +188,11 @@
       "height": 50,
       "rotation": 0,
       "text": "Download, check the SHA-256, unpack into .pending",
-      "parentId": "by2q2h",
+      "parentId": "kzize6",
       "props": {}
     },
     {
-      "id": "88muwk",
+      "id": "d5ycxp",
       "type": "action",
       "x": 720,
       "y": 1065,
@@ -201,15 +200,14 @@
       "height": 50,
       "rotation": 0,
       "text": "Restart: ApplyPending moves it into place, then it loads",
-      "parentId": "by2q2h",
+      "parentId": "kzize6",
       "props": {
-        "fill": "#DCEBFF",
-        "line": "#3574F0",
-        "textColor": "#1F3F7A"
+        "fill": "#383574F0",
+        "line": "#3574F0"
       }
     },
     {
-      "id": "k7ps33",
+      "id": "s6xgtj",
       "type": "end",
       "x": 905,
       "y": 1155,
@@ -217,166 +215,166 @@
       "height": 30,
       "rotation": 0,
       "text": "",
-      "parentId": "by2q2h",
+      "parentId": "kzize6",
       "props": {}
     }
   ],
   "edges": [
     {
-      "id": "nunyum",
+      "id": "uzc3n3",
       "type": "flow",
-      "from": "jwq4up",
-      "to": "i6b6ii",
+      "from": "tty47u",
+      "to": "q2q95e",
       "text": "",
       "routing": "orthogonal",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "e8erfg",
+      "id": "ifbrus",
       "type": "flow",
-      "from": "i6b6ii",
-      "to": "igbimv",
+      "from": "q2q95e",
+      "to": "59tnv5",
       "text": "",
       "routing": "orthogonal",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "7faa3t",
+      "id": "xn2rxw",
       "type": "flow",
-      "from": "igbimv",
-      "to": "nze69y",
+      "from": "59tnv5",
+      "to": "nm9bfb",
       "text": "",
       "routing": "orthogonal",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "stcd47",
+      "id": "xjqk4a",
       "type": "flow",
-      "from": "nze69y",
-      "to": "h6dufs",
+      "from": "nm9bfb",
+      "to": "nv448j",
       "text": "",
       "routing": "orthogonal",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "cgznph",
+      "id": "rqiygy",
       "type": "flow",
-      "from": "h6dufs",
-      "to": "igukpt",
+      "from": "nv448j",
+      "to": "6qzznt",
       "text": "[no release <id>-<version> yet]",
       "routing": "orthogonal",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "ms28m2",
+      "id": "wgzhw3",
       "type": "flow",
-      "from": "h6dufs",
-      "to": "vdkchs",
+      "from": "nv448j",
+      "to": "pewtxs",
       "text": "[already released]",
       "routing": "orthogonal",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "sn3g6w",
+      "id": "7izwwj",
       "type": "flow",
-      "from": "igukpt",
-      "to": "35w3xb",
+      "from": "6qzznt",
+      "to": "qejkm6",
       "text": "",
       "routing": "orthogonal",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "xncfvu",
+      "id": "w9zkgd",
       "type": "flow",
-      "from": "35w3xb",
-      "to": "35qu6b",
+      "from": "qejkm6",
+      "to": "cbxq23",
       "text": "",
       "routing": "orthogonal",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "xzsth7",
+      "id": "uhbmm4",
       "type": "flow",
-      "from": "35qu6b",
-      "to": "vdkchs",
+      "from": "cbxq23",
+      "to": "pewtxs",
       "text": "",
       "routing": "orthogonal",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "npx4f9",
+      "id": "tv23ib",
       "type": "flow",
-      "from": "vdkchs",
-      "to": "3d4rr2",
+      "from": "pewtxs",
+      "to": "bcmux4",
       "text": "",
       "routing": "orthogonal",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "wn73xf",
+      "id": "e2hemu",
       "type": "flow",
-      "from": "3d4rr2",
-      "to": "nze69y",
+      "from": "bcmux4",
+      "to": "nm9bfb",
       "text": "[more plugins]",
       "routing": "orthogonal",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "fef3hk",
+      "id": "4j2g4z",
       "type": "flow",
-      "from": "3d4rr2",
-      "to": "yxbafb",
+      "from": "bcmux4",
+      "to": "x6u5vb",
       "text": "[all done]",
       "routing": "orthogonal",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "usbkck",
+      "id": "krs8sm",
       "type": "flow",
-      "from": "yxbafb",
-      "to": "yz7q3c",
+      "from": "x6u5vb",
+      "to": "xiwpk9",
       "text": "",
       "routing": "orthogonal",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "fqksvi",
+      "id": "d8imf3",
       "type": "flow",
-      "from": "yz7q3c",
-      "to": "y8vd5v",
+      "from": "xiwpk9",
+      "to": "za9ubm",
       "text": "",
       "routing": "orthogonal",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "8jbvgs",
+      "id": "nitb6z",
       "type": "flow",
-      "from": "y8vd5v",
-      "to": "88muwk",
+      "from": "za9ubm",
+      "to": "d5ycxp",
       "text": "",
       "routing": "orthogonal",
       "waypoints": [],
       "props": {}
     },
     {
-      "id": "t6akpw",
+      "id": "2u8z6k",
       "type": "flow",
-      "from": "88muwk",
-      "to": "k7ps33",
+      "from": "d5ycxp",
+      "to": "s6xgtj",
       "text": "",
       "routing": "orthogonal",
       "waypoints": [],
