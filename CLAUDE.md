@@ -143,8 +143,9 @@ dotnet test DevHub-Plugins.sln
 - UI changes: Claude can build but not see the window: drive it (UI Automation) or end with a **manual check list**.
 
 ## Versions and publishing (README.md)
-- Each plugin has its own version, **N.M.0**: N = its highest `<id>/vN` tag (only the user creates those), M = pushes
-  on main touching `plugins/<Name>/` since. Every push to main publishes the plugins whose version changed (a
+- Each plugin has its own version, **N.M.P**: N = its highest `<id>/vN` tag (only the user creates those); each push on
+  main touching `plugins/<Name>/` since adds 1 to P when it merges a `Fix/` (`Hotfix/`, `Bugfix/`) branch, else 1 to M
+  (P back to 0). Name a branch `Fix/…` when it only fixes things. Every push to main publishes the plugins whose version changed (a
   release per plugin version + `index.json` on the `index` release); `"publish": false` in plugin.json skips one.
 - A change that needs a newer Sdk is released in DevHub first (the Sdk on nuget.org), then here; DevHub's next
   release bundles the new plugin versions.
