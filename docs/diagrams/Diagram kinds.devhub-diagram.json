@@ -1,0 +1,734 @@
+{
+  "schemaVersion": 1,
+  "kind": "class",
+  "title": "Diagrams: the IDiagramKind extension point",
+  "project": "../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "ysx26w",
+      "type": "package",
+      "x": 30,
+      "y": 40,
+      "width": 1058,
+      "height": 741,
+      "rotation": 0,
+      "text": "DevHub.Diagrams.Core",
+      "props": {
+        "fill": "#F4F5F7",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "7krfd8",
+      "type": "interface",
+      "x": 60,
+      "y": 90,
+      "width": 384,
+      "height": 193,
+      "rotation": 0,
+      "text": "IDiagramKindModel",
+      "parentId": "ysx26w",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ NodeTypes : IReadOnlyList<NodeTypeInfo>\n+ EdgeTypes : IReadOnlyList<EdgeTypeInfo>\n+ Rules : IReadOnlyList<IDiagramRule>\n+ TextExporters : IReadOnlyList<IDiagramTextExporter>\n+ Samples : IReadOnlyList<DiagramSample>",
+        "operations": "+ Create(title : string) : Diagram",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "2b78v9",
+      "type": "class",
+      "x": 560,
+      "y": 90,
+      "width": 267,
+      "height": 121,
+      "rotation": 0,
+      "text": "Diagram",
+      "parentId": "ysx26w",
+      "props": {
+        "attributes": "+ SchemaVersion : int\n+ Kind : string\n+ Title : string\n+ Project : string?\n+ Props : Dictionary<string, string>",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "twj44b",
+      "type": "class",
+      "x": 560,
+      "y": 300,
+      "width": 267,
+      "height": 138,
+      "rotation": 0,
+      "text": "DiagramNode",
+      "parentId": "ysx26w",
+      "props": {
+        "attributes": "+ Id : string\n+ Type : string\n+ X, Y, Width, Height : double\n+ Text : string\n+ ParentId : string?\n+ Props : Dictionary<string, string>",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "mwa4qh",
+      "type": "class",
+      "x": 860,
+      "y": 300,
+      "width": 198,
+      "height": 155,
+      "rotation": 0,
+      "text": "DiagramEdge",
+      "parentId": "ysx26w",
+      "props": {
+        "attributes": "+ Id : string\n+ Type : string\n+ From : string\n+ To : string\n+ Text : string\n+ Routing : EdgeRouting\n+ Waypoints : List<DPoint>",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "cra28x",
+      "type": "interface",
+      "x": 60,
+      "y": 380,
+      "width": 405,
+      "height": 68,
+      "rotation": 0,
+      "text": "IDiagramRule",
+      "parentId": "ysx26w",
+      "props": {
+        "attributes": "",
+        "operations": "+ Check(diagram : Diagram) : IEnumerable<DiagramProblem>",
+        "showAttributes": "false",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "xdahng",
+      "type": "interface",
+      "x": 60,
+      "y": 500,
+      "width": 267,
+      "height": 108,
+      "rotation": 0,
+      "text": "IDiagramTextExporter",
+      "parentId": "ysx26w",
+      "props": {
+        "attributes": "+ Name : string\n+ Extension : string",
+        "operations": "+ Export(diagram : Diagram) : string",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "pdrnyt",
+      "type": "interface",
+      "x": 60,
+      "y": 660,
+      "width": 336,
+      "height": 91,
+      "rotation": 0,
+      "text": "IDiagramOperation",
+      "parentId": "ysx26w",
+      "props": {
+        "attributes": "+ Name : string",
+        "operations": "+ Apply(diagram : Diagram) : IDiagramOperation",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "6zsucj",
+      "type": "package",
+      "x": 1230,
+      "y": 40,
+      "width": 891,
+      "height": 535,
+      "rotation": 0,
+      "text": "DevHub.Diagrams",
+      "props": {
+        "fill": "#F4F5F7",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "gw4qyi",
+      "type": "interface",
+      "x": 1260,
+      "y": 90,
+      "width": 357,
+      "height": 244,
+      "rotation": 0,
+      "text": "IDiagramKind",
+      "parentId": "6zsucj",
+      "props": {
+        "attributes": "+ Model : IDiagramKindModel\n+ IconKind : string\n+ Order : int\n+ Commands : IReadOnlyList<KindCommand>\n+ HasPen : bool",
+        "operations": "+ DrawNode(surface, diagram, node)\n+ DrawEdge(surface, diagram, edge, path)\n+ NodeFields(node) : IReadOnlyList<PropertyField>\n+ Fit(node, measure) : DRect?\n+ PasteAsync(editor, at) : Task<bool>\n+ DropFilesAsync(editor, paths, at) : Task<bool>",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "n7kjjd",
+      "type": "class",
+      "x": 1260,
+      "y": 420,
+      "width": 143,
+      "height": 41,
+      "rotation": 0,
+      "text": "DiagramKindBase",
+      "parentId": "6zsucj",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true"
+      }
+    },
+    {
+      "id": "gfsz2k",
+      "type": "interface",
+      "x": 1700,
+      "y": 420,
+      "width": 391,
+      "height": 125,
+      "rotation": 0,
+      "text": "IDiagramEditor",
+      "parentId": "6zsucj",
+      "props": {
+        "attributes": "+ Diagram : Diagram\n+ Selection : IReadOnlyList<string>",
+        "operations": "+ Do(operation : IDiagramOperation) : bool\n+ OpenGeneratedAsync(diagram : Diagram, path : string)",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "w7vaa7",
+      "type": "package",
+      "x": 730,
+      "y": 830,
+      "width": 387,
+      "height": 261,
+      "rotation": 0,
+      "text": "UML Diagrams",
+      "props": {
+        "fill": "#DCEBFF",
+        "line": "#3574F0",
+        "textColor": "#1F3F7A"
+      }
+    },
+    {
+      "id": "agza5r",
+      "type": "class",
+      "x": 760,
+      "y": 880,
+      "width": 120,
+      "height": 41,
+      "rotation": 0,
+      "text": "UseCaseKind",
+      "parentId": "w7vaa7",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "fw9s52",
+      "type": "class",
+      "x": 960,
+      "y": 880,
+      "width": 120,
+      "height": 41,
+      "rotation": 0,
+      "text": "ActivityKind",
+      "parentId": "w7vaa7",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "i5wceh",
+      "type": "class",
+      "x": 760,
+      "y": 950,
+      "width": 120,
+      "height": 41,
+      "rotation": 0,
+      "text": "ClassKind",
+      "parentId": "w7vaa7",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "gm68s4",
+      "type": "class",
+      "x": 960,
+      "y": 950,
+      "width": 120,
+      "height": 41,
+      "rotation": 0,
+      "text": "SequenceKind",
+      "parentId": "w7vaa7",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "xgs7j3",
+      "type": "class",
+      "x": 760,
+      "y": 1020,
+      "width": 120,
+      "height": 41,
+      "rotation": 0,
+      "text": "StateKind",
+      "parentId": "w7vaa7",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "twn7z8",
+      "type": "class",
+      "x": 960,
+      "y": 1020,
+      "width": 127,
+      "height": 41,
+      "rotation": 0,
+      "text": "StructureKind",
+      "parentId": "w7vaa7",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "b4wqa8",
+      "type": "package",
+      "x": 1230,
+      "y": 830,
+      "width": 180,
+      "height": 191,
+      "rotation": 0,
+      "text": "Database Diagrams",
+      "props": {
+        "fill": "#DCEBFF",
+        "line": "#3574F0",
+        "textColor": "#1F3F7A"
+      }
+    },
+    {
+      "id": "f3tvyh",
+      "type": "class",
+      "x": 1260,
+      "y": 880,
+      "width": 120,
+      "height": 41,
+      "rotation": 0,
+      "text": "MeriseKind",
+      "parentId": "b4wqa8",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "t8jgwy",
+      "type": "class",
+      "x": 1260,
+      "y": 950,
+      "width": 120,
+      "height": 41,
+      "rotation": 0,
+      "text": "ErdKind",
+      "parentId": "b4wqa8",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "hhq8ya",
+      "type": "package",
+      "x": 1530,
+      "y": 830,
+      "width": 187,
+      "height": 261,
+      "rotation": 0,
+      "text": "Business Diagrams",
+      "props": {
+        "fill": "#DCEBFF",
+        "line": "#3574F0",
+        "textColor": "#1F3F7A"
+      }
+    },
+    {
+      "id": "4h3s4h",
+      "type": "class",
+      "x": 1560,
+      "y": 880,
+      "width": 127,
+      "height": 41,
+      "rotation": 0,
+      "text": "FlowchartKind",
+      "parentId": "hhq8ya",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "unqtw5",
+      "type": "class",
+      "x": 1560,
+      "y": 950,
+      "width": 120,
+      "height": 41,
+      "rotation": 0,
+      "text": "BpmnKind",
+      "parentId": "hhq8ya",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "638haw",
+      "type": "class",
+      "x": 1560,
+      "y": 1020,
+      "width": 120,
+      "height": 41,
+      "rotation": 0,
+      "text": "MindMapKind",
+      "parentId": "hhq8ya",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "stpizg",
+      "type": "package",
+      "x": 1830,
+      "y": 830,
+      "width": 187,
+      "height": 121,
+      "rotation": 0,
+      "text": "Mood Boards",
+      "props": {
+        "fill": "#DCEBFF",
+        "line": "#3574F0",
+        "textColor": "#1F3F7A"
+      }
+    },
+    {
+      "id": "ytvma4",
+      "type": "class",
+      "x": 1860,
+      "y": 880,
+      "width": 127,
+      "height": 41,
+      "rotation": 0,
+      "text": "MoodBoardKind",
+      "parentId": "stpizg",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "drjemt",
+      "type": "note",
+      "x": 60,
+      "y": 900,
+      "width": 560,
+      "height": 80,
+      "rotation": 0,
+      "text": "A kind plugin registers services.AddSingleton<IDiagramKind, …>(); its .Core holds the IDiagramKindModel (shapes, lines, rules, exports), tested without UI.",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "tsg6tp",
+      "type": "composition",
+      "from": "2b78v9",
+      "to": "twj44b",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "ynvcgh",
+      "type": "composition",
+      "from": "2b78v9",
+      "to": "mwa4qh",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "7c7nps",
+      "type": "dependency",
+      "from": "7krfd8",
+      "to": "2b78v9",
+      "text": "creates",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "fc6wzf",
+      "type": "association",
+      "from": "7krfd8",
+      "to": "cra28x",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "subewt",
+      "type": "association",
+      "from": "7krfd8",
+      "to": "xdahng",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "iw5dki",
+      "type": "dependency",
+      "from": "pdrnyt",
+      "to": "2b78v9",
+      "text": "changes",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "dkpctb",
+      "type": "association",
+      "from": "gw4qyi",
+      "to": "7krfd8",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Model"
+      }
+    },
+    {
+      "id": "76hxww",
+      "type": "realization",
+      "from": "n7kjjd",
+      "to": "gw4qyi",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "rpy8gt",
+      "type": "dependency",
+      "from": "gfsz2k",
+      "to": "pdrnyt",
+      "text": "Do (one Undo step)",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ignwpa",
+      "type": "generalization",
+      "from": "agza5r",
+      "to": "n7kjjd",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "7eb8bn",
+      "type": "generalization",
+      "from": "fw9s52",
+      "to": "n7kjjd",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ne8yg5",
+      "type": "generalization",
+      "from": "i5wceh",
+      "to": "n7kjjd",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "2x8s9p",
+      "type": "generalization",
+      "from": "gm68s4",
+      "to": "n7kjjd",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "5jcexc",
+      "type": "generalization",
+      "from": "xgs7j3",
+      "to": "n7kjjd",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "vybqcz",
+      "type": "generalization",
+      "from": "twn7z8",
+      "to": "n7kjjd",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "m7basb",
+      "type": "generalization",
+      "from": "f3tvyh",
+      "to": "n7kjjd",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "fz3ukp",
+      "type": "generalization",
+      "from": "t8jgwy",
+      "to": "n7kjjd",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "zjb4yw",
+      "type": "generalization",
+      "from": "4h3s4h",
+      "to": "n7kjjd",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "tbxyez",
+      "type": "generalization",
+      "from": "unqtw5",
+      "to": "n7kjjd",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "6twrut",
+      "type": "generalization",
+      "from": "638haw",
+      "to": "n7kjjd",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "q97jsq",
+      "type": "generalization",
+      "from": "ytvma4",
+      "to": "n7kjjd",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "6qrexn",
+      "type": "noteLink",
+      "from": "drjemt",
+      "to": "gw4qyi",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 30,
+    "y": 40,
+    "width": 2091,
+    "height": 1051,
+    "left": 30,
+    "top": 40,
+    "right": 2121,
+    "bottom": 1091,
+    "center": {
+      "x": 1075.5,
+      "y": 565.5,
+      "length": 1215.1092543471143
+    }
+  }
+}

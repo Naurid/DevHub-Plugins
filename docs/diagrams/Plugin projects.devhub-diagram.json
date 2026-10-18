@@ -1,0 +1,1159 @@
+{
+  "schemaVersion": 1,
+  "kind": "package",
+  "title": "Plugin projects and their references",
+  "project": "../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "7ku7kd",
+      "type": "package",
+      "x": 30,
+      "y": 30,
+      "width": 400,
+      "height": 180,
+      "rotation": 0,
+      "text": "plugins/Projects",
+      "props": {
+        "fill": "#F4F5F7",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "cm7kbu",
+      "type": "package",
+      "x": 50,
+      "y": 90,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.Projects",
+      "parentId": "7ku7kd",
+      "props": {
+        "fill": "#DCEBFF",
+        "line": "#3574F0",
+        "textColor": "#1F3F7A"
+      }
+    },
+    {
+      "id": "rqiuma",
+      "type": "package",
+      "x": 235,
+      "y": 90,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.Projects.Core",
+      "parentId": "7ku7kd",
+      "props": {
+        "fill": "#E3F5EA",
+        "line": "#2E9E5B"
+      }
+    },
+    {
+      "id": "kr8usr",
+      "type": "package",
+      "x": 470,
+      "y": 30,
+      "width": 400,
+      "height": 180,
+      "rotation": 0,
+      "text": "plugins/Templates",
+      "props": {
+        "fill": "#F4F5F7",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "f83pep",
+      "type": "package",
+      "x": 490,
+      "y": 90,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.Templates",
+      "parentId": "kr8usr",
+      "props": {
+        "fill": "#DCEBFF",
+        "line": "#3574F0",
+        "textColor": "#1F3F7A"
+      }
+    },
+    {
+      "id": "bsgkyk",
+      "type": "package",
+      "x": 675,
+      "y": 90,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.Templates.Core",
+      "parentId": "kr8usr",
+      "props": {
+        "fill": "#E3F5EA",
+        "line": "#2E9E5B"
+      }
+    },
+    {
+      "id": "455irn",
+      "type": "package",
+      "x": 910,
+      "y": 30,
+      "width": 400,
+      "height": 180,
+      "rotation": 0,
+      "text": "plugins/Charts",
+      "props": {
+        "fill": "#F4F5F7",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "55pf9h",
+      "type": "package",
+      "x": 930,
+      "y": 90,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.Charts",
+      "parentId": "455irn",
+      "props": {
+        "fill": "#DCEBFF",
+        "line": "#3574F0",
+        "textColor": "#1F3F7A"
+      }
+    },
+    {
+      "id": "jadrux",
+      "type": "package",
+      "x": 1115,
+      "y": 90,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.Charts.Core",
+      "parentId": "455irn",
+      "props": {
+        "fill": "#E3F5EA",
+        "line": "#2E9E5B"
+      }
+    },
+    {
+      "id": "zup6bq",
+      "type": "package",
+      "x": 30,
+      "y": 270,
+      "width": 400,
+      "height": 180,
+      "rotation": 0,
+      "text": "plugins/Git",
+      "props": {
+        "fill": "#F4F5F7",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "f2j33g",
+      "type": "package",
+      "x": 50,
+      "y": 330,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.Git",
+      "parentId": "zup6bq",
+      "props": {
+        "fill": "#DCEBFF",
+        "line": "#3574F0",
+        "textColor": "#1F3F7A"
+      }
+    },
+    {
+      "id": "yc65bd",
+      "type": "package",
+      "x": 235,
+      "y": 330,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.Git.Core",
+      "parentId": "zup6bq",
+      "props": {
+        "fill": "#E3F5EA",
+        "line": "#2E9E5B"
+      }
+    },
+    {
+      "id": "u8yajy",
+      "type": "package",
+      "x": 470,
+      "y": 270,
+      "width": 400,
+      "height": 180,
+      "rotation": 0,
+      "text": "plugins/GitHub",
+      "props": {
+        "fill": "#F4F5F7",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "kphisn",
+      "type": "package",
+      "x": 490,
+      "y": 330,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.GitHub",
+      "parentId": "u8yajy",
+      "props": {
+        "fill": "#DCEBFF",
+        "line": "#3574F0",
+        "textColor": "#1F3F7A"
+      }
+    },
+    {
+      "id": "yeu8fq",
+      "type": "package",
+      "x": 675,
+      "y": 330,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.GitHub.Core",
+      "parentId": "u8yajy",
+      "props": {
+        "fill": "#E3F5EA",
+        "line": "#2E9E5B"
+      }
+    },
+    {
+      "id": "7kyhhr",
+      "type": "package",
+      "x": 910,
+      "y": 270,
+      "width": 400,
+      "height": 180,
+      "rotation": 0,
+      "text": "plugins/BoardGit",
+      "props": {
+        "fill": "#F4F5F7",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "h9bzti",
+      "type": "package",
+      "x": 930,
+      "y": 330,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.Board.Git",
+      "parentId": "7kyhhr",
+      "props": {
+        "fill": "#DCEBFF",
+        "line": "#3574F0",
+        "textColor": "#1F3F7A"
+      }
+    },
+    {
+      "id": "8z4jmy",
+      "type": "package",
+      "x": 1115,
+      "y": 330,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.Board.Git.Core",
+      "parentId": "7kyhhr",
+      "props": {
+        "fill": "#E3F5EA",
+        "line": "#2E9E5B"
+      }
+    },
+    {
+      "id": "xzqjrx",
+      "type": "package",
+      "x": 30,
+      "y": 490,
+      "width": 400,
+      "height": 180,
+      "rotation": 0,
+      "text": "plugins/Board",
+      "props": {
+        "fill": "#F4F5F7",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "3bvxsc",
+      "type": "package",
+      "x": 50,
+      "y": 550,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.Board",
+      "parentId": "xzqjrx",
+      "props": {
+        "fill": "#DCEBFF",
+        "line": "#3574F0",
+        "textColor": "#1F3F7A"
+      }
+    },
+    {
+      "id": "m7cgut",
+      "type": "package",
+      "x": 235,
+      "y": 550,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.Board.Core",
+      "parentId": "xzqjrx",
+      "props": {
+        "fill": "#E3F5EA",
+        "line": "#2E9E5B"
+      }
+    },
+    {
+      "id": "b6btyy",
+      "type": "package",
+      "x": 470,
+      "y": 490,
+      "width": 400,
+      "height": 180,
+      "rotation": 0,
+      "text": "plugins/BoardScrum",
+      "props": {
+        "fill": "#F4F5F7",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "4wqjnr",
+      "type": "package",
+      "x": 490,
+      "y": 550,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.Board.Scrum",
+      "parentId": "b6btyy",
+      "props": {
+        "fill": "#DCEBFF",
+        "line": "#3574F0",
+        "textColor": "#1F3F7A"
+      }
+    },
+    {
+      "id": "7ssz5m",
+      "type": "package",
+      "x": 910,
+      "y": 490,
+      "width": 400,
+      "height": 180,
+      "rotation": 0,
+      "text": "plugins/BoardReports",
+      "props": {
+        "fill": "#F4F5F7",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "hyukar",
+      "type": "package",
+      "x": 930,
+      "y": 550,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.Board.Reports",
+      "parentId": "7ssz5m",
+      "props": {
+        "fill": "#DCEBFF",
+        "line": "#3574F0",
+        "textColor": "#1F3F7A"
+      }
+    },
+    {
+      "id": "udt6ge",
+      "type": "package",
+      "x": 1115,
+      "y": 550,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.Board.Reports.Core",
+      "parentId": "7ssz5m",
+      "props": {
+        "fill": "#E3F5EA",
+        "line": "#2E9E5B"
+      }
+    },
+    {
+      "id": "x363ci",
+      "type": "package",
+      "x": 30,
+      "y": 710,
+      "width": 400,
+      "height": 180,
+      "rotation": 0,
+      "text": "plugins/BoardTimeline",
+      "props": {
+        "fill": "#F4F5F7",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "ig4uez",
+      "type": "package",
+      "x": 50,
+      "y": 770,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.Board.Timeline",
+      "parentId": "x363ci",
+      "props": {
+        "fill": "#DCEBFF",
+        "line": "#3574F0",
+        "textColor": "#1F3F7A"
+      }
+    },
+    {
+      "id": "q4kerk",
+      "type": "package",
+      "x": 235,
+      "y": 770,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.Board.Timeline.Core",
+      "parentId": "x363ci",
+      "props": {
+        "fill": "#E3F5EA",
+        "line": "#2E9E5B"
+      }
+    },
+    {
+      "id": "emqfxk",
+      "type": "package",
+      "x": 470,
+      "y": 710,
+      "width": 400,
+      "height": 180,
+      "rotation": 0,
+      "text": "plugins/BoardRisks",
+      "props": {
+        "fill": "#F4F5F7",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "xzy5gj",
+      "type": "package",
+      "x": 490,
+      "y": 770,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.Board.Risks",
+      "parentId": "emqfxk",
+      "props": {
+        "fill": "#DCEBFF",
+        "line": "#3574F0",
+        "textColor": "#1F3F7A"
+      }
+    },
+    {
+      "id": "42jyei",
+      "type": "package",
+      "x": 675,
+      "y": 770,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.Board.Risks.Core",
+      "parentId": "emqfxk",
+      "props": {
+        "fill": "#E3F5EA",
+        "line": "#2E9E5B"
+      }
+    },
+    {
+      "id": "2iw4sb",
+      "type": "package",
+      "x": 910,
+      "y": 710,
+      "width": 400,
+      "height": 180,
+      "rotation": 0,
+      "text": "plugins/Diagrams",
+      "props": {
+        "fill": "#F4F5F7",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "5gfhri",
+      "type": "package",
+      "x": 930,
+      "y": 770,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.Diagrams",
+      "parentId": "2iw4sb",
+      "props": {
+        "fill": "#DCEBFF",
+        "line": "#3574F0",
+        "textColor": "#1F3F7A"
+      }
+    },
+    {
+      "id": "39i9bi",
+      "type": "package",
+      "x": 1115,
+      "y": 770,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.Diagrams.Core",
+      "parentId": "2iw4sb",
+      "props": {
+        "fill": "#E3F5EA",
+        "line": "#2E9E5B"
+      }
+    },
+    {
+      "id": "tj5ddw",
+      "type": "package",
+      "x": 30,
+      "y": 930,
+      "width": 400,
+      "height": 180,
+      "rotation": 0,
+      "text": "plugins/DiagramsUml",
+      "props": {
+        "fill": "#F4F5F7",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "423cg2",
+      "type": "package",
+      "x": 50,
+      "y": 990,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.Diagrams.Uml",
+      "parentId": "tj5ddw",
+      "props": {
+        "fill": "#DCEBFF",
+        "line": "#3574F0",
+        "textColor": "#1F3F7A"
+      }
+    },
+    {
+      "id": "ec4mvj",
+      "type": "package",
+      "x": 235,
+      "y": 990,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.Diagrams.Uml.Core",
+      "parentId": "tj5ddw",
+      "props": {
+        "fill": "#E3F5EA",
+        "line": "#2E9E5B"
+      }
+    },
+    {
+      "id": "g6ca8h",
+      "type": "package",
+      "x": 470,
+      "y": 930,
+      "width": 400,
+      "height": 180,
+      "rotation": 0,
+      "text": "plugins/DiagramsDatabase",
+      "props": {
+        "fill": "#F4F5F7",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "58mz7m",
+      "type": "package",
+      "x": 490,
+      "y": 990,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.Diagrams.Database",
+      "parentId": "g6ca8h",
+      "props": {
+        "fill": "#DCEBFF",
+        "line": "#3574F0",
+        "textColor": "#1F3F7A"
+      }
+    },
+    {
+      "id": "cq8rmh",
+      "type": "package",
+      "x": 675,
+      "y": 990,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.Diagrams.Database.Core",
+      "parentId": "g6ca8h",
+      "props": {
+        "fill": "#E3F5EA",
+        "line": "#2E9E5B"
+      }
+    },
+    {
+      "id": "urcha2",
+      "type": "package",
+      "x": 910,
+      "y": 930,
+      "width": 400,
+      "height": 180,
+      "rotation": 0,
+      "text": "plugins/DiagramsBusiness",
+      "props": {
+        "fill": "#F4F5F7",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "m5uk3t",
+      "type": "package",
+      "x": 930,
+      "y": 990,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.Diagrams.Business",
+      "parentId": "urcha2",
+      "props": {
+        "fill": "#DCEBFF",
+        "line": "#3574F0",
+        "textColor": "#1F3F7A"
+      }
+    },
+    {
+      "id": "jgucw6",
+      "type": "package",
+      "x": 1115,
+      "y": 990,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.Diagrams.Business.Core",
+      "parentId": "urcha2",
+      "props": {
+        "fill": "#E3F5EA",
+        "line": "#2E9E5B"
+      }
+    },
+    {
+      "id": "jiyqpf",
+      "type": "package",
+      "x": 30,
+      "y": 1150,
+      "width": 400,
+      "height": 180,
+      "rotation": 0,
+      "text": "plugins/MoodBoard",
+      "props": {
+        "fill": "#F4F5F7",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "6xh5dw",
+      "type": "package",
+      "x": 50,
+      "y": 1210,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.MoodBoard",
+      "parentId": "jiyqpf",
+      "props": {
+        "fill": "#DCEBFF",
+        "line": "#3574F0",
+        "textColor": "#1F3F7A"
+      }
+    },
+    {
+      "id": "777czm",
+      "type": "package",
+      "x": 235,
+      "y": 1210,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.MoodBoard.Core",
+      "parentId": "jiyqpf",
+      "props": {
+        "fill": "#E3F5EA",
+        "line": "#2E9E5B"
+      }
+    },
+    {
+      "id": "2t3a8e",
+      "type": "package",
+      "x": 470,
+      "y": 1150,
+      "width": 400,
+      "height": 180,
+      "rotation": 0,
+      "text": "tests",
+      "props": {
+        "fill": "#F4F5F7",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "7wrxv8",
+      "type": "package",
+      "x": 490,
+      "y": 1210,
+      "width": 175,
+      "height": 90,
+      "rotation": 0,
+      "text": "DevHub.TestKit",
+      "parentId": "2t3a8e",
+      "props": {}
+    },
+    {
+      "id": "hks3kn",
+      "type": "note",
+      "x": 910,
+      "y": 1150,
+      "width": 400,
+      "height": 120,
+      "rotation": 0,
+      "text": "Not drawn: every UI project references DevHub.Sdk and every .Core DevHub.Sdk.Core, as NuGet packages (Directory.Build.props). Tests reference the .Core they test.",
+      "props": {}
+    },
+    {
+      "id": "tegihg",
+      "type": "note",
+      "x": 470,
+      "y": 218,
+      "width": 400,
+      "height": 40,
+      "rotation": 0,
+      "text": "Templates requires Projects but references none of its projects: hooks only.",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "zhsevb",
+      "type": "dependency",
+      "from": "cm7kbu",
+      "to": "rqiuma",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "wf94dm",
+      "type": "dependency",
+      "from": "f83pep",
+      "to": "bsgkyk",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "pbngns",
+      "type": "dependency",
+      "from": "55pf9h",
+      "to": "jadrux",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "gctjmd",
+      "type": "dependency",
+      "from": "f2j33g",
+      "to": "yc65bd",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "7a5234",
+      "type": "dependency",
+      "from": "kphisn",
+      "to": "yeu8fq",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "pfrg9e",
+      "type": "dependency",
+      "from": "h9bzti",
+      "to": "8z4jmy",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "di5i78",
+      "type": "dependency",
+      "from": "3bvxsc",
+      "to": "m7cgut",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "2t4s3p",
+      "type": "dependency",
+      "from": "hyukar",
+      "to": "udt6ge",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "9gpbr2",
+      "type": "dependency",
+      "from": "ig4uez",
+      "to": "q4kerk",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "5v8bfc",
+      "type": "dependency",
+      "from": "xzy5gj",
+      "to": "42jyei",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "w8qgm8",
+      "type": "dependency",
+      "from": "5gfhri",
+      "to": "39i9bi",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "6fj2fc",
+      "type": "dependency",
+      "from": "423cg2",
+      "to": "ec4mvj",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "qrfdfh",
+      "type": "dependency",
+      "from": "58mz7m",
+      "to": "cq8rmh",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "t56ct2",
+      "type": "dependency",
+      "from": "m5uk3t",
+      "to": "jgucw6",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "835ae2",
+      "type": "dependency",
+      "from": "6xh5dw",
+      "to": "777czm",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "fzh48q",
+      "type": "dependency",
+      "from": "kphisn",
+      "to": "f2j33g",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "p7kk3k",
+      "type": "dependency",
+      "from": "yeu8fq",
+      "to": "yc65bd",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "qy9tjb",
+      "type": "dependency",
+      "from": "h9bzti",
+      "to": "3bvxsc",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "gbsn5m",
+      "type": "dependency",
+      "from": "h9bzti",
+      "to": "f2j33g",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "uy5mth",
+      "type": "dependency",
+      "from": "8z4jmy",
+      "to": "m7cgut",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "7wip9a",
+      "type": "dependency",
+      "from": "8z4jmy",
+      "to": "yc65bd",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "px6asr",
+      "type": "dependency",
+      "from": "4wqjnr",
+      "to": "3bvxsc",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "jzrtt2",
+      "type": "dependency",
+      "from": "hyukar",
+      "to": "3bvxsc",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "zu2w5s",
+      "type": "dependency",
+      "from": "udt6ge",
+      "to": "m7cgut",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "2cjkm3",
+      "type": "dependency",
+      "from": "ig4uez",
+      "to": "3bvxsc",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "peqv65",
+      "type": "dependency",
+      "from": "q4kerk",
+      "to": "m7cgut",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "t9c4sg",
+      "type": "dependency",
+      "from": "xzy5gj",
+      "to": "3bvxsc",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "jzpn4i",
+      "type": "dependency",
+      "from": "42jyei",
+      "to": "m7cgut",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "uwcx9r",
+      "type": "dependency",
+      "from": "423cg2",
+      "to": "5gfhri",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "3bbkze",
+      "type": "dependency",
+      "from": "ec4mvj",
+      "to": "39i9bi",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "3q3bdr",
+      "type": "dependency",
+      "from": "58mz7m",
+      "to": "5gfhri",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "tuhcmf",
+      "type": "dependency",
+      "from": "cq8rmh",
+      "to": "39i9bi",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "fqjv2a",
+      "type": "dependency",
+      "from": "m5uk3t",
+      "to": "5gfhri",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ji3pcp",
+      "type": "dependency",
+      "from": "jgucw6",
+      "to": "39i9bi",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "qiw8nt",
+      "type": "dependency",
+      "from": "6xh5dw",
+      "to": "5gfhri",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "3kmbpk",
+      "type": "dependency",
+      "from": "777czm",
+      "to": "39i9bi",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "bb5mpr",
+      "type": "dependency",
+      "from": "7wrxv8",
+      "to": "yc65bd",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "b5mvt8",
+      "type": "noteLink",
+      "from": "tegihg",
+      "to": "f83pep",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 30,
+    "y": 30,
+    "width": 1280,
+    "height": 1300,
+    "left": 30,
+    "top": 30,
+    "right": 1310,
+    "bottom": 1330,
+    "center": {
+      "x": 670,
+      "y": 680,
+      "length": 954.6203433826455
+    }
+  }
+}

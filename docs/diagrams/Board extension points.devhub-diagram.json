@@ -1,0 +1,924 @@
+{
+  "schemaVersion": 1,
+  "kind": "class",
+  "title": "Board extension points",
+  "project": "../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "jaidik",
+      "type": "package",
+      "x": 30,
+      "y": 40,
+      "width": 976,
+      "height": 511,
+      "rotation": 0,
+      "text": "DevHub.Board.Core (Storage)",
+      "props": {
+        "fill": "#F4F5F7",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "c95hh8",
+      "type": "interface",
+      "x": 60,
+      "y": 90,
+      "width": 536,
+      "height": 108,
+      "rotation": 0,
+      "text": "IBoardStore",
+      "parentId": "jaidik",
+      "props": {
+        "attributes": "+ DisplayLocation : string",
+        "operations": "+ LoadAsync() : Task<BoardFiles?>\n+ WriteAsync(change : BoardChange, expectedVersion : string) : Task<string>",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "kn7gyz",
+      "type": "interface",
+      "x": 60,
+      "y": 290,
+      "width": 329,
+      "height": 125,
+      "rotation": 0,
+      "text": "IBoardStoreProvider",
+      "parentId": "jaidik",
+      "props": {
+        "attributes": "+ Kind : string\n+ DisplayName : string",
+        "operations": "+ CanUseAsync(location : string) : Task<bool>\n+ Open(location : string) : IBoardStore",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "7tmaqf",
+      "type": "class",
+      "x": 640,
+      "y": 90,
+      "width": 329,
+      "height": 85,
+      "rotation": 0,
+      "text": "BoardFiles",
+      "parentId": "jaidik",
+      "props": {
+        "attributes": "+ Version : string\n+ Files : IReadOnlyDictionary<string, byte[]>",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "76sdji",
+      "type": "class",
+      "x": 640,
+      "y": 230,
+      "width": 336,
+      "height": 85,
+      "rotation": 0,
+      "text": "BoardChange",
+      "parentId": "jaidik",
+      "props": {
+        "attributes": "+ Message : string\n+ Files : IReadOnlyDictionary<string, byte[]?>",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "9qkwji",
+      "type": "class",
+      "x": 60,
+      "y": 480,
+      "width": 214,
+      "height": 41,
+      "rotation": 0,
+      "text": "FolderBoardStoreProvider",
+      "parentId": "jaidik",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "zb3gfs",
+      "type": "class",
+      "x": 340,
+      "y": 480,
+      "width": 151,
+      "height": 41,
+      "rotation": 0,
+      "text": "FolderBoardStore",
+      "parentId": "jaidik",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "3juet9",
+      "type": "package",
+      "x": 30,
+      "y": 650,
+      "width": 491,
+      "height": 121,
+      "rotation": 0,
+      "text": "DevHub.Board.Git.Core",
+      "props": {
+        "fill": "#F4F5F7",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "fvpgb2",
+      "type": "class",
+      "x": 60,
+      "y": 700,
+      "width": 214,
+      "height": 41,
+      "rotation": 0,
+      "text": "BranchBoardStoreProvider",
+      "parentId": "3juet9",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "at5695",
+      "type": "class",
+      "x": 340,
+      "y": 700,
+      "width": 151,
+      "height": 41,
+      "rotation": 0,
+      "text": "BranchBoardStore",
+      "parentId": "3juet9",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "66459n",
+      "type": "package",
+      "x": 1030,
+      "y": 40,
+      "width": 1217,
+      "height": 852,
+      "rotation": 0,
+      "text": "DevHub.Board (Extensibility)",
+      "props": {
+        "fill": "#F4F5F7",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "75afyk",
+      "type": "interface",
+      "x": 1060,
+      "y": 90,
+      "width": 370,
+      "height": 159,
+      "rotation": 0,
+      "text": "IBoardPageProvider",
+      "parentId": "66459n",
+      "props": {
+        "attributes": "+ Id : string\n+ Title : string\n+ Order : int\n+ Replaces : string?",
+        "operations": "+ AppliesTo(definition : BoardDefinition) : bool\n+ Create(host : BoardPageHost) : BoardPageViewModel",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "7z5une",
+      "type": "class",
+      "x": 1660,
+      "y": 90,
+      "width": 343,
+      "height": 138,
+      "rotation": 0,
+      "text": "BoardPageHost",
+      "parentId": "66459n",
+      "props": {
+        "attributes": "+ Context : BoardContext\n+ Definition : BoardDefinition\n+ SelectIssue : Action<string?>\n+ OpenIssue : Action<string>\n+ CreateIssue : Func<CreateIssueDefaults, Task>\n+ ShowPage : Action<string>",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "96t2hj",
+      "type": "class",
+      "x": 1660,
+      "y": 350,
+      "width": 191,
+      "height": 127,
+      "rotation": 0,
+      "text": "BoardPageViewModel",
+      "parentId": "66459n",
+      "props": {
+        "attributes": "+ Host : BoardPageHost\n+ abstract Title : string",
+        "operations": "+ OnBoardChanged()\n+ OnSearch(text : string)\n+ OnShown(shown : bool)",
+        "showAttributes": "true",
+        "showOperations": "true",
+        "abstract": "true"
+      }
+    },
+    {
+      "id": "c5a6nx",
+      "type": "interface",
+      "x": 1060,
+      "y": 380,
+      "width": 536,
+      "height": 91,
+      "rotation": 0,
+      "text": "IIssueSectionProvider",
+      "parentId": "66459n",
+      "props": {
+        "attributes": "+ Order : int",
+        "operations": "+ Create(context : BoardContext, issueId : string) : IssueSectionViewModel?",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "h4et52",
+      "type": "class",
+      "x": 1060,
+      "y": 540,
+      "width": 336,
+      "height": 93,
+      "rotation": 0,
+      "text": "IssueSectionViewModel",
+      "parentId": "66459n",
+      "props": {
+        "attributes": "+ IssueId : string\n+ abstract Title : string",
+        "operations": "+ Update(issue : Issue, board : BoardSnapshot)",
+        "showAttributes": "true",
+        "showOperations": "true",
+        "abstract": "true"
+      }
+    },
+    {
+      "id": "tv4b6f",
+      "type": "interface",
+      "x": 1660,
+      "y": 600,
+      "width": 557,
+      "height": 68,
+      "rotation": 0,
+      "text": "IIssueActionProvider",
+      "parentId": "66459n",
+      "props": {
+        "attributes": "",
+        "operations": "+ GetActions(context : BoardContext, issue : Issue) : IEnumerable<IssueAction>",
+        "showAttributes": "false",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "cfka8w",
+      "type": "class",
+      "x": 1660,
+      "y": 760,
+      "width": 143,
+      "height": 102,
+      "rotation": 0,
+      "text": "IssueAction",
+      "parentId": "66459n",
+      "props": {
+        "attributes": "+ Text : string\n+ Run : Func<Task>\n+ IsEnabled : bool",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "ch8fv3",
+      "type": "package",
+      "x": 730,
+      "y": 950,
+      "width": 266,
+      "height": 441,
+      "rotation": 0,
+      "text": "Board",
+      "props": {
+        "fill": "#DCEBFF",
+        "line": "#3574F0",
+        "textColor": "#1F3F7A"
+      }
+    },
+    {
+      "id": "mgqt9y",
+      "type": "class",
+      "x": 760,
+      "y": 1000,
+      "width": 190,
+      "height": 41,
+      "rotation": 0,
+      "text": "BoardViewPageProvider",
+      "parentId": "ch8fv3",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "w3derd",
+      "type": "class",
+      "x": 760,
+      "y": 1080,
+      "width": 175,
+      "height": 41,
+      "rotation": 0,
+      "text": "BacklogPageProvider",
+      "parentId": "ch8fv3",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "ddjwxn",
+      "type": "class",
+      "x": 760,
+      "y": 1160,
+      "width": 167,
+      "height": 41,
+      "rotation": 0,
+      "text": "SearchPageProvider",
+      "parentId": "ch8fv3",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "2mhncg",
+      "type": "class",
+      "x": 760,
+      "y": 1240,
+      "width": 182,
+      "height": 41,
+      "rotation": 0,
+      "text": "DiagramsPageProvider",
+      "parentId": "ch8fv3",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "9y8sjn",
+      "type": "class",
+      "x": 760,
+      "y": 1320,
+      "width": 206,
+      "height": 41,
+      "rotation": 0,
+      "text": "DiagramsSectionProvider",
+      "parentId": "ch8fv3",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "q9a66x",
+      "type": "package",
+      "x": 1090,
+      "y": 950,
+      "width": 282,
+      "height": 201,
+      "rotation": 0,
+      "text": "Board Scrum",
+      "props": {
+        "fill": "#DCEBFF",
+        "line": "#3574F0",
+        "textColor": "#1F3F7A"
+      }
+    },
+    {
+      "id": "xdb8ud",
+      "type": "class",
+      "x": 1120,
+      "y": 1000,
+      "width": 222,
+      "height": 41,
+      "rotation": 0,
+      "text": "ScrumPlanningPageProvider",
+      "parentId": "q9a66x",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "xxfpi3",
+      "type": "class",
+      "x": 1120,
+      "y": 1080,
+      "width": 222,
+      "height": 41,
+      "rotation": 0,
+      "text": "RetrospectivePageProvider",
+      "parentId": "q9a66x",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "jg5zks",
+      "type": "package",
+      "x": 1090,
+      "y": 1210,
+      "width": 235,
+      "height": 121,
+      "rotation": 0,
+      "text": "Board Reports",
+      "props": {
+        "fill": "#DCEBFF",
+        "line": "#3574F0",
+        "textColor": "#1F3F7A"
+      }
+    },
+    {
+      "id": "38yhnk",
+      "type": "class",
+      "x": 1120,
+      "y": 1260,
+      "width": 175,
+      "height": 41,
+      "rotation": 0,
+      "text": "ReportsPageProvider",
+      "parentId": "jg5zks",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "mu8xz9",
+      "type": "package",
+      "x": 1450,
+      "y": 950,
+      "width": 242,
+      "height": 201,
+      "rotation": 0,
+      "text": "Board Timeline",
+      "props": {
+        "fill": "#DCEBFF",
+        "line": "#3574F0",
+        "textColor": "#1F3F7A"
+      }
+    },
+    {
+      "id": "s545yf",
+      "type": "class",
+      "x": 1480,
+      "y": 1000,
+      "width": 182,
+      "height": 41,
+      "rotation": 0,
+      "text": "TimelinePageProvider",
+      "parentId": "mu8xz9",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "5269u6",
+      "type": "class",
+      "x": 1480,
+      "y": 1080,
+      "width": 182,
+      "height": 41,
+      "rotation": 0,
+      "text": "ReleasesPageProvider",
+      "parentId": "mu8xz9",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "yvefj7",
+      "type": "package",
+      "x": 1450,
+      "y": 1210,
+      "width": 219,
+      "height": 121,
+      "rotation": 0,
+      "text": "Board Risks",
+      "props": {
+        "fill": "#DCEBFF",
+        "line": "#3574F0",
+        "textColor": "#1F3F7A"
+      }
+    },
+    {
+      "id": "q849tp",
+      "type": "class",
+      "x": 1480,
+      "y": 1260,
+      "width": 159,
+      "height": 41,
+      "rotation": 0,
+      "text": "RisksPageProvider",
+      "parentId": "yvefj7",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "u29sfy",
+      "type": "package",
+      "x": 1810,
+      "y": 950,
+      "width": 290,
+      "height": 201,
+      "rotation": 0,
+      "text": "Board Git",
+      "props": {
+        "fill": "#DCEBFF",
+        "line": "#3574F0",
+        "textColor": "#1F3F7A"
+      }
+    },
+    {
+      "id": "4biugr",
+      "type": "class",
+      "x": 1840,
+      "y": 1000,
+      "width": 230,
+      "height": 41,
+      "rotation": 0,
+      "text": "DevelopmentSectionProvider",
+      "parentId": "u29sfy",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "5efann",
+      "type": "class",
+      "x": 1840,
+      "y": 1080,
+      "width": 230,
+      "height": 41,
+      "rotation": 0,
+      "text": "CreateBranchActionProvider",
+      "parentId": "u29sfy",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "qqmk3g",
+      "type": "note",
+      "x": 60,
+      "y": 900,
+      "width": 520,
+      "height": 80,
+      "rotation": 0,
+      "text": "Every write is a compare-and-swap on the store's version: a BoardConflictException makes the caller reload and re-apply, so nothing is overwritten.",
+      "props": {}
+    },
+    {
+      "id": "x6sa4w",
+      "type": "note",
+      "x": 1120,
+      "y": 1360,
+      "width": 300,
+      "height": 60,
+      "rotation": 0,
+      "text": "Scrum's planning page Replaces \"backlog\" on Scrum boards.",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "8fmxik",
+      "type": "dependency",
+      "from": "kn7gyz",
+      "to": "c95hh8",
+      "text": "opens",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ckg9jy",
+      "type": "dependency",
+      "from": "c95hh8",
+      "to": "7tmaqf",
+      "text": "loads",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "gkm75w",
+      "type": "dependency",
+      "from": "c95hh8",
+      "to": "76sdji",
+      "text": "writes",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "2a9ddc",
+      "type": "realization",
+      "from": "9qkwji",
+      "to": "kn7gyz",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "v83qmt",
+      "type": "realization",
+      "from": "zb3gfs",
+      "to": "c95hh8",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "i8re4i",
+      "type": "realization",
+      "from": "fvpgb2",
+      "to": "kn7gyz",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "eq5nir",
+      "type": "realization",
+      "from": "at5695",
+      "to": "c95hh8",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "kfwzzh",
+      "type": "dependency",
+      "from": "75afyk",
+      "to": "96t2hj",
+      "text": "creates",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "v7dzkz",
+      "type": "association",
+      "from": "96t2hj",
+      "to": "7z5une",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1"
+      }
+    },
+    {
+      "id": "45sizn",
+      "type": "dependency",
+      "from": "c5a6nx",
+      "to": "h4et52",
+      "text": "creates",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "xa66yh",
+      "type": "dependency",
+      "from": "tv4b6f",
+      "to": "cfka8w",
+      "text": "returns",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "g8yaug",
+      "type": "realization",
+      "from": "mgqt9y",
+      "to": "75afyk",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "qs63q2",
+      "type": "realization",
+      "from": "w3derd",
+      "to": "75afyk",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "hr6pj2",
+      "type": "realization",
+      "from": "ddjwxn",
+      "to": "75afyk",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "528ww4",
+      "type": "realization",
+      "from": "2mhncg",
+      "to": "75afyk",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "qp33hv",
+      "type": "realization",
+      "from": "xdb8ud",
+      "to": "75afyk",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "yf6d9w",
+      "type": "realization",
+      "from": "xxfpi3",
+      "to": "75afyk",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "9pdkqw",
+      "type": "realization",
+      "from": "38yhnk",
+      "to": "75afyk",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "b3vpyb",
+      "type": "realization",
+      "from": "s545yf",
+      "to": "75afyk",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "w9mfjp",
+      "type": "realization",
+      "from": "5269u6",
+      "to": "75afyk",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "iehd28",
+      "type": "realization",
+      "from": "q849tp",
+      "to": "75afyk",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "yf85f9",
+      "type": "realization",
+      "from": "9y8sjn",
+      "to": "c5a6nx",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "5xh3yi",
+      "type": "realization",
+      "from": "4biugr",
+      "to": "c5a6nx",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "rrh5b8",
+      "type": "realization",
+      "from": "5efann",
+      "to": "tv4b6f",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "jiir3x",
+      "type": "noteLink",
+      "from": "qqmk3g",
+      "to": "c95hh8",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "x4e2hg",
+      "type": "noteLink",
+      "from": "x6sa4w",
+      "to": "xdb8ud",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 30,
+    "y": 40,
+    "width": 2217,
+    "height": 1380,
+    "left": 30,
+    "top": 40,
+    "right": 2247,
+    "bottom": 1420,
+    "center": {
+      "x": 1138.5,
+      "y": 730,
+      "length": 1352.435673146786
+    }
+  }
+}

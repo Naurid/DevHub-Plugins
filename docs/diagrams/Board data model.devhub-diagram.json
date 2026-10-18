@@ -1,0 +1,955 @@
+{
+  "schemaVersion": 1,
+  "kind": "class",
+  "title": "Board data model (the files of a board)",
+  "project": "../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "r4expf",
+      "type": "package",
+      "x": 30,
+      "y": 40,
+      "width": 855,
+      "height": 677,
+      "rotation": 0,
+      "text": "board.json",
+      "props": {
+        "fill": "#F4F5F7",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "fhb6hm",
+      "type": "class",
+      "x": 60,
+      "y": 90,
+      "width": 205,
+      "height": 121,
+      "rotation": 0,
+      "text": "BoardProject",
+      "parentId": "r4expf",
+      "props": {
+        "attributes": "+ Key : string\n+ Name : string\n+ NextNumber : int\n+ DefaultWorkflow : string?\n+ DefaultPriority : string?",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "w7kwvf",
+      "type": "class",
+      "x": 420,
+      "y": 90,
+      "width": 184,
+      "height": 104,
+      "rotation": 0,
+      "text": "IssueType",
+      "parentId": "r4expf",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Level : IssueTypeLevel\n+ Workflow : string?",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "m9t462",
+      "type": "class",
+      "x": 420,
+      "y": 250,
+      "width": 205,
+      "height": 87,
+      "rotation": 0,
+      "text": "Status",
+      "parentId": "r4expf",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Category : StatusCategory",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "yhx72u",
+      "type": "enumeration",
+      "x": 720,
+      "y": 250,
+      "width": 135,
+      "height": 102,
+      "rotation": 0,
+      "text": "StatusCategory",
+      "parentId": "r4expf",
+      "props": {
+        "attributes": "ToDo\nInProgress\nDone",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "9wv2nq",
+      "type": "enumeration",
+      "x": 720,
+      "y": 90,
+      "width": 135,
+      "height": 102,
+      "rotation": 0,
+      "text": "IssueTypeLevel",
+      "parentId": "r4expf",
+      "props": {
+        "attributes": "Epic\nStandard\nSubtask",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "pvgjq4",
+      "type": "class",
+      "x": 60,
+      "y": 300,
+      "width": 136,
+      "height": 104,
+      "rotation": 0,
+      "text": "BoardPerson",
+      "parentId": "r4expf",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Email : string?\n+ Role : string?",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "6zz5mk",
+      "type": "class",
+      "x": 60,
+      "y": 460,
+      "width": 177,
+      "height": 87,
+      "rotation": 0,
+      "text": "Component",
+      "parentId": "r4expf",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Description : string?",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "qqrb9v",
+      "type": "class",
+      "x": 420,
+      "y": 400,
+      "width": 246,
+      "height": 104,
+      "rotation": 0,
+      "text": "FieldDefinition",
+      "parentId": "r4expf",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Type : FieldType\n+ Options : IReadOnlyList<string>",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "hp4q7b",
+      "type": "class",
+      "x": 420,
+      "y": 560,
+      "width": 122,
+      "height": 70,
+      "rotation": 0,
+      "text": "DoneItem",
+      "parentId": "r4expf",
+      "props": {
+        "attributes": "+ Id : string\n+ Text : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "zh4qmr",
+      "type": "class",
+      "x": 60,
+      "y": 600,
+      "width": 177,
+      "height": 87,
+      "rotation": 0,
+      "text": "ProjectSettings",
+      "parentId": "r4expf",
+      "props": {
+        "attributes": "+ HoursPerDay : double\n+ DaysPerWeek : double\n+ DoneCheck : DoneCheck",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "t5t2us",
+      "type": "package",
+      "x": 1010,
+      "y": 40,
+      "width": 313,
+      "height": 337,
+      "rotation": 0,
+      "text": "workflows/<id>.json",
+      "props": {
+        "fill": "#F4F5F7",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "ywbvhp",
+      "type": "class",
+      "x": 1040,
+      "y": 90,
+      "width": 253,
+      "height": 104,
+      "rotation": 0,
+      "text": "Workflow",
+      "parentId": "t5t2us",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Statuses : IReadOnlyList<string>\n+ AnyToAny : bool",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "pjf2cz",
+      "type": "class",
+      "x": 1040,
+      "y": 260,
+      "width": 167,
+      "height": 87,
+      "rotation": 0,
+      "text": "WorkflowTransition",
+      "parentId": "t5t2us",
+      "props": {
+        "attributes": "+ From : string?\n+ To : string\n+ Name : string?",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "3vfrsp",
+      "type": "package",
+      "x": 1410,
+      "y": 40,
+      "width": 568,
+      "height": 451,
+      "rotation": 0,
+      "text": "boards/<id>.json",
+      "props": {
+        "fill": "#F4F5F7",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "ik8itm",
+      "type": "class",
+      "x": 1440,
+      "y": 90,
+      "width": 267,
+      "height": 155,
+      "rotation": 0,
+      "text": "BoardDefinition",
+      "parentId": "3vfrsp",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Kind : BoardKind\n+ Filter : string\n+ Swimlanes : SwimlaneMode\n+ HideDoneAfterDays : int?\n+ CardFields : IReadOnlyList<string>",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "yb6w7v",
+      "type": "class",
+      "x": 1440,
+      "y": 340,
+      "width": 253,
+      "height": 121,
+      "rotation": 0,
+      "text": "BoardColumn",
+      "parentId": "3vfrsp",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Statuses : IReadOnlyList<string>\n+ WipLimit : int?\n+ WipMinimum : int?",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "geesmn",
+      "type": "class",
+      "x": 1760,
+      "y": 340,
+      "width": 129,
+      "height": 87,
+      "rotation": 0,
+      "text": "QuickFilter",
+      "parentId": "3vfrsp",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Query : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "egjcfe",
+      "type": "enumeration",
+      "x": 1820,
+      "y": 90,
+      "width": 128,
+      "height": 85,
+      "rotation": 0,
+      "text": "BoardKind",
+      "parentId": "3vfrsp",
+      "props": {
+        "attributes": "Kanban\nScrum",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "sg3hav",
+      "type": "enumeration",
+      "x": 1820,
+      "y": 200,
+      "width": 128,
+      "height": 136,
+      "rotation": 0,
+      "text": "SwimlaneMode",
+      "parentId": "3vfrsp",
+      "props": {
+        "attributes": "None\nAssignee\nEpic\nPriority\nType",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "dp3cvx",
+      "type": "package",
+      "x": 30,
+      "y": 850,
+      "width": 1018,
+      "height": 470,
+      "rotation": 0,
+      "text": "issues/<id>.json",
+      "props": {
+        "fill": "#F4F5F7",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "4nq2jd",
+      "type": "class",
+      "x": 60,
+      "y": 900,
+      "width": 315,
+      "height": 342,
+      "rotation": 0,
+      "text": "Issue",
+      "parentId": "dp3cvx",
+      "props": {
+        "attributes": "+ Id : string\n+ Key : string\n+ Type : string\n+ Summary : string\n+ Description : string\n+ Status : string\n+ Resolution : string?\n+ Priority : string?\n+ Parent : string?\n+ Assignee : string?\n+ Reporter : string?\n+ Labels : IReadOnlyList<string>\n+ StoryPoints : double?\n+ Start : DateOnly?\n+ Due : DateOnly?\n+ Sprint : string?\n+ Rank : string\n+ Custom : SortedDictionary<string, string>",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "zm8bhg",
+      "type": "class",
+      "x": 520,
+      "y": 900,
+      "width": 191,
+      "height": 70,
+      "rotation": 0,
+      "text": "TimeTracking",
+      "parentId": "dp3cvx",
+      "props": {
+        "attributes": "+ OriginalMinutes : int?\n+ RemainingMinutes : int?",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "gnvx7h",
+      "type": "class",
+      "x": 520,
+      "y": 1040,
+      "width": 198,
+      "height": 104,
+      "rotation": 0,
+      "text": "WorkLog",
+      "parentId": "dp3cvx",
+      "props": {
+        "attributes": "+ Author : string?\n+ Started : DateTimeOffset\n+ Minutes : int\n+ Note : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "erad5s",
+      "type": "class",
+      "x": 520,
+      "y": 1220,
+      "width": 136,
+      "height": 70,
+      "rotation": 0,
+      "text": "IssueLink",
+      "parentId": "dp3cvx",
+      "props": {
+        "attributes": "+ Type : string\n+ Target : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "3ti4b2",
+      "type": "class",
+      "x": 820,
+      "y": 900,
+      "width": 198,
+      "height": 87,
+      "rotation": 0,
+      "text": "Comment",
+      "parentId": "dp3cvx",
+      "props": {
+        "attributes": "+ Author : string?\n+ Created : DateTimeOffset\n+ Body : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "539urq",
+      "type": "class",
+      "x": 820,
+      "y": 1060,
+      "width": 184,
+      "height": 87,
+      "rotation": 0,
+      "text": "Attachment",
+      "parentId": "dp3cvx",
+      "props": {
+        "attributes": "+ FileName : string\n+ Size : long\n+ Added : DateTimeOffset",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "grdnqh",
+      "type": "class",
+      "x": 820,
+      "y": 1220,
+      "width": 122,
+      "height": 70,
+      "rotation": 0,
+      "text": "CheckItem",
+      "parentId": "dp3cvx",
+      "props": {
+        "attributes": "+ Text : string\n+ Done : bool",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "w6eucb",
+      "type": "package",
+      "x": 1210,
+      "y": 850,
+      "width": 223,
+      "height": 201,
+      "rotation": 0,
+      "text": "history/<id>.jsonl",
+      "props": {
+        "fill": "#F4F5F7",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "fdhd5x",
+      "type": "class",
+      "x": 1240,
+      "y": 900,
+      "width": 163,
+      "height": 121,
+      "rotation": 0,
+      "text": "HistoryEntry",
+      "parentId": "w6eucb",
+      "props": {
+        "attributes": "+ At : DateTimeOffset\n+ Who : string?\n+ Field : string\n+ From : string?\n+ To : string?",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "8vzcie",
+      "type": "package",
+      "x": 1210,
+      "y": 1100,
+      "width": 548,
+      "height": 235,
+      "rotation": 0,
+      "text": "sprints/<id>.json",
+      "props": {
+        "fill": "#F4F5F7",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "ci5rfr",
+      "type": "class",
+      "x": 1240,
+      "y": 1150,
+      "width": 191,
+      "height": 155,
+      "rotation": 0,
+      "text": "Sprint",
+      "parentId": "8vzcie",
+      "props": {
+        "attributes": "+ Name : string\n+ Goal : string\n+ State : SprintState\n+ Start : DateTimeOffset?\n+ End : DateTimeOffset?\n+ Capacity : double?\n+ FocusFactor : double?",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "i8qj6t",
+      "type": "enumeration",
+      "x": 1600,
+      "y": 1150,
+      "width": 128,
+      "height": 102,
+      "rotation": 0,
+      "text": "SprintState",
+      "parentId": "8vzcie",
+      "props": {
+        "attributes": "Future\nActive\nClosed",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "jr7eec",
+      "type": "package",
+      "x": 1610,
+      "y": 850,
+      "width": 230,
+      "height": 201,
+      "rotation": 0,
+      "text": "versions/<id>.json",
+      "props": {
+        "fill": "#F4F5F7",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "ngru9h",
+      "type": "class",
+      "x": 1640,
+      "y": 900,
+      "width": 170,
+      "height": 121,
+      "rotation": 0,
+      "text": "FixVersion",
+      "parentId": "jr7eec",
+      "props": {
+        "attributes": "+ Name : string\n+ Description : string\n+ Start : DateOnly?\n+ Release : DateOnly?\n+ Released : bool",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "62z9vp",
+      "type": "note",
+      "x": 60,
+      "y": 1600,
+      "width": 700,
+      "height": 80,
+      "rotation": 0,
+      "text": "Every file has \"schema\": 1. References are ids (an issue's Status, Assignee, Parent, Sprint), never copies. history/<id>.jsonl is append-only: one line per change. Attachments: attachments/<issue id>/<file>; risks/<id>.json (Board.Risks), retros/<sprint>.json (Board.Scrum).",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "gzdnvc",
+      "type": "composition",
+      "from": "fhb6hm",
+      "to": "w7kwvf",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "xv7exq",
+      "type": "composition",
+      "from": "fhb6hm",
+      "to": "m9t462",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "8gxygb",
+      "type": "composition",
+      "from": "fhb6hm",
+      "to": "pvgjq4",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "bg9hjc",
+      "type": "composition",
+      "from": "fhb6hm",
+      "to": "6zz5mk",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "578x4a",
+      "type": "composition",
+      "from": "fhb6hm",
+      "to": "qqrb9v",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "hrdvfz",
+      "type": "composition",
+      "from": "fhb6hm",
+      "to": "hp4q7b",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "m7t688",
+      "type": "composition",
+      "from": "fhb6hm",
+      "to": "zh4qmr",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "1"
+      }
+    },
+    {
+      "id": "6bzr8y",
+      "type": "association",
+      "from": "m9t462",
+      "to": "yhx72u",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1"
+      }
+    },
+    {
+      "id": "krmaf4",
+      "type": "association",
+      "from": "w7kwvf",
+      "to": "9wv2nq",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1"
+      }
+    },
+    {
+      "id": "488iaf",
+      "type": "composition",
+      "from": "ywbvhp",
+      "to": "pjf2cz",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "xj2tjj",
+      "type": "association",
+      "from": "ywbvhp",
+      "to": "m9t462",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "sejsid",
+      "type": "composition",
+      "from": "ik8itm",
+      "to": "yb6w7v",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "9x3uss",
+      "type": "composition",
+      "from": "ik8itm",
+      "to": "geesmn",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "u8g2i4",
+      "type": "association",
+      "from": "ik8itm",
+      "to": "egjcfe",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1"
+      }
+    },
+    {
+      "id": "ydfe4i",
+      "type": "association",
+      "from": "ik8itm",
+      "to": "sg3hav",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1"
+      }
+    },
+    {
+      "id": "gctrvn",
+      "type": "association",
+      "from": "yb6w7v",
+      "to": "m9t462",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "4zje98",
+      "type": "composition",
+      "from": "4nq2jd",
+      "to": "zm8bhg",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "1"
+      }
+    },
+    {
+      "id": "dfx22b",
+      "type": "composition",
+      "from": "zm8bhg",
+      "to": "gnvx7h",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "m597m6",
+      "type": "composition",
+      "from": "4nq2jd",
+      "to": "erad5s",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "227s3x",
+      "type": "composition",
+      "from": "4nq2jd",
+      "to": "3ti4b2",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "iizsh3",
+      "type": "composition",
+      "from": "4nq2jd",
+      "to": "539urq",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "t5mb3u",
+      "type": "composition",
+      "from": "4nq2jd",
+      "to": "grdnqh",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "i6274g",
+      "type": "composition",
+      "from": "4nq2jd",
+      "to": "fdhd5x",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "wrn6z5",
+      "type": "association",
+      "from": "4nq2jd",
+      "to": "m9t462",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1"
+      }
+    },
+    {
+      "id": "4jq2cr",
+      "type": "association",
+      "from": "4nq2jd",
+      "to": "ci5rfr",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "0..1"
+      }
+    },
+    {
+      "id": "vwz43u",
+      "type": "association",
+      "from": "4nq2jd",
+      "to": "ngru9h",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*"
+      }
+    },
+    {
+      "id": "wwvkxb",
+      "type": "association",
+      "from": "ci5rfr",
+      "to": "i8qj6t",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1"
+      }
+    },
+    {
+      "id": "afi46u",
+      "type": "noteLink",
+      "from": "62z9vp",
+      "to": "4nq2jd",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 30,
+    "y": 40,
+    "width": 1948,
+    "height": 1640,
+    "left": 30,
+    "top": 40,
+    "right": 1978,
+    "bottom": 1680,
+    "center": {
+      "x": 1004,
+      "y": 860,
+      "length": 1321.9742811416568
+    }
+  }
+}

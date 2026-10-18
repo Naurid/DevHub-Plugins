@@ -44,6 +44,10 @@ tests/                           DevHub.<X>.Core.Tests (xUnit), DevHub.TestKit (
 tools/BoardDemo/                 writes a demo board + repository with every Board feature in use (README.md); never shipped
 docs/                            GIT_CLIENT_PLAN.md (Git plugin), BOARD_PLAN.md (Board plugins), DIAGRAMS_PLAN.md (Diagrams
                                  plugins), TEMPLATE_FORMAT.md (the template spec)
+docs/plugins/                    the plugin reference, one file per plugin family: update it when a plugin's actions,
+                                 settings, files or hooks change
+docs/diagrams/                   architecture diagrams (*.devhub-diagram.json): requirements, hooks, project
+                                 references, Board and Diagrams extension points, the board's files, publishing
 build/                           Get-PluginVersion, Pack-Plugin, Publish-Plugins, Test-Plugins (README.md)
 Directory.Build.props            project kinds (plugin / .Core / test) and their Sdk references
 Directory.Build.targets          after a build: plugin.json next to the DLLs, Properties/launchSettings.json (F5)
