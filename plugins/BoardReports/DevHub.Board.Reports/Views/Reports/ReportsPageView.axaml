@@ -29,7 +29,7 @@
         <c:SidePane PaneWidth="{DynamicResource Size.EpicsPanel}" MinPaneWidth="160" MinContentWidth="420"
                     PaneIcon="menu" PaneTitle="{l:T 'Reports'}">
             <c:SidePane.Pane>
-                <ListBox ItemsSource="{Binding Kinds}" SelectedItem="{Binding Kind}"
+                <ListBox SelectionMode="Single,AlwaysSelected" ItemsSource="{Binding Kinds}" SelectedItem="{Binding Kind}"
                          Background="Transparent" AutomationProperties.Name="{l:T 'Reports'}">
                     <ListBox.ItemTemplate>
                         <DataTemplate x:DataType="vm:ReportKind">

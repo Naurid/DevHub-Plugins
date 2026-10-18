@@ -91,12 +91,17 @@ reads another folder.) Without the property the build goes back to the newest re
 
 ## Versions (each plugin has its own)
 
-A plugin's version is **N.M.0**:
+A plugin's version is **N.M.P**:
 
 - **N (major)** is the highest tag `<plugin-id>/vN`, e.g. `git tag naurid.hello-world/v2 && git push origin naurid.hello-world/v2`.
-- **M (minor)** is the number of pushes or merges on `main` since that tag *that touched the
-  plugin's folder*. Changing one plugin never changes another's version.
-- Before the first major tag the version is `0.M.0`.
+- **M.P** come from the pushes or merges on `main` since that tag *that touched the plugin's folder* (changing one
+  plugin never changes another's version):
+  - a **fix**, the merge of a `Fix/…`, `Hotfix/…` or `Bugfix/…` branch or pull request (or a commit titled `fix: …`),
+    adds 1 to **P (patch)**: 1.10.0 → 1.10.1;
+  - anything else adds 1 to **M (minor)** and starts P again at 0: 1.10.1 → 1.11.0.
+
+  Commits up to the rule's start all counted as minors (`$PatchesSince` in the script), so earlier versions stay.
+- Before the first major tag the version is `0.M.P`.
 
 `pwsh build/Get-PluginVersion.ps1 -Folder plugins/Charts/DevHub.Charts` shows the version it would get.
 

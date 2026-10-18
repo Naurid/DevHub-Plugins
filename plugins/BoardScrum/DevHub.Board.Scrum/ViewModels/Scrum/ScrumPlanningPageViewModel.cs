@@ -44,7 +44,8 @@ public sealed class ScrumPlanningPageViewModel : PlanningPageViewModel
             .OrderBy(s => s.State == SprintState.Active ? 0 : 1).ThenBy(s => s.Sequence).ToList();
 
         // One list per open sprint, kept (with its expanded state and selection) across changes.
-        foreach (var gone in Lists.Where(l => l.Tag is Sprint s && open.All(o => o.Id != s.Id)).ToList())
+        foreach (var gone in Lists.Where(l => l.Tag is Sprint s && !l.Id.StartsWith(ClosedPrefix, StringComparison.Ordinal)
+                                              && open.All(o => o.Id != s.Id)).ToList())
             RemoveList(gone);
         var index = 0;
         foreach (var sprint in open)
@@ -61,9 +62,45 @@ public sealed class ScrumPlanningPageViewModel : PlanningPageViewModel
             list.Fill(issues.Where(i => i.Sprint == sprint.Id), board, Context, Host.Definition.CardFields, this);
             Summarize(list, sprint);
         }
-        Lists.Move(Lists.IndexOf(_backlog), Lists.Count - 1);
-        _backlog.Fill(issues.Where(i => i.Sprint is null || !open.Any(s => s.Id == i.Sprint)), board, Context, Host.Definition.CardFields, this);
+        Lists.Move(Lists.IndexOf(_backlog), index++);
+        // The backlog is what isn't planned: not an issue finished in a past sprint (it stays with that sprint). One left
+        // unfinished in a closed sprint still needs planning, so it's here.
+        var closed = board.Sprints.Values.Where(s => s.State == SprintState.Closed).ToDictionary(s => s.Id);
+        _backlog.Fill(issues.Where(i => i.Sprint is null
+                                        || (!open.Any(s => s.Id == i.Sprint) && !(closed.ContainsKey(i.Sprint) && board.IsDone(i)))),
+            board, Context, Host.Definition.CardFields, this);
+
+        // With "Show done", each past sprint below the backlog (newest first, folded) with what was finished in it.
+        var past = ShowDone ? closed.Values.OrderByDescending(s => s.Sequence).ToList() : [];
+        foreach (var gone in Lists.Where(l => l.Id.StartsWith(ClosedPrefix, StringComparison.Ordinal)
+                                              && past.All(s => ClosedPrefix + s.Id != l.Id)).ToList())
+            RemoveList(gone);
+        foreach (var sprint in past)
+        {
+            var list = Lists.FirstOrDefault(l => l.Id == ClosedPrefix + sprint.Id);
+            if (list is null)
+            {
+                list = new IssueListViewModel(ClosedPrefix + sprint.Id, sprint.Name)
+                {
+                    IsExpanded = false,
+                    EmptyText = L.T("Nothing was finished in this sprint."),
+                };
+                AddList(list);
+            }
+            // Its sprint as the tag: a drop here asks to plan into a finished sprint, which the board refuses.
+            list.Tag = sprint;
+            list.Title = sprint.Name;
+            list.Subtitle = sprint.Start is { } start && sprint.End is { } end
+                ? L.T($"Closed · {start.LocalDateTime:d MMM} – {end.LocalDateTime:d MMM}")
+                : L.T("Closed");
+            Lists.Move(Lists.IndexOf(list), index++);
+            list.Fill(issues.Where(i => i.Sprint == sprint.Id && board.IsDone(i)), board, Context, Host.Definition.CardFields, this);
+            list.Summary = L.T($"{list.Items.Count} done");
+        }
     }
+
+    // The lists of closed sprints ("Show done"), apart from the open sprints' lists (their id is the sprint's).
+    private const string ClosedPrefix = "closed:";
 
     private void DescribeSprint(IssueListViewModel list, Sprint sprint, BoardSnapshot board)
     {

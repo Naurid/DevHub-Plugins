@@ -1,4 +1,8 @@
 {
+  "Nothing was finished in this sprint.": "Aucun ticket n'a été terminé dans ce sprint.",
+  "Closed · {0:d MMM} – {1:d MMM}": "Clôturé · du {0:d MMM} au {1:d MMM}",
+  "Closed": "Clôturé",
+  "{0} done": "Terminés · {0}",
   "Create Sprint": "Créer un sprint",
   "Plan another sprint on the board in front.": "Planifier un nouveau sprint dans le tableau actif.",
   "Sprint Planning": "Planification des sprints",

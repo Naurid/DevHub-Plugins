@@ -57,7 +57,7 @@
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
-                    <ListBox Grid.Column="1" Classes="pages" ItemsSource="{Binding Pages}" SelectedItem="{Binding SelectedPage}"
+                    <ListBox Grid.Column="1" Classes="pages" SelectionMode="Single,AlwaysSelected" ItemsSource="{Binding Pages}" SelectedItem="{Binding SelectedPage}"
                              Background="Transparent" AutomationProperties.Name="{l:T 'Pages'}" VerticalAlignment="Center"
                              ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                         <!-- One row: the pages that don't fit beside the search box go into « More ▾ » (the open page
@@ -114,7 +114,7 @@
                         CloseOnContentClick="False" CloseOnSelection="False"
                         PaneIcon="info" PaneTitle="{l:T 'Issue'}">
                 <c:SidePane.Pane>
-                    <Panel>
+                    <Panel IsVisible="{Binding HasSidePanel}">
                         <Border IsVisible="{Binding HasIssuePanel}">
                             <ContentControl Content="{Binding IssuePanel}" />
                         </Border>

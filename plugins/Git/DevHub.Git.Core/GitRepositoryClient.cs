@@ -616,6 +616,31 @@ public sealed partial class GitRepositoryClient(GitRunner runner, string reposit
         throw new GitException(["log"], result.ExitCode, result.StandardError);
     }
 
+    /// <summary>
+    /// The commits HEAD gained by moving from <paramref name="from"/> to <paramref name="to"/>, oldest first, that this
+    /// repository's user (user.email) made: commits made outside DevHub (an IDE, a terminal). Empty when HEAD didn't
+    /// move forward (a reset, a rebase); merges and others' commits that came with a pull are left out.
+    /// </summary>
+    public async Task<IReadOnlyList<string>> GetOwnNewCommitsAsync(string from, string to, int max = 20, CancellationToken ct = default)
+    {
+        var forward = await runner.RunAsync(RepositoryPath, ["merge-base", "--is-ancestor", from, to],
+            new GitRunOptions { ReadOnly = true, AllowFailure = true }, ct);
+        if (!forward.Succeeded)
+            return [];
+        var email = (await GetConfigAsync("user.email", ct))?.Trim();
+        var log = await runner.RunAsync(RepositoryPath,
+            ["log", "--no-merges", "--format=%H%x00%ae", "-n", max.ToString(System.Globalization.CultureInfo.InvariantCulture),
+             $"{from}..{to}", "--"],
+            new GitRunOptions { ReadOnly = true }, ct);
+        return log.StandardOutput.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(line => line.Split('\0'))
+            .Where(parts => parts.Length == 2
+                            && (string.IsNullOrEmpty(email) || string.Equals(parts[1], email, StringComparison.OrdinalIgnoreCase)))
+            .Select(parts => parts[0])
+            .Reverse()
+            .ToList();
+    }
+
     /// <summary>A commit's full message (subject, blank line, body).</summary>
     public async Task<string> GetCommitMessageAsync(string commitId, CancellationToken ct = default)
     {

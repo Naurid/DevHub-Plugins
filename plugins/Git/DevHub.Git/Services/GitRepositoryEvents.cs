@@ -13,6 +13,8 @@ namespace DevHub.Services;
 public sealed class GitRepositoryEvents : IRepositoryEvents
 {
     private readonly Dictionary<string, (string? Branch, string? Commit)> _heads = new(StringComparer.OrdinalIgnoreCase);
+    private readonly HashSet<string> _reported = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Queue<string> _reportedOrder = new();
 
     public event EventHandler<RepositoryEventArgs>? BranchChanged;
     public event EventHandler<RepositoryEventArgs>? Committed;
@@ -29,14 +31,53 @@ public sealed class GitRepositoryEvents : IRepositoryEvents
 
     /// <summary>
     /// What a status refresh found: when the branch differs from the last one seen for this repository, BranchChanged
-    /// (not the first time a repository is seen: opening a tab isn't a change).
+    /// (not the first time a repository is seen: opening a tab isn't a change). When the same branch moved forward,
+    /// the user's new commits made outside DevHub (an IDE, a terminal) are reported as Committed, so smart commits
+    /// work wherever the commit was made.
     /// </summary>
-    public void ReportHead(string repositoryFolder, string? branch, string? commitId)
+    public void ReportHead(GitRepositoryClient client, string? branch, string? commitId)
     {
+        var repositoryFolder = client.RepositoryPath;
         var known = _heads.TryGetValue(repositoryFolder, out var previous);
         _heads[repositoryFolder] = (branch, commitId);
-        if (known && !string.Equals(previous.Branch, branch, StringComparison.Ordinal))
+        if (!known)
+            return;
+        if (!string.Equals(previous.Branch, branch, StringComparison.Ordinal))
             Raise(BranchChanged, new RepositoryEventArgs(repositoryFolder, branch, commitId));
+        else if (previous.Commit is { } from && commitId is { } to && from != to)
+            _ = ReportOutsideCommitsAsync(client, branch, from, to);
+    }
+
+    private async Task ReportOutsideCommitsAsync(GitRepositoryClient client, string? branch, string from, string to)
+    {
+        IReadOnlyList<string> commits;
+        try
+        {
+            commits = await client.GetOwnNewCommitsAsync(from, to);
+        }
+        catch (Exception ex) when (ex is GitException or IOException or InvalidOperationException)
+        {
+            return;
+        }
+        foreach (var commit in commits)
+        {
+            if (FirstReport(commit))
+                Raise(Committed, new RepositoryEventArgs(client.RepositoryPath, branch, commit));
+        }
+    }
+
+    // A commit made from DevHub is seen twice (the commit itself, then the status refresh): reported once.
+    private bool FirstReport(string commit)
+    {
+        lock (_reported)
+        {
+            if (!_reported.Add(commit))
+                return false;
+            _reportedOrder.Enqueue(commit);
+            if (_reportedOrder.Count > 500)
+                _reported.Remove(_reportedOrder.Dequeue());
+            return true;
+        }
     }
 
     private async Task ReportAsync(GitRepositoryClient client, GitOperationCompleted e)
@@ -55,7 +96,8 @@ public sealed class GitRepositoryEvents : IRepositoryEvents
         switch (e.Operation)
         {
             case GitOperation.Committed:
-                Raise(Committed, args);
+                if (args.CommitSha is null || FirstReport(args.CommitSha))
+                    Raise(Committed, args);
                 break;
             case GitOperation.Fetched:
             case GitOperation.Pulled:

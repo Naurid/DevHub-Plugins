@@ -314,7 +314,7 @@ public sealed partial class RepositoryDocumentViewModel : DocumentViewModelBase,
             Branch = status.DisplayBranch;
             Upstream = status.Upstream;
             _headBranch = status.Branch;
-            _events.ReportHead(Path, status.Branch, status.CommitId);
+            _events.ReportHead(client, status.Branch, status.CommitId);
             SyncText = (status.Ahead, status.Behind) switch
             {
                 (0, 0) => null,

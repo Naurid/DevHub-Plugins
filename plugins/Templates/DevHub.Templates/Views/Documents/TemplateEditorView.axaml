@@ -74,7 +74,7 @@
                 <c:SidePane.Pane>
                     <Border
                             Background="{DynamicResource Brush.Bg.Panel}">
-                        <ListBox ItemsSource="{Binding Sections}" SelectedItem="{Binding SelectedSection}" Background="Transparent"
+                        <ListBox SelectionMode="Single,AlwaysSelected" ItemsSource="{Binding Sections}" SelectedItem="{Binding SelectedSection}" Background="Transparent"
                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" AutomationProperties.Name="{l:T 'Sections'}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate x:DataType="docs:EditorSectionViewModel">

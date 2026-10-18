@@ -89,7 +89,7 @@
                          Stashes, Submodules. No icons: names start at the edge; the fold arrow is on the
                          right (SidebarItem theme). A branch: select = show it in All Commits,
                          double-click / Enter = check out, right-click = its menu. Left / Right fold. -->
-                    <TreeView ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding Sidebar}" SelectedItem="{Binding SelectedNode}"
+                    <TreeView ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionMode="Single,AlwaysSelected" ItemsSource="{Binding Sidebar}" SelectedItem="{Binding SelectedNode}"
                               Background="Transparent" AutomationProperties.Name="{l:T 'Repository sidebar'}">
                         <TreeView.Resources>
                             <!-- Rows indent by depth (Level × Size.TreeIndent). -->

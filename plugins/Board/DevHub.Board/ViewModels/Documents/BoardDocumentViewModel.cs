@@ -75,9 +75,13 @@ public sealed partial class BoardDocumentViewModel : DocumentViewModelBase, IDis
     /// <summary>Several selected issues edited together (null when fewer than two are selected).</summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasMultiPanel))]
+    [NotifyPropertyChangedFor(nameof(HasSidePanel))]
     private MultiIssuePanelViewModel? _multiPanel;
 
     public bool HasMultiPanel => MultiPanel is not null;
+
+    /// <summary>The right pane holds something; without it the pane and its splitter go away.</summary>
+    public bool HasSidePanel => HasIssuePanel || HasMultiPanel;
 
     /// <summary>The issue panel's width (dragged with its splitter).</summary>
     [ObservableProperty] private double _issuePanelWidth = 440;
@@ -243,6 +247,7 @@ public sealed partial class BoardDocumentViewModel : DocumentViewModelBase, IDis
     {
         oldValue?.Dispose();
         OnPropertyChanged(nameof(HasIssuePanel));
+        OnPropertyChanged(nameof(HasSidePanel));
     }
 
     private void OnBoardChanged(object? sender, EventArgs e)

@@ -43,7 +43,7 @@
             <TextBlock Text="{Binding Error}" TextWrapping="Wrap" Foreground="{DynamicResource Brush.Status.Error}"
                        IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
         </StackPanel>
-        <ListBox ItemsSource="{Binding Kinds}" SelectedItem="{Binding Kind}" AutomationProperties.Name="{l:T 'Kind of diagram'}">
+        <ListBox SelectionMode="Single,AlwaysSelected" ItemsSource="{Binding Kinds}" SelectedItem="{Binding Kind}" AutomationProperties.Name="{l:T 'Kind of diagram'}">
             <!-- A short list: every kind realised, so screen readers (and Up / Down) see them all. -->
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>

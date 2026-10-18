@@ -63,10 +63,13 @@ public sealed class BoardService(IEnumerable<IBoardStoreProvider> providers, ISe
         await _gate.WaitAsync();
         try
         {
-            if (_open.TryGetValue(location.Key, out var open))
+            lock (_open)
             {
-                _open[location.Key] = (open.Context, open.Users + 1);
-                return open.Context;
+                if (_open.TryGetValue(location.Key, out var open))
+                {
+                    _open[location.Key] = (open.Context, open.Users + 1);
+                    return open.Context;
+                }
             }
             var provider = Provider(location.StoreKind)
                            ?? throw new BoardStoreException(L.T($"Boards kept as \"{location.StoreKind}\" need a plugin that's switched off."));
@@ -87,7 +90,8 @@ public sealed class BoardService(IEnumerable<IBoardStoreProvider> providers, ISe
                 return null;
             }
             var context = new BoardContext(location, session, this, status, dialogs);
-            _open[location.Key] = (context, 1);
+            lock (_open)
+                _open[location.Key] = (context, 1);
             if (remember)
                 Remember(context);
             return context;
@@ -117,7 +121,8 @@ public sealed class BoardService(IEnumerable<IBoardStoreProvider> providers, ISe
                 throw;
             }
             var context = new BoardContext(location, session, this, status, dialogs);
-            _open[location.Key] = (context, 1);
+            lock (_open)
+                _open[location.Key] = (context, 1);
             Remember(context);
             return context;
         }
@@ -130,8 +135,9 @@ public sealed class BoardService(IEnumerable<IBoardStoreProvider> providers, ISe
     /// <summary>One user of a board is done with it; the last one closes it.</summary>
     public void Release(BoardContext context)
     {
-        _gate.Wait();
-        try
+        // A plain lock, not the gate: the gate is held while a board loads, and that load needs the UI thread a
+        // Release on the UI thread would be blocking (two boards opened at once froze DevHub).
+        lock (_open)
         {
             if (!_open.TryGetValue(context.Location.Key, out var open) || !ReferenceEquals(open.Context, context))
                 return;
@@ -141,10 +147,6 @@ public sealed class BoardService(IEnumerable<IBoardStoreProvider> providers, ISe
                 return;
             }
             _open.Remove(context.Location.Key);
-        }
-        finally
-        {
-            _gate.Release();
         }
         context.Close();
     }

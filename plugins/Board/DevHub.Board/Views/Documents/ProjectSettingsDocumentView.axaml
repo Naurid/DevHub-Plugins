@@ -31,7 +31,7 @@
             <c:SidePane PaneWidth="{DynamicResource Size.SettingsList}" MinPaneWidth="160" MinContentWidth="420"
                         PaneIcon="settings" PaneTitle="{l:T 'Sections'}">
                 <c:SidePane.Pane>
-                    <ListBox ItemsSource="{Binding Sections}" SelectedItem="{Binding Section}"
+                    <ListBox SelectionMode="Single,AlwaysSelected" ItemsSource="{Binding Sections}" SelectedItem="{Binding Section}"
                              Background="Transparent" AutomationProperties.Name="{l:T 'Sections'}" />
                 </c:SidePane.Pane>
                 <DockPanel>
