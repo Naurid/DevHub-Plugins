@@ -97,6 +97,7 @@ public abstract partial class PlanningPageViewModel : BoardPageViewModel, IItems
             ClearLists(Lists.Where(l => !ReferenceEquals(l.Selected, changed)));
         OnPropertyChanged(nameof(SelectedIssues));
         OnPropertyChanged(nameof(HasSelection));
+        ShowSelectionInPanel();
         // The issue panel opens on a tap (Tap.Command in the row), not on selection: selection happens on press,
         // and opening the panel then would move the lists under a drag that's just starting.
     }
@@ -113,7 +114,11 @@ public abstract partial class PlanningPageViewModel : BoardPageViewModel, IItems
         ClearLists(Lists);
         OnPropertyChanged(nameof(SelectedIssues));
         OnPropertyChanged(nameof(HasSelection));
+        ShowSelectionInPanel();
     }
+
+    /// <summary>Two or more selected issues: the panel edits them together (one shows on a tap, as before).</summary>
+    private void ShowSelectionInPanel() => Host.SelectIssues(SelectedIssues.Select(i => i.Id).ToList());
 
     private void ClearLists(IEnumerable<IssueListViewModel> lists)
     {
@@ -314,7 +319,15 @@ public abstract partial class PlanningPageViewModel : BoardPageViewModel, IItems
     }
 
     [RelayCommand]
-    private void Select(IssueItemViewModel? item) => Host.SelectIssue(item?.Id);
+    private void Select(IssueItemViewModel? item)
+    {
+        // A tap on one of several selected issues keeps them together in the panel.
+        var selected = SelectedIssues;
+        if (item is not null && selected.Count > 1 && selected.Any(i => i.Id == item.Id))
+            Host.SelectIssues(selected.Select(i => i.Id).ToList());
+        else
+            Host.SelectIssue(item?.Id);
+    }
 
     [RelayCommand]
     private void Open(IssueItemViewModel? item)

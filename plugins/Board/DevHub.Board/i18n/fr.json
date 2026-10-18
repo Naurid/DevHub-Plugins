@@ -696,5 +696,10 @@
   "Use case, class, database and other diagrams, and mood boards, made for this project show here.": "Les diagrammes de cas d'utilisation, de classes, de bases de données et autres, ainsi que les mood boards faits pour ce projet, apparaissent ici.",
   "No diagram has a shape linked to this issue. In a diagram, select a use case or an action and use Issue ▾ › Link to Issue.": "Aucun diagramme n'a de forme liée à ce ticket. Dans un diagramme, sélectionnez un cas d'utilisation ou une action, puis Ticket ▾ › Lier à un ticket.",
   "Clear Selection": "Tout désélectionner",
-  "Unselect every issue (Esc)": "Désélectionner tous les tickets (Échap)"
+  "Unselect every issue (Esc)": "Désélectionner tous les tickets (Échap)",
+  "{0} issues selected": "{0} tickets sélectionnés",
+  "Close the panel": "Fermer le panneau",
+  "A change here applies to every selected issue (one Undo). — means the issues differ; leaving it keeps each one as it is.": "Une modification ici s'applique à tous les tickets sélectionnés (une seule annulation). — signifie que les tickets diffèrent\u202F; laisser tel quel garde la valeur de chacun.",
+  "More Changes…": "Autres modifications…",
+  "Add labels or acceptance criteria, tick the Definition of Done": "Ajouter des étiquettes ou des critères d'acceptation, cocher la Definition of Done"
 }

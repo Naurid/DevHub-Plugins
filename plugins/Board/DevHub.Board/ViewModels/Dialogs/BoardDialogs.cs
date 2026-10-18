@@ -547,12 +547,30 @@ public sealed partial class BulkEditDialogViewModel : DialogViewModelBase
 
     partial void OnFieldChanged(NamedItem value) => UpdateChoices();
 
-    private void UpdateChoices()
+    /// <summary>The bulk edit's field id for the status (it isn't an issue field: it moves issues through the workflow).</summary>
+    public const string Status = StatusField;
+
+    /// <summary>
+    /// Sets one field on the issues, as the dialog would: the same rules, one Undo. Used by the issue panel's
+    /// multi-selection view. False (and <see cref="Error"/> set) when it can't.
+    /// </summary>
+    public async Task<bool> ApplyFieldAsync(string fieldId, string? choiceId, string text)
     {
-        var snapshot = _context.Snapshot;
+        if (Fields.FirstOrDefault(f => f.Id == fieldId) is not { } field)
+            return false;
+        Field = field;
+        if (ShowChoices)
+            Choice = Choices.FirstOrDefault(c => c.Id == choiceId);
+        Text = text;
+        return await ApplyChangesAsync();
+    }
+
+    /// <summary>The choices a field offers (empty for a typed field).</summary>
+    public static IReadOnlyList<NamedItem> ChoicesFor(BoardContext context, string fieldId)
+    {
+        var snapshot = context.Snapshot;
         var project = snapshot.Project;
-        Choices.Clear();
-        IEnumerable<NamedItem> items = Field.Id switch
+        IEnumerable<NamedItem> items = fieldId switch
         {
             StatusField => project.Statuses.Select(s => new NamedItem(s.Id, s.Name)),
             IssueFields.Type => project.IssueTypes.Select(t => new NamedItem(t.Id, t.Name)),
@@ -565,25 +583,34 @@ public sealed partial class BulkEditDialogViewModel : DialogViewModelBase
             DoneField => [new NamedItem("tick", L.T("Tick every item")), new NamedItem("clear", L.T("Clear every tick"))],
             _ => [],
         };
-        foreach (var item in items)
+        return items.ToList();
+    }
+
+    /// <summary>How to fill a field in (the tooltip / hint under it).</summary>
+    public static string HintFor(string fieldId) => fieldId switch
+    {
+        StatusField => L.T("Issues whose workflow doesn't allow the move stay where they are."),
+        IssueFields.Type => L.T("A type of the same level (story, task, bug…); an epic stays an epic."),
+        IssueFields.StoryPoints => L.T("A number; empty clears it."),
+        AddCriteriaField => L.T("One criterion per line; added to every selected issue, after the ones it has."),
+        DoneField => L.T("Ticks or clears the Definition of Done items on every selected issue (not epics or sub-tasks)."),
+        AddLabelsField => L.T("Labels separated by spaces, added to the ones each issue has."),
+        IssueFields.Labels => L.T("Labels separated by spaces, replacing the ones each issue has; empty clears them."),
+        IssueFields.FixVersions => L.T("Version names separated by commas; empty clears them."),
+        IssueFields.Components => L.T("Component names separated by commas; empty clears them."),
+        IssueFields.Start or IssueFields.Due => L.T("A date like 2026-10-31; empty clears it."),
+        _ => "",
+    };
+
+    private void UpdateChoices()
+    {
+        Choices.Clear();
+        foreach (var item in ChoicesFor(_context, Field.Id!))
             Choices.Add(item);
         ShowChoices = Choices.Count > 0;
         MultiLine = Field.Id == AddCriteriaField;
         Choice = Choices.FirstOrDefault();
-        Hint = Field.Id switch
-        {
-            StatusField => L.T("Issues whose workflow doesn't allow the move stay where they are."),
-            IssueFields.Type => L.T("A type of the same level (story, task, bug…); an epic stays an epic."),
-            IssueFields.StoryPoints => L.T("A number; empty clears it."),
-            AddCriteriaField => L.T("One criterion per line; added to every selected issue, after the ones it has."),
-            DoneField => L.T("Ticks or clears the Definition of Done items on every selected issue (not epics or sub-tasks)."),
-            AddLabelsField => L.T("Labels separated by spaces, added to the ones each issue has."),
-            IssueFields.Labels => L.T("Labels separated by spaces, replacing the ones each issue has; empty clears them."),
-            IssueFields.FixVersions => L.T("Version names separated by commas; empty clears them."),
-            IssueFields.Components => L.T("Component names separated by commas; empty clears them."),
-            IssueFields.Start or IssueFields.Due => L.T("A date like 2026-10-31; empty clears it."),
-            _ => "",
-        };
+        Hint = HintFor(Field.Id!);
     }
 
     protected override async Task<bool> ApplyChangesAsync()

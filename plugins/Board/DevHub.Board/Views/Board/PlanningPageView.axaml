@@ -139,7 +139,8 @@
                 </Border>
 
                 <!-- The lists. -->
-                <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                <!-- Clicking empty space (between rows, around the lists) unselects. -->
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" Background="Transparent" c:EmptyClick.Command="{Binding ClearSelectionCommand}">
                     <ItemsControl ItemsSource="{Binding Lists}" Margin="{DynamicResource Padding.Board}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="vm:IssueListViewModel">

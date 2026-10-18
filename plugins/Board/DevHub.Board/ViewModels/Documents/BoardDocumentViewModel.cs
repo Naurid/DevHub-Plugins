@@ -72,6 +72,13 @@ public sealed partial class BoardDocumentViewModel : DocumentViewModelBase, IDis
 
     public bool HasIssuePanel => IssuePanel is not null;
 
+    /// <summary>Several selected issues edited together (null when fewer than two are selected).</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasMultiPanel))]
+    private MultiIssuePanelViewModel? _multiPanel;
+
+    public bool HasMultiPanel => MultiPanel is not null;
+
     /// <summary>The issue panel's width (dragged with its splitter).</summary>
     [ObservableProperty] private double _issuePanelWidth = 440;
 
@@ -201,6 +208,7 @@ public sealed partial class BoardDocumentViewModel : DocumentViewModelBase, IDis
         _host = new BoardPageHost(_context!, definition)
         {
             SelectIssue = ShowIssue,
+            SelectIssues = ShowIssues,
             OpenIssue = OpenIssue,
             CreateIssue = CreateIssueWithAsync,
             ShowPage = id => SelectedPage = Pages.FirstOrDefault(p => p.Id == id) ?? SelectedPage,
@@ -252,6 +260,7 @@ public sealed partial class BoardDocumentViewModel : DocumentViewModelBase, IDis
             else
                 panel.Refresh();
         }
+        MultiPanel?.Refresh();
         var key = _context.Project.Key + L.T(" board");
         if (key != _title)
         {
@@ -266,6 +275,7 @@ public sealed partial class BoardDocumentViewModel : DocumentViewModelBase, IDis
     {
         if (_context is null)
             return;
+        MultiPanel = null;
         if (issueId is null)
         {
             IssuePanel = null;
@@ -279,6 +289,21 @@ public sealed partial class BoardDocumentViewModel : DocumentViewModelBase, IDis
             Close = () => IssuePanel = null,
             Navigate = ShowIssue,
         };
+    }
+
+    /// <summary>Several issues in the panel, edited together; fewer than two closes that view.</summary>
+    public void ShowIssues(IReadOnlyList<string> issueIds)
+    {
+        if (_context is null || issueIds.Count < 2)
+        {
+            MultiPanel = null;
+            return;
+        }
+        IssuePanel = null;
+        if (MultiPanel is { } panel)
+            panel.Show(issueIds);
+        else
+            MultiPanel = new MultiIssuePanelViewModel(_context, issueIds, () => MultiPanel = null);
     }
 
     public void OpenIssue(string issueId) => OpenDocument?.Invoke(IssueDocumentFactory.IdFor(Location, issueId));
