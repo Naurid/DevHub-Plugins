@@ -191,4 +191,27 @@ public class LogTests
 
         Assert.Equal("feature.txt", Assert.Single(changes).Path);
     }
+
+    [GitFact]
+    public async Task New_commits_are_the_users_own_made_on_top()
+    {
+        using var repo = new TempGitRepo();
+        repo.Run("config", "user.email", "author@example.com");
+        repo.WriteFile("a.txt", "1");
+        repo.CommitAll("root");
+        var root = repo.Run("rev-parse", "HEAD").StandardOutput.Trim();
+        repo.WriteFile("a.txt", "2");
+        repo.CommitAll("DEV-1 #done");
+        var mine = repo.Run("rev-parse", "HEAD").StandardOutput.Trim();
+        repo.WriteFile("a.txt", "3");
+        repo.Run("add", "-A");
+        repo.Run("commit", "-q", "-m", "from a teammate", "--author", "Other <other@example.com>");
+        repo.WriteFile("a.txt", "4");
+        repo.CommitAll("DEV-2 #comment again");
+        var head = repo.Run("rev-parse", "HEAD").StandardOutput.Trim();
+
+        Assert.Equal([mine, head], await repo.Client.GetOwnNewCommitsAsync(root, head));
+        // HEAD going back (a reset) brings nothing new.
+        Assert.Empty(await repo.Client.GetOwnNewCommitsAsync(head, root));
+    }
 }

@@ -16,8 +16,9 @@ namespace DevHub.ViewModels.BoardGit;
 
 /// <summary>
 /// The status bar's issue: on a branch named after an issue (feature/DEV-12-…) of a repository tab in front, it shows
-/// "DEV-12 Login form"; a click opens the issue. It also watches commits made from DevHub for smart commit commands
-/// (DEV-12 #done #comment … #time 2h) and asks before applying them, never silently.
+/// "DEV-12 Login form"; a click opens the issue. It also watches new commits (made from DevHub, or outside it while
+/// the repository is open in a tab) for smart commit commands (DEV-12 #done #comment … #time 2h) and asks before
+/// applying them, never silently.
 /// </summary>
 public sealed partial class BranchIssueWidgetViewModel : StatusBarWidgetViewModelBase, IDisposable
 {
@@ -28,6 +29,7 @@ public sealed partial class BranchIssueWidgetViewModel : StatusBarWidgetViewMode
     private RecentBoard? _board;
     private string? _issueId;
     private int _refresh;
+    private readonly SemaphoreSlim _smartCommits = new(1, 1);
 
     public BranchIssueWidgetViewModel(BoardGitServices services, IServiceProvider provider)
     {
@@ -117,12 +119,14 @@ public sealed partial class BranchIssueWidgetViewModel : StatusBarWidgetViewMode
     }
 
     // Smart commits: commands in the message of a commit made from DevHub, confirmed before they apply.
+    // Several commits can arrive together (made outside DevHub, then noticed at once): one confirmation at a time.
     private async void OnCommitted(object? sender, RepositoryEventArgs e)
     {
+        if (!_services.Settings.SmartCommits || e.CommitSha is null)
+            return;
+        await _smartCommits.WaitAsync();
         try
         {
-            if (!_services.Settings.SmartCommits || e.CommitSha is null)
-                return;
             var message = await new GitRepositoryClient(_services.Runner, e.RepositoryFolder).GetCommitMessageAsync(e.CommitSha);
             foreach (var board in await _services.BoardsOfRepositoryAsync(e.RepositoryFolder))
             {
@@ -144,9 +148,13 @@ public sealed partial class BranchIssueWidgetViewModel : StatusBarWidgetViewMode
             }
             await RefreshAsync();
         }
-        catch (Exception ex) when (ex is GitException or IOException or InvalidOperationException)
+        catch (Exception ex) when (ex is GitException or IOException or InvalidOperationException or BoardRuleException)
         {
             _services.Status.Show(L.T("Smart commit skipped: ") + ex.Message);
+        }
+        finally
+        {
+            _smartCommits.Release();
         }
     }
 
