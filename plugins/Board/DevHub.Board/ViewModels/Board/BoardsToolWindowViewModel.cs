@@ -25,7 +25,8 @@ public sealed partial class BoardsToolWindowViewModel : ToolWindowViewModelBase,
         Load();
     }
 
-    public override string Id => L.T("Boards");
+    // Saved in the tool-window layout and built into its action id (ToolWindow.Boards): never translated.
+    public override string Id => "boards";
     public override string Title => L.T("Boards");
     public override string IconKind => Controls.IconKind.Menu;
     public override ToolWindowSlot Slot => ToolWindowSlot.Left;
