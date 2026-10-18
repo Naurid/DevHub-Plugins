@@ -3,7 +3,7 @@
   (with the version filled in) and the plugin's own DLLs. Prints the package's details as JSON (id,
   name, version, file, sha256, size), which publish.yml turns into the index entry.
 
-    pwsh build/Pack-Plugin.ps1 -Folder plugins/HelloWorld [-Version 1.2.0] [-Out out] [-SdkVersion <DevHub Sdk version>]
+    pwsh build/Pack-Plugin.ps1 -Folder plugins/Charts/DevHub.Charts [-Version 1.2.0] [-Out out] [-SdkVersion <DevHub Sdk version>]
 #>
 param(
     [Parameter(Mandatory)] [string]$Folder,

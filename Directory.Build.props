@@ -1,6 +1,6 @@
 <!--
   Shared by every project in this repository. Three kinds, by name:
-    - a plugin (UI) project, e.g. plugins/Git/DevHub.Git, HelloWorld: builds against DevHub's Sdk (the NuGet packages
+    - a plugin (UI) project, e.g. plugins/Git/DevHub.Git: builds against DevHub's Sdk (the NuGet packages
       DevHub.Sdk + DevHub.Sdk.Core) and Avalonia / CommunityToolkit.Mvvm / DI;
     - a ".Core" project (no UI): DevHub.Sdk.Core only, never Avalonia;
     - a test project (".Tests", and DevHub.TestKit): runs, so it gets real copies of everything it uses (through

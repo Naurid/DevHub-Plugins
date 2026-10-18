@@ -8,7 +8,7 @@ DevHub with their history): DevHub bundles them, and they update through the mar
 ## Layout
 
 ```
-plugins/<Name>/          one plugin: plugin.json, <Name>.csproj, its plugin class, ViewModels/, Views/ (HelloWorld)
+plugins/<Name>/          one plugin: plugin.json, <Name>.csproj, its plugin class, ViewModels/, Views/
 plugins/<Name>/DevHub.X/       or grouped: the UI project with plugin.json (Git, GitHub, Projects, Templates)…
 plugins/<Name>/DevHub.X.Core/  …and its logic, no UI (tested in tests/)
 tests/                   DevHub.X.Core.Tests (xUnit; real git / dotnet / cargo / go in temp folders), DevHub.TestKit
@@ -28,7 +28,8 @@ whose plugin.json says `"publish": false` isn't released.
 
 ## Writing a plugin
 
-1. Copy `plugins/HelloWorld` to `plugins/<YourPlugin>` and rename:
+1. Copy a plugin's UI project (e.g. `plugins/Charts/DevHub.Charts`, without its `.Core` reference) to
+   `plugins/<YourPlugin>` and rename:
    - the `.csproj`;
    - `plugin.json`: a new `id` (lowercase, `yourname.plugin-name`), name, description, category.
      Leave out `version`, which is computed;
@@ -97,7 +98,7 @@ A plugin's version is **N.M.0**:
   plugin's folder*. Changing one plugin never changes another's version.
 - Before the first major tag the version is `0.M.0`.
 
-`pwsh build/Get-PluginVersion.ps1 -Folder plugins/HelloWorld` shows the version it would get.
+`pwsh build/Get-PluginVersion.ps1 -Folder plugins/Charts/DevHub.Charts` shows the version it would get.
 
 ## Publishing (automatic)
 

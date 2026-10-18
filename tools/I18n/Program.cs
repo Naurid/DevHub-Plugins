@@ -75,7 +75,7 @@ static IEnumerable<string> Projects(string folder)
         return [folder];
     return Directory.EnumerateFiles(folder, "*.csproj", SearchOption.AllDirectories)
         .Select(Path.GetDirectoryName).OfType<string>()
-        .Where(d => !Regex.IsMatch(d, @"[\\/](tests|tools|bin|obj)[\\/]|\.Tests$|TestPlugin|TestKit|HelloWorld"))
+        .Where(d => !Regex.IsMatch(d, @"[\\/](tests|tools|bin|obj)[\\/]|\.Tests$|TestPlugin|TestKit"))
         .Order(StringComparer.OrdinalIgnoreCase);
 }
 

@@ -39,7 +39,6 @@ plugins/<Name>/                  one plugin; grouped ones have a UI project and 
   DiagramsDatabase/DevHub.Diagrams.Database/ + .Core/  Merise MCD → MLD, crow's-foot ERD, SQL export / import, data dictionary
   DiagramsBusiness/DevHub.Diagrams.Business/ + .Core/  flowcharts, BPMN, mind maps
   MoodBoard/DevHub.MoodBoard/ + .Core/           mood boards: pictures, swatches, links, pen (the diagram kinds require Diagrams)
-  HelloWorld/                                   the sample plugin (one project)
   (plugin.json sits next to the UI project: id, name, description, category, apiVersion, requires)
 tests/                           DevHub.<X>.Core.Tests (xUnit), DevHub.TestKit (TempGitRepo, [GitFact])
 tools/BoardDemo/                 writes a demo board + repository with every Board feature in use (README.md); never shipped
