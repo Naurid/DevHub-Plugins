@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- The diagram kinds' cores: UML, business (flowchart, BPMN, mind map) and mood boards. -->
+
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+        <PackageReference Include="xunit" Version="2.9.2" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\plugins\DiagramsUml\DevHub.Diagrams.Uml.Core\DevHub.Diagrams.Uml.Core.csproj" />
+        <ProjectReference Include="..\..\plugins\DiagramsBusiness\DevHub.Diagrams.Business.Core\DevHub.Diagrams.Business.Core.csproj" />
+        <ProjectReference Include="..\..\plugins\MoodBoard\DevHub.MoodBoard.Core\DevHub.MoodBoard.Core.csproj" />
+    </ItemGroup>
+
+</Project>

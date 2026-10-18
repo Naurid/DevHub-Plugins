@@ -1,0 +1,27 @@
+<!-- An issue's Diagrams section: the diagrams of the project with a shape linked to this issue. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
+             xmlns:vm="using:DevHub.ViewModels.Board"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Board.DiagramsSectionView"
+             x:DataType="vm:DiagramsSectionViewModel">
+    <StackPanel Spacing="{DynamicResource Spacing.Small}">
+        <TextBlock Classes="small secondary" TextWrapping="Wrap" IsVisible="{Binding IsEmpty}"
+                   Text="{l:T 'No diagram has a shape linked to this issue. In a diagram, select a use case or an action and use Issue ▾ › Link to Issue.'}" />
+        <ItemsControl ItemsSource="{Binding Items}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:DiagramRow">
+                    <Button Classes="flat" HorizontalAlignment="Left" ToolTip.Tip="{Binding Path}"
+                            Command="{Binding OpenCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing.Small}">
+                            <c:Icon Kind="{Binding IconKind}" VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                            <TextBlock Classes="small secondary" Text="{Binding KindName}" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </StackPanel>
+</UserControl>

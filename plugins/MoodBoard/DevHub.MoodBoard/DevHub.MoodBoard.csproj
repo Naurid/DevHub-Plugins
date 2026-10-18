@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- Mood Boards: the mood board kind of the Diagrams editor (pictures, swatches, shapes, links, pen). Requires the
+         Diagrams plugin, so it references DevHub.Diagrams (never the reverse). -->
+
+    <PropertyGroup>
+        <RootNamespace>DevHub</RootNamespace>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Diagrams\DevHub.Diagrams\DevHub.Diagrams.csproj" />
+        <ProjectReference Include="..\DevHub.MoodBoard.Core\DevHub.MoodBoard.Core.csproj" />
+    </ItemGroup>
+
+</Project>

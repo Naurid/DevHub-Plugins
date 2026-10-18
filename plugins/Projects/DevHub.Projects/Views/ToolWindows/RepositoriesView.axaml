@@ -46,8 +46,9 @@
                     </TreeView.KeyBindings>
                     <TreeView.Styles>
                         <!-- Two-way: the tree remembers expanded/collapsed on the node. -->
-                        <Style Selector="TreeViewItem" x:DataType="vm:ScanFolderNode">
-                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                        <Style Selector="TreeViewItem">
+                            <!-- ReflectionBinding: folders, projects and their diagrams all have IsExpanded. -->
+                            <Setter Property="IsExpanded" Value="{ReflectionBinding IsExpanded, Mode=TwoWay}" />
                             <!-- Screen-reader name (the item's content is a Grid, so it had none).
                                  ReflectionBinding: rows are folders or repositories, and both have a
                                  Name, which a compiled binding typed to one of them can't express. -->
@@ -71,8 +72,9 @@
                             </Grid>
                         </TreeDataTemplate>
 
-                        <!-- Repository (leaf). Double-click opens it as a tab (Fork / JetBrains style). -->
-                        <DataTemplate DataType="vm:RepositoryNode">
+                        <!-- Repository. Double-click opens it as a tab (Fork / JetBrains style). Its child is
+                             "Diagrams" when the Diagrams plugin is on. -->
+                        <TreeDataTemplate DataType="vm:RepositoryNode" ItemsSource="{Binding Children}">
                             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}" Margin="{DynamicResource Margin.RowEnd}"
                                   Background="Transparent" ToolTip.Tip="{Binding Path}"
                                   c:DoubleTap.Command="{Binding OpenInDevHubCommand}">
@@ -92,6 +94,10 @@
                                                   IsVisible="{Binding CanAddFiles}">
                                             <MenuItem.Icon><c:Icon Kind="template" /></MenuItem.Icon>
                                         </MenuItem>
+                                        <MenuItem Header="{l:T 'New Diagram…'}" Command="{Binding NewDiagramCommand}"
+                                                  IsVisible="{Binding HasDiagrams}">
+                                            <MenuItem.Icon><c:Icon Kind="add" /></MenuItem.Icon>
+                                        </MenuItem>
                                     </ContextMenu>
                                 </Grid.ContextMenu>
                                 <c:Icon Kind="vcs" VerticalAlignment="Center" />
@@ -99,6 +105,52 @@
                                            TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
                                 <TextBlock Grid.Column="2" Classes="small secondary" Text="{Binding Language}"
                                            VerticalAlignment="Center" />
+                            </Grid>
+                        </TreeDataTemplate>
+
+                        <!-- A project's diagrams and mood boards (Diagrams plugin). -->
+                        <TreeDataTemplate DataType="vm:ProjectDiagramsNode" ItemsSource="{Binding Items}">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}" Margin="{DynamicResource Margin.RowEnd}"
+                                  Background="Transparent" ToolTip.Tip="{l:T 'Diagrams and mood boards of this project'}">
+                                <Grid.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="{l:T 'New Diagram…'}" Command="{Binding NewCommand}" FontWeight="SemiBold">
+                                            <MenuItem.Icon><c:Icon Kind="add" /></MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="{l:T 'Refresh'}" Command="{Binding RefreshCommand}">
+                                            <MenuItem.Icon><c:Icon Kind="refresh" /></MenuItem.Icon>
+                                        </MenuItem>
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
+                                <c:Icon Kind="template" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="1" Text="{Binding Name}" Classes="secondary"
+                                           TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                <c:Badge Grid.Column="2" Content="{Binding CountText}" />
+                            </Grid>
+                        </TreeDataTemplate>
+
+                        <!-- One diagram: double-click opens it in its tab. -->
+                        <DataTemplate DataType="vm:ProjectDiagramNode">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing.Small}" Margin="{DynamicResource Margin.RowEnd}"
+                                  Background="Transparent" ToolTip.Tip="{Binding Path}"
+                                  c:DoubleTap.Command="{Binding OpenCommand}">
+                                <Grid.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="{l:T 'Open'}" Command="{Binding OpenCommand}" FontWeight="SemiBold" />
+                                        <MenuItem Header="{l:T 'Show in Explorer'}" Command="{Binding RevealCommand}">
+                                            <MenuItem.Icon><c:Icon Kind="folder" /></MenuItem.Icon>
+                                        </MenuItem>
+                                        <Separator />
+                                        <MenuItem Header="{l:T 'Delete…'}" Command="{Binding DeleteCommand}">
+                                            <MenuItem.Icon><c:Icon Kind="delete" /></MenuItem.Icon>
+                                        </MenuItem>
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
+                                <c:Icon Kind="{Binding IconKind}" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="1" Text="{Binding Name}"
+                                           TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="2" Classes="small secondary" Text="{Binding KindName}"
+                                           TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
                             </Grid>
                         </DataTemplate>
                     </TreeView.DataTemplates>

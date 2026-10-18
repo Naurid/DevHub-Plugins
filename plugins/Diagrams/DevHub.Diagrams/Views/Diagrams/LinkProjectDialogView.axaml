@@ -1,0 +1,27 @@
+<!-- Link to Project: one of the projects DevHub knows, another folder, or none. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
+             xmlns:vm="using:DevHub.ViewModels.Diagrams"
+             xmlns:i="using:DevHub.Integration"
+             x:Class="DevHub.Views.Diagrams.LinkProjectDialogView"
+             x:DataType="vm:LinkProjectDialogViewModel">
+    <DockPanel Margin="{DynamicResource Padding.Dialog}">
+        <TextBlock DockPanel.Dock="Top" Classes="secondary" TextWrapping="Wrap" Margin="{DynamicResource Margin.BlockBelow}"
+                   Text="{l:T 'The diagram shows under its project in Projects, and a board in that folder lists it. The link is stored relative to the file, so it survives moving the whole project.'}" />
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.DiagramSection}">
+            <Button Content="{l:T 'Other Folder…'}" Command="{Binding BrowseCommand}" />
+            <Button Content="{l:T 'No Project'}" Command="{Binding UnlinkCommand}" />
+        </StackPanel>
+        <ListBox ItemsSource="{Binding Projects}" SelectedItem="{Binding Selected}" AutomationProperties.Name="{l:T 'Projects'}">
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="i:ProjectInfo">
+                    <StackPanel>
+                        <TextBlock Text="{Binding Name}" />
+                        <TextBlock Classes="small secondary" Text="{Binding Folder}" TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </DockPanel>
+</UserControl>

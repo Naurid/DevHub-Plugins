@@ -34,11 +34,17 @@ plugins/<Name>/                  one plugin; grouped ones have a UI project and 
   BoardTimeline/DevHub.Board.Timeline/ + .Core/  roadmap of epics, releases and release notes (requires Board)
   BoardRisks/DevHub.Board.Risks/ + .Core/        risk register, probability × impact matrix, mitigation (requires Board)
   Charts/DevHub.Charts/ + .Core/                 the chart maker: your own tables in every chart type, export (needs nothing)
+  Diagrams/DevHub.Diagrams/ + .Core/            the diagram editor: canvas, tabs, export; the IDiagramKind extension point (needs nothing)
+  DiagramsUml/DevHub.Diagrams.Uml/ + .Core/      UML: use case, activity, class, object, sequence, state, component, deployment, package
+  DiagramsDatabase/DevHub.Diagrams.Database/ + .Core/  Merise MCD → MLD, crow's-foot ERD, SQL export / import, data dictionary
+  DiagramsBusiness/DevHub.Diagrams.Business/ + .Core/  flowcharts, BPMN, mind maps
+  MoodBoard/DevHub.MoodBoard/ + .Core/           mood boards: pictures, swatches, links, pen (the diagram kinds require Diagrams)
   HelloWorld/                                   the sample plugin (one project)
   (plugin.json sits next to the UI project: id, name, description, category, apiVersion, requires)
 tests/                           DevHub.<X>.Core.Tests (xUnit), DevHub.TestKit (TempGitRepo, [GitFact])
 tools/BoardDemo/                 writes a demo board + repository with every Board feature in use (README.md); never shipped
-docs/                            GIT_CLIENT_PLAN.md (Git plugin), BOARD_PLAN.md (Board plugins), TEMPLATE_FORMAT.md (the template spec)
+docs/                            GIT_CLIENT_PLAN.md (Git plugin), BOARD_PLAN.md (Board plugins), DIAGRAMS_PLAN.md (Diagrams
+                                 plugins), TEMPLATE_FORMAT.md (the template spec)
 build/                           Get-PluginVersion, Pack-Plugin, Publish-Plugins, Test-Plugins (README.md)
 Directory.Build.props            project kinds (plugin / .Core / test) and their Sdk references
 Directory.Build.targets          after a build: plugin.json next to the DLLs, Properties/launchSettings.json (F5)
@@ -98,6 +104,19 @@ DevHub-Plugins.sln
   references them.
 - Files keep unknown fields and stable bytes (`BoardJson`); history is the per-issue change log (`history/*.jsonl`).
 - Smart commits are shown and confirmed, never applied silently.
+
+## Diagram rules (Diagrams plugins; details in docs/DIAGRAMS_PLAN.md)
+- **Every change is an operation** (`IDiagramOperation` in `DevHub.Diagrams.Core`; `Apply` returns its undo), run
+  through the editor (`IDiagramEditor.Do`): one Undo step each; the dirty dot comes from the undo stack.
+- **A kind is two halves:** its model in a `.Core` (`IDiagramKindModel`: shapes, lines, the notation's rules, text
+  exports, samples; no Avalonia, tested) and its drawing in the UI project (`IDiagramKind` over `IDiagramSurface`, so
+  the canvas, PNG and SVG look the same). Kind plugins require Diagrams; Diagrams never references them.
+- Files (`*.devhub-diagram.json`) keep unknown fields (`[JsonExtensionData]`); pictures go beside the file
+  (`<name>.assets/`, relative paths).
+- Exports are light (white, the course look) whatever the app's theme. Samples are built with `SampleBuilder` and
+  `L.T`, so they come in the user's language; notation inside them stays plain text (no typographic spaces).
+- Projects, Board and Diagrams meet only through DevHub's `Integration/` hooks (`IProjectDiagrams`, `IIssueLinks`,
+  `IProjectCatalog`): each works alone.
 
 ## Template engine rules (Templates plugin; details in the `template-engine` skill and docs/TEMPLATE_FORMAT.md)
 - **Unknown `{{...}}` tokens pass through untouched** (Vue, Handlebars, Jinja, Go templates, GitHub Actions `${{ }}`).

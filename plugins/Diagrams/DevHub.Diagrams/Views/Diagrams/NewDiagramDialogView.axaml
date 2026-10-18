@@ -1,0 +1,66 @@
+<!-- New Diagram: the kind, a name, the project it belongs to (its docs/diagrams folder) or any folder. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
+             xmlns:vm="using:DevHub.ViewModels.Diagrams"
+             xmlns:i="using:DevHub.Integration"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Diagrams.NewDiagramDialogView"
+             x:DataType="vm:NewDiagramDialogViewModel">
+    <DockPanel Margin="{DynamicResource Padding.Dialog}">
+        <StackPanel DockPanel.Dock="Bottom" Spacing="{DynamicResource Spacing}" Margin="{DynamicResource Margin.DiagramSection}">
+            <StackPanel Spacing="{DynamicResource Spacing}" IsVisible="{Binding HasSamples}">
+                <TextBlock Classes="secondary" Text="{l:T 'Start from'}" />
+                <ComboBox ItemsSource="{Binding Samples}" SelectedItem="{Binding Sample}" HorizontalAlignment="Stretch"
+                          AutomationProperties.Name="{l:T 'Start from'}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="vm:SampleChoiceViewModel">
+                            <TextBlock Text="{Binding Name}" ToolTip.Tip="{Binding Description}" TextTrimming="CharacterEllipsis" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+            <TextBlock Classes="secondary" Text="{l:T 'Name'}" />
+            <TextBox Text="{Binding Name}" AutomationProperties.Name="{l:T 'Name'}" c:FocusOnLoad.IsEnabled="True" />
+            <StackPanel Spacing="{DynamicResource Spacing}" IsVisible="{Binding HasProjects}">
+                <TextBlock Classes="secondary" Text="{l:T 'Project'}" />
+                <ComboBox ItemsSource="{Binding Projects}" SelectedItem="{Binding Project}" HorizontalAlignment="Stretch"
+                          AutomationProperties.Name="{l:T 'Project'}" PlaceholderText="{l:T 'No project'}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="i:ProjectInfo">
+                            <TextBlock Text="{Binding Name}" ToolTip.Tip="{Binding Folder}" TextTrimming="CharacterEllipsis" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+            <CheckBox Content="{l:T 'Link it to the project (it shows under the project in Projects)'}" IsChecked="{Binding LinkToProject}"
+                      IsVisible="{Binding Project, Converter={x:Static ObjectConverters.IsNotNull}}" />
+            <TextBlock Classes="secondary" Text="{l:T 'Folder'}" />
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                <TextBox Text="{Binding Folder}" AutomationProperties.Name="{l:T 'Folder'}" />
+                <Button Grid.Column="1" Content="{l:T 'Browse…'}" Command="{Binding BrowseCommand}" />
+            </Grid>
+            <TextBlock Text="{Binding Error}" TextWrapping="Wrap" Foreground="{DynamicResource Brush.Status.Error}"
+                       IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        </StackPanel>
+        <ListBox ItemsSource="{Binding Kinds}" SelectedItem="{Binding Kind}" AutomationProperties.Name="{l:T 'Kind of diagram'}">
+            <!-- A short list: every kind realised, so screen readers (and Up / Down) see them all. -->
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel />
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="vm:KindChoiceViewModel">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Spacing}" Margin="0,4">
+                        <c:Icon Kind="{Binding Icon}" VerticalAlignment="Top" />
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                            <TextBlock Classes="small secondary" Text="{Binding Description}" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </DockPanel>
+</UserControl>

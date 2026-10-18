@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- Database diagram kinds without drawing: Merise MCD, the MLD / entity-relationship diagram, the MCD → MLD rules,
+         SQL in four dialects (export and CREATE TABLE import) and the data dictionary. Requires Diagrams. No Avalonia. -->
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Diagrams\DevHub.Diagrams.Core\DevHub.Diagrams.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="DevHub.Diagrams.Database.Core.Tests" />
+    </ItemGroup>
+
+</Project>

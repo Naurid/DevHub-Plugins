@@ -29,5 +29,17 @@
   "Add Files from Template…": "Ajouter des fichiers depuis un modèle…",
   "The Projects tool window: choose folders, find the git repositories in them, see their language and open them in the right tool.": "La fenêtre d'outils Projets\u00A0: choisissez des dossiers, trouvez les dépôts git qu'ils contiennent, voyez leur langage et ouvrez-les dans le bon outil.",
   "Git client": "Client Git",
-  "Project templates": "Modèles de projets"
+  "Project templates": "Modèles de projets",
+  "Diagrams": "Diagrammes",
+  "Delete {0}?": "Supprimer {0}\u202F?",
+  "The diagram file is deleted from the disk (git keeps it if it was committed).": "Le fichier du diagramme est supprimé du disque (git le garde s'il a été commité).",
+  "Delete": "Supprimer",
+  "Deleted {0}.": "{0} supprimé.",
+  "{0} couldn't be deleted: {1}": "Impossible de supprimer {0}\u00A0: {1}",
+  "New Diagram…": "Nouveau diagramme…",
+  "Diagrams and mood boards of this project": "Diagrammes et mood boards de ce projet",
+  "Refresh": "Actualiser",
+  "Open": "Ouvrir",
+  "Show in Explorer": "Afficher dans l'Explorateur",
+  "Delete…": "Supprimer…"
 }

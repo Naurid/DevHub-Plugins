@@ -1,0 +1,12 @@
+// The package's description of the plugin (docs/PLUGINS.md in DevHub); keep it equal to the plugin class's PluginInfo.
+// The version is computed from git (build/Get-PluginVersion.ps1); don't write one here.
+{
+  "id": "devhub.moodboard",
+  "name": "Mood Boards",
+  "description": "Mood boards in the Diagrams editor: pictures (dropped, pasted, picked), colour swatches and palettes from pictures, shapes and frames, links, text and freehand drawing.",
+  "category": "Tools",
+  "apiVersion": 1,
+  "requires": [
+    "devhub.diagrams"
+  ]
+}

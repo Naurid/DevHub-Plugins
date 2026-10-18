@@ -1,0 +1,12 @@
+// The package's description of the plugin (docs/PLUGINS.md in DevHub); keep it equal to the plugin class's PluginInfo.
+// The version is computed from git (build/Get-PluginVersion.ps1); don't write one here.
+{
+  "id": "devhub.diagrams.business",
+  "name": "Business Diagrams",
+  "description": "Flowcharts, BPMN business processes (pools, lanes, tasks, events, gateways, message flows) and mind maps.",
+  "category": "Tools",
+  "apiVersion": 1,
+  "requires": [
+    "devhub.diagrams"
+  ]
+}

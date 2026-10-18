@@ -1,0 +1,338 @@
+<!--
+  A diagram tab: the toolbar (one row; what doesn't fit goes into ⋯), the palette (left), the canvas with its
+  minimap, the properties of the selection (right) and the problems the kind's rules find (bottom). In a narrow
+  window the palette and the properties fold into rails (SidePane).
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
+             xmlns:vm="using:DevHub.ViewModels.Diagrams"
+             xmlns:dg="using:DevHub.Diagrams"
+             xmlns:dc="using:DevHub.Diagrams.Controls"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Diagrams.DiagramDocumentView"
+             x:DataType="vm:DiagramDocumentViewModel">
+
+    <UserControl.KeyBindings>
+        <KeyBinding Gesture="Ctrl+S" Command="{Binding SaveCommand}" />
+        <KeyBinding Gesture="Ctrl+Z" Command="{Binding UndoCommand}" />
+        <KeyBinding Gesture="Ctrl+Y" Command="{Binding RedoCommand}" />
+        <KeyBinding Gesture="Ctrl+Shift+Z" Command="{Binding RedoCommand}" />
+        <KeyBinding Gesture="Ctrl+D0" Command="{Binding ZoomFitCommand}" />
+        <KeyBinding Gesture="Ctrl+OemPlus" Command="{Binding ZoomInCommand}" />
+        <KeyBinding Gesture="Ctrl+OemMinus" Command="{Binding ZoomOutCommand}" />
+    </UserControl.KeyBindings>
+
+    <UserControl.Styles>
+        <Style Selector="Button.paletteItem">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="{DynamicResource Padding.ListItem}" />
+            <Setter Property="MinHeight" Value="{DynamicResource Size.RowHeight}" />
+        </Style>
+        <Style Selector="Button.paletteItem.active">
+            <Setter Property="Background" Value="{DynamicResource Brush.Bg.Selection}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Panel>
+        <c:EmptyState IconKind="warning" Title="{l:T 'This diagram can\'t be shown'}" Description="{Binding LoadError}"
+                      IsVisible="{Binding LoadError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+        <DockPanel IsVisible="{Binding LoadError, Converter={x:Static StringConverters.IsNullOrEmpty}}">
+            <!-- Toolbar -->
+            <Border DockPanel.Dock="Top" Classes="paneHeader" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,0,1">
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" Classes="flat" Content="{Binding ProjectText}" Command="{Binding LinkToProjectCommand}"
+                            ToolTip.Tip="{l:T 'Link the diagram to a project: it shows under the project in Projects, and new diagrams of the project go to its docs/diagrams folder'}"
+                            Margin="{DynamicResource Margin.InnerLeft}" MaxWidth="{DynamicResource Size.DiagramProperties}" />
+                    <c:OverflowPanel Spacing="{DynamicResource Spacing.Toolbar}">
+                        <Button Classes="flat" Content="{l:T 'Save'}" Command="{Binding SaveCommand}" ToolTip.Tip="{l:T 'Save the diagram (Ctrl+S)'}" />
+                        <Button Classes="flat" Content="{l:T 'Undo'}" Command="{Binding UndoCommand}" ToolTip.Tip="{Binding UndoText}" />
+                        <Button Classes="flat" Content="{l:T 'Redo'}" Command="{Binding RedoCommand}" ToolTip.Tip="{Binding RedoText}" />
+                        <c:ToolbarSeparator />
+                        <ToggleButton Theme="{StaticResource IconToggle}" IsChecked="{Binding IsSelectTool}" AutomationProperties.Name="{l:T 'Select'}"
+                                      ToolTip.Tip="{l:T 'Select and move (Esc): click, Ctrl+click, drag a box around shapes'}">
+                            <TextBlock Classes="small" Text="{l:T 'Select'}" />
+                        </ToggleButton>
+                        <ToggleButton Theme="{StaticResource IconToggle}" IsChecked="{Binding IsPanTool}" AutomationProperties.Name="{l:T 'Move the view'}"
+                                      ToolTip.Tip="{l:T 'Move the view (or hold Space, or drag with the middle button)'}">
+                            <TextBlock Classes="small" Text="{l:T 'Hand'}" />
+                        </ToggleButton>
+                        <ToggleButton Theme="{StaticResource IconToggle}" IsChecked="{Binding IsPenTool}" IsVisible="{Binding HasPen}"
+                                      AutomationProperties.Name="{l:T 'Pen'}" ToolTip.Tip="{l:T 'Draw freehand'}">
+                            <TextBlock Classes="small" Text="{l:T 'Pen'}" />
+                        </ToggleButton>
+                        <ToggleButton Theme="{StaticResource IconToggle}" IsChecked="{Binding IsEraserTool}" IsVisible="{Binding HasPen}"
+                                      AutomationProperties.Name="{l:T 'Eraser'}" ToolTip.Tip="{l:T 'Erase freehand strokes'}">
+                            <TextBlock Classes="small" Text="{l:T 'Eraser'}" />
+                        </ToggleButton>
+                        <c:ToolbarSeparator />
+                        <Button Classes="flat" Content="−" Command="{Binding ZoomOutCommand}" AutomationProperties.Name="{l:T 'Zoom Out'}" ToolTip.Tip="{l:T 'Zoom out (Ctrl+−, or Ctrl+wheel)'}" />
+                        <Button Classes="flat" Content="{Binding ZoomText}" Command="{Binding ZoomResetCommand}" AutomationProperties.Name="{l:T 'Actual Size'}" ToolTip.Tip="{l:T 'Back to 100 %'}" />
+                        <Button Classes="flat" Content="+" Command="{Binding ZoomInCommand}" AutomationProperties.Name="{l:T 'Zoom In'}" ToolTip.Tip="{l:T 'Zoom in (Ctrl+=, or Ctrl+wheel)'}" />
+                        <Button Classes="flat" Content="{l:T 'Fit'}" Command="{Binding ZoomFitCommand}" ToolTip.Tip="{l:T 'Show the whole diagram (Ctrl+0)'}" />
+                        <c:ToolbarSeparator />
+                        <Button Classes="flat" Content="{l:T 'Arrange'}" Command="{Binding ArrangeCommand}"
+                                ToolTip.Tip="{l:T 'Arrange the selected shapes (or all) in rows following their lines'}" />
+                        <Button Classes="flat" Content="{l:T 'Align ▾'}" AutomationProperties.Name="{l:T 'Align'}" ToolTip.Tip="{l:T 'Line up or space out the selected shapes'}">
+                            <Button.Flyout>
+                                <MenuFlyout>
+                                    <MenuItem Header="{l:T 'Align Left'}" Command="{Binding AlignCommand}" CommandParameter="Left" />
+                                    <MenuItem Header="{l:T 'Align Centres'}" Command="{Binding AlignCommand}" CommandParameter="CenterX" />
+                                    <MenuItem Header="{l:T 'Align Right'}" Command="{Binding AlignCommand}" CommandParameter="Right" />
+                                    <Separator />
+                                    <MenuItem Header="{l:T 'Align Top'}" Command="{Binding AlignCommand}" CommandParameter="Top" />
+                                    <MenuItem Header="{l:T 'Align Middles'}" Command="{Binding AlignCommand}" CommandParameter="CenterY" />
+                                    <MenuItem Header="{l:T 'Align Bottom'}" Command="{Binding AlignCommand}" CommandParameter="Bottom" />
+                                    <Separator />
+                                    <MenuItem Header="{l:T 'Space Out Horizontally'}" Command="{Binding DistributeCommand}" CommandParameter="Horizontal" />
+                                    <MenuItem Header="{l:T 'Space Out Vertically'}" Command="{Binding DistributeCommand}" CommandParameter="Vertical" />
+                                    <Separator />
+                                    <MenuItem Header="{l:T 'Bring to Front'}" Command="{Binding BringToFrontCommand}" />
+                                    <MenuItem Header="{l:T 'Send to Back'}" Command="{Binding SendToBackCommand}" />
+                                </MenuFlyout>
+                            </Button.Flyout>
+                        </Button>
+                        <Button Classes="flat" Content="{l:T 'Export ▾'}" AutomationProperties.Name="{l:T 'Export'}"
+                                ToolTip.Tip="{l:T 'The diagram (or the selection) as an image or as text, for your documents'}">
+                            <Button.Flyout>
+                                <MenuFlyout>
+                                    <MenuItem Header="{l:T 'Save as PNG…'}" Command="{Binding SaveImageCommand}" />
+                                    <MenuItem Header="{l:T 'Copy Image'}" Command="{Binding CopyImageCommand}" />
+                                    <MenuItem Header="{l:T 'Save as SVG…'}" Command="{Binding SaveSvgCommand}" />
+                                    <Separator IsVisible="{Binding HasTextExports}" />
+                                    <MenuItem Header="{l:T 'As Text'}" ItemsSource="{Binding TextExports}" IsVisible="{Binding HasTextExports}">
+                                        <MenuItem.ItemContainerTheme>
+                                            <ControlTheme TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}" x:DataType="vm:EditorCommandViewModel">
+                                                <Setter Property="Header" Value="{Binding Name}" />
+                                                <Setter Property="Command" Value="{Binding RunCommand}" />
+                                            </ControlTheme>
+                                        </MenuItem.ItemContainerTheme>
+                                    </MenuItem>
+                                    <Separator />
+                                    <MenuItem Header="{l:T 'Show in Explorer'}" Command="{Binding ShowInExplorerCommand}" />
+                                </MenuFlyout>
+                            </Button.Flyout>
+                        </Button>
+                        <Button Classes="flat" Content="{l:T 'Tools ▾'}" IsVisible="{Binding HasKindCommands}" AutomationProperties.Name="{l:T 'Tools'}"
+                                ToolTip.Tip="{l:T 'What this kind of diagram can do'}">
+                            <Button.Flyout>
+                                <MenuFlyout ItemsSource="{Binding KindCommands}">
+                                    <MenuFlyout.ItemContainerTheme>
+                                        <ControlTheme TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}" x:DataType="vm:EditorCommandViewModel">
+                                            <Setter Property="Header" Value="{Binding Name}" />
+                                            <Setter Property="Command" Value="{Binding RunCommand}" />
+                                            <Setter Property="ToolTip.Tip" Value="{Binding Description}" />
+                                        </ControlTheme>
+                                    </MenuFlyout.ItemContainerTheme>
+                                </MenuFlyout>
+                            </Button.Flyout>
+                        </Button>
+                        <Button Classes="flat" Content="{l:T 'Issue ▾'}" IsVisible="{Binding HasBoard}" AutomationProperties.Name="{l:T 'Issue'}"
+                                ToolTip.Tip="{l:T 'Link the selected shape to a board issue: its status shows on the shape'}">
+                            <Button.Flyout>
+                                <MenuFlyout>
+                                    <MenuItem Header="{l:T 'Link to Issue…'}" Command="{Binding LinkIssueCommand}" />
+                                    <MenuItem Header="{l:T 'Create Story from This Shape'}" Command="{Binding CreateStoryCommand}" />
+                                    <MenuItem Header="{l:T 'Open Issue'}" Command="{Binding OpenIssueCommand}" />
+                                    <MenuItem Header="{l:T 'Unlink Issue'}" Command="{Binding UnlinkIssueCommand}" />
+                                </MenuFlyout>
+                            </Button.Flyout>
+                        </Button>
+                    </c:OverflowPanel>
+                </DockPanel>
+            </Border>
+
+            <!-- Problems the kind's rules find; a click selects the shapes. -->
+            <Border DockPanel.Dock="Bottom" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,1,0,0"
+                    Background="{DynamicResource Brush.Bg.Panel}" IsVisible="{Binding HasProblems}">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Classes="secondary" Text="{Binding ProblemsTitle}" Margin="{DynamicResource Padding.DiagramPanel}" />
+                    <ListBox ItemsSource="{Binding Problems}" MaxHeight="{DynamicResource Size.DiagramProblemsMax}" Background="Transparent"
+                             AutomationProperties.Name="{l:T 'Problems'}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:ProblemViewModel">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Spacing}" Background="Transparent"
+                                      c:DoubleTap.Command="{Binding ShowCommand}">
+                                    <c:Icon Kind="{Binding Icon}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Message}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                                    <Grid.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="{l:T 'Show'}" Command="{Binding ShowCommand}" />
+                                        </ContextMenu>
+                                    </Grid.ContextMenu>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </Border>
+
+            <!-- Palette | canvas | properties -->
+            <c:SidePane PaneWidth="{DynamicResource Size.DiagramPalette}" MinPaneWidth="160" MinContentWidth="560"
+                        PaneIcon="add" PaneTitle="{l:T 'Shapes and lines'}">
+                <c:SidePane.Pane>
+                    <Border Background="{DynamicResource Brush.Bg.Panel}">
+                        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                            <StackPanel Margin="{DynamicResource Padding.DiagramPanel}" Spacing="{DynamicResource Spacing.Small}">
+                                <TextBlock Classes="secondary small" Text="{l:T 'Shapes (click, then click on the canvas)'}" TextWrapping="Wrap" />
+                                <ItemsControl ItemsSource="{Binding Shapes}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:PaletteItemViewModel">
+                                            <Button Classes="paletteItem" Classes.active="{Binding IsActive}" Command="{Binding PickCommand}"
+                                                    ToolTip.Tip="{Binding Description}" AutomationProperties.Name="{Binding Name}">
+                                                <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <TextBlock Classes="secondary small" Text="{l:T 'Lines (drag from a shape to another)'}" TextWrapping="Wrap"
+                                           IsVisible="{Binding HasLines}" Margin="{DynamicResource Margin.DiagramSection}" />
+                                <ItemsControl ItemsSource="{Binding Lines}" IsVisible="{Binding HasLines}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:PaletteItemViewModel">
+                                            <Button Classes="paletteItem" Classes.active="{Binding IsActive}" Command="{Binding PickCommand}"
+                                                    ToolTip.Tip="{Binding Description}" AutomationProperties.Name="{Binding Name}">
+                                                <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <!-- Pen (mood boards) -->
+                                <StackPanel Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding HasPen}">
+                                    <TextBlock Classes="secondary small" Text="{l:T 'Pen'}" />
+                                    <ItemsControl ItemsSource="{Binding PenColorChoices}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <WrapPanel />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="x:String">
+                                                <Button Classes="flat" Padding="2" Command="{Binding $parent[UserControl].((vm:DiagramDocumentViewModel)DataContext).SetPenColorCommand}"
+                                                        CommandParameter="{Binding}" ToolTip.Tip="{Binding}" AutomationProperties.Name="{Binding}">
+                                                    <Border Width="{DynamicResource Size.DiagramSwatch}" Height="{DynamicResource Size.DiagramSwatch}"
+                                                            CornerRadius="{DynamicResource Radius.Control}" Background="{Binding}"
+                                                            BorderBrush="{DynamicResource Brush.Border.Control}" BorderThickness="1" />
+                                                </Button>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                    <Slider Minimum="1" Maximum="24" Value="{Binding PenWidth}" AutomationProperties.Name="{l:T 'Pen width'}"
+                                            ToolTip.Tip="{l:T 'Pen width'}" />
+                                </StackPanel>
+                                <StackPanel Spacing="{DynamicResource Spacing.Small}" Margin="{DynamicResource Margin.DiagramSection}">
+                                    <CheckBox Content="{l:T 'Grid'}" IsChecked="{Binding ShowGrid}" />
+                                    <CheckBox Content="{l:T 'Snap to grid'}" IsChecked="{Binding SnapToGrid}" />
+                                    <CheckBox Content="{l:T 'Overview'}" IsChecked="{Binding ShowMinimap}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Border>
+                </c:SidePane.Pane>
+
+                <c:SidePane IsRight="True" PaneWidth="{DynamicResource Size.DiagramProperties}" MinPaneWidth="220"
+                            MinContentWidth="{DynamicResource Size.DiagramCanvasMin}" CloseOnSelection="False"
+                            PaneIcon="settings" PaneTitle="{l:T 'Properties'}">
+                    <c:SidePane.Pane>
+                        <Border Background="{DynamicResource Brush.Bg.Panel}">
+                            <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                                <StackPanel Margin="{DynamicResource Padding.DiagramPanel}" Spacing="{DynamicResource Spacing}">
+                                    <TextBlock Classes="header" Text="{Binding SelectionTitle}" TextTrimming="CharacterEllipsis" />
+                                    <ItemsControl ItemsSource="{Binding Fields}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Spacing="{DynamicResource Spacing}" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="vm:PropertyFieldViewModel">
+                                                <StackPanel Spacing="{DynamicResource Spacing.Small}">
+                                                    <TextBlock Classes="secondary small" Text="{Binding Label}" IsVisible="{Binding !IsToggle}" />
+                                                    <TextBox Text="{Binding Value, UpdateSourceTrigger=LostFocus}" IsVisible="{Binding IsText}"
+                                                             PlaceholderText="{Binding Hint}" AutomationProperties.Name="{Binding Label}" />
+                                                    <TextBox Text="{Binding Value, UpdateSourceTrigger=LostFocus}" IsVisible="{Binding IsNumber}"
+                                                             PlaceholderText="{Binding Hint}" AutomationProperties.Name="{Binding Label}" />
+                                                    <TextBox Classes="code" Text="{Binding Value, UpdateSourceTrigger=LostFocus}" IsVisible="{Binding IsMultiline}"
+                                                             AcceptsReturn="True" TextWrapping="NoWrap" MinHeight="{DynamicResource Size.DiagramMultiline}"
+                                                             VerticalContentAlignment="Top" AutomationProperties.Name="{Binding Label}"
+                                                             ToolTip.Tip="{Binding Hint}" />
+                                                    <TextBlock Classes="small secondary" Text="{Binding Hint}" TextWrapping="Wrap"
+                                                               IsVisible="{Binding IsMultiline}" />
+                                                    <ComboBox ItemsSource="{Binding Choices}" SelectedItem="{Binding Choice}" IsVisible="{Binding IsChoice}"
+                                                              HorizontalAlignment="Stretch" AutomationProperties.Name="{Binding Label}">
+                                                        <ComboBox.ItemTemplate>
+                                                            <DataTemplate x:DataType="dg:FieldChoice">
+                                                                <TextBlock Text="{Binding Label}" />
+                                                            </DataTemplate>
+                                                        </ComboBox.ItemTemplate>
+                                                    </ComboBox>
+                                                    <CheckBox Content="{Binding Label}" IsChecked="{Binding IsOn}" IsVisible="{Binding IsToggle}" />
+                                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Spacing}" IsVisible="{Binding IsColor}">
+                                                        <Border Width="{DynamicResource Size.DiagramSwatch}" Height="{DynamicResource Size.DiagramSwatch}"
+                                                                CornerRadius="{DynamicResource Radius.Control}" Background="{Binding Swatch}"
+                                                                BorderBrush="{DynamicResource Brush.Border.Control}" BorderThickness="1" />
+                                                        <TextBox Grid.Column="1" Classes="code" Text="{Binding Value, UpdateSourceTrigger=LostFocus}"
+                                                                 PlaceholderText="#RRGGBB" AutomationProperties.Name="{Binding Label}" />
+                                                    </Grid>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                    <StackPanel Spacing="{DynamicResource Spacing.Small}" IsVisible="{Binding HasLinkedIssue}">
+                                        <TextBlock Classes="secondary small" Text="{l:T 'Linked issue'}" />
+                                        <Button Classes="flat" Content="{Binding LinkedIssue}" Command="{Binding OpenIssueCommand}"
+                                                ToolTip.Tip="{l:T 'Open the issue on its board'}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </Border>
+                    </c:SidePane.Pane>
+
+                    <Panel>
+                        <dc:DiagramCanvas x:Name="Canvas" Host="{Binding}" AutomationProperties.Name="{l:T 'Diagram'}">
+                            <dc:DiagramCanvas.KeyBindings>
+                                <KeyBinding Gesture="Delete" Command="{Binding DeleteCommand}" />
+                                <KeyBinding Gesture="Back" Command="{Binding DeleteCommand}" />
+                                <KeyBinding Gesture="Ctrl+A" Command="{Binding SelectAllCommand}" />
+                                <KeyBinding Gesture="Ctrl+C" Command="{Binding CopyCommand}" />
+                                <KeyBinding Gesture="Ctrl+X" Command="{Binding CutCommand}" />
+                                <KeyBinding Gesture="Ctrl+V" Command="{Binding PasteCommand}" />
+                                <KeyBinding Gesture="Ctrl+D" Command="{Binding DuplicateCommand}" />
+                            </dc:DiagramCanvas.KeyBindings>
+                            <dc:DiagramCanvas.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="{l:T 'Edit Text'}" InputGesture="F2" Command="{Binding EditTextCommand}" />
+                                    <Separator />
+                                    <MenuItem Header="{l:T 'Cut'}" InputGesture="Ctrl+X" Command="{Binding CutCommand}" />
+                                    <MenuItem Header="{l:T 'Copy'}" InputGesture="Ctrl+C" Command="{Binding CopyCommand}" />
+                                    <MenuItem Header="{l:T 'Paste'}" InputGesture="Ctrl+V" Command="{Binding PasteCommand}" />
+                                    <MenuItem Header="{l:T 'Duplicate'}" InputGesture="Ctrl+D" Command="{Binding DuplicateCommand}" />
+                                    <MenuItem Header="{l:T 'Delete'}" InputGesture="Delete" Command="{Binding DeleteCommand}" />
+                                    <Separator />
+                                    <MenuItem Header="{l:T 'Bring to Front'}" Command="{Binding BringToFrontCommand}" />
+                                    <MenuItem Header="{l:T 'Send to Back'}" Command="{Binding SendToBackCommand}" />
+                                    <Separator IsVisible="{Binding HasBoard}" />
+                                    <MenuItem Header="{l:T 'Link to Issue…'}" Command="{Binding LinkIssueCommand}" IsVisible="{Binding HasBoard}" />
+                                    <MenuItem Header="{l:T 'Create Story from This Shape'}" Command="{Binding CreateStoryCommand}" IsVisible="{Binding HasBoard}" />
+                                    <MenuItem Header="{l:T 'Open Issue'}" Command="{Binding OpenIssueCommand}" IsVisible="{Binding HasBoard}" />
+                                    <Separator />
+                                    <MenuItem Header="{l:T 'Select All'}" InputGesture="Ctrl+A" Command="{Binding SelectAllCommand}" />
+                                </ContextMenu>
+                            </dc:DiagramCanvas.ContextMenu>
+                        </dc:DiagramCanvas>
+                        <Border HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="{DynamicResource Margin.DiagramMinimap}"
+                                Width="{DynamicResource Size.DiagramMinimapWidth}" Height="{DynamicResource Size.DiagramMinimapHeight}"
+                                BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1" CornerRadius="{DynamicResource Radius.Control}"
+                                ClipToBounds="True" IsVisible="{Binding MinimapShown}">
+                            <dc:DiagramMinimap Host="{Binding}" AutomationProperties.Name="{l:T 'Overview'}" />
+                        </Border>
+                    </Panel>
+                </c:SidePane>
+            </c:SidePane>
+        </DockPanel>
+    </Panel>
+</UserControl>

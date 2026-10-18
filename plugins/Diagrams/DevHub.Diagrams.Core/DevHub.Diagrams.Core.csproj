@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- Diagrams engine logic: the model, the *.devhub-diagram.json format, operations with Undo / Redo, geometry
+         (shapes, routing, snapping, hit tests), rules, and the kind models diagram kinds plug in. No Avalonia. -->
+
+</Project>

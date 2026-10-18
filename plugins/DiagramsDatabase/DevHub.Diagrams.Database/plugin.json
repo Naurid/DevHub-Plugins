@@ -1,0 +1,12 @@
+// The package's description of the plugin (docs/PLUGINS.md in DevHub); keep it equal to the plugin class's PluginInfo.
+// The version is computed from git (build/Get-PluginVersion.ps1); don't write one here.
+{
+  "id": "devhub.diagrams.database",
+  "name": "Database Diagrams",
+  "description": "Merise data models (MCD) that generate the MLD, SQL tables for MySQL, PostgreSQL, SQL Server and SQLite, and the data dictionary; table diagrams in crow's-foot notation; SQL import.",
+  "category": "Tools",
+  "apiVersion": 1,
+  "requires": [
+    "devhub.diagrams"
+  ]
+}

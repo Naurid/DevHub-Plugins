@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- Business diagram kinds without drawing: flowcharts, BPMN processes and mind maps, their rules and text exports.
+         Requires Diagrams. No Avalonia. -->
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Diagrams\DevHub.Diagrams.Core\DevHub.Diagrams.Core.csproj" />
+    </ItemGroup>
+
+</Project>

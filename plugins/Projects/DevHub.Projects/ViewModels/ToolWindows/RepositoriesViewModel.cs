@@ -17,7 +17,7 @@ namespace DevHub.ViewModels.ToolWindows;
 /// the git repositories found under it, as a tree. All file-system work lives in
 /// <see cref="IRepositoryScanner"/> (Core); this drives it and shapes the results for the tree.
 /// </summary>
-public partial class RepositoriesViewModel : ToolWindowViewModelBase, IProjectFolders
+public partial class RepositoriesViewModel : ToolWindowViewModelBase, IProjectFolders, IProjectCatalog, IDisposable
 {
     private readonly IRepositoryScanner _scanner;
     private readonly IDialogService _dialogs;
@@ -26,6 +26,7 @@ public partial class RepositoriesViewModel : ToolWindowViewModelBase, IProjectFo
     private readonly ISettingsStore _store;
     private readonly IProjectOpener? _opener;
     private readonly IAddFilesFromTemplate? _addFiles;
+    private readonly IProjectDiagrams? _diagrams;
 
     /// <summary>Results of the last scan (flat). The tree is built from this + the folders.</summary>
     private IReadOnlyList<GitRepository> _repositories = [];
@@ -59,7 +60,8 @@ public partial class RepositoriesViewModel : ToolWindowViewModelBase, IProjectFo
     [ObservableProperty] private string _filter = "";
 
     public RepositoriesViewModel(IRepositoryScanner scanner, IDialogService dialogs, IProjectLauncher launcher,
-        IStatusService status, ISettingsStore store, IEnumerable<IProjectOpener> openers, IEnumerable<IAddFilesFromTemplate> addFiles)
+        IStatusService status, ISettingsStore store, IEnumerable<IProjectOpener> openers, IEnumerable<IAddFilesFromTemplate> addFiles,
+        IEnumerable<IProjectDiagrams> diagrams)
     {
         _scanner = scanner;
         _dialogs = dialogs;
@@ -69,6 +71,10 @@ public partial class RepositoriesViewModel : ToolWindowViewModelBase, IProjectFo
         // Soft hook: another plugin (Git) may open projects inside DevHub. None → the external tool.
         _opener = openers.FirstOrDefault();
         _addFiles = addFiles.FirstOrDefault();
+        // Soft hook: Diagrams lists each project's diagrams under it. None → no "Diagrams" rows.
+        _diagrams = diagrams.FirstOrDefault();
+        if (_diagrams is not null)
+            _diagrams.Changed += OnDiagramsChanged;
 
         foreach (var folder in _store.LoadSection<ProjectsSettings>().RepositoryFolders)
             ScanFolders.Add(folder);
@@ -95,6 +101,25 @@ public partial class RepositoriesViewModel : ToolWindowViewModelBase, IProjectFo
     IReadOnlyList<string> IProjectFolders.Folders => ScanFolders.ToList();
 
     Task IProjectFolders.RescanAsync() => ScanCommand.CanExecute(null) ? ScanCommand.ExecuteAsync(null) : Task.CompletedTask;
+
+    // ---- IProjectCatalog (Diagrams' Link to Project) ----
+
+    IReadOnlyList<ProjectInfo> IProjectCatalog.Projects =>
+        _repositories.Select(r => new ProjectInfo(r.Name, r.Path)).OrderBy(p => p.Name, StringComparer.OrdinalIgnoreCase).ToList();
+
+    private void OnDiagramsChanged(object? sender, EventArgs e) => Avalonia.Threading.Dispatcher.UIThread.Post(async () =>
+    {
+        foreach (var repo in Roots.SelectMany(r => r.Repositories))
+            if (repo.Diagrams is { } group)
+                await group.RefreshIfLoadedAsync();
+    });
+
+    public void Dispose()
+    {
+        if (_diagrams is not null)
+            _diagrams.Changed -= OnDiagramsChanged;
+        GC.SuppressFinalize(this);
+    }
 
     partial void OnFilterChanged(string value) => RebuildTree();
 
@@ -204,7 +229,8 @@ public partial class RepositoriesViewModel : ToolWindowViewModelBase, IProjectFo
                 .Where(x => !filtering || x.Match is not null)
                 .OrderByDescending(x => x.Match?.Score ?? 0)
                 .ThenBy(x => x.Repo.Name, StringComparer.OrdinalIgnoreCase)
-                .Select(x => new RepositoryNode(x.Repo, OpenInDevHub, Open, Reveal, _addFiles is null ? null : r => _addFiles.Open(r.Path)))
+                .Select(x => new RepositoryNode(x.Repo, OpenInDevHub, Open, Reveal, _addFiles is null ? null : r => _addFiles.Open(r.Path),
+                    _diagrams is null ? null : new ProjectDiagramsNode(x.Repo.Path, _diagrams, _dialogs, _status)))
                 .ToList();
 
             if (filtering && repos.Count == 0)
@@ -243,13 +269,21 @@ public sealed partial class ScanFolderNode : ObservableObject
     public override string ToString() => Name;
 }
 
-/// <summary>A repository leaf in the tree. Carries its own commands so the context menu can bind directly.</summary>
-public sealed class RepositoryNode
+/// <summary>
+/// A repository in the tree (a leaf, or with its "Diagrams" when Diagrams is on). Carries its own commands so the
+/// context menu can bind directly.
+/// </summary>
+public sealed partial class RepositoryNode : ObservableObject
 {
     /// <param name="addFiles">Templates' Add Files (null when that plugin is off: the menu item hides).</param>
+    /// <param name="diagrams">Its diagrams (null when Diagrams is off).</param>
     public RepositoryNode(GitRepository repository, Action<GitRepository> openInDevHub,
-        Action<GitRepository> open, Action<GitRepository> reveal, Action<GitRepository>? addFiles = null)
+        Action<GitRepository> open, Action<GitRepository> reveal, Action<GitRepository>? addFiles = null,
+        ProjectDiagramsNode? diagrams = null)
     {
+        Diagrams = diagrams;
+        Children = diagrams is null ? [] : [diagrams];
+        NewDiagramCommand = new AsyncRelayCommand(() => diagrams?.NewCommand.ExecuteAsync(null) ?? Task.CompletedTask);
         CanAddFiles = addFiles is not null;
         AddFilesCommand = new RelayCommand(() => addFiles?.Invoke(repository));
         Repository = repository;
@@ -273,6 +307,22 @@ public sealed class RepositoryNode
     /// <summary>Add Files from Template… (the Templates plugin), into this project.</summary>
     public RelayCommand AddFilesCommand { get; }
     public bool CanAddFiles { get; }
+
+    public ProjectDiagramsNode? Diagrams { get; }
+
+    /// <summary>The rows under it: its "Diagrams" (nothing without the Diagrams plugin).</summary>
+    public IReadOnlyList<object> Children { get; }
+
+    public bool HasDiagrams => Diagrams is not null;
+    public AsyncRelayCommand NewDiagramCommand { get; }
+
+    [ObservableProperty] private bool _isExpanded;
+
+    partial void OnIsExpandedChanged(bool value)
+    {
+        if (value && Diagrams is not null)
+            _ = Diagrams.EnsureLoadedAsync();
+    }
 
     public override string ToString() => Name;
 }

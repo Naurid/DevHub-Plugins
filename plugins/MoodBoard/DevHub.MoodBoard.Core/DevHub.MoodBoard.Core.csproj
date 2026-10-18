@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- Mood boards without drawing: the board kind, pictures stored beside the board, freehand strokes, colour
+         palettes picked from pictures. Requires Diagrams. No Avalonia. -->
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Diagrams\DevHub.Diagrams.Core\DevHub.Diagrams.Core.csproj" />
+    </ItemGroup>
+
+</Project>
