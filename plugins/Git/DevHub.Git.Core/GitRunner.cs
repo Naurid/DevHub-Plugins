@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text;
 using DevHub.Sdk.Core.Localization;
 
@@ -76,6 +77,36 @@ public sealed class GitRunner
     /// <summary>Added before every command: print paths as-is (UTF-8) instead of octal escapes.</summary>
     private static readonly string[] CommonOptions = ["-c", "core.quotepath=false"];
 
+    /// <summary>
+    /// Windows' exit code for a process whose DLLs failed to initialise (0xC0000142). Starting many console programs
+    /// at once (each hidden git gets its own console) can run the desktop heap out, and git then dies before it runs.
+    /// </summary>
+    private const int DllInitFailed = unchecked((int)0xC0000142);
+
+    private const int StartAttempts = 3;
+
+    private const uint FailCriticalErrors = 0x0001;
+
+    /// <summary>
+    /// How many git processes run at the same time, app-wide: a board, the log, the status and file watchers all
+    /// refreshing together would otherwise start dozens at once (see <see cref="DllInitFailed"/>).
+    /// </summary>
+    private static readonly SemaphoreSlim Slots = new(Math.Clamp(Environment.ProcessorCount, 4, 8));
+
+    static GitRunner()
+    {
+        // A git that fails to start returns an exit code instead of Windows' "unable to start correctly" box,
+        // which nobody asked for and which blocks until clicked. Child processes inherit the error mode.
+        if (OperatingSystem.IsWindows())
+            SetErrorMode(GetErrorMode() | FailCriticalErrors);
+    }
+
+    [DllImport("kernel32.dll")]
+    private static extern uint SetErrorMode(uint mode);
+
+    [DllImport("kernel32.dll")]
+    private static extern uint GetErrorMode();
+
     private readonly GitExecutable _git;
     private readonly IGitCommandLog _log;
     private readonly IReadOnlyDictionary<string, string?> _environment;
@@ -105,7 +136,60 @@ public sealed class GitRunner
         CancellationToken ct = default)
     {
         options ??= new GitRunOptions();
+        var result = await WithSlotAsync(workingDirectory, arguments, options,
+            () => RunOnceAsync(workingDirectory, arguments, options, ct), r => r.ExitCode, ct);
+        if (!result.Succeeded && !options.AllowFailure)
+            throw new GitException(arguments, result.ExitCode, result.StandardError);
+        return result;
+    }
 
+    /// <summary>
+    /// Runs <paramref name="run"/> once a slot is free (a sign-in doesn't wait: it may stay open for minutes), again
+    /// after a short pause when git couldn't even start.
+    /// </summary>
+    private async Task<T> WithSlotAsync<T>(string workingDirectory, IReadOnlyList<string> arguments, GitRunOptions options,
+        Func<Task<T>> run, Func<T, int> exitCode, CancellationToken ct)
+    {
+        for (var attempt = 1; ; attempt++)
+        {
+            T result;
+            if (options.Interactive)
+            {
+                result = await run();
+            }
+            else
+            {
+                try
+                {
+                    await Slots.WaitAsync(ct);
+                }
+                catch (OperationCanceledException)
+                {
+                    // Cancelled before it could start: still in the Git Console, like a command cancelled while running.
+                    _log.Add(new GitCommandEntry(workingDirectory, arguments, DateTimeOffset.Now, TimeSpan.Zero, -1, "(cancelled)"));
+                    throw;
+                }
+                try
+                {
+                    result = await run();
+                }
+                finally
+                {
+                    Slots.Release();
+                }
+            }
+            if (exitCode(result) != DllInitFailed || attempt == StartAttempts)
+                return result;
+            await Task.Delay(TimeSpan.FromMilliseconds(250 * attempt), ct);
+        }
+    }
+
+    private async Task<GitResult> RunOnceAsync(
+        string workingDirectory,
+        IReadOnlyList<string> arguments,
+        GitRunOptions options,
+        CancellationToken ct)
+    {
         var psi = CreateStartInfo(workingDirectory, arguments, options);
 
         var started = DateTimeOffset.Now;
@@ -151,10 +235,6 @@ public sealed class GitRunner
         _log.Add(new GitCommandEntry(workingDirectory, arguments, started, result.Duration, result.ExitCode,
             shown.Length > LoggedOutputLength ? shown[..LoggedOutputLength] + "…" : shown,
             FailureExpected: options.AllowFailure));
-
-        if (!result.Succeeded && !options.AllowFailure)
-            throw new GitException(arguments, result.ExitCode, stderr);
-
         return result;
     }
 
@@ -172,6 +252,20 @@ public sealed class GitRunner
         CancellationToken ct = default)
     {
         options ??= new GitRunOptions();
+        var result = await WithSlotAsync(workingDirectory, arguments, options, () => RunBinaryOnceAsync(workingDirectory, arguments, standardInput, options, ct),
+            r => r.ExitCode, ct);
+        if (result.ExitCode != 0 && !options.AllowFailure)
+            throw new GitException(arguments, result.ExitCode, result.StandardError);
+        return result;
+    }
+
+    private async Task<GitBinaryResult> RunBinaryOnceAsync(
+        string workingDirectory,
+        IReadOnlyList<string> arguments,
+        byte[]? standardInput,
+        GitRunOptions options,
+        CancellationToken ct)
+    {
         var psi = CreateStartInfo(workingDirectory, arguments, options);
 
         var started = DateTimeOffset.Now;
@@ -204,9 +298,6 @@ public sealed class GitRunner
         _log.Add(new GitCommandEntry(workingDirectory, arguments, started, result.Duration, result.ExitCode,
             shown.Length > LoggedOutputLength ? shown[..LoggedOutputLength] + "…" : shown,
             FailureExpected: options.AllowFailure));
-
-        if (result.ExitCode != 0 && !options.AllowFailure)
-            throw new GitException(arguments, result.ExitCode, stderr);
         return result;
     }
 
