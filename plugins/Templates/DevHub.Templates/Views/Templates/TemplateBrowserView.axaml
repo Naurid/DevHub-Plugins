@@ -51,7 +51,7 @@
                           Description="{l:T 'Try other words, or another library or kind.'}"
                           IsVisible="{Binding NothingMatches}" />
 
-            <TreeView ItemsSource="{Binding Groups}" SelectedItem="{Binding SelectedNode}"
+            <TreeView ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding Groups}" SelectedItem="{Binding SelectedNode}"
                       Background="Transparent" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                       AutomationProperties.Name="{l:T 'Templates'}">
                 <TreeView.KeyBindings>

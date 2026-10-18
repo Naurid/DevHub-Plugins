@@ -97,7 +97,7 @@
                         </c:Toolbar>
                     </DockPanel>
                 </Border>
-                <TreeView ItemsSource="{Binding Nodes}" SelectedItem="{Binding SelectedNode}" Background="Transparent"
+                <TreeView ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding Nodes}" SelectedItem="{Binding SelectedNode}" Background="Transparent"
                           AutomationProperties.Name="{l:T 'Project files'}"
                           c:TreeDragDrop.Handler="{Binding}">
                     <TreeView.KeyBindings>
