@@ -48,11 +48,17 @@ public sealed class BoardService(IEnumerable<IBoardStoreProvider> providers, ISe
     /// <summary>Raised when the list of recent boards changes.</summary>
     public event EventHandler? RecentChanged;
 
+    /// <summary>An open board's issues changed (diagrams refresh the badges of shapes linked to them).</summary>
+    public event EventHandler? IssuesChanged;
+
+    internal void RaiseIssuesChanged() => IssuesChanged?.Invoke(this, EventArgs.Empty);
+
     public IBoardStoreProvider? Provider(string kind) => Providers.FirstOrDefault(p => p.Kind == kind);
 
     /// <summary>The open board at <paramref name="location"/> (shared), or null when there's no board there.</summary>
+    /// <param name="remember">False: a look from elsewhere (diagram links) that leaves the recent boards as they are.</param>
     /// <exception cref="BoardStoreException">The store can't be read.</exception>
-    public async Task<BoardContext?> AcquireAsync(BoardLocation location)
+    public async Task<BoardContext?> AcquireAsync(BoardLocation location, bool remember = true)
     {
         await _gate.WaitAsync();
         try
@@ -82,7 +88,8 @@ public sealed class BoardService(IEnumerable<IBoardStoreProvider> providers, ISe
             }
             var context = new BoardContext(location, session, this, status, dialogs);
             _open[location.Key] = (context, 1);
-            Remember(context);
+            if (remember)
+                Remember(context);
             return context;
         }
         finally

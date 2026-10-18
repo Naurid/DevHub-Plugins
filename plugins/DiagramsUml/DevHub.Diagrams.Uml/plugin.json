@@ -1,0 +1,12 @@
+// The package's description of the plugin (docs/PLUGINS.md in DevHub); keep it equal to the plugin class's PluginInfo.
+// The version is computed from git (build/Get-PluginVersion.ps1); don't write one here.
+{
+  "id": "devhub.diagrams.uml",
+  "name": "UML Diagrams",
+  "description": "Use case, activity, class, object, sequence, state machine, component, deployment and package diagrams, checked against the UML notation and exported as PlantUML or Mermaid.",
+  "category": "Tools",
+  "apiVersion": 1,
+  "requires": [
+    "devhub.diagrams"
+  ]
+}

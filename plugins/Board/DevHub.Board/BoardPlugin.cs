@@ -2,6 +2,7 @@ using DevHub.Actions;
 using DevHub.Actions.Providers;
 using DevHub.Board;
 using DevHub.Board.Core.Storage;
+using DevHub.Integration;
 using DevHub.Sdk.Core.Plugins;
 using DevHub.Services.Board;
 using DevHub.ViewModels.Board;
@@ -51,5 +52,11 @@ public sealed class BoardPlugin : IPlugin
         services.AddSingleton<ToolWindowViewModelBase>(sp => sp.GetRequiredService<BoardsToolWindowViewModel>());
         services.AddSingleton<IActionProvider, BoardActionProvider>();
         services.AddTransient<SettingsPageViewModelBase, BoardSettingsPageViewModel>();
+
+        // Diagrams (DevHub.Integration, when that plugin is on): shapes link to issues, an issue lists the diagrams
+        // linked to it, a board has a Diagrams page for its project's diagrams.
+        services.AddSingleton<IIssueLinks, BoardIssueLinks>();
+        services.AddSingleton<IIssueSectionProvider, DiagramsSectionProvider>();
+        services.AddSingleton<IBoardPageProvider, DiagramsPageProvider>();
     }
 }

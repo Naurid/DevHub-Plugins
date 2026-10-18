@@ -34,6 +34,8 @@ public sealed class ProjectsPlugin : IPlugin
         services.AddSingleton<RepositoriesViewModel>();
         services.AddSingleton<ToolWindowViewModelBase>(sp => sp.GetRequiredService<RepositoriesViewModel>());
         services.AddSingleton<IProjectFolders>(sp => sp.GetRequiredService<RepositoriesViewModel>());
+        // Diagrams' Link to Project lists these projects.
+        services.AddSingleton<IProjectCatalog>(sp => sp.GetRequiredService<RepositoriesViewModel>());
         services.AddSingleton<IActionProvider, RepositoryActionProvider>();
         services.AddTransient<SettingsPageViewModelBase, OpenWithSettingsPageViewModel>();
     }

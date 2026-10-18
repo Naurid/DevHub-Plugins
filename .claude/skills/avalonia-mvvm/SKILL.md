@@ -1,6 +1,6 @@
 ---
 name: avalonia-mvvm
-description: Conventions for DevHub plugin UI projects (this repository: plugins/<Name>/DevHub.<Name>, HelloWorld) — Avalonia 12 views, ViewModels with CommunityToolkit.Mvvm, DI registration, ViewLocator, compiled bindings, design tokens and components, actions, documents/tool windows/dialogs, threading, and how to verify UI changes. Use when adding or changing any view, ViewModel, style, action or service in a plugin UI project under plugins/.
+description: Conventions for DevHub plugin UI projects (this repository: plugins/<Name>/DevHub.<Name>) — Avalonia 12 views, ViewModels with CommunityToolkit.Mvvm, DI registration, ViewLocator, compiled bindings, design tokens and components, actions, documents/tool windows/dialogs, threading, and how to verify UI changes. Use when adding or changing any view, ViewModel, style, action or service in a plugin UI project under plugins/.
 ---
 
 # DevHub UI (App + Sdk) — Avalonia + MVVM conventions

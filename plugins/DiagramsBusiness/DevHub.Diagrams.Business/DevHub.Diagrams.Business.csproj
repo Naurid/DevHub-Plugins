@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- Business Diagrams: how flowcharts, BPMN processes and mind maps are drawn and edited in the Diagrams editor.
+         Requires the Diagrams plugin, so it references DevHub.Diagrams (never the reverse). -->
+
+    <PropertyGroup>
+        <RootNamespace>DevHub</RootNamespace>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Diagrams\DevHub.Diagrams\DevHub.Diagrams.csproj" />
+        <ProjectReference Include="..\DevHub.Diagrams.Business.Core\DevHub.Diagrams.Business.Core.csproj" />
+    </ItemGroup>
+
+</Project>

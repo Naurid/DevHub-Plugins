@@ -1,0 +1,10 @@
+// The package's description of the plugin (docs/PLUGINS.md in DevHub); keep it equal to the plugin class's PluginInfo.
+// The version is computed from git (build/Get-PluginVersion.ps1); don't write one here.
+{
+  "id": "devhub.diagrams",
+  "name": "Diagrams",
+  "description": "A diagram editor: draw, check and export diagrams (PNG, SVG, text), linked to your projects and boards. The kinds come with the Diagrams plugins (UML, databases, business processes, mood boards).",
+  "category": "Tools",
+  "apiVersion": 1,
+  "requires": []
+}

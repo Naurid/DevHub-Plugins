@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- Diagrams: the diagram editor (canvas, palette, properties, problems, export) and the IDiagramKind extension
+         point that the kind plugins (UML, Merise databases, mood boards) fill. Needs no other plugin. -->
+
+    <PropertyGroup>
+        <RootNamespace>DevHub</RootNamespace>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\DevHub.Diagrams.Core\DevHub.Diagrams.Core.csproj" />
+    </ItemGroup>
+
+</Project>

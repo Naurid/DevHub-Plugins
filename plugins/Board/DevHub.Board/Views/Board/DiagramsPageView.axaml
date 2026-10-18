@@ -1,0 +1,59 @@
+<!--
+  The Diagrams page of a board (Diagrams plugin on): the diagrams and mood boards of the board's project folder.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
+             xmlns:vm="using:DevHub.ViewModels.Board"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Board.DiagramsPageView"
+             x:DataType="vm:DiagramsPageViewModel">
+
+    <UserControl.Styles>
+        <StyleInclude Source="avares://DevHub.Board/Views/Board/BoardStyles.axaml" />
+    </UserControl.Styles>
+
+    <DockPanel>
+        <Border DockPanel.Dock="Top" Classes="pageHeader" IsVisible="{Binding HasFolder}">
+            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                <TextBlock Classes="secondary" Text="{Binding Folder}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"
+                           ToolTip.Tip="{Binding Folder}" />
+                <Button Grid.Column="1" Classes="accent" Content="{l:T 'New Diagram…'}" Command="{Binding NewCommand}" />
+                <Button Grid.Column="2" Classes="flat" ToolTip.Tip="{l:T 'Refresh'}" AutomationProperties.Name="{l:T 'Refresh'}"
+                        Command="{Binding LoadCommand}">
+                    <c:Icon Kind="refresh" />
+                </Button>
+            </Grid>
+        </Border>
+
+        <Panel>
+            <c:EmptyState IconKind="template" Title="{l:T 'Not in a project folder'}"
+                          Description="{l:T 'This board is kept in DevHub, not in a project: diagrams live in a project folder. Make a board for the project to see its diagrams here.'}"
+                          IsVisible="{Binding NoFolder}" />
+            <c:EmptyState IconKind="template" Title="{l:T 'No diagrams yet'}"
+                          Description="{l:T 'Use case, class, database and other diagrams, and mood boards, made for this project show here.'}">
+                <c:EmptyState.IsVisible>
+                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                        <Binding Path="HasFolder" />
+                        <Binding Path="IsEmpty" />
+                    </MultiBinding>
+                </c:EmptyState.IsVisible>
+                <Button Classes="accent" Content="{l:T 'New Diagram…'}" Command="{Binding NewCommand}" />
+            </c:EmptyState>
+            <ListBox ItemsSource="{Binding Items}" Background="Transparent" IsVisible="{Binding !IsEmpty}"
+                     AutomationProperties.Name="{l:T 'Diagrams'}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="vm:DiagramRow">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing}" MinHeight="{DynamicResource Size.RowHeight}"
+                              Background="Transparent" ToolTip.Tip="{Binding Path}"
+                              c:DoubleTap.Command="{Binding OpenCommand}">
+                            <c:Icon Kind="{Binding IconKind}" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Text="{Binding Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="2" Classes="small secondary" Text="{Binding KindName}" VerticalAlignment="Center" />
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Panel>
+    </DockPanel>
+</UserControl>

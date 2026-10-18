@@ -680,5 +680,19 @@
   "{0} board {1}": "Tableau {0} {1}",
   "{0} settings": "Paramètres de {0}",
   "{0} ticked": "{0} cochés",
-  "{0} assigned": "{0} attribués"
+  "{0} assigned": "{0} attribués",
+  "{0} isn't on any recent board.": "{0} n'est sur aucun tableau récent.",
+  "Open or create a board first: the story goes on the most recent one.": "Ouvrez ou créez d'abord un tableau\u00A0: la story va sur le plus récent.",
+  "The board couldn't be opened: {0}": "Impossible d'ouvrir le tableau\u00A0: {0}",
+  "Story": "Story",
+  "The board has no issue type for stories.": "Le tableau n'a pas de type de ticket pour les stories.",
+  "Created {0} on {1}.": "{0} créé sur {1}.",
+  "Diagrams": "Diagrammes",
+  "New Diagram…": "Nouveau diagramme…",
+  "Refresh": "Actualiser",
+  "Not in a project folder": "Hors d'un dossier de projet",
+  "This board is kept in DevHub, not in a project: diagrams live in a project folder. Make a board for the project to see its diagrams here.": "Ce tableau est gardé dans DevHub, pas dans un projet\u00A0: les diagrammes vivent dans un dossier de projet. Créez un tableau pour le projet pour voir ses diagrammes ici.",
+  "No diagrams yet": "Aucun diagramme pour l'instant",
+  "Use case, class, database and other diagrams, and mood boards, made for this project show here.": "Les diagrammes de cas d'utilisation, de classes, de bases de données et autres, ainsi que les mood boards faits pour ce projet, apparaissent ici.",
+  "No diagram has a shape linked to this issue. In a diagram, select a use case or an action and use Issue ▾ › Link to Issue.": "Aucun diagramme n'a de forme liée à ce ticket. Dans un diagramme, sélectionnez un cas d'utilisation ou une action, puis Ticket ▾ › Lier à un ticket."
 }

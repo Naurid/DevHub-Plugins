@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- Database Diagrams: how the Merise MCD and the table diagrams (MLD / ERD) are drawn and edited in the Diagrams
+         editor. Requires the Diagrams plugin, so it references DevHub.Diagrams (never the reverse). -->
+
+    <PropertyGroup>
+        <RootNamespace>DevHub</RootNamespace>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Diagrams\DevHub.Diagrams\DevHub.Diagrams.csproj" />
+        <ProjectReference Include="..\DevHub.Diagrams.Database.Core\DevHub.Diagrams.Database.Core.csproj" />
+    </ItemGroup>
+
+</Project>

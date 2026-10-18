@@ -1,0 +1,243 @@
+using DevHub.Diagrams.Core;
+using Xunit;
+
+namespace DevHub.Diagrams.Core.Tests;
+
+public class DiagramCoreTests
+{
+    private static DiagramNode Box(string id, double x, double y, double w = 100, double h = 50, string? parent = null) =>
+        new() { Id = id, Type = "box", X = x, Y = y, Width = w, Height = h, Text = id, ParentId = parent };
+
+    private static DiagramEdge Line(string id, string from, string to) => new() { Id = id, Type = "line", From = from, To = to };
+
+    private static Diagram Sample() => new()
+    {
+        Kind = "test",
+        Title = "Sample",
+        Nodes = [Box("sys", 0, 0, 400, 300), Box("a", 20, 40, parent: "sys"), Box("b", 200, 40, parent: "sys"), Box("c", 500, 40)],
+        Edges = [Line("ab", "a", "b"), Line("bc", "b", "c")],
+    };
+
+    [Fact]
+    public void A_file_round_trips_and_keeps_fields_it_does_not_know()
+    {
+        const string json = """
+            { "schemaVersion": 1, "kind": "usecase", "title": "Hôpital", "future": { "x": 1 },
+              "nodes": [ { "id": "n1", "type": "actor", "x": 1, "y": 2, "width": 3, "height": 4, "text": "Secrétaire", "later": true } ],
+              "edges": [] }
+            """;
+        var diagram = DiagramFile.Read(json);
+        var again = DiagramFile.Read(DiagramFile.Write(diagram));
+
+        Assert.Equal("Hôpital", again.Title);
+        Assert.Equal("Secrétaire", again.Nodes[0].Text);
+        Assert.Contains("\"future\"", DiagramFile.Write(again));
+        Assert.Contains("\"later\": true", DiagramFile.Write(again));
+        Assert.Contains("Hôpital", DiagramFile.Write(again));   // not escaped
+        Assert.Equal(DiagramFile.Write(diagram), DiagramFile.Write(again));
+    }
+
+    [Fact]
+    public void A_file_without_a_kind_is_refused()
+    {
+        Assert.Throws<DiagramFileException>(() => DiagramFile.Read("""{ "nodes": [] }"""));
+        Assert.Throws<DiagramFileException>(() => DiagramFile.Read("not json"));
+    }
+
+    [Fact]
+    public void Deleting_a_container_takes_its_contents_and_lines_and_undo_puts_everything_back_in_order()
+    {
+        var d = Sample();
+        var before = DiagramFile.Write(d);
+
+        var undo = new RemoveElements(["sys"]).Apply(d);
+        Assert.Equal(["c"], d.Nodes.Select(n => n.Id));
+        Assert.Empty(d.Edges);
+
+        undo.Apply(d);
+        Assert.Equal(before, DiagramFile.Write(d));
+    }
+
+    [Fact]
+    public void Moving_a_container_moves_its_contents_and_the_bends_between_them()
+    {
+        var d = Sample();
+        d.Edge("ab")!.Waypoints = [new DPoint(150, 100)];
+
+        var undo = new MoveNodes(["sys"], 10, 5).Apply(d);
+        Assert.Equal(30, d.Node("a")!.X);
+        Assert.Equal(new DPoint(160, 105), d.Edge("ab")!.Waypoints[0]);
+        Assert.Equal(500, d.Node("c")!.X);   // outside: stays
+
+        undo.Apply(d);
+        Assert.Equal(20, d.Node("a")!.X);
+    }
+
+    [Fact]
+    public void Undo_stack_knows_when_the_diagram_is_back_to_its_saved_state()
+    {
+        var stack = new UndoStack(Sample());
+        stack.MarkSaved();
+        Assert.False(stack.IsDirty);
+
+        stack.Do(new SetText("a", "Client"));
+        Assert.True(stack.IsDirty);
+        Assert.Equal("Edit Text", stack.UndoName);
+
+        stack.Undo();
+        Assert.False(stack.IsDirty);
+        Assert.Equal("a", stack.Diagram.Node("a")!.Text);
+
+        stack.Redo();
+        Assert.Equal("Client", stack.Diagram.Node("a")!.Text);
+
+        // Saved, undone, then a new change: the saved state can't come back by undoing.
+        stack.MarkSaved();
+        stack.Undo();
+        stack.Do(new SetText("b", "Vendeur"));
+        stack.Undo();
+        Assert.True(stack.IsDirty);
+    }
+
+    [Fact]
+    public void A_batch_is_one_step_and_all_or_nothing()
+    {
+        var d = Sample();
+        var before = DiagramFile.Write(d);
+        var failing = new Batch("Test", [new SetText("a", "x"), new SetText("missing", "y")]);
+
+        Assert.Throws<DiagramRuleException>(() => failing.Apply(d));
+        Assert.Equal(before, DiagramFile.Write(d));
+
+        var undo = new Batch("Test", [new SetText("a", "x"), new SetProps("b", new Dictionary<string, string?> { ["k"] = "v" })]).Apply(d);
+        undo.Apply(d);
+        Assert.Equal(before, DiagramFile.Write(d));
+    }
+
+    [Fact]
+    public void A_container_cannot_go_inside_itself()
+    {
+        var d = Sample();
+        Assert.Throws<DiagramRuleException>(() => new SetParent(["sys"], "a").Apply(d));
+    }
+
+    [Fact]
+    public void Reorder_and_its_undo()
+    {
+        var d = Sample();
+        var undo = new Reorder(["sys"], ToFront: true).Apply(d);
+        Assert.Equal("sys", d.Nodes[^1].Id);
+        undo.Apply(d);
+        Assert.Equal("sys", d.Nodes[0].Id);
+    }
+
+    [Fact]
+    public void Lines_meet_the_outline_of_ellipses_and_diamonds()
+    {
+        var r = new DRect(0, 0, 200, 100);
+        Assert.Equal(new DPoint(200, 50), Shapes.Boundary(NodeShape.Ellipse, r, new DPoint(500, 50)));
+        Assert.Equal(new DPoint(100, 0), Shapes.Boundary(NodeShape.Diamond, r, new DPoint(100, -300)));
+        var diagonal = Shapes.Boundary(NodeShape.Ellipse, r, new DPoint(300, 150));
+        Assert.Equal(1, Math.Pow((diagonal.X - 100) / 100, 2) + Math.Pow((diagonal.Y - 50) / 50, 2), 6);
+        Assert.False(Shapes.Hit(NodeShape.Ellipse, r, new DPoint(2, 2), slack: 0));
+        Assert.True(Shapes.Hit(NodeShape.Rectangle, r, new DPoint(2, 2), slack: 0));
+    }
+
+    [Fact]
+    public void Orthogonal_routes_have_only_straight_segments_and_go_around_shapes()
+    {
+        var from = new DRect(0, 0, 80, 40);
+        var to = new DRect(400, 0, 80, 40);
+        var wall = new DRect(180, -20, 60, 80);
+
+        var route = Routing.Orthogonal(from, to, [wall]);
+
+        for (var i = 1; i < route.Count; i++)
+            Assert.True(Math.Abs(route[i].X - route[i - 1].X) < 0.01 || Math.Abs(route[i].Y - route[i - 1].Y) < 0.01);
+        for (var i = 1; i < route.Count; i++)
+            Assert.False(Shapes.SegmentCrosses(route[i - 1], route[i], wall));
+    }
+
+    [Fact]
+    public void Straight_lines_start_and_end_on_the_shapes()
+    {
+        var d = Sample();
+        var path = Routing.Path(d, d.Edge("ab")!, _ => NodeShape.Rectangle);
+        Assert.Equal(new DPoint(120, 65), path[0]);
+        Assert.Equal(new DPoint(200, 65), path[^1]);
+        Assert.Equal(new DPoint(160, 65), Routing.LabelPoint(path, null));
+    }
+
+    [Fact]
+    public void Snapping_and_smart_guides()
+    {
+        Assert.Equal(40, Layout.Snap(43, 10));
+        Assert.Equal(43, Layout.Snap(43, 0));
+        var (dx, dy, gx, _) = Layout.Guides(new DRect(103, 300, 50, 50), [new DRect(100, 0, 80, 40)]);
+        Assert.Equal(-3, dx);
+        Assert.Equal(0, dy);
+        Assert.Equal(100, gx);
+    }
+
+    [Fact]
+    public void Align_and_distribute()
+    {
+        var d = new Diagram { Kind = "t", Nodes = [Box("a", 0, 0), Box("b", 130, 30), Box("c", 400, 10)] };
+        Layout.Align(d, ["a", "b", "c"], Alignment.Top).Apply(d);
+        Assert.All(d.Nodes, n => Assert.Equal(0, n.Y));
+
+        Layout.Distribute(d, ["a", "b", "c"], horizontally: true).Apply(d);
+        Assert.Equal(200, d.Node("b")!.X);   // gaps of 100 between 0..100, 200..300, 400..500
+    }
+
+    [Fact]
+    public void Layered_layout_puts_each_shape_below_what_leads_to_it_even_with_a_loop()
+    {
+        var d = new Diagram
+        {
+            Kind = "activity",
+            Nodes = [Box("start", 300, 300, 20, 20), Box("act", 10, 10), Box("check", 500, 0), Box("end", 0, 500, 20, 20)],
+            Edges = [Line("1", "start", "act"), Line("2", "act", "check"), Line("3", "check", "act"), Line("4", "check", "end")],
+        };
+        AutoLayout.Layered(d, d.Nodes.Select(n => n.Id).ToList()).Apply(d);
+
+        double Row(string id) => d.Node(id)!.Center.Y;
+        Assert.True(Row("start") < Row("act"));
+        Assert.True(Row("act") < Row("check"));
+        Assert.True(Row("check") < Row("end"));
+    }
+
+    [Fact]
+    public void Project_links_are_relative_to_the_diagram_and_survive_a_move()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "dg-" + Guid.NewGuid().ToString("N"));
+        var project = Path.Combine(root, "shop");
+        var file = Path.Combine(project, "docs", "diagrams", "Login" + DiagramFile.Extension);
+        var d = new Diagram { Kind = "usecase", Project = ProjectLinks.Relative(file, project) };
+        Assert.Equal("../..", d.Project);
+        Assert.True(ProjectLinks.BelongsTo(file, d, project));
+
+        var moved = Path.Combine(root, "renamed");
+        Assert.True(ProjectLinks.BelongsTo(Path.Combine(moved, "docs", "diagrams", "Login" + DiagramFile.Extension), d, moved));
+        Assert.Null(ProjectLinks.Resolve(file, new Diagram { Kind = "x" }));
+    }
+
+    [Fact]
+    public async Task Files_under_a_project_skip_build_folders()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "dg-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            var d = new Diagram { Kind = "usecase" };
+            await DiagramFile.SaveAsync(d, Path.Combine(root, "docs", "diagrams", "A" + DiagramFile.Extension));
+            await DiagramFile.SaveAsync(d, Path.Combine(root, "bin", "B" + DiagramFile.Extension));
+            var found = ProjectLinks.FilesUnder(root);
+            Assert.Single(found);
+            Assert.Equal("A", DiagramFile.NameOf(found[0]));
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+}

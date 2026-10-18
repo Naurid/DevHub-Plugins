@@ -1,0 +1,17 @@
+<!-- Diagrams plugin tokens (returned from DiagramsPlugin.Resources). -->
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- The palette (left) and properties (right) beside the canvas. -->
+    <x:Double x:Key="Size.DiagramPalette">200</x:Double>
+    <x:Double x:Key="Size.DiagramProperties">280</x:Double>
+    <!-- The canvas keeps at least this much; narrower, the panels fold into rails. -->
+    <x:Double x:Key="Size.DiagramCanvasMin">360</x:Double>
+    <x:Double x:Key="Size.DiagramMinimapWidth">160</x:Double>
+    <x:Double x:Key="Size.DiagramMinimapHeight">104</x:Double>
+    <x:Double x:Key="Size.DiagramProblemsMax">140</x:Double>
+    <x:Double x:Key="Size.DiagramSwatch">18</x:Double>
+    <x:Double x:Key="Size.DiagramMultiline">120</x:Double>
+    <Thickness x:Key="Margin.DiagramMinimap">0,0,12,12</Thickness>
+    <Thickness x:Key="Padding.DiagramPanel">10,8</Thickness>
+    <Thickness x:Key="Margin.DiagramSection">0,8,0,0</Thickness>
+</ResourceDictionary>

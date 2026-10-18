@@ -1,0 +1,25 @@
+<!-- Link to Issue: search by key or summary, pick one. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
+             xmlns:vm="using:DevHub.ViewModels.Diagrams"
+             xmlns:i="using:DevHub.Integration"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Diagrams.LinkIssueDialogView"
+             x:DataType="vm:LinkIssueDialogViewModel">
+    <DockPanel Margin="{DynamicResource Padding.Dialog}">
+        <c:SearchField DockPanel.Dock="Top" Text="{Binding Query}" PlaceholderText="{l:T 'Key or words of the summary'}"
+                       Margin="{DynamicResource Margin.BlockBelow}" c:FocusOnLoad.IsEnabled="True" />
+        <ListBox ItemsSource="{Binding Results}" SelectedItem="{Binding Selected}" AutomationProperties.Name="{l:T 'Issues'}">
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="i:IssueLinkInfo">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                        <TextBlock Classes="code secondary" Text="{Binding Key}" VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="1" Text="{Binding Summary}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                        <c:Badge Grid.Column="2" Content="{Binding Status}" />
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </DockPanel>
+</UserControl>

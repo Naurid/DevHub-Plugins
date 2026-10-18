@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- UML diagram kinds without drawing: use case, activity, class / object, sequence, state machine, component,
+         deployment and package models, their rules and PlantUML / Mermaid exports. Requires Diagrams. No Avalonia. -->
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Diagrams\DevHub.Diagrams.Core\DevHub.Diagrams.Core.csproj" />
+    </ItemGroup>
+
+</Project>

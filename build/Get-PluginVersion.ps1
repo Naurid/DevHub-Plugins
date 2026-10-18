@@ -7,7 +7,7 @@
   The tagged commit is N.0.0; before any major tag, 0.M.0 (tag "<id>/v1" for 1.0.0).
   Release tags made by CI ("<plugin-id>/1.3.0") don't look like "/vN", so they don't count.
 
-    pwsh build/Get-PluginVersion.ps1 -Folder plugins/HelloWorld
+    pwsh build/Get-PluginVersion.ps1 -Folder plugins/Charts/DevHub.Charts
 #>
 param(
     [Parameter(Mandatory)] [string]$Folder,

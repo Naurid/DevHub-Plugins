@@ -174,5 +174,6 @@ public sealed partial class BoardContext : ObservableObject
         OnPropertyChanged(nameof(Project));
         OnPropertyChanged(nameof(Title));
         Changed?.Invoke(this, EventArgs.Empty);
+        _service.RaiseIssuesChanged();
     }
 }
