@@ -13,6 +13,9 @@ public sealed class BoardReportsSettings : ISettingsSection
     /// <summary>Report id → the chart type picked for it (a <c>ChartKind</c> name), for every board.</summary>
     public Dictionary<string, string> ChartKinds { get; set; } = new();
 
+    /// <summary>Report lines curve through their points instead of going straight from one to the next (every board).</summary>
+    public bool CurvedLines { get; set; }
+
     /// <summary>Board location key → the forecast's scope and velocities last used.</summary>
     public Dictionary<string, ForecastSettings> Forecasts { get; set; } = new();
 }

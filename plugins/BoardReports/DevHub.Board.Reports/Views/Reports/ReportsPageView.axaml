@@ -98,11 +98,13 @@
                                       IsVisible="{Binding Empty, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
                         <!-- The chart, its type and export (one row: the buttons that don't fit go into a ⋯ menu). -->
-                        <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="{DynamicResource Spacing}" IsVisible="{Binding HasChart}">
+                        <Grid ColumnDefinitions="Auto,Auto,Auto,*" ColumnSpacing="{DynamicResource Spacing}" IsVisible="{Binding HasChart}">
                             <TextBlock Text="{l:T 'Chart'}" VerticalAlignment="Center" />
                             <ComboBox Grid.Column="1" ItemsSource="{Binding ChartKindChoices}" SelectedItem="{Binding SelectedChartKind}"
                                       AutomationProperties.Name="{l:T 'Chart type'}" ToolTip.Tip="{l:T 'Show this report as another kind of chart'}" />
-                            <c:OverflowPanel Grid.Column="2" HorizontalAlignment="Right" Spacing="{DynamicResource Spacing}">
+                            <CheckBox Grid.Column="2" Content="{l:T 'Curved lines'}" IsChecked="{Binding CurvedLines}" IsVisible="{Binding CanCurve}"
+                                      ToolTip.Tip="{l:T 'Lines curve through their points instead of going straight from one to the next (every report)'}" />
+                            <c:OverflowPanel Grid.Column="3" HorizontalAlignment="Right" Spacing="{DynamicResource Spacing}">
                                 <Button Classes="flat" Content="{l:T 'Save Image…'}" Command="{Binding SaveChartCommand}" ToolTip.Tip="{l:T 'Save the chart as a PNG (light, for a report)'}" />
                                 <Button Classes="flat" Content="{l:T 'Copy Image'}" Command="{Binding CopyChartCommand}" ToolTip.Tip="{l:T 'Copy the chart to paste into a document'}" />
                                 <Button Classes="flat" Content="{l:T 'Export CSV…'}" Command="{Binding ExportTableCommand}" IsVisible="{Binding CanExportTable}"
@@ -113,7 +115,7 @@
                                         IsVisible="{Binding CanOpenInChartMaker}" ToolTip.Tip="{l:T 'Restyle the chart or change its numbers in the chart maker'}" />
                             </c:OverflowPanel>
                         </Grid>
-                        <c:Chart Kind="{Binding SelectedChartKind.Kind, FallbackValue=Line}" Data="{Binding Chart}" Height="{DynamicResource Size.ReportChart}"
+                        <c:Chart Kind="{Binding SelectedChartKind.Kind, FallbackValue=Line}" Data="{Binding ShownChart}" Height="{DynamicResource Size.ReportChart}"
                                  IsVisible="{Binding HasChart}" />
                         <TextBlock Classes="small secondary" Text="{Binding Explanation}" TextWrapping="Wrap"
                                    IsVisible="{Binding Explanation, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />

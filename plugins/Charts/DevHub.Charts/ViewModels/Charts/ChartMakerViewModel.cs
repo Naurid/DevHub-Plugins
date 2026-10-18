@@ -17,7 +17,7 @@ public sealed record KindChoice(ChartKind Kind)
     public override string ToString() => ChartKinds.Name(Kind);
 }
 
-/// <summary>A series' style row: dash, markers, values, bars or line (combo charts), color.</summary>
+/// <summary>A series' style row: dash, markers, values, curved, bars or line (combo charts), color.</summary>
 public sealed partial class SeriesStyleRow : ObservableObject
 {
     private readonly Action _changed;
@@ -28,6 +28,7 @@ public sealed partial class SeriesStyleRow : ObservableObject
         _dash = spec.Dash;
         _markers = spec.Markers;
         _valueLabels = spec.ValueLabels;
+        _curved = spec.Curved;
         _kind = spec.Kind;
         _color = spec.Color is { } c ? Colors[c] : Colors[0];
         _changed = changed;
@@ -42,19 +43,21 @@ public sealed partial class SeriesStyleRow : ObservableObject
     [ObservableProperty] private LineDash _dash;
     [ObservableProperty] private bool _markers;
     [ObservableProperty] private bool _valueLabels;
+    [ObservableProperty] private bool _curved;
     [ObservableProperty] private SeriesKind _kind;
     [ObservableProperty] private string _color;
 
     partial void OnDashChanged(LineDash value) => _changed();
     partial void OnMarkersChanged(bool value) => _changed();
     partial void OnValueLabelsChanged(bool value) => _changed();
+    partial void OnCurvedChanged(bool value) => _changed();
     partial void OnKindChanged(SeriesKind value) => _changed();
     partial void OnColorChanged(string value) => _changed();
 
     public SeriesSpec ToSpec()
     {
         var index = Colors.ToList().IndexOf(Color);
-        return new SeriesSpec { Name = Name, Dash = Dash, Markers = Markers, ValueLabels = ValueLabels, Kind = Kind, Color = index > 0 ? index : null };
+        return new SeriesSpec { Name = Name, Dash = Dash, Markers = Markers, ValueLabels = ValueLabels, Curved = Curved, Kind = Kind, Color = index > 0 ? index : null };
     }
 
     public override string ToString() => Name;

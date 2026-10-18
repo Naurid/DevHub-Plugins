@@ -76,10 +76,12 @@
                                             <ComboBox Grid.Column="2" ItemsSource="{x:Static vm:SeriesStyleRow.Colors}" SelectedItem="{Binding Color}" HorizontalAlignment="Stretch"
                                                       ToolTip.Tip="{l:T 'Color'}" AutomationProperties.Name="{l:T 'Color'}" />
                                         </Grid>
-                                        <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Spacing}">
-                                            <CheckBox Content="{l:T 'Markers'}" IsChecked="{Binding Markers}" />
-                                            <CheckBox Content="{l:T 'Values'}" IsChecked="{Binding ValueLabels}" />
-                                        </StackPanel>
+                                        <WrapPanel Orientation="Horizontal">
+                                            <CheckBox Content="{l:T 'Markers'}" IsChecked="{Binding Markers}" Margin="{DynamicResource Margin.RowEnd}" />
+                                            <CheckBox Content="{l:T 'Values'}" IsChecked="{Binding ValueLabels}" Margin="{DynamicResource Margin.RowEnd}" />
+                                            <CheckBox Content="{l:T 'Curved'}" IsChecked="{Binding Curved}"
+                                                      ToolTip.Tip="{l:T 'The line curves through its points instead of going straight from one to the next'}" />
+                                        </WrapPanel>
                                     </StackPanel>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>

@@ -85,6 +85,7 @@ public sealed partial class ReportsPageViewModel : BoardPageViewModel, ICardHost
     public ReportsPageViewModel(BoardPageHost host, ISettingsStore settings, IExportService export, IChartMaker? chartMaker = null) : base(host)
     {
         _settings = settings;
+        _curvedLines = settings.LoadSection<BoardReportsSettings>().CurvedLines;
         _export = export;
         _chartMaker = chartMaker;
         Kinds =
@@ -128,6 +129,25 @@ public sealed partial class ReportsPageViewModel : BoardPageViewModel, ICardHost
 
     [ObservableProperty] private ChartData _chart = ChartData.Empty;
     [ObservableProperty] private bool _hasChart;
+
+    /// <summary>Lines curved or straight (remembered for every board); <see cref="ShownChart"/> is the chart with it applied.</summary>
+    [ObservableProperty] private bool _curvedLines;
+
+    /// <summary>The chart as shown, saved, copied and opened in the chart maker.</summary>
+    public ChartData ShownChart => CurvedLines
+        ? Chart with { Series = Chart.Series.Select(s => s with { Style = s.Style with { Curved = true } }).ToList() }
+        : Chart;
+
+    /// <summary>Only charts with lines (or area edges) can curve.</summary>
+    public bool CanCurve => SelectedChartKind?.Kind is ChartKind.Line or ChartKind.Area or ChartKind.StackedArea or ChartKind.Combo;
+
+    partial void OnChartChanged(ChartData value) => OnPropertyChanged(nameof(ShownChart));
+
+    partial void OnCurvedLinesChanged(bool value)
+    {
+        _settings.UpdateSection<BoardReportsSettings>(s => s.CurvedLines = value);
+        OnPropertyChanged(nameof(ShownChart));
+    }
     public ObservableCollection<ChartKindItem> ChartKindChoices { get; } = [];
     [ObservableProperty] private ChartKindItem? _selectedChartKind;
     [ObservableProperty] private string _summary = "";
@@ -152,6 +172,7 @@ public sealed partial class ReportsPageViewModel : BoardPageViewModel, ICardHost
 
     partial void OnSelectedChartKindChanged(ChartKindItem? value)
     {
+        OnPropertyChanged(nameof(CanCurve));
         if (_refreshing || value is null)
             return;
         _settings.UpdateSection<BoardReportsSettings>(s => s.ChartKinds[Kind.Id] = value.Kind.ToString());
@@ -361,10 +382,10 @@ public sealed partial class ReportsPageViewModel : BoardPageViewModel, ICardHost
     private string ExportName => $"{Kind.Name} {Context.Project.Key}{(Kind.NeedsSprint && Sprint is not null ? " " + Sprint.Name : "")}";
 
     [RelayCommand]
-    private Task SaveChartAsync() => _export.SaveChartAsync(SelectedChartKind?.Kind ?? Kind.DefaultChart, Chart, ExportName);
+    private Task SaveChartAsync() => _export.SaveChartAsync(SelectedChartKind?.Kind ?? Kind.DefaultChart, ShownChart, ExportName);
 
     [RelayCommand]
-    private Task CopyChartAsync() => _export.CopyChartAsync(SelectedChartKind?.Kind ?? Kind.DefaultChart, Chart);
+    private Task CopyChartAsync() => _export.CopyChartAsync(SelectedChartKind?.Kind ?? Kind.DefaultChart, ShownChart);
 
     [RelayCommand]
     private Task ExportTableAsync() => _export.SaveTableAsync(_table, ExportName);
@@ -376,7 +397,7 @@ public sealed partial class ReportsPageViewModel : BoardPageViewModel, ICardHost
     public bool CanOpenInChartMaker => _chartMaker is not null;
 
     [RelayCommand]
-    private void OpenInChartMaker() => _chartMaker?.Open(SelectedChartKind?.Kind ?? Kind.DefaultChart, Chart);
+    private void OpenInChartMaker() => _chartMaker?.Open(SelectedChartKind?.Kind ?? Kind.DefaultChart, ShownChart);
 
     // ---- Forecast and scope change ------------------------------------------------------------------------
 

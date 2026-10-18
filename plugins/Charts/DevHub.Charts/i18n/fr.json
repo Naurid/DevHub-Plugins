@@ -54,5 +54,7 @@
   "Tools": "Outils",
   "Planning": "Planification",
   "Chart: {0}": "Graphique\u00A0: {0}",
-  "Chart settings": "Réglages du graphique"
+  "Chart settings": "Réglages du graphique",
+  "Curved": "Lissée",
+  "The line curves through its points instead of going straight from one to the next": "La courbe passe par ses points en douceur au lieu de les relier en ligne droite"
 }

@@ -14,6 +14,10 @@ public sealed record SeriesSpec
     public LineDash Dash { get; init; } = LineDash.Solid;
     public bool Markers { get; init; }
     public bool ValueLabels { get; init; }
+
+    /// <summary>The line curves through its points (never past them) instead of going straight.</summary>
+    public bool Curved { get; init; }
+
     public SeriesKind Kind { get; init; } = SeriesKind.Line;
 
     /// <summary>Palette color 1–6; null = by position.</summary>
@@ -93,7 +97,7 @@ public sealed record ChartSpec
             TrafficColors = data.TrafficColors,
             Series = data.Series.Select(s => new SeriesSpec
             {
-                Name = s.Name, Dash = s.Style.Dash, Markers = s.Style.Markers, ValueLabels = s.Style.ValueLabels, Kind = s.Style.Kind,
+                Name = s.Name, Dash = s.Style.Dash, Markers = s.Style.Markers, ValueLabels = s.Style.ValueLabels, Curved = s.Style.Curved, Kind = s.Style.Kind,
                 Color = s.Style.Color is { } c ? c + 1 : null,
             }).ToList(),
         };
@@ -206,7 +210,7 @@ public static class ChartBuilder
             {
                 Style = style is null ? SeriesStyle.Default : new SeriesStyle
                 {
-                    Dash = style.Dash, Markers = style.Markers, ValueLabels = style.ValueLabels, Kind = style.Kind,
+                    Dash = style.Dash, Markers = style.Markers, ValueLabels = style.ValueLabels, Curved = style.Curved, Kind = style.Kind,
                     Color = style.Color is >= 1 and <= 6 ? style.Color - 1 : null,
                 },
             };

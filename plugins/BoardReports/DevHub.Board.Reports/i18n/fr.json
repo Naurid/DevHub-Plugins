@@ -166,5 +166,7 @@
   "{0}/{1} issues · {2}/{3} points": "{0}/{1} tickets · {2}/{3} points",
   "Target: {0:d MMM yyyy}": "Cible\u00A0: {0:d MMM yyyy}",
   "left {0} → {1}": "restant {0} → {1}",
-  "{0} · {1}{2} points · {3:d MMM}": "{0} · {1}{2} points · {3:d MMM}"
+  "{0} · {1}{2} points · {3:d MMM}": "{0} · {1}{2} points · {3:d MMM}",
+  "Curved lines": "Courbes lissées",
+  "Lines curve through their points instead of going straight from one to the next (every report)": "Les courbes passent par leurs points en douceur au lieu de les relier en ligne droite (tous les rapports)"
 }
