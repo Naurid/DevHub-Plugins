@@ -153,4 +153,16 @@ public interface IDiagramKind
 
     /// <summary>Makes a freehand stroke from points in diagram coordinates (only kinds with <see cref="HasPen"/>).</summary>
     IDiagramOperation? Stroke(Diagram diagram, IReadOnlyList<DPoint> points, string color, double width);
+
+    /// <summary>
+    /// The full text of a shape whose text is cut short where it's drawn (a package name ending in "…"): the canvas
+    /// shows it on hover and while the shape is selected. Null when all of it shows.
+    /// </summary>
+    string? HiddenText(Diagram diagram, DiagramNode node, IDiagramSurface measure) => null;
+
+    /// <summary>
+    /// The centre of a line's label as the kind draws it (the canvas picks the label up there to drag it): by default
+    /// its point on the line (<see cref="DiagramEdge.LabelAt"/>) plus where it was dragged to (<see cref="Routing.LabelOffset"/>).
+    /// </summary>
+    DPoint LabelAnchor(Diagram diagram, DiagramEdge edge, IReadOnlyList<DPoint> path) => Routing.LabelCenter(path, edge);
 }

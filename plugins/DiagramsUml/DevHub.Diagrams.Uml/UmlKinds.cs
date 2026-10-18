@@ -94,7 +94,7 @@ public sealed class UseCaseKind : DiagramKindBase
     {
         base.DrawEdge(s, d, e, path);
         if (e.Type == UseCaseModel.Extend && e.Prop("condition") is { Length: > 0 } condition && path.Count >= 2)
-            Label(s, $"[{condition.Trim('[', ']')}]", Routing.LabelPoint(path, e.LabelAt) + new DPoint(0, 16), 10.5, s.Style.MutedText);
+            Label(s, $"[{condition.Trim('[', ']')}]", LabelAnchor(d, e, path) + new DPoint(0, 16), 10.5, s.Style.MutedText, edge: e);
     }
 
     public override DRect? Fit(DiagramNode n, IDiagramSurface m)
@@ -217,7 +217,7 @@ public sealed class ActivityKind : DiagramKindBase
         var pen = PenOf(s, e);
         s.Polyline(path, pen);
         DrawEnds(s, e, path, LineEnd.None, LineEnd.Open, pen.Color);
-        Label(s, shown, Routing.LabelPoint(path, e.LabelAt), 10.5);
+        Label(s, shown, LabelAnchor(d, e, path), 10.5, edge: e);
     }
 
     public override DRect? Fit(DiagramNode n, IDiagramSurface m)
@@ -335,6 +335,9 @@ public sealed class ClassKind(bool objects = false) : DiagramKindBase
 
     private static double NameHeight(DiagramNode n) => Math.Ceiling((MemberSize(n) + 1) * 18 / 13);
 
+    public override string? HiddenText(Diagram d, DiagramNode n, IDiagramSurface measure) =>
+        n.Type == ClassModel.Package ? FolderHiddenText(measure, n, d.Children(n.Id).Any()) : null;
+
     public override void DrawNode(IDiagramSurface s, Diagram d, DiagramNode n)
     {
         var r = n.Bounds;
@@ -344,7 +347,7 @@ public sealed class ClassKind(bool objects = false) : DiagramKindBase
                 Note(s, n);
                 return;
             case ClassModel.Package:
-                Folder(s, n, s.Style.ContainerFill);
+                Folder(s, n, s.Style.ContainerFill, d.Children(n.Id).Any());
                 return;
             case ClassModel.Instance:
             {
@@ -573,11 +576,27 @@ public sealed class SequenceKind : DiagramKindBase
         DrawEnds(s, e, path, LineEnd.None, e.Type == SequenceModel.NoteLink ? LineEnd.None : e.Type == SequenceModel.Sync ? LineEnd.Filled : LineEnd.Open, pen.Color);
         if (e.Text.Length == 0)
             return;
-        // The message's name just above its line (beside a self-message).
-        var at = path.Count == 2 ? path[0] + (path[1] - path[0]) * 0.5 + new DPoint(0, -10) : path[1] + new DPoint(6, 12);
-        var style = new DText(11.5, Align: path.Count == 2 ? TextAlign.Center : TextAlign.Left);
-        var (w, h) = s.Measure(e.Text, style);
-        s.Text(e.Text, path.Count == 2 ? new DRect(at.X - w / 2, at.Y - h / 2, w, h) : new DRect(at.X, at.Y - h / 2, w, h), style, wrap: false);
+        // No background unless the message has its own (a name above a line needs none).
+        var style = new DText(11.5);
+        var box = LabelBox(s, e.Text, LabelAnchor(d, e, path), style);
+        if (TryColor(e.Prop(LabelFill)) is { A: > 0 } fill)
+        {
+            s.Rect(box, fill, null, 2);
+            if (e.Prop("textColor").Length == 0)
+                style = style with { Color = ContrastOn(fill, s.Style.Background).Text };
+        }
+        s.Text(e.Text, box, style, wrap: false);
+    }
+
+    /// <summary>The message's name just above its line (to the right of a self-message), plus where it was dragged to.</summary>
+    public override DPoint LabelAnchor(Diagram d, DiagramEdge e, IReadOnlyList<DPoint> path)
+    {
+        if (path.Count < 2)
+            return Routing.LabelCenter(path, e);
+        var at = path.Count == 2
+            ? path[0] + (path[1] - path[0]) * 0.5 + new DPoint(0, -10)
+            : path[1] + new DPoint(6 + MeasureSurface.Instance.Measure(e.Text, new DText(11.5)).Width / 2, 12);
+        return at + Routing.LabelOffset(e);
     }
 }
 
@@ -682,6 +701,9 @@ public sealed class StructureKind(string kind) : DiagramKindBase
         _ => new(),
     };
 
+    public override string? HiddenText(Diagram d, DiagramNode n, IDiagramSurface measure) =>
+        n.Type == StructureModel.Package ? FolderHiddenText(measure, n, d.Children(n.Id).Any()) : null;
+
     public override void DrawNode(IDiagramSurface s, Diagram d, DiagramNode n)
     {
         var r = n.Bounds;
@@ -728,7 +750,7 @@ public sealed class StructureKind(string kind) : DiagramKindBase
                 Box3D(s, n, "executionEnvironment");
                 break;
             case StructureModel.Package:
-                Folder(s, n, s.Style.ContainerFill);
+                Folder(s, n, s.Style.ContainerFill, d.Children(n.Id).Any());
                 break;
             case StructureModel.Note:
                 Note(s, n);

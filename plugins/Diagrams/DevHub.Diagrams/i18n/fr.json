@@ -189,5 +189,9 @@
   "A folder inside the diagram folder, e.g. images. Empty: right next to the diagram.": "Un dossier dans celui du diagramme, par ex. images. Vide\u00A0: juste à côté du diagramme.",
   "Move up": "Monter",
   "Move down": "Descendre",
-  "Remove": "Retirer"
+  "Remove": "Retirer",
+  "Label background": "Fond de l'étiquette",
+  "Empty: the diagram's background. Transparent: none.": "Vide : le fond du diagramme. Transparent : aucun.",
+  "Transparent": "Transparent",
+  "No colour: see-through": "Aucune couleur : on voit à travers"
 }

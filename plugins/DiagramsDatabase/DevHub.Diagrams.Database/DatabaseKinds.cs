@@ -391,7 +391,7 @@ public sealed class ErdKind : DiagramKindBase
                 CrowsFoot(s, path[^1], path[^2], e.Prop("toEnd", "one"), pen);
         }
         if (e.Text.Length > 0)
-            Label(s, e.Text, Routing.LabelPoint(path, e.LabelAt), 10.5, s.Style.MutedText, italic: true);
+            Label(s, e.Text, LabelAnchor(d, e, path), 10.5, s.Style.MutedText, italic: true, edge: e);
     }
 
     /// <summary>Crow's-foot end at <paramref name="tip"/> (on the table's edge), the line coming from <paramref name="from"/>.</summary>

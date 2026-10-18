@@ -7,18 +7,38 @@ namespace DevHub.Diagrams.Rendering;
 /// Draws one shape or line with its own text colour: every text a kind draws in the diagram's text or muted colour
 /// (the name, a class's attributes, a stereotype, a caption, a table's columns…) takes the element's colour instead;
 /// text a kind colours on purpose stays as it is. So "Text colour" reaches all of an element's text in every kind.
+/// A shape filled with its own colour and no text colour gets text that contrasts with the fill, so a light fill
+/// stays readable in the dark theme (and a dark one in the light theme).
 /// </summary>
-public sealed class TextColorSurface(IDiagramSurface inner, Color color) : IDiagramSurface
+public sealed class TextColorSurface(IDiagramSurface inner, Color color, Color? muted = null) : IDiagramSurface
 {
     /// <summary>The surface to draw an element on: tinted when it has a text colour, else the surface itself.</summary>
     public static IDiagramSurface For(IDiagramSurface s, IReadOnlyDictionary<string, string> props) =>
         props.TryGetValue("textColor", out var text) && DiagramKindBase.TryColor(text) is { } c ? new TextColorSurface(s, c) : s;
 
+    /// <summary>
+    /// For a shape: its own text colour, or (with <paramref name="textOnFill"/>, its text drawn on its fill) text that
+    /// contrasts with its own fill.
+    /// </summary>
+    public static IDiagramSurface ForNode(IDiagramSurface s, DiagramNode n, bool textOnFill)
+    {
+        if (n.Props.TryGetValue("textColor", out var text) && DiagramKindBase.TryColor(text) is { } own)
+            return new TextColorSurface(s, own);
+        if (textOnFill && DiagramKindBase.TryColor(n.Prop("fill")) is { A: > 0 } fill)
+        {
+            var (onFill, muted) = DiagramKindBase.ContrastOn(fill, s.Style.Background);
+            return new TextColorSurface(s, onFill, muted);
+        }
+        return s;
+    }
+
     public DiagramStyle Style => inner.Style;
     public string? Folder => inner.Folder;
 
     private DText Tint(DText style) =>
-        style.Color is null || style.Color == inner.Style.Text || style.Color == inner.Style.MutedText ? style with { Color = color } : style;
+        style.Color is null || style.Color == inner.Style.Text ? style with { Color = color }
+        : style.Color == inner.Style.MutedText ? style with { Color = muted ?? color }
+        : style;
 
     public void Text(string text, DRect box, DText style, bool wrap = true) => inner.Text(text, box, Tint(style), wrap);
     public (double Width, double Height) Measure(string text, DText style, double maxWidth = double.PositiveInfinity) => inner.Measure(text, style, maxWidth);

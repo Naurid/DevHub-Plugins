@@ -368,10 +368,12 @@
                                                                                 </DataTemplate>
                                                                             </ItemsControl.ItemTemplate>
                                                                         </ItemsControl>
-                                                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                                                                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
                                                                             <TextBox Classes="code" Text="{Binding Value, UpdateSourceTrigger=LostFocus}"
                                                                                      PlaceholderText="#RRGGBB" AutomationProperties.Name="{l:T 'Colour code'}" />
-                                                                            <Button Grid.Column="1" Content="{l:T 'Default'}" Command="{Binding ClearColorCommand}"
+                                                                            <Button Grid.Column="1" Content="{l:T 'Transparent'}" Command="{Binding MakeTransparentCommand}"
+                                                                                    ToolTip.Tip="{l:T 'No colour: see-through'}" />
+                                                                            <Button Grid.Column="2" Content="{l:T 'Default'}" Command="{Binding ClearColorCommand}"
                                                                                     ToolTip.Tip="{l:T 'Back to the default colour'}" />
                                                                         </Grid>
                                                                     </StackPanel>

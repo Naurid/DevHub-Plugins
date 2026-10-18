@@ -188,4 +188,42 @@ public static class Routing
                 longest = i;
         return path[longest - 1] + (path[longest] - path[longest - 1]) * 0.5;
     }
+
+    /// <summary>The detail keys of a label dragged off its line: its offset from <see cref="LabelPoint"/>.</summary>
+    public const string LabelDx = "labelDx", LabelDy = "labelDy";
+
+    /// <summary>A label's offset from its point on the line (0, 0 unless it was dragged off it).</summary>
+    public static DPoint LabelOffset(DiagramEdge edge) =>
+        new(double.TryParse(edge.Prop(LabelDx), System.Globalization.CultureInfo.InvariantCulture, out var dx) ? dx : 0,
+            double.TryParse(edge.Prop(LabelDy), System.Globalization.CultureInfo.InvariantCulture, out var dy) ? dy : 0);
+
+    /// <summary>Where a line's label is drawn: its point on the line plus where it was dragged to.</summary>
+    public static DPoint LabelCenter(IReadOnlyList<DPoint> path, DiagramEdge edge) => LabelPoint(path, edge.LabelAt) + LabelOffset(edge);
+
+    /// <summary>
+    /// Where a label dropped at <paramref name="at"/> sits: the fraction of the line nearest to it, and its offset from
+    /// there. Kept that way, the label follows the line when its shapes move.
+    /// </summary>
+    public static (double At, DPoint Offset) PlaceLabel(IReadOnlyList<DPoint> path, DPoint at)
+    {
+        if (path.Count < 2)
+            return (0.5, path.Count == 1 ? at - path[0] : default);
+        var total = 0.0;
+        for (var i = 1; i < path.Count; i++)
+            total += path[i].DistanceTo(path[i - 1]);
+        var (best, bestAlong, walked) = (double.MaxValue, 0.0, 0.0);
+        for (var i = 1; i < path.Count; i++)
+        {
+            var (a, b) = (path[i - 1], path[i]);
+            var d = b - a;
+            var len = d.Length;
+            var t = len == 0 ? 0 : Math.Clamp(((at.X - a.X) * d.X + (at.Y - a.Y) * d.Y) / (len * len), 0, 1);
+            var distance = at.DistanceTo(a + d * t);
+            if (distance < best)
+                (best, bestAlong) = (distance, walked + len * t);
+            walked += len;
+        }
+        var fraction = total == 0 ? 0.5 : bestAlong / total;
+        return (fraction, at - Shapes.Along(path, fraction).Point);
+    }
 }
