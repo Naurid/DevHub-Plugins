@@ -38,6 +38,37 @@ public class DiagramCoreTests
     }
 
     [Fact]
+    public void A_dragged_label_keeps_its_place_along_the_line_and_its_offset()
+    {
+        IReadOnlyList<DPoint> path = [new(0, 0), new(100, 0), new(100, 100)];   // 200 long: a corner at the middle
+        var (at, offset) = Routing.PlaceLabel(path, new DPoint(130, 75));
+
+        Assert.Equal(0.875, at, 3);                                // nearest to (100, 75): 175 of 200
+        Assert.Equal(new DPoint(30, 0), offset);
+        var e = Line("ab", "a", "b");
+        new MoveLabel("ab", at, offset).Apply(new Diagram { Kind = "test", Edges = [e] });
+        Assert.Equal(new DPoint(130, 75), Routing.LabelCenter(path, e));
+        // Moved shapes: the label stays at the same share of the line, at the same offset.
+        Assert.Equal(new DPoint(30, 175), Routing.LabelCenter([new(0, 0), new(0, 200)], e));
+    }
+
+    [Fact]
+    public void Moving_a_label_back_onto_its_line_drops_the_offset_and_undo_restores_it()
+    {
+        var d = Sample();
+        var before = DiagramFile.Write(d);
+        var undo = new MoveLabel("ab", 0.3, new DPoint(12, -8)).Apply(d);
+        Assert.Equal("12", d.Edge("ab")!.Prop(Routing.LabelDx));
+        Assert.Equal("-8", d.Edge("ab")!.Prop(Routing.LabelDy));
+
+        new MoveLabel("ab", 0.3, new DPoint(0.2, 0)).Apply(d);
+        Assert.Empty(d.Edge("ab")!.Props);
+
+        undo.Apply(d);
+        Assert.Equal(before, DiagramFile.Write(d));
+    }
+
+    [Fact]
     public void A_file_without_a_kind_is_refused()
     {
         Assert.Throws<DiagramFileException>(() => DiagramFile.Read("""{ "nodes": [] }"""));

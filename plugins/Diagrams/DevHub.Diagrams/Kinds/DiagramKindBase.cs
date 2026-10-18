@@ -59,10 +59,18 @@ public abstract class DiagramKindBase : IDiagramKind
         new(L.T("Line colour"), "line", FieldKind.Color, L.T("Empty: the diagram's colour")),
         new(L.T("Line width"), "width", FieldKind.Number) { Default = "1.2", Minimum = 0.5, Maximum = 8, Step = 0.1 },
         new(L.T("Text colour"), "textColor", FieldKind.Color, L.T("Empty: the diagram's colour")),
+        LabelBackgroundField,
         new(L.T("Dash"), "dash", FieldKind.Choice) { Choices = DashChoices },
         new(L.T("Arrow at the start"), "startArrow", FieldKind.Choice) { Choices = ArrowChoices },
         new(L.T("Arrow at the end"), "endArrow", FieldKind.Choice) { Choices = ArrowChoices },
     ];
+
+    /// <summary>The colour behind a line's label ("labelFill"): empty = the diagram's background, transparent = none.</summary>
+    /// <remarks>A computed property, not a stored one: <see cref="LineStyleFields"/> (initialised first) lists it.</remarks>
+    public static PropertyField LabelBackgroundField =>
+        new(L.T("Label background"), LabelFill, FieldKind.Color, L.T("Empty: the diagram's background. Transparent: none."));
+
+    public const string LabelFill = "labelFill";
 
     public static IReadOnlyList<FieldChoice> DashChoices =>
     [
@@ -133,6 +141,21 @@ public abstract class DiagramKindBase : IDiagramKind
     public static Color? TryColor(string text) =>
         text.Length > 0 && Color.TryParse(text.Trim(), out var c) ? c : null;
 
+    /// <summary>
+    /// Text that reads on <paramref name="fill"/> (blended over <paramref name="behind"/> when it's see-through): near
+    /// black on light colours, near white on dark ones, so a shape filled light stays readable in the dark theme.
+    /// </summary>
+    public static (Color Text, Color Muted) ContrastOn(Color fill, Color behind)
+    {
+        var a = fill.A / 255.0;
+        double Mix(byte f, byte b) => (f * a + b * (1 - a)) / 255.0;
+        static double Linear(double c) => c <= 0.04045 ? c / 12.92 : Math.Pow((c + 0.055) / 1.055, 2.4);
+        var luminance = 0.2126 * Linear(Mix(fill.R, behind.R)) + 0.7152 * Linear(Mix(fill.G, behind.G)) + 0.0722 * Linear(Mix(fill.B, behind.B));
+        return luminance > 0.36
+            ? (Color.Parse("#1F1F1F"), Color.Parse("#5C6068"))
+            : (Color.Parse("#F0F1F3"), Color.Parse("#B4B8BF"));
+    }
+
     public virtual IReadOnlyList<PropertyField> DiagramFields => [new(L.T("Title"), "@title")];
 
     public virtual DRect? Fit(DiagramNode node, IDiagramSurface measure) => null;
@@ -186,22 +209,52 @@ public abstract class DiagramKindBase : IDiagramKind
         DrawEnd(s, path[^1], path[^2], EndOf(edge, look.End), pen.Color);
         DrawEnd(s, path[0], path[1], StartOf(edge, look.Start), pen.Color);
         if (edge.Text.Length > 0)
-            Label(s, edge.Text, Routing.LabelPoint(path, edge.LabelAt));
+            Label(s, edge.Text, LabelAnchor(diagram, edge, path), edge: edge);
     }
+
+    /// <summary>Where the line's label is drawn (and dragged from): its point on the line plus its offset.</summary>
+    public virtual DPoint LabelAnchor(Diagram diagram, DiagramEdge edge, IReadOnlyList<DPoint> path) => Routing.LabelCenter(path, edge);
+
+    /// <summary>
+    /// The full text of a shape whose text doesn't fit where it's drawn (a long package name ends in "…"), shown on hover
+    /// and while it's selected; null when all of it shows.
+    /// </summary>
+    public virtual string? HiddenText(Diagram diagram, DiagramNode node, IDiagramSurface measure) => null;
 
     // ---- Helpers for kinds ----
 
     public static IReadOnlyList<DPoint> Diamond(DRect r) =>
         [new(r.Center.X, r.Top), new(r.Right, r.Center.Y), new(r.Center.X, r.Bottom), new(r.Left, r.Center.Y)];
 
-    /// <summary>A line label on a small background, so it stays readable across the line.</summary>
-    public static void Label(IDiagramSurface s, string text, DPoint at, double size = 11, Color? color = null, bool italic = false)
+    /// <summary>
+    /// A line label on a small background, so it stays readable across the line. With <paramref name="edge"/>, its
+    /// "Label background" is used: a colour (the text then contrasts with it), or transparent for none.
+    /// </summary>
+    public static void Label(IDiagramSurface s, string text, DPoint at, double size = 11, Color? color = null, bool italic = false,
+        DiagramEdge? edge = null)
     {
         var style = new DText(size, Italic: italic, Color: color);
-        var (w, h) = s.Measure(text, style);
-        var box = new DRect(at.X - w / 2 - 3, at.Y - h / 2 - 1, w + 6, h + 2);
-        s.Rect(box, s.Style.Background, null, 2);
+        var box = LabelBox(s, text, at, style);
+        var background = s.Style.Background;
+        if (edge is not null && TryColor(edge.Prop(LabelFill)) is { } own)
+        {
+            background = own;
+            if (own.A > 0 && edge.Prop("textColor").Length == 0)
+            {
+                var (onFill, muted) = ContrastOn(own, s.Style.Background);
+                style = style with { Color = color == s.Style.MutedText ? muted : onFill };
+            }
+        }
+        if (background.A > 0)
+            s.Rect(box, background, null, 2);
         s.Text(text, box, style, wrap: false);
+    }
+
+    /// <summary>The box a label takes around <paramref name="at"/> (what the canvas picks it up by).</summary>
+    public static DRect LabelBox(IDiagramSurface s, string text, DPoint at, DText style)
+    {
+        var (w, h) = s.Measure(text, style);
+        return new DRect(at.X - w / 2 - 3, at.Y - h / 2 - 1, w + 6, h + 2);
     }
 
     /// <summary>A text near the end of a line (multiplicities, roles, cardinalities), set off to one side.</summary>
@@ -304,17 +357,63 @@ public abstract class DiagramKindBase : IDiagramKind
         s.Text(n.Text, r.Inflate(-8), TextOf(n, new DText(12, Align: TextAlign.Left, Vertical: TextVertical.Top)));
     }
 
-    /// <summary>A folder (UML package): a tab on the top left, the name in the tab or the body.</summary>
-    public static void Folder(IDiagramSurface s, DiagramNode n, Color? fill = null)
+    /// <summary>
+    /// A folder (UML package): a tab on the top left. A package with shapes inside has its name in the tab, which grows
+    /// with the name up to the package's width (a longer name ends in "…": <see cref="FolderHiddenText"/>); an empty
+    /// package has a small tab and its name in the body, wrapped, as UML draws it.
+    /// </summary>
+    public static void Folder(IDiagramSurface s, DiagramNode n, Color? fill = null, bool hasContents = true)
     {
         var r = n.Bounds;
         var pen = PenOf(s, n);
-        var name = TextOf(n, new DText(12, Bold: true, Align: TextAlign.Left));
+        var name = FolderName(n);
         var (w, h) = s.Measure(n.Text, name);
-        var tab = new DRect(r.X, r.Y, Math.Min(r.Width * 0.6, Math.Max(60, w + 16)), h + 8);
+        var tabHeight = h + 8;
+        var tab = new DRect(r.X, r.Y, hasContents ? Math.Min(r.Width, Math.Max(60, w + 16)) : Math.Min(r.Width, 48), tabHeight);
         s.Rect(tab, FillOf(s, n, fill), pen);
-        s.Rect(new DRect(r.X, tab.Bottom, r.Width, r.Height - tab.Height), FillOf(s, n, fill), pen);
-        s.Text(n.Text, tab.Inflate(-4) with { X = tab.X + 8 }, name, wrap: false);
+        var body = new DRect(r.X, tab.Bottom, r.Width, Math.Max(0, r.Height - tab.Height));
+        s.Rect(body, FillOf(s, n, fill), pen);
+        if (hasContents)
+            s.Text(Ellipsize(s, n.Text, name, tab.Width - 16), tab.Inflate(-4) with { X = tab.X + 8, Width = tab.Width - 12 }, name, wrap: false);
+        else
+        {
+            // Wrapped in the body; when even that doesn't fit, one line ending in "…" (nothing bleeds out).
+            var inner = body.Inflate(-8);
+            var centred = name with { Align = TextAlign.Center };
+            if (s.Measure(n.Text, centred, Math.Max(1, inner.Width)).Height <= inner.Height)
+                s.Text(n.Text, inner, centred);
+            else
+                s.Text(Ellipsize(s, n.Text, centred, inner.Width), inner, centred, wrap: false);
+        }
+    }
+
+    /// <summary>The package's name when its tab cuts it short, else null.</summary>
+    public static string? FolderHiddenText(IDiagramSurface measure, DiagramNode n, bool hasContents)
+    {
+        var name = FolderName(n);
+        if (hasContents)
+            return measure.Measure(n.Text, name).Width + 16 > n.Width ? n.Text : null;
+        var tab = measure.Measure("Ag", name).Height + 8;
+        return measure.Measure(n.Text, name with { Align = TextAlign.Center }, Math.Max(1, n.Width - 16)).Height > n.Height - tab - 16 ? n.Text : null;
+    }
+
+    private static DText FolderName(DiagramNode n) => TextOf(n, new DText(12, Bold: true, Align: TextAlign.Left));
+
+    /// <summary><paramref name="text"/> cut to <paramref name="width"/> with "…" at the end (as it is when it fits).</summary>
+    public static string Ellipsize(IDiagramSurface s, string text, DText style, double width)
+    {
+        if (s.Measure(text, style).Width <= width)
+            return text;
+        var (low, high) = (0, text.Length);
+        while (low < high)
+        {
+            var mid = (low + high + 1) / 2;
+            if (s.Measure(text[..mid].TrimEnd() + "…", style).Width <= width)
+                low = mid;
+            else
+                high = mid - 1;
+        }
+        return low == 0 ? "…" : text[..low].TrimEnd() + "…";
     }
 
     /// <summary>A cylinder (a database, a data store).</summary>

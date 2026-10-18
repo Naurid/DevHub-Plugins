@@ -57,8 +57,10 @@ public static class DiagramRenderer
 
     public static void DrawNode(IDiagramSurface s, Diagram diagram, IDiagramKind kind, DiagramNode n)
     {
+        // A stick figure's name, a bar or a stroke isn't drawn on the shape's fill: no contrast to keep there.
+        var textOnFill = kind.Model.ShapeOf(n) is not (NodeShape.Figure or NodeShape.Bar or NodeShape.Path);
         using (s.Rotate(n.Center, n.Rotation))
-            kind.DrawNode(TextColorSurface.For(s, n.Props), diagram, n);
+            kind.DrawNode(TextColorSurface.ForNode(s, n, textOnFill), diagram, n);
     }
 
     /// <summary>"SHOP-12" in a pill at the shape's top right, coloured by the issue's status.</summary>

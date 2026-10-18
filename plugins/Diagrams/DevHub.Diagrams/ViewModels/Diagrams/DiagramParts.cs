@@ -152,6 +152,12 @@ public sealed partial class PropertyFieldViewModel : ObservableObject
     [RelayCommand]
     private void ClearColor() => Value = "";
 
+    /// <summary>See-through: no fill, no label background (stored as #00000000, alpha 0).</summary>
+    [RelayCommand]
+    private void MakeTransparent() => Value = Transparent;
+
+    public const string Transparent = "#00000000";
+
     /// <summary>The colour as a brush-friendly string (for the swatch next to a colour field).</summary>
     public string Swatch => Value.StartsWith('#') && (Value.Length == 7 || Value.Length == 9) ? Value : "#00000000";
 

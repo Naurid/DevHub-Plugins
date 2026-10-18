@@ -77,7 +77,7 @@ public sealed class DiagramCanvas : Control
     public static readonly StyledProperty<IDiagramCanvasHost?> HostProperty =
         AvaloniaProperty.Register<DiagramCanvas, IDiagramCanvasHost?>(nameof(Host));
 
-    private enum Drag { None, Pan, Move, Resize, Rubber, Connect, Waypoint, Pen }
+    private enum Drag { None, Pan, Move, Resize, Rubber, Connect, Waypoint, Pen, Label }
 
     private const double HandleSize = 7;
 
@@ -95,6 +95,9 @@ public sealed class DiagramCanvas : Control
     private List<DPoint> _originalWaypoints = [];
     private int _waypointIndex;
     private readonly List<DPoint> _stroke = [];
+    private string? _labelEdge;
+    private DPoint _labelStart;
+    private (double? At, DPoint Offset) _labelOriginal;
     private double? _guideX, _guideY;
     private string? _hover;
     private bool _space;
@@ -249,7 +252,7 @@ public sealed class DiagramCanvas : Control
             return Host!.Kind.MultilineText(n) ? n.Bounds : n.Bounds with { Y = n.Center.Y - 16, Height = 32 };
         if (diagram.Edge(id) is { } e)
         {
-            var at = Routing.LabelPoint(PathOf(e), e.LabelAt);
+            var at = Host!.Kind.LabelAnchor(diagram, e, PathOf(e));
             return new DRect(at.X - 70, at.Y - 14, 140, 28);
         }
         return default;
@@ -396,6 +399,44 @@ public sealed class DiagramCanvas : Control
 
         if (_drag == Drag.Pen && _stroke.Count > 1)
             s.Curve(_stroke, new DPen(Color.Parse(host.PenColor), host.PenWidth));
+
+        // A selected shape whose name is cut short (a long package name): all of it, just above the shape.
+        if (SingleNode(host) is { } named && host.Kind.HiddenText(diagram, named, s) is { } full)
+        {
+            var text = new DText(12 * thin, Bold: true, Align: TextAlign.Left);
+            var (w, h) = s.Measure(full, text);
+            var box = new DRect(named.X, named.Y - h - 14 * thin, w + 16 * thin, h + 8 * thin);
+            s.Rect(box, style.Background, new DPen(accent, thin), 3 * thin);
+            s.Text(full, box.Inflate(-4 * thin) with { X = box.X + 8 * thin }, text, wrap: false);
+        }
+
+        // The selected line's label: a frame shows it can be dragged.
+        foreach (var e in diagram.Edges.Where(e => selected.Contains(e.Id) && e.Text.Length > 0))
+            s.Rect(LabelRect(host, e), null, new DPen(accent, thin, StrokeDash.Dashed), 2 * thin);
+    }
+
+    /// <summary>Where a line's label is, as the canvas picks it up (the kind's anchor, the label's size).</summary>
+    private DRect LabelRect(IDiagramCanvasHost host, DiagramEdge e) =>
+        DiagramKindBase.LabelBox(MeasureSurface.Instance, e.Text, host.Kind.LabelAnchor(host.Diagram, e, PathOf(e)), new DText(11)).Inflate(2);
+
+    /// <summary>The line whose label is under the pointer (the topmost), or null.</summary>
+    private DiagramEdge? LabelUnder(IDiagramCanvasHost host, DPoint at) =>
+        host.Diagram.Edges.LastOrDefault(e => e.Text.Length > 0 && LabelRect(host, e).Contains(at));
+
+    /// <summary>A label at <paramref name="at"/> unless a shape (not a container) is on top of it there.</summary>
+    private DiagramEdge? DraggableLabel(IDiagramCanvasHost host, DPoint at) =>
+        LabelUnder(host, at) is { } labelled && (HitAt(host, at).Node is not { } over || host.Kind.Model.IsContainer(over)) ? labelled : null;
+
+    /// <summary>Puts a label's centre at <paramref name="target"/>: its point on the line nearest there, and the rest as offset.</summary>
+    private void PlaceLabel(IDiagramCanvasHost host, DiagramEdge edge, DPoint target)
+    {
+        var path = PathOf(edge);
+        var (at, _) = Routing.PlaceLabel(path, target);
+        // Ask the kind where the label sits at that point with no offset: kinds that place labels their own way
+        // (sequence messages, mind map branches) still end up exactly where the label was dropped.
+        new MoveLabel(edge.Id, at, default).Apply(host.Diagram);
+        var anchor = host.Kind.LabelAnchor(host.Diagram, edge, path);
+        new MoveLabel(edge.Id, at, target - anchor).Apply(host.Diagram);   // live; one operation on release
     }
 
     private static DRect Square(DPoint c, double size) => new(c.X - size / 2, c.Y - size / 2, size, size);
@@ -454,7 +495,7 @@ public sealed class DiagramCanvas : Control
         if (e.ClickCount == 2)
         {
             var hit = HitAt(host, _pressWorld);
-            var target = hit.Node?.Id ?? hit.Edge?.Id;
+            var target = DraggableLabel(host, _pressWorld)?.Id ?? hit.Node?.Id ?? hit.Edge?.Id;
             if (target is not null)
             {
                 host.Select([target]);
@@ -516,6 +557,18 @@ public sealed class DiagramCanvas : Control
         }
         if (host.Selection.Count == 1 && diagram.Edge(host.Selection[0]) is { } selectedEdge && TryStartWaypoint(host, selectedEdge, e))
             return;
+
+        // A line's label: dragged anywhere (it then follows its line when the shapes move).
+        if (DraggableLabel(host, _pressWorld) is { } labelled)
+        {
+            if (!host.Selection.Contains(labelled.Id))
+                host.Select([labelled.Id], add: ctrl);
+            _labelEdge = labelled.Id;
+            _labelOriginal = (labelled.LabelAt, Routing.LabelOffset(labelled));
+            _labelStart = host.Kind.LabelAnchor(diagram, labelled, PathOf(labelled));
+            Start(Drag.Label, e);
+            return;
+        }
 
         // Shapes, then lines, then containers: a line inside a package is picked, not the package.
         var (node, hitEdge) = HitAt(host, _pressWorld);
@@ -637,6 +690,15 @@ public sealed class DiagramCanvas : Control
             if (host.Tool == CanvasTool.Edge || _drag == Drag.Connect)
                 InvalidateVisual();
         }
+        if (_drag == Drag.None && host.Tool == CanvasTool.Select && !_space)
+        {
+            // A cut-off name shows in full on hover; a label shows it can be picked up.
+            var under = HitAt(host, world).Node;
+            var tip = under is null ? null : host.Kind.HiddenText(diagram, under, MeasureSurface.Instance);
+            if (!Equals(ToolTip.GetTip(this), tip))
+                ToolTip.SetTip(this, tip);
+            Cursor = DraggableLabel(host, world) is not null ? new Cursor(StandardCursorType.SizeAll) : Cursor.Default;
+        }
 
         switch (_drag)
         {
@@ -659,6 +721,9 @@ public sealed class DiagramCanvas : Control
             case Drag.Pen:
                 if (_stroke[^1].DistanceTo(world) > 2 / Zoom)
                     _stroke.Add(world);
+                break;
+            case Drag.Label when diagram.Edge(_labelEdge) is { } labelled:
+                PlaceLabel(host, labelled, _labelStart + (world - _pressWorld));
                 break;
             case Drag.Rubber:
             case Drag.Connect:
@@ -802,6 +867,15 @@ public sealed class DiagramCanvas : Control
                 host.AddStroke([.. _stroke]);
                 _stroke.Clear();
                 break;
+            case Drag.Label when diagram.Edge(_labelEdge) is { } labelled:
+            {
+                var now = (labelled.LabelAt, Routing.LabelOffset(labelled));
+                new MoveLabel(labelled.Id, _labelOriginal.At, _labelOriginal.Offset).Apply(diagram);
+                if (now != _labelOriginal)
+                    host.Do(new MoveLabel(labelled.Id, now.LabelAt, now.Item2));
+                _labelEdge = null;
+                break;
+            }
         }
         InvalidateVisual();
     }

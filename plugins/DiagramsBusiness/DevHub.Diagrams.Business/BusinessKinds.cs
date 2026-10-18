@@ -416,12 +416,30 @@ public sealed class MindMapKind : DiagramKindBase
 
     public override void DrawEdge(IDiagramSurface s, Diagram d, DiagramEdge e, IReadOnlyList<DPoint> path)
     {
-        if (d.Node(e.From) is not { } a || d.Node(e.To) is not { } b)
+        if (d.Node(e.From) is not { } a || d.Node(e.To) is not { } b || Branch(d, e) is not { } points)
             return;
         var colour = TryColor(e.Prop("line")) ?? TryColor(MindMapModel.ColourOf(d, b)) ?? s.Style.Line;
         var width = double.TryParse(e.Prop("width"), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var w)
             ? w : a.Type == MindMapModel.Central ? 3.2 : 1.8;
-        // From the parent's side to the child's near side (sub-topics: the end of their underline), as an S-curve.
+        var pen = new DPen(colour, width, DashOf(e, StrokeDash.Solid));
+        s.Polyline(points, pen);
+        DrawEnds(s, e, points, LineEnd.None, LineEnd.None, colour);
+        if (e.Text.Length > 0)
+            Label(s, e.Text, LabelAnchor(d, e, path), 10.5, s.Style.MutedText, edge: e);
+    }
+
+    /// <summary>The middle of the branch's curve, plus where its label was dragged to.</summary>
+    public override DPoint LabelAnchor(Diagram d, DiagramEdge e, IReadOnlyList<DPoint> path) =>
+        (Branch(d, e) is { } points ? points[10] : Routing.LabelPoint(path, e.LabelAt)) + Routing.LabelOffset(e);
+
+    /// <summary>
+    /// A branch from the parent's side to the child's near side (sub-topics: the end of their underline), as an S-curve
+    /// of 21 points; null when a shape is missing.
+    /// </summary>
+    private static List<DPoint>? Branch(Diagram d, DiagramEdge e)
+    {
+        if (d.Node(e.From) is not { } a || d.Node(e.To) is not { } b)
+            return null;
         var right = b.Bounds.Center.X >= a.Bounds.Center.X;
         var start = a.Type == MindMapModel.Central ? a.Bounds.Center + new DPoint(right ? a.Width * 0.42 : -a.Width * 0.42, 0)
             : new DPoint(right ? a.Bounds.Right : a.Bounds.Left, a.Type == MindMapModel.SubTopic ? a.Bounds.Bottom : a.Bounds.Center.Y);
@@ -436,11 +454,7 @@ public sealed class MindMapKind : DiagramKindBase
             var u = 1 - t;
             points.Add(start * (u * u * u) + c1 * (3 * u * u * t) + c2 * (3 * u * t * t) + end * (t * t * t));
         }
-        var pen = new DPen(colour, width, DashOf(e, StrokeDash.Solid));
-        s.Polyline(points, pen);
-        DrawEnds(s, e, points, LineEnd.None, LineEnd.None, colour);
-        if (e.Text.Length > 0)
-            Label(s, e.Text, points[10], 10.5, s.Style.MutedText);
+        return points;
     }
 
     public override DRect? Fit(DiagramNode n, IDiagramSurface m)

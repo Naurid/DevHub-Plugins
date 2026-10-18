@@ -225,6 +225,30 @@ public sealed record SetEdgePath(string Id, IReadOnlyList<DPoint> Waypoints, Edg
     }
 }
 
+/// <summary>Moves a line's label: its point on the line and its offset from there (dragged off the line).</summary>
+public sealed record MoveLabel(string Id, double? LabelAt, DPoint Offset) : IDiagramOperation
+{
+    public string Name => L.T("Move Label");
+
+    public IDiagramOperation Apply(Diagram diagram)
+    {
+        var e = diagram.Edge(Id) ?? throw new DiagramRuleException(L.T("The line no longer exists."));
+        var undo = new MoveLabel(Id, e.LabelAt, Routing.LabelOffset(e));
+        e.LabelAt = LabelAt;
+        Set(Routing.LabelDx, Offset.X);
+        Set(Routing.LabelDy, Offset.Y);
+        return undo;
+
+        void Set(string key, double value)
+        {
+            if (Math.Abs(value) < 0.5)
+                e.Props.Remove(key);
+            else
+                e.Props[key] = Math.Round(value, 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        }
+    }
+}
+
 /// <summary>Sets the points of a freehand stroke or a line shape (relative to the shape).</summary>
 public sealed record SetPoints(string Id, IReadOnlyList<DPoint>? Points) : IDiagramOperation
 {

@@ -172,7 +172,6 @@ public sealed class ClassModel(bool objects = false) : IDiagramKindModel
         new Rule(d => UseCaseModel.Duplicates(d, Class, L.T("class"))),
         new Rule(InheritanceCycles),
         new Rule(Multiplicities),
-        new Rule(InterfaceAttributes),
     ];
 
     public IReadOnlyList<IDiagramTextExporter> TextExporters => objects ? [] : [new ClassPlantUml(), new ClassMermaid()];
@@ -233,12 +232,6 @@ public sealed class ClassModel(bool objects = false) : IDiagramKindModel
                         L.T($"\"{value}\" isn't a multiplicity: write 1, 0..1, *, 1..* or 2..5."), [e.Id]);
             }
         }
-    }
-
-    private static IEnumerable<DiagramProblem> InterfaceAttributes(Diagram d)
-    {
-        foreach (var n in d.Nodes.Where(n => n.Type == Interface && ClassMember.Lines(n.Prop("attributes")).Any()))
-            yield return new DiagramProblem(ProblemSeverity.Info, L.T($"\"{n.Text}\" is an interface: it usually has operations only."), [n.Id]);
     }
 }
 

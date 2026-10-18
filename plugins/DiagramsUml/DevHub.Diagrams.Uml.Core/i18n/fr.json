@@ -76,7 +76,6 @@
   "In \"{0}\", \"{1}\" isn't read as a member: write it like + name : Type.": "Dans «\u00A0{0}\u00A0», «\u00A0{1}\u00A0» n'est pas lu comme un membre\u00A0: écrivez-le comme + nom\u00A0: Type.",
   "\"{0}\" inherits from itself (a loop of inheritance).": "«\u00A0{0}\u00A0» hérite de lui-même (une boucle d'héritage).",
   "\"{0}\" isn't a multiplicity: write 1, 0..1, *, 1..* or 2..5.": "«\u00A0{0}\u00A0» n'est pas une multiplicité\u00A0: écrivez 1, 0..1, *, 1..* ou 2..5.",
-  "\"{0}\" is an interface: it usually has operations only.": "«\u00A0{0}\u00A0» est une interface\u00A0: elle n'a en général que des opérations.",
   "Sequence diagram": "Diagramme de séquence",
   "Who sends which message to whom, in order: lifelines, messages, replies, alt / loop fragments.": "Qui envoie quel message à qui, dans l'ordre\u00A0: lignes de vie, messages, réponses, fragments alt / loop.",
   "Lifeline": "Ligne de vie",
