@@ -13,6 +13,7 @@ published is in DevHub's `docs/PLUGINS.md` and this repository's `README.md`.
 | [BOARD.md](BOARD.md) | Board, Board Scrum, Board Git, Board Reports, Board Timeline, Board Risks |
 | [DIAGRAMS.md](DIAGRAMS.md) | Diagrams, UML Diagrams, Database Diagrams, Business Diagrams, Mood Boards |
 | [CHARTS.md](CHARTS.md) | Charts |
+| [CI.md](CI.md) | CI (GitHub Actions) |
 
 Older design documents stay where they were: `docs/GIT_CLIENT_PLAN.md`, `docs/TEMPLATE_FORMAT.md` (the template
 spec), `docs/BOARD_PLAN.md`, `docs/DIAGRAMS_PLAN.md`.
@@ -24,6 +25,7 @@ spec), `docs/BOARD_PLAN.md`, `docs/DIAGRAMS_PLAN.md`.
 | Projects | `devhub.projects` | – | Projects | Git client, Project templates | yes |
 | Git | `devhub.git` | – | Version control | Git client | yes |
 | GitHub | `devhub.github` | Git | Version control | Git client | yes |
+| CI | `devhub.ci` | GitHub | Version control | Git client | |
 | Templates | `devhub.templates` | Projects | Templates | Project templates | yes |
 | Board | `devhub.board` | – | Planning | Planning | |
 | Board Scrum | `devhub.board.scrum` | Board | Planning | Planning | |

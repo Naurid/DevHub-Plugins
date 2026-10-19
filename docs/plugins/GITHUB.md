@@ -32,7 +32,7 @@ No section of its own: the accounts are GCM's.
 | Offers | Hook | Used by |
 |---|---|---|
 | A hosting service for Git: Publish, your identity, your repositories for Clone | `IRemoteHost` (Git's) | Git |
-| GitHub's REST API as the signed-in user | `IGitHubApi` (`DevHub.Integration`) | Board (GitHub Issues import), Board Git (an issue's pull requests) |
+| GitHub's REST API as the signed-in user | `IGitHubApi` (`DevHub.Integration`) | Board (GitHub Issues import), Board Git (an issue's pull requests), CI (runs, jobs, logs, re-runs) |
 
 `IGitHubApi.SendAsync(GitHubApiRequest)` returns a `GitHubApiResponse` with the ETag, the next page and the rate
 limit; it throws `GitHubApiUnavailableException` when nobody is signed in or GitHub can't be reached. Callers pace

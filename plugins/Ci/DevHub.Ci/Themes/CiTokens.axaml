@@ -1,0 +1,10 @@
+<!-- CI plugin tokens (returned from CiPlugin.Resources). -->
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- The branch and workflow filters above the runs. -->
+    <x:Double x:Key="Size.CiFilter">180</x:Double>
+    <!-- The state symbol's column (✓ ✗ ● ⊘) in runs and jobs. -->
+    <x:Double x:Key="Size.CiState">18</x:Double>
+    <!-- An expanded run's jobs, indented under it. -->
+    <Thickness x:Key="Padding.CiJobs">28,2,8,6</Thickness>
+</ResourceDictionary>

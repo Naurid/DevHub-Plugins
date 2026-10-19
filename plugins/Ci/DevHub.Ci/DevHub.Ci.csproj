@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- CI: GitHub Actions runs of the open repository tabs (a bottom tool window, a status-bar mark, marks in Git),
+         failed logs, re-runs. Calls GitHub through IGitHubApi (the GitHub plugin keeps the sign-in). -->
+
+    <PropertyGroup>
+        <RootNamespace>DevHub</RootNamespace>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\DevHub.Ci.Core\DevHub.Ci.Core.csproj" />
+    </ItemGroup>
+
+</Project>

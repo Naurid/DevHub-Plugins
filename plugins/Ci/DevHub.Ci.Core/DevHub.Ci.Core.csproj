@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- CI logic: GitHub Actions runs and jobs as the API returns them, a repository's GitHub address, the polling pace,
+         finished-run detection, failed-step log excerpts. No Avalonia, no network (the UI project calls IGitHubApi). -->
+
+</Project>

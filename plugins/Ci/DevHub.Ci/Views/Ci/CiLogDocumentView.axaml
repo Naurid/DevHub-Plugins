@@ -1,0 +1,56 @@
+<!-- A job's log: the failed steps by default (step starts as headings, errors in red), all of it on request. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
+             xmlns:vm="using:DevHub.ViewModels.Ci"
+             xmlns:ci="using:DevHub.Ci.Core"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Ci.CiLogDocumentView"
+             x:DataType="vm:CiLogDocumentViewModel">
+    <UserControl.Styles>
+        <Style Selector="SelectableTextBlock.line">
+            <Setter Property="FontFamily" Value="{DynamicResource Font.Code}" />
+            <Setter Property="FontSize" Value="{DynamicResource FontSize.Code}" />
+        </Style>
+        <Style Selector="SelectableTextBlock.line.error">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Error}" />
+        </Style>
+        <Style Selector="SelectableTextBlock.line.header">
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+        </Style>
+    </UserControl.Styles>
+
+    <DockPanel>
+        <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}"
+              Margin="{DynamicResource Padding.ListItem}">
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Classes="header" Text="{Binding JobName}" />
+                <TextBlock Classes="small secondary" Text="{Binding Summary}" />
+            </StackPanel>
+            <ToggleSwitch Grid.Column="1" IsChecked="{Binding ShowAll}" OnContent="{l:T 'All of the log'}" OffContent="{l:T 'Failed steps'}"
+                          AutomationProperties.Name="{l:T 'All of the log'}" VerticalAlignment="Center" />
+            <c:ActionButton Grid.Column="2" IconKind="refresh" Command="{Binding LoadCommand}"
+                            ToolTip.Tip="{l:T 'Reload'}" AutomationProperties.Name="{l:T 'Reload'}" />
+            <c:ActionButton Grid.Column="3" IconKind="externalTools" Command="{Binding OpenInBrowserCommand}"
+                            ToolTip.Tip="{l:T 'Open in Browser'}" AutomationProperties.Name="{l:T 'Open in Browser'}" />
+        </Grid>
+
+        <Panel>
+            <c:EmptyState IconKind="warning" Title="{l:T 'No log'}" Description="{Binding Problem}"
+                          IsVisible="{Binding Problem, Converter={x:Static ObjectConverters.IsNotNull}}" />
+            <TextBlock Classes="secondary" Text="{l:T 'Loading the log…'}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                       IsVisible="{Binding IsLoading}" />
+            <!-- A ListBox: only the lines on screen get visuals (a full log has thousands). -->
+            <ListBox ItemsSource="{Binding Lines}" Background="Transparent"
+                     IsVisible="{Binding Problem, Converter={x:Static ObjectConverters.IsNull}}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="ci:LogLine">
+                        <SelectableTextBlock Classes="line" Classes.error="{Binding IsError}" Classes.header="{Binding IsHeader}"
+                                             Text="{Binding Text}" TextWrapping="Wrap" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Panel>
+    </DockPanel>
+</UserControl>

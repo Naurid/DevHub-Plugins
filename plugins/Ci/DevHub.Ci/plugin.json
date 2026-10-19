@@ -1,0 +1,12 @@
+// The package's description of the plugin (docs/PLUGINS.md in DevHub); keep it equal to the plugin class's PluginInfo.
+// The version is computed from git (build/Get-PluginVersion.ps1); don't write one here.
+{
+  "id": "devhub.ci",
+  "name": "CI",
+  "description": "GitHub Actions for your open repositories: run history, a mark when a run passes or fails, the failed step's log, re-run a job.",
+  "category": "Version control",
+  "apiVersion": 1,
+  "requires": [
+    "devhub.github"
+  ]
+}
