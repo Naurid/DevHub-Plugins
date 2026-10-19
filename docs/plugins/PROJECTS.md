@@ -56,3 +56,7 @@ section on first load.
 
 Its own services (`IRepositoryScanner`, `IProjectLanguageDetector`, `IToolLocator`, `IProjectLauncher`) are for itself;
 Templates requires Projects but uses only the hooks above.
+
+## Diagrams
+
+`docs/diagrams/Projects/`: use cases, the activity of opening a project, and the classes.

@@ -1,0 +1,559 @@
+{
+  "schemaVersion": 1,
+  "kind": "class",
+  "title": "Board Timeline: main classes",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "3bc7ja",
+      "type": "class",
+      "x": 0,
+      "y": 135,
+      "width": 281,
+      "height": 76,
+      "rotation": 0,
+      "text": "BoardTimelinePlugin",
+      "props": {
+        "attributes": "+ Info : PluginInfo",
+        "operations": "+ ConfigureServices(services, context)",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "tdkq22",
+      "type": "class",
+      "x": 1171,
+      "y": 135,
+      "width": 370,
+      "height": 110,
+      "rotation": 0,
+      "text": "TimelinePageProvider",
+      "props": {
+        "attributes": "+ Id : string\n+ Title : string\n+ Order : int",
+        "operations": "+ Create(host : BoardPageHost) : BoardPageViewModel",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "ixpt4q",
+      "type": "class",
+      "x": 331,
+      "y": 135,
+      "width": 370,
+      "height": 229,
+      "rotation": 0,
+      "text": "TimelinePageViewModel",
+      "props": {
+        "attributes": "+ Title : string\n+ Rows : ObservableCollection<TimelineRowViewModel>\n+ WithIssues : bool\n+ ShowDone : bool\n+ From : DateTime\n+ Days : int\n+ Today : double\n+ IsEmpty : bool\n+ Summary : string\n+ CreateEpicCommand : IAsyncRelayCommand",
+        "operations": "+ OnBoardChanged()",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "2p3uyk",
+      "type": "class",
+      "x": 1237.5,
+      "y": 649,
+      "width": 182,
+      "height": 206,
+      "rotation": 0,
+      "text": "TimelineRowViewModel",
+      "props": {
+        "attributes": "+ Item : TimelineItem\n+ Key : string\n+ Summary : string\n+ IsChild : bool\n+ Start : double\n+ End : double\n+ Today : double\n+ Progress : double\n+ Dates : string\n+ ToolTip : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "8acye9",
+      "type": "class",
+      "x": 1591,
+      "y": 135,
+      "width": 370,
+      "height": 110,
+      "rotation": 0,
+      "text": "ReleasesPageProvider",
+      "props": {
+        "attributes": "+ Id : string\n+ Title : string\n+ Order : int",
+        "operations": "+ Create(host : BoardPageHost) : BoardPageViewModel",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "s7zt5c",
+      "type": "class",
+      "x": 751,
+      "y": 135,
+      "width": 370,
+      "height": 229,
+      "rotation": 0,
+      "text": "ReleasesPageViewModel",
+      "props": {
+        "attributes": "+ Title : string\n+ Releases : ObservableCollection<ReleaseRow>\n+ Issues : ObservableCollection<IssueItemViewModel>\n+ Selected : ReleaseRow\n+ ShowArchived : bool\n+ Notes : string\n+ HasSelection : bool\n+ CanRelease : bool\n+ NewVersionCommand : IAsyncRelayCommand\n+ ReleaseCommand : IAsyncRelayCommand",
+        "operations": "+ OnBoardChanged()",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "dcxcsj",
+      "type": "class",
+      "x": 1469.5,
+      "y": 675.5,
+      "width": 184,
+      "height": 153,
+      "rotation": 0,
+      "text": "ReleaseRow",
+      "props": {
+        "attributes": "+ Status : ReleaseStatus\n+ Id : string\n+ Name : string\n+ Detail : string\n+ Fraction : double\n+ IsLate : bool",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "7psrs4",
+      "type": "class",
+      "x": 2011,
+      "y": 135,
+      "width": 253,
+      "height": 195,
+      "rotation": 0,
+      "text": "TimelineBar",
+      "props": {
+        "attributes": "+ Start : double\n+ End : double\n+ Progress : double\n+ IsLate : bool\n+ IsDone : bool\n+ IsGuessed : bool\n+ HasConflict : bool\n+ IsChild : bool",
+        "operations": "+ Render(context : DrawingContext)",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "krwsm7",
+      "type": "class",
+      "x": 0,
+      "y": 434,
+      "width": 253,
+      "height": 93,
+      "rotation": 0,
+      "text": "TimelineScale",
+      "props": {
+        "attributes": "+ From : DateTime\n+ Days : int",
+        "operations": "+ Render(context : DrawingContext)",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "7wy3ps",
+      "type": "class",
+      "x": 1319,
+      "y": 1188,
+      "width": 253,
+      "height": 221,
+      "rotation": 0,
+      "text": "TimelineItem",
+      "props": {
+        "attributes": "+ Issue : Issue\n+ Start : DateOnly\n+ End : DateOnly\n+ DatesGuessed : bool\n+ Progress : double\n+ IsDone : bool\n+ IsLate : bool\n+ BlockedBy : IReadOnlyList<Issue>\n+ HasConflict : bool\n+ Depth : int",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "s3dipw",
+      "type": "class",
+      "x": 1167.5,
+      "y": 950.5,
+      "width": 274,
+      "height": 142,
+      "rotation": 0,
+      "text": "TimelineResult",
+      "props": {
+        "attributes": "+ Items : IReadOnlyList<TimelineItem>\n+ From : DateOnly\n+ To : DateOnly\n+ Days : int",
+        "operations": "+ Fraction(date : DateOnly) : double",
+        "showAttributes": "true",
+        "showOperations": "true",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "jguarq",
+      "type": "class",
+      "x": 1491.5,
+      "y": 945,
+      "width": 232,
+      "height": 153,
+      "rotation": 0,
+      "text": "ReleaseStatus",
+      "props": {
+        "attributes": "+ Version : FixVersion\n+ Issues : IReadOnlyList<Issue>\n+ Done : int\n+ IsLate : bool\n+ Open : int\n+ Fraction : double",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "gxus7k",
+      "type": "class",
+      "x": 303,
+      "y": 434,
+      "width": 274,
+      "height": 125,
+      "rotation": 0,
+      "text": "ReleaseVersion",
+      "props": {
+        "attributes": "+ VersionId : string\n+ Today : DateOnly\n+ MoveOpenTo : string",
+        "operations": "+ Apply(board, context) : BoardChange",
+        "showAttributes": "true",
+        "showOperations": "true",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "kqcg3k",
+      "type": "interface",
+      "x": 786,
+      "y": 0,
+      "width": 120,
+      "height": 45,
+      "rotation": 0,
+      "text": "IPlugin",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "tba4rw",
+      "type": "interface",
+      "x": 1520,
+      "y": 0,
+      "width": 167,
+      "height": 45,
+      "rotation": 0,
+      "text": "IBoardPageProvider",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "nbiffh",
+      "type": "class",
+      "x": 956,
+      "y": 2,
+      "width": 167,
+      "height": 41,
+      "rotation": 0,
+      "text": "BoardPageViewModel",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "yqv9bt",
+      "type": "class",
+      "x": 1343,
+      "y": 2,
+      "width": 127,
+      "height": 41,
+      "rotation": 0,
+      "text": "ViewModelBase",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "k859tm",
+      "type": "interface",
+      "x": 1173,
+      "y": 0,
+      "width": 120,
+      "height": 45,
+      "rotation": 0,
+      "text": "ICardHost",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "fiuqn8",
+      "type": "class",
+      "x": 1737,
+      "y": 2,
+      "width": 175,
+      "height": 41,
+      "rotation": 0,
+      "text": "TimelineControlBase",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "fe5c25",
+      "type": "interface",
+      "x": 1962,
+      "y": 0,
+      "width": 143,
+      "height": 45,
+      "rotation": 0,
+      "text": "IBoardOperation",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "v3p3fn",
+      "type": "note",
+      "x": 0,
+      "y": 1459,
+      "width": 620,
+      "height": 76,
+      "rotation": 0,
+      "text": "Read from DevHub.Board.Timeline.dll, DevHub.Board.Timeline.Core.dll: each type's own public members (up to 10 properties and 8 methods). Grey: from the Sdk or another plugin.",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "neqvz5",
+      "type": "realization",
+      "from": "3bc7ja",
+      "to": "kqcg3k",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "u2tipf",
+      "type": "realization",
+      "from": "tdkq22",
+      "to": "tba4rw",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "82v4tj",
+      "type": "generalization",
+      "from": "ixpt4q",
+      "to": "nbiffh",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "z2x8im",
+      "type": "association",
+      "from": "ixpt4q",
+      "to": "2p3uyk",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Rows"
+      }
+    },
+    {
+      "id": "3xdf2d",
+      "type": "generalization",
+      "from": "2p3uyk",
+      "to": "yqv9bt",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "3hnbst",
+      "type": "association",
+      "from": "2p3uyk",
+      "to": "7wy3ps",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Item"
+      }
+    },
+    {
+      "id": "vhxyii",
+      "type": "dependency",
+      "from": "2p3uyk",
+      "to": "s3dipw",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "jabd7b",
+      "type": "realization",
+      "from": "8acye9",
+      "to": "tba4rw",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "mftufv",
+      "type": "generalization",
+      "from": "s7zt5c",
+      "to": "nbiffh",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "wtk79v",
+      "type": "realization",
+      "from": "s7zt5c",
+      "to": "k859tm",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "fn9u76",
+      "type": "association",
+      "from": "s7zt5c",
+      "to": "dcxcsj",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Releases"
+      }
+    },
+    {
+      "id": "wyak93",
+      "type": "association",
+      "from": "dcxcsj",
+      "to": "jguarq",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Status"
+      }
+    },
+    {
+      "id": "8ksiv4",
+      "type": "generalization",
+      "from": "7psrs4",
+      "to": "fiuqn8",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "kf48bi",
+      "type": "generalization",
+      "from": "krwsm7",
+      "to": "fiuqn8",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "3ypxbq",
+      "type": "association",
+      "from": "s3dipw",
+      "to": "7wy3ps",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Items"
+      }
+    },
+    {
+      "id": "ewgm5q",
+      "type": "realization",
+      "from": "gxus7k",
+      "to": "fe5c25",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 0,
+    "y": 0,
+    "width": 2264,
+    "height": 1535,
+    "left": 0,
+    "top": 0,
+    "right": 2264,
+    "bottom": 1535,
+    "center": {
+      "x": 1132,
+      "y": 767.5,
+      "length": 1367.6550186359132
+    }
+  }
+}

@@ -1,0 +1,480 @@
+{
+  "schemaVersion": 1,
+  "kind": "class",
+  "title": "Business Diagrams: main classes",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "rc8vcr",
+      "type": "class",
+      "x": 0,
+      "y": 186,
+      "width": 281,
+      "height": 76,
+      "rotation": 0,
+      "text": "DiagramsBusinessPlugin",
+      "props": {
+        "attributes": "+ Info : PluginInfo",
+        "operations": "+ ConfigureServices(services, context)",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "dd4gb4",
+      "type": "class",
+      "x": 331,
+      "y": 160.5,
+      "width": 432,
+      "height": 127,
+      "rotation": 0,
+      "text": "FlowchartKind",
+      "props": {
+        "attributes": "+ Model : IDiagramKindModel\n+ IconKind : string\n+ Order : int",
+        "operations": "+ EdgeFields(e : DiagramEdge) : IReadOnlyList<PropertyField>\n+ DrawNode(s, d, n)",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "vy2nts",
+      "type": "class",
+      "x": 813,
+      "y": 143.5,
+      "width": 432,
+      "height": 161,
+      "rotation": 0,
+      "text": "BpmnKind",
+      "props": {
+        "attributes": "+ Model : IDiagramKindModel\n+ IconKind : string\n+ Order : int",
+        "operations": "+ NodeFields(n : DiagramNode) : IReadOnlyList<PropertyField>\n+ EdgeFields(e : DiagramEdge) : IReadOnlyList<PropertyField>\n+ DrawNode(s, d, n)\n+ DrawEdge(s, d, e, path)",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "ubtvxp",
+      "type": "class",
+      "x": 1295,
+      "y": 135,
+      "width": 377,
+      "height": 178,
+      "rotation": 0,
+      "text": "MindMapKind",
+      "props": {
+        "attributes": "+ Model : IDiagramKindModel\n+ IconKind : string\n+ Order : int\n+ Commands : IReadOnlyList<KindCommand>",
+        "operations": "+ DrawNode(s, d, n)\n+ DrawEdge(s, d, e, path)\n+ LabelAnchor(d, e, path) : DPoint\n+ Fit(n : DiagramNode, m : IDiagramSurface) : DRect?",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "c595wc",
+      "type": "class",
+      "x": 99,
+      "y": 580.5,
+      "width": 384,
+      "height": 195,
+      "rotation": 0,
+      "text": "FlowchartModel",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Description : string\n+ NodeTypes : IReadOnlyList<NodeTypeInfo>\n+ EdgeTypes : IReadOnlyList<EdgeTypeInfo>\n+ Rules : IReadOnlyList<IDiagramRule>\n+ TextExporters : IReadOnlyList<IDiagramTextExporter>\n+ Samples : IReadOnlyList<DiagramSample>",
+        "operations": "+ Create(title : string) : Diagram",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "kg6kgw",
+      "type": "class",
+      "x": 533,
+      "y": 572,
+      "width": 426,
+      "height": 212,
+      "rotation": 0,
+      "text": "BpmnModel",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Description : string\n+ NodeTypes : IReadOnlyList<NodeTypeInfo>\n+ EdgeTypes : IReadOnlyList<EdgeTypeInfo>\n+ Rules : IReadOnlyList<IDiagramRule>\n+ TextExporters : IReadOnlyList<IDiagramTextExporter>\n+ Samples : IReadOnlyList<DiagramSample>",
+        "operations": "+ Create(title : string) : Diagram\n+ static PoolOf(d : Diagram, n : DiagramNode) : DiagramNode",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "cxst4w",
+      "type": "class",
+      "x": 1009,
+      "y": 538,
+      "width": 564,
+      "height": 280,
+      "rotation": 0,
+      "text": "MindMapModel",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Description : string\n+ NodeTypes : IReadOnlyList<NodeTypeInfo>\n+ EdgeTypes : IReadOnlyList<EdgeTypeInfo>\n+ Rules : IReadOnlyList<IDiagramRule>\n+ TextExporters : IReadOnlyList<IDiagramTextExporter>\n+ Samples : IReadOnlyList<DiagramSample>",
+        "operations": "+ Create(title : string) : Diagram\n+ static ParentOf(d : Diagram, n : DiagramNode) : DiagramNode\n+ static ChildrenOf(d : Diagram, n : DiagramNode) : IEnumerable<DiagramNode>\n+ static ColourOf(d : Diagram, n : DiagramNode) : string\n+ AddChild(d : Diagram, parent : DiagramNode) : IDiagramOperation\n+ static Arrange(d : Diagram, gapX : double, gapY : double) : IDiagramOperation",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "v8w2pv",
+      "type": "class",
+      "x": 311,
+      "y": 1043,
+      "width": 225,
+      "height": 93,
+      "rotation": 0,
+      "text": "FlowchartMermaid",
+      "props": {
+        "attributes": "+ Name : string\n+ Extension : string",
+        "operations": "+ Export(d : Diagram) : string",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "mh9ha5",
+      "type": "class",
+      "x": 586,
+      "y": 1043,
+      "width": 225,
+      "height": 93,
+      "rotation": 0,
+      "text": "BpmnOutline",
+      "props": {
+        "attributes": "+ Name : string\n+ Extension : string",
+        "operations": "+ Export(d : Diagram) : string",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "r76kv5",
+      "type": "class",
+      "x": 861,
+      "y": 1043,
+      "width": 225,
+      "height": 93,
+      "rotation": 0,
+      "text": "MindMapOutline",
+      "props": {
+        "attributes": "+ Name : string\n+ Extension : string",
+        "operations": "+ Export(d : Diagram) : string",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "x539ke",
+      "type": "class",
+      "x": 1136,
+      "y": 1043,
+      "width": 225,
+      "height": 93,
+      "rotation": 0,
+      "text": "MindMapMermaid",
+      "props": {
+        "attributes": "+ Name : string\n+ Extension : string",
+        "operations": "+ Export(d : Diagram) : string",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "9h9hi2",
+      "type": "interface",
+      "x": 679.5,
+      "y": 0,
+      "width": 120,
+      "height": 45,
+      "rotation": 0,
+      "text": "IPlugin",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "bpy9dc",
+      "type": "class",
+      "x": 849.5,
+      "y": 2,
+      "width": 143,
+      "height": 41,
+      "rotation": 0,
+      "text": "DiagramKindBase",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "g5kfjn",
+      "type": "interface",
+      "x": 756.5,
+      "y": 403,
+      "width": 159,
+      "height": 45,
+      "rotation": 0,
+      "text": "IDiagramKindModel",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "z7x9by",
+      "type": "interface",
+      "x": 745,
+      "y": 908,
+      "width": 182,
+      "height": 45,
+      "rotation": 0,
+      "text": "IDiagramTextExporter",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "sywsa5",
+      "type": "note",
+      "x": 0,
+      "y": 1186,
+      "width": 620,
+      "height": 76,
+      "rotation": 0,
+      "text": "Read from DevHub.Diagrams.Business.dll, DevHub.Diagrams.Business.Core.dll: each type's own public members (up to 10 properties and 8 methods). Grey: from the Sdk or another plugin.",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "q4hqc6",
+      "type": "realization",
+      "from": "rc8vcr",
+      "to": "9h9hi2",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ankrci",
+      "type": "generalization",
+      "from": "dd4gb4",
+      "to": "bpy9dc",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "d2pi4w",
+      "type": "association",
+      "from": "dd4gb4",
+      "to": "g5kfjn",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Model"
+      }
+    },
+    {
+      "id": "j4aaj3",
+      "type": "generalization",
+      "from": "vy2nts",
+      "to": "bpy9dc",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "dd66mj",
+      "type": "association",
+      "from": "vy2nts",
+      "to": "g5kfjn",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Model"
+      }
+    },
+    {
+      "id": "34b7pz",
+      "type": "generalization",
+      "from": "ubtvxp",
+      "to": "bpy9dc",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "xjb4mt",
+      "type": "association",
+      "from": "ubtvxp",
+      "to": "g5kfjn",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Model"
+      }
+    },
+    {
+      "id": "q5h4uk",
+      "type": "realization",
+      "from": "c595wc",
+      "to": "g5kfjn",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "9xiut7",
+      "type": "association",
+      "from": "c595wc",
+      "to": "z7x9by",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "TextExporters"
+      }
+    },
+    {
+      "id": "p93fwk",
+      "type": "realization",
+      "from": "kg6kgw",
+      "to": "g5kfjn",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "2c358m",
+      "type": "association",
+      "from": "kg6kgw",
+      "to": "z7x9by",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "TextExporters"
+      }
+    },
+    {
+      "id": "2pw4bk",
+      "type": "realization",
+      "from": "cxst4w",
+      "to": "g5kfjn",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "tiy6fn",
+      "type": "association",
+      "from": "cxst4w",
+      "to": "z7x9by",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "TextExporters"
+      }
+    },
+    {
+      "id": "qf4pbr",
+      "type": "realization",
+      "from": "v8w2pv",
+      "to": "z7x9by",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "r84333",
+      "type": "realization",
+      "from": "mh9ha5",
+      "to": "z7x9by",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "vd2u8k",
+      "type": "realization",
+      "from": "r76kv5",
+      "to": "z7x9by",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "yak8s4",
+      "type": "realization",
+      "from": "x539ke",
+      "to": "z7x9by",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 0,
+    "y": 0,
+    "width": 1672,
+    "height": 1262,
+    "left": 0,
+    "top": 0,
+    "right": 1672,
+    "bottom": 1262,
+    "center": {
+      "x": 836,
+      "y": 631,
+      "length": 1047.4048882834184
+    }
+  }
+}

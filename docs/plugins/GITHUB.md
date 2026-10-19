@@ -38,3 +38,7 @@ No section of its own: the accounts are GCM's.
 limit; it throws `GitHubApiUnavailableException` when nobody is signed in or GitHub can't be reached. Callers pace
 themselves (send the last ETag as `IfNoneMatch`: a 304 costs no rate limit). The full contract is in DevHub's
 `docs/sdk/SDK.md`.
+
+## Diagrams
+
+`docs/diagrams/GitHub/`: use cases, the activity of a request through `IGitHubApi` (the token cache and the 401 retry), and the classes.

@@ -1,0 +1,362 @@
+{
+  "schemaVersion": 1,
+  "kind": "activity",
+  "title": "Board Timeline: drawing the roadmap",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "pte6jb",
+      "type": "lane",
+      "x": 40,
+      "y": 40,
+      "width": 340,
+      "height": 1494,
+      "rotation": 0,
+      "text": "You",
+      "props": {
+        "vertical": "true",
+        "fill": "#143574F0"
+      }
+    },
+    {
+      "id": "2rzj9e",
+      "type": "lane",
+      "x": 380,
+      "y": 40,
+      "width": 340,
+      "height": 1494,
+      "rotation": 0,
+      "text": "Board Timeline plugin",
+      "props": {
+        "vertical": "true",
+        "fill": "#14D98C1F"
+      }
+    },
+    {
+      "id": "uavc37",
+      "type": "start",
+      "x": 197,
+      "y": 127,
+      "width": 26,
+      "height": 26,
+      "rotation": 0,
+      "text": "",
+      "parentId": "pte6jb",
+      "props": {}
+    },
+    {
+      "id": "9hzyy3",
+      "type": "action",
+      "x": 90,
+      "y": 230,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Open the Timeline page",
+      "parentId": "pte6jb",
+      "props": {}
+    },
+    {
+      "id": "vvbgcq",
+      "type": "action",
+      "x": 430,
+      "y": 342,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Take each epic with its issues",
+      "parentId": "2rzj9e",
+      "props": {}
+    },
+    {
+      "id": "hymvpf",
+      "type": "decision",
+      "x": 533,
+      "y": 459,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "2rzj9e",
+      "props": {}
+    },
+    {
+      "id": "xfhw3n",
+      "type": "action",
+      "x": 430,
+      "y": 566,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Guess its dates from its issues",
+      "parentId": "2rzj9e",
+      "props": {}
+    },
+    {
+      "id": "hfki2z",
+      "type": "decision",
+      "x": 533,
+      "y": 683,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "2rzj9e",
+      "props": {}
+    },
+    {
+      "id": "xsqjfr",
+      "type": "action",
+      "x": 430,
+      "y": 784,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Progress from its issues' statuses",
+      "parentId": "2rzj9e",
+      "props": {}
+    },
+    {
+      "id": "q6pkgy",
+      "type": "action",
+      "x": 430,
+      "y": 902,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Mark late epics and blockers",
+      "parentId": "2rzj9e",
+      "props": {}
+    },
+    {
+      "id": "v8m7ma",
+      "type": "action",
+      "x": 430,
+      "y": 1014,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Draw the bars on the time scale",
+      "parentId": "2rzj9e",
+      "props": {}
+    },
+    {
+      "id": "8t3uui",
+      "type": "action",
+      "x": 90,
+      "y": 1126,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Click a bar",
+      "parentId": "pte6jb",
+      "props": {}
+    },
+    {
+      "id": "9qxauu",
+      "type": "action",
+      "x": 430,
+      "y": 1238,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Open the epic",
+      "parentId": "2rzj9e",
+      "props": {}
+    },
+    {
+      "id": "ztfsky",
+      "type": "end",
+      "x": 195,
+      "y": 1357,
+      "width": 30,
+      "height": 30,
+      "rotation": 0,
+      "text": "",
+      "parentId": "pte6jb",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "6uuhe6",
+      "type": "flow",
+      "from": "uavc37",
+      "to": "9hzyy3",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "r4nvfa",
+      "type": "flow",
+      "from": "9hzyy3",
+      "to": "vvbgcq",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 308,
+          "length": 372.7787547594417
+        },
+        {
+          "x": 550,
+          "y": 308,
+          "length": 630.3681464033538
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "jhxi86",
+      "type": "flow",
+      "from": "vvbgcq",
+      "to": "hymvpf",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "mum75v",
+      "type": "flow",
+      "from": "hymvpf",
+      "to": "xfhw3n",
+      "text": "[no start or due date]",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "9jet5y",
+      "type": "flow",
+      "from": "xfhw3n",
+      "to": "hfki2z",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "4bu546",
+      "type": "flow",
+      "from": "hymvpf",
+      "to": "hfki2z",
+      "text": "[dated]",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "wm2rk7",
+      "type": "flow",
+      "from": "hfki2z",
+      "to": "xsqjfr",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "c5e9ws",
+      "type": "flow",
+      "from": "xsqjfr",
+      "to": "q6pkgy",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "hxhf2k",
+      "type": "flow",
+      "from": "q6pkgy",
+      "to": "v8m7ma",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "wnmkak",
+      "type": "flow",
+      "from": "v8m7ma",
+      "to": "8t3uui",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 550,
+          "y": 1092,
+          "length": 1222.687204480361
+        },
+        {
+          "x": 210,
+          "y": 1092,
+          "length": 1112.008992769393
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "dkhjpw",
+      "type": "flow",
+      "from": "8t3uui",
+      "to": "9qxauu",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 1204,
+          "length": 1222.1767466287354
+        },
+        {
+          "x": 550,
+          "y": 1204,
+          "length": 1323.675186743334
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "xdgkd5",
+      "type": "flow",
+      "from": "9qxauu",
+      "to": "ztfsky",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 550,
+          "y": 1316,
+          "length": 1426.3085220246005
+        },
+        {
+          "x": 210,
+          "y": 1316,
+          "length": 1332.6499915581735
+        }
+      ],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 40,
+    "y": 40,
+    "width": 680,
+    "height": 1494,
+    "left": 40,
+    "top": 40,
+    "right": 720,
+    "bottom": 1534,
+    "center": {
+      "x": 380,
+      "y": 787,
+      "length": 873.9387850416069
+    }
+  }
+}

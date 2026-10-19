@@ -1,0 +1,865 @@
+{
+  "schemaVersion": 1,
+  "kind": "class",
+  "title": "CI: main classes",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "8d59sa",
+      "type": "class",
+      "x": 520.5,
+      "y": 346.5,
+      "width": 281,
+      "height": 93,
+      "rotation": 0,
+      "text": "CiPlugin",
+      "props": {
+        "attributes": "+ Info : PluginInfo\n+ Resources : IEnumerable<Uri>",
+        "operations": "+ ConfigureServices(services, context)",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "2f8vwy",
+      "type": "class",
+      "x": 851.5,
+      "y": 366.5,
+      "width": 288,
+      "height": 53,
+      "rotation": 0,
+      "text": "CiActionProvider",
+      "props": {
+        "attributes": "",
+        "operations": "+ GetActions() : IEnumerable<AppAction>",
+        "showAttributes": "false",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "ms6t86",
+      "type": "class",
+      "x": 944.5,
+      "y": 956,
+      "width": 612,
+      "height": 195,
+      "rotation": 0,
+      "text": "CiService",
+      "props": {
+        "attributes": "+ ActiveFolder : string",
+        "operations": "+ Repository(folder : string) : CiRepository\n+ PollSoon(repo : CiRepository)\n+ LoadMoreAsync(repo : CiRepository) : Task\n+ JobsAsync(repo : CiRepository, run : WorkflowRun) : Task<IReadOnlyList<WorkflowJob>>\n+ LogAsync(slug : string, jobId : long) : Task<string>\n+ static OpenInBrowser(url : string)\n+ RerunJobAsync(repo : CiRepository, job : WorkflowJob) : Task<bool>\n+ RerunFailedAsync(repo : CiRepository, run : WorkflowRun) : Task<bool>",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "ffqqrn",
+      "type": "class",
+      "x": 1051.5,
+      "y": 1581.5,
+      "width": 260,
+      "height": 155,
+      "rotation": 0,
+      "text": "CiRepository",
+      "props": {
+        "attributes": "+ Folder : string\n+ Slug : string\n+ Runs : IReadOnlyList<WorkflowRun>\n+ TotalCount : int\n+ HasMore : bool\n+ Loaded : bool\n+ Problem : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "ndtbfg",
+      "type": "class",
+      "x": 1051.5,
+      "y": 586,
+      "width": 446,
+      "height": 263,
+      "rotation": 0,
+      "text": "CiToolWindowViewModel",
+      "props": {
+        "attributes": "+ Service : CiService\n+ Id : string\n+ Title : string\n+ IconKind : string\n+ Slot : ToolWindowSlot\n+ Order : int\n+ Current : CiRepository\n+ Runs : ObservableCollection<RunRowViewModel>\n+ Branches : ObservableCollection<FilterItem>\n+ Workflows : ObservableCollection<FilterItem>",
+        "operations": "+ RerunFailedAsync(run : WorkflowRun) : Task\n+ RerunJobAsync(repo : CiRepository, job : WorkflowJob) : Task\n+ OpenLog(repo, run, job)",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "2c764q",
+      "type": "class",
+      "x": 1606.5,
+      "y": 939,
+      "width": 184,
+      "height": 229,
+      "rotation": 0,
+      "text": "RunRowViewModel",
+      "props": {
+        "attributes": "+ Id : long\n+ Symbol : string\n+ StateText : string\n+ Title : string\n+ Meta : string\n+ When : string\n+ DurationText : string\n+ IsPassed : bool\n+ IsFailed : bool\n+ IsActive : bool",
+        "operations": "+ LoadJobsAsync() : Task",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "9qirwr",
+      "type": "class",
+      "x": 1279,
+      "y": 1258,
+      "width": 177,
+      "height": 206,
+      "rotation": 0,
+      "text": "JobRowViewModel",
+      "props": {
+        "attributes": "+ Job : WorkflowJob\n+ Symbol : string\n+ Name : string\n+ DurationText : string\n+ IsPassed : bool\n+ IsFailed : bool\n+ IsActive : bool\n+ FailedSteps : string\n+ HasLog : bool\n+ CanRerun : bool",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "ip9xp5",
+      "type": "class",
+      "x": 1189.5,
+      "y": 307,
+      "width": 246,
+      "height": 172,
+      "rotation": 0,
+      "text": "CiStatusWidgetViewModel",
+      "props": {
+        "attributes": "+ Order : int\n+ IsVisible : bool\n+ Text : string\n+ ToolTip : string\n+ IsPassed : bool\n+ IsFailed : bool\n+ IsActive : bool\n+ ShowRunsCommand : IRelayCommand",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "rnjukt",
+      "type": "class",
+      "x": 1823.5,
+      "y": 346.5,
+      "width": 391,
+      "height": 93,
+      "rotation": 0,
+      "text": "CiLogDocumentFactory",
+      "props": {
+        "attributes": "+ IdPrefix : string",
+        "operations": "+ static IdFor(folder, runId, jobId, jobName) : string\n+ Create(id : string) : DocumentViewModelBase",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "cbhy9h",
+      "type": "class",
+      "x": 1485.5,
+      "y": 290,
+      "width": 288,
+      "height": 206,
+      "rotation": 0,
+      "text": "CiLogDocumentViewModel",
+      "props": {
+        "attributes": "+ Id : string\n+ Title : string\n+ Icon : string\n+ ContextPath : string\n+ JobName : string\n+ Lines : ObservableCollection<LogLine>\n+ ShowAll : bool\n+ IsLoading : bool\n+ Problem : string\n+ Summary : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "ecyw9t",
+      "type": "class",
+      "x": 1110,
+      "y": 1854,
+      "width": 322,
+      "height": 244,
+      "rotation": 0,
+      "text": "WorkflowRun",
+      "props": {
+        "attributes": "+ Id : long\n+ Workflow : string\n+ Number : int\n+ Attempt : int\n+ Branch : string\n+ HeadSha : string\n+ Title : string\n+ Event : string\n+ Actor : string\n+ State : RunState",
+        "operations": "+ Duration(now : DateTimeOffset) : TimeSpan?",
+        "showAttributes": "true",
+        "showOperations": "true",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "wivsbf",
+      "type": "class",
+      "x": 1361.5,
+      "y": 1554,
+      "width": 322,
+      "height": 210,
+      "rotation": 0,
+      "text": "WorkflowJob",
+      "props": {
+        "attributes": "+ Id : long\n+ Name : string\n+ State : RunState\n+ Started : DateTimeOffset?\n+ Completed : DateTimeOffset?\n+ HtmlUrl : string\n+ Steps : IReadOnlyList<JobStep>\n+ FailedSteps : IReadOnlyList<JobStep>",
+        "operations": "+ Duration(now : DateTimeOffset) : TimeSpan?",
+        "showAttributes": "true",
+        "showOperations": "true",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "pkkzk2",
+      "type": "class",
+      "x": 1482,
+      "y": 1925,
+      "width": 143,
+      "height": 102,
+      "rotation": 0,
+      "text": "JobStep",
+      "props": {
+        "attributes": "+ Number : int\n+ Name : string\n+ State : RunState",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "txabzm",
+      "type": "class",
+      "x": 0,
+      "y": 0,
+      "width": 260,
+      "height": 85,
+      "rotation": 0,
+      "text": "RunPage",
+      "props": {
+        "attributes": "+ Runs : IReadOnlyList<WorkflowRun>\n+ TotalCount : int",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "nsdvwv",
+      "type": "class",
+      "x": 673,
+      "y": 0,
+      "width": 515,
+      "height": 53,
+      "rotation": 0,
+      "text": "RunWatch",
+      "props": {
+        "attributes": "",
+        "operations": "+ Update(runs : IReadOnlyList<WorkflowRun>) : IReadOnlyList<RunFinished>",
+        "showAttributes": "false",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "jss7pd",
+      "type": "class",
+      "x": 1774,
+      "y": 0,
+      "width": 150,
+      "height": 68,
+      "rotation": 0,
+      "text": "RunFinished",
+      "props": {
+        "attributes": "+ Run : WorkflowRun",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "8fyjz7",
+      "type": "enumeration",
+      "x": 1303.5,
+      "y": 2188,
+      "width": 128,
+      "height": 170,
+      "rotation": 0,
+      "text": "RunState",
+      "props": {
+        "attributes": "Queued\nRunning\nPassed\nFailed\nCancelled\nSkipped\nOther",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "esxxg7",
+      "type": "class",
+      "x": 1547.5,
+      "y": 666.5,
+      "width": 136,
+      "height": 102,
+      "rotation": 0,
+      "text": "LogLine",
+      "props": {
+        "attributes": "+ Text : string\n+ IsError : bool\n+ IsHeader : bool",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "7tzc7j",
+      "type": "interface",
+      "x": 310,
+      "y": 0,
+      "width": 120,
+      "height": 45,
+      "rotation": 0,
+      "text": "IPlugin",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "s5eibj",
+      "type": "interface",
+      "x": 480,
+      "y": 0,
+      "width": 143,
+      "height": 45,
+      "rotation": 0,
+      "text": "IActionProvider",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "cvfnan",
+      "type": "interface",
+      "x": 0,
+      "y": 155,
+      "width": 127,
+      "height": 45,
+      "rotation": 0,
+      "text": "IGitDecorator",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "7q77i6",
+      "type": "class",
+      "x": 177,
+      "y": 155,
+      "width": 206,
+      "height": 41,
+      "rotation": 0,
+      "text": "ToolWindowViewModelBase",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "uwuwjk",
+      "type": "class",
+      "x": 433,
+      "y": 155,
+      "width": 127,
+      "height": 41,
+      "rotation": 0,
+      "text": "ViewModelBase",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "ejfpce",
+      "type": "class",
+      "x": 1238,
+      "y": 0,
+      "width": 246,
+      "height": 41,
+      "rotation": 0,
+      "text": "StatusBarWidgetViewModelBase",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "3wkttg",
+      "type": "interface",
+      "x": 1974,
+      "y": 0,
+      "width": 151,
+      "height": 45,
+      "rotation": 0,
+      "text": "IDocumentFactory",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "rkhvbb",
+      "type": "class",
+      "x": 1534,
+      "y": 0,
+      "width": 190,
+      "height": 41,
+      "rotation": 0,
+      "text": "DocumentViewModelBase",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "tuc892",
+      "type": "note",
+      "x": 0,
+      "y": 2408,
+      "width": 620,
+      "height": 76,
+      "rotation": 0,
+      "text": "Read from DevHub.Ci.dll, DevHub.Ci.Core.dll: each type's own public members (up to 10 properties and 8 methods). Grey: from the Sdk or another plugin.",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "dyqgj4",
+      "type": "realization",
+      "from": "8d59sa",
+      "to": "7tzc7j",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "bnr65e",
+      "type": "realization",
+      "from": "2f8vwy",
+      "to": "s5eibj",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "8mxsh6",
+      "type": "dependency",
+      "from": "2f8vwy",
+      "to": "ms6t86",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "yubmaf",
+      "type": "dependency",
+      "from": "2f8vwy",
+      "to": "ndtbfg",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "n99h4c",
+      "type": "realization",
+      "from": "ms6t86",
+      "to": "cvfnan",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "4cwenx",
+      "type": "association",
+      "from": "ffqqrn",
+      "to": "ecyw9t",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Runs"
+      }
+    },
+    {
+      "id": "8icxts",
+      "type": "generalization",
+      "from": "ndtbfg",
+      "to": "7q77i6",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "76cywb",
+      "type": "association",
+      "from": "ndtbfg",
+      "to": "ms6t86",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Service"
+      }
+    },
+    {
+      "id": "875u49",
+      "type": "association",
+      "from": "ndtbfg",
+      "to": "ffqqrn",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Current"
+      }
+    },
+    {
+      "id": "ga29a2",
+      "type": "association",
+      "from": "ndtbfg",
+      "to": "2c764q",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Runs"
+      }
+    },
+    {
+      "id": "jnwvtf",
+      "type": "generalization",
+      "from": "2c764q",
+      "to": "uwuwjk",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "6skhbh",
+      "type": "association",
+      "from": "2c764q",
+      "to": "9qirwr",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Jobs"
+      }
+    },
+    {
+      "id": "g9drfi",
+      "type": "association",
+      "from": "2c764q",
+      "to": "ecyw9t",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Run"
+      }
+    },
+    {
+      "id": "82mvhc",
+      "type": "dependency",
+      "from": "2c764q",
+      "to": "ndtbfg",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "i24t5u",
+      "type": "generalization",
+      "from": "9qirwr",
+      "to": "uwuwjk",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "67x4qg",
+      "type": "association",
+      "from": "9qirwr",
+      "to": "wivsbf",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Job"
+      }
+    },
+    {
+      "id": "trmr39",
+      "type": "dependency",
+      "from": "9qirwr",
+      "to": "ndtbfg",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "gf3pr5",
+      "type": "dependency",
+      "from": "9qirwr",
+      "to": "ffqqrn",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "g99twh",
+      "type": "dependency",
+      "from": "9qirwr",
+      "to": "ecyw9t",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "hprzav",
+      "type": "generalization",
+      "from": "ip9xp5",
+      "to": "ejfpce",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "g3bkdq",
+      "type": "dependency",
+      "from": "ip9xp5",
+      "to": "ms6t86",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "uy54jz",
+      "type": "dependency",
+      "from": "ip9xp5",
+      "to": "ndtbfg",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "vqt9jz",
+      "type": "realization",
+      "from": "rnjukt",
+      "to": "3wkttg",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "9z838x",
+      "type": "dependency",
+      "from": "rnjukt",
+      "to": "ms6t86",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "dt28v9",
+      "type": "generalization",
+      "from": "cbhy9h",
+      "to": "rkhvbb",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "mckfkw",
+      "type": "association",
+      "from": "cbhy9h",
+      "to": "esxxg7",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Lines"
+      }
+    },
+    {
+      "id": "krkykm",
+      "type": "dependency",
+      "from": "cbhy9h",
+      "to": "ms6t86",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "k2yzuw",
+      "type": "association",
+      "from": "ecyw9t",
+      "to": "8fyjz7",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "State"
+      }
+    },
+    {
+      "id": "xvt7vq",
+      "type": "association",
+      "from": "wivsbf",
+      "to": "8fyjz7",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "State"
+      }
+    },
+    {
+      "id": "iy79g4",
+      "type": "association",
+      "from": "wivsbf",
+      "to": "pkkzk2",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Steps"
+      }
+    },
+    {
+      "id": "nwvd9h",
+      "type": "association",
+      "from": "pkkzk2",
+      "to": "8fyjz7",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "State"
+      }
+    },
+    {
+      "id": "qf2gqq",
+      "type": "association",
+      "from": "txabzm",
+      "to": "ecyw9t",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Runs"
+      }
+    },
+    {
+      "id": "uv469w",
+      "type": "association",
+      "from": "jss7pd",
+      "to": "ecyw9t",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Run"
+      }
+    }
+  ],
+  "bounds": {
+    "x": 0,
+    "y": 0,
+    "width": 2214.5,
+    "height": 2484,
+    "left": 0,
+    "top": 0,
+    "right": 2214.5,
+    "bottom": 2484,
+    "center": {
+      "x": 1107.25,
+      "y": 1242,
+      "length": 1663.9010074220162
+    }
+  }
+}

@@ -1,0 +1,493 @@
+{
+  "schemaVersion": 1,
+  "kind": "activity",
+  "title": "Board Reports: a release forecast",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "p6u67s",
+      "type": "lane",
+      "x": 40,
+      "y": 40,
+      "width": 340,
+      "height": 1382,
+      "rotation": 0,
+      "text": "You",
+      "props": {
+        "vertical": "true",
+        "fill": "#143574F0"
+      }
+    },
+    {
+      "id": "bqzjxa",
+      "type": "lane",
+      "x": 380,
+      "y": 40,
+      "width": 590,
+      "height": 1382,
+      "rotation": 0,
+      "text": "Board Reports plugin",
+      "props": {
+        "vertical": "true",
+        "fill": "#14D98C1F"
+      }
+    },
+    {
+      "id": "p23jcp",
+      "type": "start",
+      "x": 197,
+      "y": 127,
+      "width": 26,
+      "height": 26,
+      "rotation": 0,
+      "text": "",
+      "parentId": "p6u67s",
+      "props": {}
+    },
+    {
+      "id": "nmgqxr",
+      "type": "action",
+      "x": 90,
+      "y": 224,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Open the Reports page; pick Release forecast",
+      "parentId": "p6u67s",
+      "props": {}
+    },
+    {
+      "id": "c5xdam",
+      "type": "action",
+      "x": 555,
+      "y": 336,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Read the board and every issue's history",
+      "parentId": "bqzjxa",
+      "props": {}
+    },
+    {
+      "id": "b378pw",
+      "type": "decision",
+      "x": 658,
+      "y": 459,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "bqzjxa",
+      "props": {}
+    },
+    {
+      "id": "tgn58u",
+      "type": "action",
+      "x": 420,
+      "y": 566,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Say there's no closed sprint yet",
+      "parentId": "bqzjxa",
+      "props": {}
+    },
+    {
+      "id": "z2c3ga",
+      "type": "action",
+      "x": 690,
+      "y": 553,
+      "width": 240,
+      "height": 70,
+      "rotation": 0,
+      "text": "Velocity from the closed sprints (pessimistic, neutral, optimistic)",
+      "parentId": "bqzjxa",
+      "props": {}
+    },
+    {
+      "id": "iw59ew",
+      "type": "action",
+      "x": 420,
+      "y": 672,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Forecast the delivery dates against the target",
+      "parentId": "bqzjxa",
+      "props": {}
+    },
+    {
+      "id": "up5xzt",
+      "type": "end",
+      "x": 795,
+      "y": 685,
+      "width": 30,
+      "height": 30,
+      "rotation": 0,
+      "text": "",
+      "parentId": "bqzjxa",
+      "props": {}
+    },
+    {
+      "id": "xmqhyp",
+      "type": "action",
+      "x": 555,
+      "y": 784,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Draw it in the chosen chart type, with the baselines",
+      "parentId": "bqzjxa",
+      "props": {}
+    },
+    {
+      "id": "2r2s7r",
+      "type": "decision",
+      "x": 193,
+      "y": 907,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "p6u67s",
+      "props": {}
+    },
+    {
+      "id": "9e5xbi",
+      "type": "action",
+      "x": 420,
+      "y": 1008,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Save a baseline (reports/baselines.json)",
+      "parentId": "bqzjxa",
+      "props": {}
+    },
+    {
+      "id": "3vdphv",
+      "type": "action",
+      "x": 690,
+      "y": 1008,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "PNG, copy, CSV, or Open in Chart Maker",
+      "parentId": "bqzjxa",
+      "props": {}
+    },
+    {
+      "id": "hx7iux",
+      "type": "decision",
+      "x": 193,
+      "y": 1131,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "p6u67s",
+      "props": {}
+    },
+    {
+      "id": "cfnwhq",
+      "type": "end",
+      "x": 195,
+      "y": 1245,
+      "width": 30,
+      "height": 30,
+      "rotation": 0,
+      "text": "",
+      "parentId": "p6u67s",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "rs53fi",
+      "type": "flow",
+      "from": "p23jcp",
+      "to": "nmgqxr",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "imw476",
+      "type": "flow",
+      "from": "nmgqxr",
+      "to": "c5xdam",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 308,
+          "length": 372.7787547594417
+        },
+        {
+          "x": 675,
+          "y": 308,
+          "length": 741.9494591951665
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "74n865",
+      "type": "flow",
+      "from": "c5xdam",
+      "to": "b378pw",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "zbakhf",
+      "type": "flow",
+      "from": "b378pw",
+      "to": "tgn58u",
+      "text": "[no closed sprint]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 532,
+          "length": 859.4469151727756
+        },
+        {
+          "x": 540,
+          "y": 532,
+          "length": 758.0395768032167
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "2urc9y",
+      "type": "flow",
+      "from": "b378pw",
+      "to": "z2c3ga",
+      "text": "[closed sprints]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 532,
+          "length": 859.4469151727756
+        },
+        {
+          "x": 810,
+          "y": 532,
+          "length": 969.0841036772814
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "cmrtsa",
+      "type": "flow",
+      "from": "z2c3ga",
+      "to": "iw59ew",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 810,
+          "y": 644,
+          "length": 1034.8120602312285
+        },
+        {
+          "x": 540,
+          "y": 644,
+          "length": 840.4379810551163
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "vpx8vh",
+      "type": "flow",
+      "from": "iw59ew",
+      "to": "xmqhyp",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 540,
+          "y": 756,
+          "length": 929.0511288406037
+        },
+        {
+          "x": 675,
+          "y": 756,
+          "length": 1013.4895164726669
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "uqqaau",
+      "type": "flow",
+      "from": "xmqhyp",
+      "to": "2r2s7r",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 868,
+          "length": 1099.567642303101
+        },
+        {
+          "x": 210,
+          "y": 868,
+          "length": 893.0419922937555
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "ghc6xc",
+      "type": "flow",
+      "from": "2r2s7r",
+      "to": "9e5xbi",
+      "text": "[save a baseline]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 980,
+          "length": 1002.2474744293447
+        },
+        {
+          "x": 540,
+          "y": 980,
+          "length": 1118.9280584559492
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "4ijwqh",
+      "type": "flow",
+      "from": "2r2s7r",
+      "to": "3vdphv",
+      "text": "[export]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 980,
+          "length": 1002.2474744293447
+        },
+        {
+          "x": 810,
+          "y": 980,
+          "length": 1271.416532848303
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "6ha3ig",
+      "type": "flow",
+      "from": "9e5xbi",
+      "to": "hx7iux",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 540,
+          "y": 1092,
+          "length": 1218.2216547082062
+        },
+        {
+          "x": 210,
+          "y": 1092,
+          "length": 1112.008992769393
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "ticb2u",
+      "type": "flow",
+      "from": "3vdphv",
+      "to": "hx7iux",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 810,
+          "y": 1092,
+          "length": 1359.6190642970553
+        },
+        {
+          "x": 210,
+          "y": 1092,
+          "length": 1112.008992769393
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "vn7gqe",
+      "type": "flow",
+      "from": "2r2s7r",
+      "to": "hx7iux",
+      "text": "[just look]",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "2iqcxe",
+      "type": "flow",
+      "from": "hx7iux",
+      "to": "cfnwhq",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "at3qsk",
+      "type": "flow",
+      "from": "tgn58u",
+      "to": "up5xzt",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 540,
+          "y": 644,
+          "length": 840.4379810551163
+        },
+        {
+          "x": 810,
+          "y": 644,
+          "length": 1034.8120602312285
+        }
+      ],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 40,
+    "y": 40,
+    "width": 930,
+    "height": 1382,
+    "left": 40,
+    "top": 40,
+    "right": 970,
+    "bottom": 1422,
+    "center": {
+      "x": 505,
+      "y": 731,
+      "length": 888.4739726069639
+    }
+  }
+}

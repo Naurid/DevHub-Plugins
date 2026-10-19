@@ -1,0 +1,279 @@
+{
+  "schemaVersion": 1,
+  "kind": "usecase",
+  "title": "Board Reports: use cases",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "vdxsrq",
+      "type": "boundary",
+      "x": 340,
+      "y": 40,
+      "width": 933.2,
+      "height": 808,
+      "rotation": 0,
+      "text": "Board Reports plugin",
+      "props": {
+        "fill": "#383574F0",
+        "line": "#3574F0",
+        "bold": "true"
+      }
+    },
+    {
+      "id": "ngnma7",
+      "type": "usecase",
+      "x": 434.0897959183674,
+      "y": 110,
+      "width": 300.8,
+      "height": 70,
+      "rotation": 0,
+      "text": "Follow a sprint (burndown, burnup)",
+      "parentId": "vdxsrq",
+      "props": {}
+    },
+    {
+      "id": "bapikv",
+      "type": "usecase",
+      "x": 508.75102040816324,
+      "y": 214,
+      "width": 257.6,
+      "height": 70,
+      "rotation": 0,
+      "text": "See velocity and reliability",
+      "parentId": "vdxsrq",
+      "props": {}
+    },
+    {
+      "id": "k9wfk9",
+      "type": "usecase",
+      "x": 509.38775510204084,
+      "y": 318,
+      "width": 320,
+      "height": 84,
+      "rotation": 0,
+      "text": "See the flow (CFD, control chart, lead time)",
+      "parentId": "vdxsrq",
+      "props": {}
+    },
+    {
+      "id": "pdqdpu",
+      "type": "usecase",
+      "x": 585,
+      "y": 422,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Forecast a release",
+      "parentId": "vdxsrq",
+      "props": {}
+    },
+    {
+      "id": "nu3i76",
+      "type": "usecase",
+      "x": 990.8,
+      "y": 422,
+      "width": 221.6,
+      "height": 70,
+      "rotation": 0,
+      "text": "Compare with a baseline",
+      "parentId": "vdxsrq",
+      "props": {}
+    },
+    {
+      "id": "bdfkaa",
+      "type": "usecase",
+      "x": 574.3877551020408,
+      "y": 526,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Save a baseline",
+      "parentId": "vdxsrq",
+      "props": {}
+    },
+    {
+      "id": "r7d492",
+      "type": "usecase",
+      "x": 508.75102040816324,
+      "y": 630,
+      "width": 257.6,
+      "height": 70,
+      "rotation": 0,
+      "text": "Build a dashboard of gadgets",
+      "parentId": "vdxsrq",
+      "props": {}
+    },
+    {
+      "id": "v7usbg",
+      "type": "usecase",
+      "x": 459.28979591836736,
+      "y": 734,
+      "width": 250.4,
+      "height": 70,
+      "rotation": 0,
+      "text": "Export a chart or its table",
+      "parentId": "vdxsrq",
+      "props": {
+        "extensionPoints": "restyle"
+      }
+    },
+    {
+      "id": "799vzp",
+      "type": "usecase",
+      "x": 980,
+      "y": 734,
+      "width": 243.20000000000002,
+      "height": 70,
+      "rotation": 0,
+      "text": "Open it in the Chart Maker",
+      "parentId": "vdxsrq",
+      "props": {}
+    },
+    {
+      "id": "9sakwx",
+      "type": "actor",
+      "x": 130,
+      "y": 411,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Developer",
+      "props": {}
+    },
+    {
+      "id": "3dusbr",
+      "type": "actor",
+      "x": 1423.2,
+      "y": 723,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Charts plugin",
+      "props": {
+        "stereotype": "system"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "dtmp43",
+      "type": "association",
+      "from": "9sakwx",
+      "to": "ngnma7",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "jkrevv",
+      "type": "association",
+      "from": "9sakwx",
+      "to": "bapikv",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "xnvvgq",
+      "type": "association",
+      "from": "9sakwx",
+      "to": "k9wfk9",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "nixzag",
+      "type": "association",
+      "from": "9sakwx",
+      "to": "pdqdpu",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "f9bbb2",
+      "type": "association",
+      "from": "9sakwx",
+      "to": "bdfkaa",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "fgsuyy",
+      "type": "association",
+      "from": "9sakwx",
+      "to": "r7d492",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "mkwnek",
+      "type": "association",
+      "from": "9sakwx",
+      "to": "v7usbg",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ncyzmv",
+      "type": "association",
+      "from": "3dusbr",
+      "to": "799vzp",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "srezg3",
+      "type": "include",
+      "from": "pdqdpu",
+      "to": "nu3i76",
+      "text": "«include»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "i6t3gn",
+      "type": "extend",
+      "from": "799vzp",
+      "to": "v7usbg",
+      "text": "«extend» [Charts is on]",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    }
+  ],
+  "bounds": {
+    "x": 130,
+    "y": 40,
+    "width": 1353.2,
+    "height": 808,
+    "left": 130,
+    "top": 40,
+    "right": 1483.2,
+    "bottom": 848,
+    "center": {
+      "x": 806.6,
+      "y": 444,
+      "length": 920.7277339148637
+    }
+  }
+}

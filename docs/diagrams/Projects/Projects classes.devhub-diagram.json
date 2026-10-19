@@ -1,0 +1,607 @@
+{
+  "schemaVersion": 1,
+  "kind": "class",
+  "title": "Projects: main classes",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "wvy9x8",
+      "type": "class",
+      "x": 136,
+      "y": 257,
+      "width": 281,
+      "height": 76,
+      "rotation": 0,
+      "text": "ProjectsPlugin",
+      "props": {
+        "attributes": "+ Info : PluginInfo",
+        "operations": "+ ConfigureServices(services, context)",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "4vx8dv",
+      "type": "class",
+      "x": 467,
+      "y": 192,
+      "width": 336,
+      "height": 206,
+      "rotation": 0,
+      "text": "RepositoriesViewModel",
+      "props": {
+        "attributes": "+ Id : string\n+ Title : string\n+ IconKind : string\n+ Slot : ToolWindowSlot\n+ Order : int\n+ WelcomeOrder : int?\n+ ScanFolders : ObservableCollection<string>\n+ Roots : ObservableCollection<ScanFolderNode>\n+ HasFolders : bool\n+ IsScanning : bool",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "apaijh",
+      "type": "class",
+      "x": 63.5,
+      "y": 716,
+      "width": 253,
+      "height": 206,
+      "rotation": 0,
+      "text": "RepositoryNode",
+      "props": {
+        "attributes": "+ Repository : GitRepository\n+ Name : string\n+ Path : string\n+ Language : string\n+ IconKind : string\n+ CanAddFiles : bool\n+ Diagrams : ProjectDiagramsNode\n+ Children : IReadOnlyList<object>\n+ HasDiagrams : bool\n+ IsExpanded : bool",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "un7be3",
+      "type": "class",
+      "x": 0,
+      "y": 488,
+      "width": 336,
+      "height": 138,
+      "rotation": 0,
+      "text": "ScanFolderNode",
+      "props": {
+        "attributes": "+ Path : string\n+ Name : string\n+ Repositories : IReadOnlyList<RepositoryNode>\n+ CountText : string\n+ IsExpanded : bool\n+ RemoveCommand : RelayCommand",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "a2cy2n",
+      "type": "class",
+      "x": 2,
+      "y": 1012,
+      "width": 363,
+      "height": 195,
+      "rotation": 0,
+      "text": "ProjectDiagramsNode",
+      "props": {
+        "attributes": "+ Name : string\n+ Path : string\n+ Items : ObservableCollection<ProjectDiagramNode>\n+ CountText : string\n+ IsExpanded : bool\n+ RefreshCommand : IAsyncRelayCommand\n+ NewCommand : IAsyncRelayCommand",
+        "operations": "+ EnsureLoadedAsync() : Task\n+ RefreshIfLoadedAsync() : Task",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "rj4pah",
+      "type": "interface",
+      "x": 386,
+      "y": 523,
+      "width": 426,
+      "height": 68,
+      "rotation": 0,
+      "text": "IRepositoryScanner",
+      "props": {
+        "attributes": "",
+        "operations": "+ ScanAsync(roots, ct) : Task<IReadOnlyList<GitRepository>>",
+        "showAttributes": "false",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "sqtfap",
+      "type": "class",
+      "x": 366.5,
+      "y": 792.5,
+      "width": 426,
+      "height": 53,
+      "rotation": 0,
+      "text": "RepositoryScanner",
+      "props": {
+        "attributes": "",
+        "operations": "+ ScanAsync(roots, ct) : Task<IReadOnlyList<GitRepository>>",
+        "showAttributes": "false",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "8hj54g",
+      "type": "class",
+      "x": 415,
+      "y": 1058.5,
+      "width": 212,
+      "height": 102,
+      "rotation": 0,
+      "text": "GitRepository",
+      "props": {
+        "attributes": "+ Name : string\n+ Path : string\n+ Language : ProjectLanguage",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "vnbars",
+      "type": "interface",
+      "x": 677,
+      "y": 1075.5,
+      "width": 329,
+      "height": 68,
+      "rotation": 0,
+      "text": "IProjectLanguageDetector",
+      "props": {
+        "attributes": "",
+        "operations": "+ Detect(repoPath : string) : ProjectLanguage",
+        "showAttributes": "false",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "8uq77s",
+      "type": "class",
+      "x": 642.5,
+      "y": 1313,
+      "width": 329,
+      "height": 53,
+      "rotation": 0,
+      "text": "ProjectLanguageDetector",
+      "props": {
+        "attributes": "",
+        "operations": "+ Detect(repoPath : string) : ProjectLanguage",
+        "showAttributes": "false",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "jinjvc",
+      "type": "class",
+      "x": 422.5,
+      "y": 1297,
+      "width": 170,
+      "height": 85,
+      "rotation": 0,
+      "text": "ProjectLanguage",
+      "props": {
+        "attributes": "+ Id : string\n+ DisplayName : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "6p834h",
+      "type": "interface",
+      "x": 862,
+      "y": 506,
+      "width": 315,
+      "height": 102,
+      "rotation": 0,
+      "text": "IProjectLauncher",
+      "props": {
+        "attributes": "",
+        "operations": "+ Open(repo : GitRepository)\n+ OpenFile(repo, filePath, line)\n+ RevealInFileManager(repo : GitRepository)",
+        "showAttributes": "false",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "wndh9p",
+      "type": "class",
+      "x": 842.5,
+      "y": 758.5,
+      "width": 488,
+      "height": 121,
+      "rotation": 0,
+      "text": "ProjectLauncher",
+      "props": {
+        "attributes": "",
+        "operations": "+ Open(repo : GitRepository)\n+ OpenFile(repo, filePath, line)\n+ RevealInFileManager(repo : GitRepository)\n+ static Resolve(repo, choice, ctx) : LaunchSpec\n+ static ResolveFile(repo, filePath, line, choice, ctx) : LaunchSpec",
+        "showAttributes": "false",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "228vwm",
+      "type": "interface",
+      "x": 1056,
+      "y": 1067,
+      "width": 336,
+      "height": 85,
+      "rotation": 0,
+      "text": "IToolLocator",
+      "props": {
+        "attributes": "",
+        "operations": "+ GetAvailableTools() : IReadOnlyList<DevTool>\n+ Find(toolId : string) : DevTool",
+        "showAttributes": "false",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "yw62fq",
+      "type": "class",
+      "x": 95,
+      "y": 0,
+      "width": 191,
+      "height": 102,
+      "rotation": 0,
+      "text": "DevTool",
+      "props": {
+        "attributes": "+ Id : string\n+ DisplayName : string\n+ ExecutablePath : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "6dxje4",
+      "type": "class",
+      "x": 853,
+      "y": 251.5,
+      "width": 405,
+      "height": 87,
+      "rotation": 0,
+      "text": "ProjectsSettings",
+      "props": {
+        "attributes": "+ static SectionId : string\n+ RepositoryFolders : List<string>\n+ LanguageTools : Dictionary<string, LanguageToolChoice>",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "6wjkik",
+      "type": "class",
+      "x": 1227,
+      "y": 522,
+      "width": 167,
+      "height": 70,
+      "rotation": 0,
+      "text": "LanguageToolChoice",
+      "props": {
+        "attributes": "+ ToolId : string\n+ CustomExe : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "aprm4e",
+      "type": "interface",
+      "x": 336,
+      "y": 28.5,
+      "width": 120,
+      "height": 45,
+      "rotation": 0,
+      "text": "IPlugin",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "es68wh",
+      "type": "class",
+      "x": 506,
+      "y": 30.5,
+      "width": 206,
+      "height": 41,
+      "rotation": 0,
+      "text": "ToolWindowViewModelBase",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "778849",
+      "type": "interface",
+      "x": 762,
+      "y": 28.5,
+      "width": 143,
+      "height": 45,
+      "rotation": 0,
+      "text": "IProjectFolders",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "2t824z",
+      "type": "interface",
+      "x": 955,
+      "y": 28.5,
+      "width": 143,
+      "height": 45,
+      "rotation": 0,
+      "text": "IProjectCatalog",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "faiymp",
+      "type": "interface",
+      "x": 1148,
+      "y": 28.5,
+      "width": 151,
+      "height": 45,
+      "rotation": 0,
+      "text": "ISettingsSection",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "5vchzr",
+      "type": "note",
+      "x": 0,
+      "y": 1432,
+      "width": 620,
+      "height": 76,
+      "rotation": 0,
+      "text": "Read from DevHub.Projects.dll, DevHub.Projects.Core.dll: each type's own public members (up to 10 properties and 8 methods). Grey: from the Sdk or another plugin.",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "ykcabj",
+      "type": "realization",
+      "from": "wvy9x8",
+      "to": "aprm4e",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "q37twr",
+      "type": "generalization",
+      "from": "4vx8dv",
+      "to": "es68wh",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "txh4dy",
+      "type": "realization",
+      "from": "4vx8dv",
+      "to": "778849",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "dpz5tg",
+      "type": "realization",
+      "from": "4vx8dv",
+      "to": "2t824z",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "7db33q",
+      "type": "association",
+      "from": "4vx8dv",
+      "to": "un7be3",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Roots"
+      }
+    },
+    {
+      "id": "6asmf7",
+      "type": "dependency",
+      "from": "4vx8dv",
+      "to": "rj4pah",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ia66m2",
+      "type": "dependency",
+      "from": "4vx8dv",
+      "to": "6p834h",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "e6kikp",
+      "type": "association",
+      "from": "apaijh",
+      "to": "8hj54g",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Repository"
+      }
+    },
+    {
+      "id": "efdjm2",
+      "type": "association",
+      "from": "apaijh",
+      "to": "a2cy2n",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Diagrams"
+      }
+    },
+    {
+      "id": "fbwezm",
+      "type": "association",
+      "from": "un7be3",
+      "to": "apaijh",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Repositories"
+      }
+    },
+    {
+      "id": "j377ue",
+      "type": "realization",
+      "from": "sqtfap",
+      "to": "rj4pah",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "dhuc2p",
+      "type": "dependency",
+      "from": "sqtfap",
+      "to": "vnbars",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "z39auk",
+      "type": "association",
+      "from": "8hj54g",
+      "to": "jinjvc",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Language"
+      }
+    },
+    {
+      "id": "smh9uq",
+      "type": "realization",
+      "from": "8uq77s",
+      "to": "vnbars",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ydq6zy",
+      "type": "realization",
+      "from": "wndh9p",
+      "to": "6p834h",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "mubxx4",
+      "type": "dependency",
+      "from": "wndh9p",
+      "to": "228vwm",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "9mxxvj",
+      "type": "realization",
+      "from": "6dxje4",
+      "to": "faiymp",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "vzcdvh",
+      "type": "association",
+      "from": "6dxje4",
+      "to": "6wjkik",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "LanguageTools"
+      }
+    }
+  ],
+  "bounds": {
+    "x": 0,
+    "y": 0,
+    "width": 1394,
+    "height": 1508,
+    "left": 0,
+    "top": 0,
+    "right": 1394,
+    "bottom": 1508,
+    "center": {
+      "x": 697,
+      "y": 754,
+      "length": 1026.8032917750118
+    }
+  }
+}

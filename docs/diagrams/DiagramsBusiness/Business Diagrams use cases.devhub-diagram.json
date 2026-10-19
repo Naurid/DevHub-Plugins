@@ -1,0 +1,190 @@
+{
+  "schemaVersion": 1,
+  "kind": "usecase",
+  "title": "Business Diagrams: use cases",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "2iqkjp",
+      "type": "boundary",
+      "x": 340,
+      "y": 40,
+      "width": 942.8000000000002,
+      "height": 496,
+      "rotation": 0,
+      "text": "Business Diagrams plugin",
+      "props": {
+        "fill": "#383574F0",
+        "line": "#3574F0",
+        "bold": "true"
+      }
+    },
+    {
+      "id": "32k3sx",
+      "type": "usecase",
+      "x": 509.475,
+      "y": 110,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Draw a flowchart",
+      "parentId": "2iqkjp",
+      "props": {}
+    },
+    {
+      "id": "chb6k7",
+      "type": "usecase",
+      "x": 569.475,
+      "y": 214,
+      "width": 200,
+      "height": 70,
+      "rotation": 0,
+      "text": "Model a BPMN process",
+      "parentId": "2iqkjp",
+      "props": {}
+    },
+    {
+      "id": "excb7x",
+      "type": "usecase",
+      "x": 1004,
+      "y": 214,
+      "width": 200,
+      "height": 70,
+      "rotation": 0,
+      "text": "Check the pool rules",
+      "parentId": "2iqkjp",
+      "props": {}
+    },
+    {
+      "id": "jasna9",
+      "type": "usecase",
+      "x": 558.675,
+      "y": 318,
+      "width": 221.6,
+      "height": 70,
+      "rotation": 0,
+      "text": "Map ideas in a mind map",
+      "parentId": "2iqkjp",
+      "props": {
+        "extensionPoints": "grow"
+      }
+    },
+    {
+      "id": "vxwtec",
+      "type": "usecase",
+      "x": 975.2,
+      "y": 318,
+      "width": 257.6,
+      "height": 70,
+      "rotation": 0,
+      "text": "Add an idea (two-sided tree)",
+      "parentId": "2iqkjp",
+      "props": {}
+    },
+    {
+      "id": "wahwbf",
+      "type": "usecase",
+      "x": 446.875,
+      "y": 422,
+      "width": 315.2,
+      "height": 84,
+      "rotation": 0,
+      "text": "Export Mermaid or a Markdown outline",
+      "parentId": "2iqkjp",
+      "props": {}
+    },
+    {
+      "id": "ger5ue",
+      "type": "actor",
+      "x": 130,
+      "y": 255,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Developer",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "m623vk",
+      "type": "association",
+      "from": "ger5ue",
+      "to": "32k3sx",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "d8j69d",
+      "type": "association",
+      "from": "ger5ue",
+      "to": "chb6k7",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "wqcair",
+      "type": "association",
+      "from": "ger5ue",
+      "to": "jasna9",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "yv74a8",
+      "type": "association",
+      "from": "ger5ue",
+      "to": "wahwbf",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "vs9j64",
+      "type": "include",
+      "from": "chb6k7",
+      "to": "excb7x",
+      "text": "«include»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "6wdixb",
+      "type": "extend",
+      "from": "vxwtec",
+      "to": "jasna9",
+      "text": "«extend» [an idea is selected]",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    }
+  ],
+  "bounds": {
+    "x": 130,
+    "y": 40,
+    "width": 1152.8000000000002,
+    "height": 496,
+    "left": 130,
+    "top": 40,
+    "right": 1282.8000000000002,
+    "bottom": 536,
+    "center": {
+      "x": 706.4000000000001,
+      "y": 288,
+      "length": 762.8531706691663
+    }
+  }
+}

@@ -191,3 +191,7 @@ A **Reports** page, computed from the board and each issue's history:
 
 - **Risks** page: a risk register (title, category, probability and impact 1–5, owner, mitigation and contingency
   plans), the probability × impact matrix as a traffic-colored heatmap, export.
+
+## Diagrams
+
+Three per plugin (use cases, an activity, the classes): `docs/diagrams/Board/` (an issue's life), `BoardScrum/` (a sprint), `BoardGit/` (a smart commit), `BoardReports/` (a release forecast), `BoardTimeline/` (the roadmap), `BoardRisks/` (a risk).

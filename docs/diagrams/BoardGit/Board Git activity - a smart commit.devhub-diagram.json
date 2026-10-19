@@ -1,0 +1,522 @@
+{
+  "schemaVersion": 1,
+  "kind": "activity",
+  "title": "Board Git: a smart commit",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "bpz9b9",
+      "type": "lane",
+      "x": 40,
+      "y": 40,
+      "width": 340,
+      "height": 1606,
+      "rotation": 0,
+      "text": "You",
+      "props": {
+        "vertical": "true",
+        "fill": "#143574F0"
+      }
+    },
+    {
+      "id": "kpit45",
+      "type": "lane",
+      "x": 380,
+      "y": 40,
+      "width": 590,
+      "height": 1606,
+      "rotation": 0,
+      "text": "Board Git plugin",
+      "props": {
+        "vertical": "true",
+        "fill": "#14D98C1F"
+      }
+    },
+    {
+      "id": "jycizv",
+      "type": "lane",
+      "x": 970,
+      "y": 40,
+      "width": 340,
+      "height": 1606,
+      "rotation": 0,
+      "text": "git",
+      "props": {
+        "vertical": "true",
+        "fill": "#142E9E5B"
+      }
+    },
+    {
+      "id": "jmqqzj",
+      "type": "start",
+      "x": 197,
+      "y": 127,
+      "width": 26,
+      "height": 26,
+      "rotation": 0,
+      "text": "",
+      "parentId": "bpz9b9",
+      "props": {}
+    },
+    {
+      "id": "r9zfyu",
+      "type": "action",
+      "x": 90,
+      "y": 224,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Commit \"DEV-12 #done #time 2h fixed it\"",
+      "parentId": "bpz9b9",
+      "props": {}
+    },
+    {
+      "id": "ttrkvf",
+      "type": "action",
+      "x": 555,
+      "y": 336,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Committed (IRepositoryEvents), also for commits made outside",
+      "parentId": "kpit45",
+      "props": {}
+    },
+    {
+      "id": "gxp4cx",
+      "type": "action",
+      "x": 555,
+      "y": 454,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Read the commands in the message",
+      "parentId": "kpit45",
+      "props": {}
+    },
+    {
+      "id": "9uyudw",
+      "type": "decision",
+      "x": 658,
+      "y": 571,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "kpit45",
+      "props": {}
+    },
+    {
+      "id": "7ijmrd",
+      "type": "action",
+      "x": 555,
+      "y": 672,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Show the commands for confirmation",
+      "parentId": "kpit45",
+      "props": {}
+    },
+    {
+      "id": "n46ykj",
+      "type": "decision",
+      "x": 193,
+      "y": 795,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "bpz9b9",
+      "props": {}
+    },
+    {
+      "id": "gvxgcp",
+      "type": "action",
+      "x": 555,
+      "y": 896,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Apply: transition, comment, work log",
+      "parentId": "kpit45",
+      "props": {}
+    },
+    {
+      "id": "t7cghz",
+      "type": "action",
+      "x": 1020,
+      "y": 1008,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Write a commit on devhub/board (temporary index, commit-tree)",
+      "parentId": "jycizv",
+      "props": {}
+    },
+    {
+      "id": "9vm5fk",
+      "type": "action",
+      "x": 1020,
+      "y": 1126,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "update-ref against the old value",
+      "parentId": "jycizv",
+      "props": {}
+    },
+    {
+      "id": "r9gpmt",
+      "type": "decision",
+      "x": 658,
+      "y": 1243,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "kpit45",
+      "props": {}
+    },
+    {
+      "id": "nak42k",
+      "type": "action",
+      "x": 420,
+      "y": 1344,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Re-apply on the new board version",
+      "parentId": "kpit45",
+      "props": {}
+    },
+    {
+      "id": "58rkfu",
+      "type": "decision",
+      "x": 793,
+      "y": 1355,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "kpit45",
+      "props": {}
+    },
+    {
+      "id": "3k5hik",
+      "type": "end",
+      "x": 660,
+      "y": 1469,
+      "width": 30,
+      "height": 30,
+      "rotation": 0,
+      "text": "",
+      "parentId": "kpit45",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "hfb62f",
+      "type": "flow",
+      "from": "jmqqzj",
+      "to": "r9zfyu",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "3xhbrw",
+      "type": "flow",
+      "from": "r9zfyu",
+      "to": "ttrkvf",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 308,
+          "length": 372.7787547594417
+        },
+        {
+          "x": 675,
+          "y": 308,
+          "length": 741.9494591951665
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "rsurzb",
+      "type": "flow",
+      "from": "ttrkvf",
+      "to": "gxp4cx",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "rygi5n",
+      "type": "flow",
+      "from": "gxp4cx",
+      "to": "9uyudw",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "zbvdns",
+      "type": "flow",
+      "from": "9uyudw",
+      "to": "7ijmrd",
+      "text": "[commands found]",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "zsakyb",
+      "type": "flow",
+      "from": "7ijmrd",
+      "to": "n46ykj",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 756,
+          "length": 1013.4895164726669
+        },
+        {
+          "x": 210,
+          "y": 756,
+          "length": 784.624751075315
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "yx4g72",
+      "type": "flow",
+      "from": "n46ykj",
+      "to": "gvxgcp",
+      "text": "[confirmed]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 868,
+          "length": 893.0419922937555
+        },
+        {
+          "x": 675,
+          "y": 868,
+          "length": 1099.567642303101
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "m9nds9",
+      "type": "flow",
+      "from": "gvxgcp",
+      "to": "t7cghz",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 980,
+          "length": 1189.9684869777013
+        },
+        {
+          "x": 1140,
+          "y": 980,
+          "length": 1503.3296378372909
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "7dbkvb",
+      "type": "flow",
+      "from": "t7cghz",
+      "to": "9vm5fk",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "wsxv95",
+      "type": "flow",
+      "from": "9vm5fk",
+      "to": "r9gpmt",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 1140,
+          "y": 1204,
+          "length": 1658.0759934333528
+        },
+        {
+          "x": 675,
+          "y": 1204,
+          "length": 1380.304676511675
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "wwupn3",
+      "type": "flow",
+      "from": "r9gpmt",
+      "to": "nak42k",
+      "text": "[the branch moved meanwhile]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 1316,
+          "length": 1479.0135225886206
+        },
+        {
+          "x": 540,
+          "y": 1316,
+          "length": 1422.4823373244394
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "sumqxe",
+      "type": "flow",
+      "from": "nak42k",
+      "to": "t7cghz",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 540,
+          "y": 1416,
+          "length": 1515.4722036381927
+        },
+        {
+          "x": 984,
+          "y": 1416,
+          "length": 1724.3294348818615
+        },
+        {
+          "x": 984,
+          "y": 1036,
+          "length": 1428.8288910852832
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "ibg6qx",
+      "type": "flow",
+      "from": "r9gpmt",
+      "to": "58rkfu",
+      "text": "[updated]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 1316,
+          "length": 1479.0135225886206
+        },
+        {
+          "x": 810,
+          "y": 1316,
+          "length": 1545.3012651259949
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "mbv8ep",
+      "type": "flow",
+      "from": "9uyudw",
+      "to": "58rkfu",
+      "text": "[none]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 644,
+          "length": 932.9314015510465
+        },
+        {
+          "x": 810,
+          "y": 644,
+          "length": 1034.8120602312285
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "822exz",
+      "type": "flow",
+      "from": "n46ykj",
+      "to": "58rkfu",
+      "text": "[declined]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 868,
+          "length": 893.0419922937555
+        },
+        {
+          "x": 810,
+          "y": 868,
+          "length": 1187.2337596278164
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "xug8ip",
+      "type": "flow",
+      "from": "58rkfu",
+      "to": "3k5hik",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 810,
+          "y": 1428,
+          "length": 1641.7320122358583
+        },
+        {
+          "x": 675,
+          "y": 1428,
+          "length": 1579.496438742424
+        }
+      ],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 40,
+    "y": 40,
+    "width": 1270,
+    "height": 1606,
+    "left": 40,
+    "top": 40,
+    "right": 1310,
+    "bottom": 1646,
+    "center": {
+      "x": 675,
+      "y": 843,
+      "length": 1079.9416650912215
+    }
+  }
+}

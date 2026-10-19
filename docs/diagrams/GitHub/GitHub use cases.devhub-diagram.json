@@ -1,0 +1,363 @@
+{
+  "schemaVersion": 1,
+  "kind": "usecase",
+  "title": "GitHub: use cases",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "aby3kj",
+      "type": "boundary",
+      "x": 340,
+      "y": 40,
+      "width": 1010,
+      "height": 808,
+      "rotation": 0,
+      "text": "GitHub plugin",
+      "props": {
+        "fill": "#383574F0",
+        "line": "#3574F0",
+        "bold": "true"
+      }
+    },
+    {
+      "id": "bdzycc",
+      "type": "usecase",
+      "x": 489.48979591836735,
+      "y": 110,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Sign in",
+      "parentId": "aby3kj",
+      "props": {}
+    },
+    {
+      "id": "u87cdn",
+      "type": "usecase",
+      "x": 542.5510204081633,
+      "y": 214,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Sign out",
+      "parentId": "aby3kj",
+      "props": {}
+    },
+    {
+      "id": "p32s36",
+      "type": "usecase",
+      "x": 554.9877551020409,
+      "y": 318,
+      "width": 228.8,
+      "height": 70,
+      "rotation": 0,
+      "text": "See your GitHub accounts",
+      "parentId": "aby3kj",
+      "props": {}
+    },
+    {
+      "id": "mnadap",
+      "type": "usecase",
+      "x": 580,
+      "y": 422,
+      "width": 200,
+      "height": 70,
+      "rotation": 0,
+      "text": "Publish a repository",
+      "parentId": "aby3kj",
+      "props": {}
+    },
+    {
+      "id": "v2nrs5",
+      "type": "usecase",
+      "x": 533.3877551020408,
+      "y": 526,
+      "width": 272,
+      "height": 70,
+      "rotation": 0,
+      "text": "Clone one of your repositories",
+      "parentId": "aby3kj",
+      "props": {}
+    },
+    {
+      "id": "ca6idn",
+      "type": "usecase",
+      "x": 477.55102040816325,
+      "y": 630,
+      "width": 320,
+      "height": 84,
+      "rotation": 0,
+      "text": "Show your picture next to your commits",
+      "parentId": "aby3kj",
+      "props": {}
+    },
+    {
+      "id": "b22w8y",
+      "type": "usecase",
+      "x": 462.8897959183673,
+      "y": 734,
+      "width": 243.20000000000002,
+      "height": 70,
+      "rotation": 0,
+      "text": "Call the GitHub API as you",
+      "parentId": "aby3kj",
+      "props": {}
+    },
+    {
+      "id": "8v9pr9",
+      "type": "usecase",
+      "x": 980,
+      "y": 318,
+      "width": 320,
+      "height": 84,
+      "rotation": 0,
+      "text": "Borrow the token (kept 10 minutes in memory)",
+      "parentId": "aby3kj",
+      "props": {}
+    },
+    {
+      "id": "a9v7vv",
+      "type": "actor",
+      "x": 130,
+      "y": 359,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Developer",
+      "props": {}
+    },
+    {
+      "id": "9et2up",
+      "type": "actor",
+      "x": 1500,
+      "y": 203,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Git Credential Manager",
+      "props": {
+        "stereotype": "system"
+      }
+    },
+    {
+      "id": "gvvnyw",
+      "type": "actor",
+      "x": 1500,
+      "y": 489,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "GitHub",
+      "props": {
+        "stereotype": "system"
+      }
+    },
+    {
+      "id": "qsdg9a",
+      "type": "actor",
+      "x": 1500,
+      "y": 723,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Other plugins (Board, Board Git, CI)",
+      "props": {
+        "stereotype": "system"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "yzfavq",
+      "type": "association",
+      "from": "a9v7vv",
+      "to": "bdzycc",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "phh9v8",
+      "type": "association",
+      "from": "9et2up",
+      "to": "bdzycc",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "53rc68",
+      "type": "association",
+      "from": "a9v7vv",
+      "to": "u87cdn",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "22aj6r",
+      "type": "association",
+      "from": "9et2up",
+      "to": "u87cdn",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "pien9a",
+      "type": "association",
+      "from": "a9v7vv",
+      "to": "p32s36",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "8vqy7x",
+      "type": "association",
+      "from": "gvvnyw",
+      "to": "p32s36",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ubv65c",
+      "type": "association",
+      "from": "a9v7vv",
+      "to": "mnadap",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "g7ahg8",
+      "type": "association",
+      "from": "gvvnyw",
+      "to": "mnadap",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "p5qhq4",
+      "type": "association",
+      "from": "a9v7vv",
+      "to": "v2nrs5",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "zn4gmk",
+      "type": "association",
+      "from": "gvvnyw",
+      "to": "v2nrs5",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "4xayx9",
+      "type": "association",
+      "from": "a9v7vv",
+      "to": "ca6idn",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "d9zgvm",
+      "type": "association",
+      "from": "qsdg9a",
+      "to": "b22w8y",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "dntwn4",
+      "type": "association",
+      "from": "gvvnyw",
+      "to": "b22w8y",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "kabn5f",
+      "type": "association",
+      "from": "9et2up",
+      "to": "8v9pr9",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "646ee4",
+      "type": "include",
+      "from": "p32s36",
+      "to": "8v9pr9",
+      "text": "«include»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "as9v8n",
+      "type": "include",
+      "from": "mnadap",
+      "to": "8v9pr9",
+      "text": "«include»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "yayp6u",
+      "type": "include",
+      "from": "b22w8y",
+      "to": "8v9pr9",
+      "text": "«include»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    }
+  ],
+  "bounds": {
+    "x": 130,
+    "y": 40,
+    "width": 1430,
+    "height": 808,
+    "left": 130,
+    "top": 40,
+    "right": 1560,
+    "bottom": 848,
+    "center": {
+      "x": 845,
+      "y": 444,
+      "length": 954.5475367942657
+    }
+  }
+}

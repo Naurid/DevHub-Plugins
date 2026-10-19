@@ -1,0 +1,519 @@
+{
+  "schemaVersion": 1,
+  "kind": "class",
+  "title": "Board Reports: main classes",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "vmwsnw",
+      "type": "class",
+      "x": 108,
+      "y": 345,
+      "width": 281,
+      "height": 76,
+      "rotation": 0,
+      "text": "BoardReportsPlugin",
+      "props": {
+        "attributes": "+ Info : PluginInfo",
+        "operations": "+ ConfigureServices(services, context)",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "fvibmd",
+      "type": "class",
+      "x": 763,
+      "y": 328,
+      "width": 370,
+      "height": 110,
+      "rotation": 0,
+      "text": "ReportsPageProvider",
+      "props": {
+        "attributes": "+ Id : string\n+ Title : string\n+ Order : int",
+        "operations": "+ Create(host : BoardPageHost) : BoardPageViewModel",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "7udtn2",
+      "type": "class",
+      "x": 1183,
+      "y": 260,
+      "width": 405,
+      "height": 246,
+      "rotation": 0,
+      "text": "ReportsPageViewModel",
+      "props": {
+        "attributes": "+ Title : string\n+ Kinds : IReadOnlyList<ReportKind>\n+ Sprints : ObservableCollection<Sprint>\n+ ShownChart : ChartData\n+ CanCurve : bool\n+ ChartKindChoices : ObservableCollection<ChartKindItem>\n+ Rows : ObservableCollection<ReportRow>\n+ HasRows : bool\n+ Gadgets : ObservableCollection<GadgetViewModel>\n+ CanOpenInChartMaker : bool",
+        "operations": "+ OnBoardChanged()\n+ Refresh()",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "xhj5fm",
+      "type": "class",
+      "x": 756,
+      "y": 620.5,
+      "width": 370,
+      "height": 155,
+      "rotation": 0,
+      "text": "GadgetViewModel",
+      "props": {
+        "attributes": "+ Index : int\n+ Title : string\n+ Issues : ObservableCollection<IssueItemViewModel>\n+ Chart : ChartData\n+ IsChart : bool\n+ Note : string\n+ RemoveCommand : IRelayCommand",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "9ca3sq",
+      "type": "class",
+      "x": 1176,
+      "y": 621.5,
+      "width": 198,
+      "height": 153,
+      "rotation": 0,
+      "text": "ReportKind",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Description : string\n+ NeedsSprint : bool\n+ DefaultChart : ChartKind\n+ Group : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "vexxc5",
+      "type": "class",
+      "x": 0,
+      "y": 0,
+      "width": 274,
+      "height": 170,
+      "rotation": 0,
+      "text": "SprintReport",
+      "props": {
+        "attributes": "+ Sprint : Sprint\n+ Completed : IReadOnlyList<Issue>\n+ NotCompleted : IReadOnlyList<Issue>\n+ Added : IReadOnlyList<Issue>\n+ Removed : IReadOnlyList<Issue>\n+ CommittedPoints : double\n+ CompletedPoints : double",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "kypykx",
+      "type": "class",
+      "x": 687,
+      "y": 17,
+      "width": 170,
+      "height": 136,
+      "rotation": 0,
+      "text": "SprintChart",
+      "props": {
+        "attributes": "+ Burndown : ChartData\n+ Burnup : ChartData\n+ Committed : double\n+ Completed : double\n+ Scope : double",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "6qss45",
+      "type": "class",
+      "x": 377,
+      "y": 596,
+      "width": 329,
+      "height": 204,
+      "rotation": 0,
+      "text": "Forecast",
+      "props": {
+        "attributes": "+ ScopePoints : double\n+ DonePoints : double\n+ Unestimated : int\n+ NextSprintStart : DateOnly\n+ SprintDays : int\n+ Target : DateOnly?\n+ Scenarios : IReadOnlyList<ScenarioForecast>\n+ Chart : ChartData\n+ Remaining : double",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "6tesji",
+      "type": "class",
+      "x": 1424,
+      "y": 604.5,
+      "width": 329,
+      "height": 187,
+      "rotation": 0,
+      "text": "ForecastBaseline",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Taken : DateTimeOffset\n+ Scope : string\n+ ScopePoints : double\n+ DonePoints : double\n+ Scenarios : IReadOnlyList<BaselineScenario>\n+ Extra : Dictionary<string, JsonElement>",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "nw94hp",
+      "type": "class",
+      "x": 980,
+      "y": 890,
+      "width": 170,
+      "height": 153,
+      "rotation": 0,
+      "text": "ScenarioForecast",
+      "props": {
+        "attributes": "+ Name : string\n+ Velocity : double\n+ Sprints : int?\n+ Delivery : DateOnly?\n+ DaysLate : int?\n+ Text : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "3z26tj",
+      "type": "class",
+      "x": 1511,
+      "y": 25.5,
+      "width": 205,
+      "height": 119,
+      "rotation": 0,
+      "text": "CycleTime",
+      "props": {
+        "attributes": "+ Issue : Issue\n+ Started : DateTimeOffset\n+ Resolved : DateTimeOffset\n+ Days : double",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "udxjts",
+      "type": "class",
+      "x": 1967,
+      "y": 8.5,
+      "width": 163,
+      "height": 153,
+      "rotation": 0,
+      "text": "EpicProgress",
+      "props": {
+        "attributes": "+ Epic : Issue\n+ Issues : int\n+ DoneIssues : int\n+ Points : double\n+ DonePoints : double\n+ Fraction : double",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "iy4e9a",
+      "type": "class",
+      "x": 439,
+      "y": 320.5,
+      "width": 274,
+      "height": 125,
+      "rotation": 0,
+      "text": "SaveBaseline",
+      "props": {
+        "attributes": "+ Name : string\n+ Scope : string\n+ Forecast : Forecast",
+        "operations": "+ Apply(board, context) : BoardChange",
+        "showAttributes": "true",
+        "showOperations": "true",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "smbpjm",
+      "type": "class",
+      "x": 1638,
+      "y": 322.5,
+      "width": 384,
+      "height": 121,
+      "rotation": 0,
+      "text": "BoardReportsSettings",
+      "props": {
+        "attributes": "+ static SectionId : string\n+ Dashboards : Dictionary<string, List<GadgetConfig>>\n+ ChartKinds : Dictionary<string, string>\n+ CurvedLines : bool\n+ Forecasts : Dictionary<string, ForecastSettings>",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "xdev9v",
+      "type": "interface",
+      "x": 324,
+      "y": 62.5,
+      "width": 120,
+      "height": 45,
+      "rotation": 0,
+      "text": "IPlugin",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "aa36j7",
+      "type": "interface",
+      "x": 907,
+      "y": 62.5,
+      "width": 167,
+      "height": 45,
+      "rotation": 0,
+      "text": "IBoardPageProvider",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "krecsj",
+      "type": "class",
+      "x": 1124,
+      "y": 64.5,
+      "width": 167,
+      "height": 41,
+      "rotation": 0,
+      "text": "BoardPageViewModel",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "xw5s8x",
+      "type": "interface",
+      "x": 1341,
+      "y": 62.5,
+      "width": 120,
+      "height": 45,
+      "rotation": 0,
+      "text": "ICardHost",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "7rs5rq",
+      "type": "interface",
+      "x": 494,
+      "y": 62.5,
+      "width": 143,
+      "height": 45,
+      "rotation": 0,
+      "text": "IBoardOperation",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "3wmenm",
+      "type": "interface",
+      "x": 1766,
+      "y": 62.5,
+      "width": 151,
+      "height": 45,
+      "rotation": 0,
+      "text": "ISettingsSection",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "fvy3vb",
+      "type": "note",
+      "x": 0,
+      "y": 1093,
+      "width": 620,
+      "height": 76,
+      "rotation": 0,
+      "text": "Read from DevHub.Board.Reports.dll, DevHub.Board.Reports.Core.dll: each type's own public members (up to 10 properties and 8 methods). Grey: from the Sdk or another plugin.",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "6t2jd4",
+      "type": "realization",
+      "from": "vmwsnw",
+      "to": "xdev9v",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "chr5x6",
+      "type": "realization",
+      "from": "fvibmd",
+      "to": "aa36j7",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "umpmz3",
+      "type": "generalization",
+      "from": "7udtn2",
+      "to": "krecsj",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "6s53th",
+      "type": "realization",
+      "from": "7udtn2",
+      "to": "xw5s8x",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ecdnv5",
+      "type": "association",
+      "from": "7udtn2",
+      "to": "9ca3sq",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Kinds"
+      }
+    },
+    {
+      "id": "gsmcec",
+      "type": "association",
+      "from": "7udtn2",
+      "to": "xhj5fm",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Gadgets"
+      }
+    },
+    {
+      "id": "enbgnv",
+      "type": "association",
+      "from": "7udtn2",
+      "to": "6tesji",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Baselines"
+      }
+    },
+    {
+      "id": "h5sykg",
+      "type": "dependency",
+      "from": "xhj5fm",
+      "to": "7udtn2",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "x29vwg",
+      "type": "association",
+      "from": "6qss45",
+      "to": "nw94hp",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Scenarios"
+      }
+    },
+    {
+      "id": "46nuqj",
+      "type": "realization",
+      "from": "iy4e9a",
+      "to": "7rs5rq",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "jn9wmq",
+      "type": "association",
+      "from": "iy4e9a",
+      "to": "6qss45",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Forecast"
+      }
+    },
+    {
+      "id": "fgp8rg",
+      "type": "realization",
+      "from": "smbpjm",
+      "to": "3wmenm",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 0,
+    "y": 0,
+    "width": 2130,
+    "height": 1169,
+    "left": 0,
+    "top": 0,
+    "right": 2130,
+    "bottom": 1169,
+    "center": {
+      "x": 1065,
+      "y": 584.5,
+      "length": 1214.8519457119044
+    }
+  }
+}

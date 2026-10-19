@@ -1,0 +1,633 @@
+{
+  "schemaVersion": 1,
+  "kind": "activity",
+  "title": "Templates: New Project, from the template to the repository tab",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "gzjdyj",
+      "type": "lane",
+      "x": 40,
+      "y": 40,
+      "width": 340,
+      "height": 1942,
+      "rotation": 0,
+      "text": "You",
+      "props": {
+        "vertical": "true",
+        "fill": "#143574F0"
+      }
+    },
+    {
+      "id": "435dmd",
+      "type": "lane",
+      "x": 380,
+      "y": 40,
+      "width": 590,
+      "height": 1942,
+      "rotation": 0,
+      "text": "Templates plugin",
+      "props": {
+        "vertical": "true",
+        "fill": "#14D98C1F"
+      }
+    },
+    {
+      "id": "wxgw4q",
+      "type": "lane",
+      "x": 970,
+      "y": 40,
+      "width": 590,
+      "height": 1942,
+      "rotation": 0,
+      "text": "File system and tools",
+      "props": {
+        "vertical": "true",
+        "fill": "#142E9E5B"
+      }
+    },
+    {
+      "id": "ihm3re",
+      "type": "start",
+      "x": 197,
+      "y": 127,
+      "width": 26,
+      "height": 26,
+      "rotation": 0,
+      "text": "",
+      "parentId": "gzjdyj",
+      "props": {}
+    },
+    {
+      "id": "e3mnr2",
+      "type": "action",
+      "x": 90,
+      "y": 224,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "New Project… (Ctrl+N): pick a template",
+      "parentId": "gzjdyj",
+      "props": {}
+    },
+    {
+      "id": "965ryn",
+      "type": "action",
+      "x": 90,
+      "y": 342,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Fill the variables; choose where",
+      "parentId": "gzjdyj",
+      "props": {}
+    },
+    {
+      "id": "cb8pww",
+      "type": "decision",
+      "x": 658,
+      "y": 459,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "435dmd",
+      "props": {}
+    },
+    {
+      "id": "h997yn",
+      "type": "action",
+      "x": 420,
+      "y": 560,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Say what's wrong next to the field",
+      "parentId": "435dmd",
+      "props": {}
+    },
+    {
+      "id": "fsut9b",
+      "type": "action",
+      "x": 690,
+      "y": 566,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Show every command that will run",
+      "parentId": "435dmd",
+      "props": {}
+    },
+    {
+      "id": "tsgnbv",
+      "type": "action",
+      "x": 90,
+      "y": 678,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Generate",
+      "parentId": "gzjdyj",
+      "props": {}
+    },
+    {
+      "id": "93n97j",
+      "type": "action",
+      "x": 1145,
+      "y": 784,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Run the base command and the steps into a staging folder",
+      "parentId": "wxgw4q",
+      "props": {}
+    },
+    {
+      "id": "5crhve",
+      "type": "action",
+      "x": 90,
+      "y": 896,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Preview: rename, move, delete, Undo",
+      "parentId": "gzjdyj",
+      "props": {}
+    },
+    {
+      "id": "j3t2dj",
+      "type": "decision",
+      "x": 193,
+      "y": 1019,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "gzjdyj",
+      "props": {}
+    },
+    {
+      "id": "yfs8bb",
+      "type": "action",
+      "x": 1010,
+      "y": 1126,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Delete the staging folder",
+      "parentId": "wxgw4q",
+      "props": {}
+    },
+    {
+      "id": "wfnd5x",
+      "type": "action",
+      "x": 1280,
+      "y": 1120,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Move it into the destination (nothing overwritten)",
+      "parentId": "wxgw4q",
+      "props": {}
+    },
+    {
+      "id": "neaqwd",
+      "type": "action",
+      "x": 1010,
+      "y": 1232,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Run the post-create commands, output live",
+      "parentId": "wxgw4q",
+      "props": {}
+    },
+    {
+      "id": "gmjhxz",
+      "type": "end",
+      "x": 1385,
+      "y": 1245,
+      "width": 30,
+      "height": 30,
+      "rotation": 0,
+      "text": "",
+      "parentId": "wxgw4q",
+      "props": {}
+    },
+    {
+      "id": "u5ca5h",
+      "type": "decision",
+      "x": 658,
+      "y": 1355,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "435dmd",
+      "props": {}
+    },
+    {
+      "id": "6ugr7z",
+      "type": "action",
+      "x": 555,
+      "y": 1456,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Open the project as a repository tab",
+      "parentId": "435dmd",
+      "props": {}
+    },
+    {
+      "id": "j63ur8",
+      "type": "decision",
+      "x": 658,
+      "y": 1579,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "435dmd",
+      "props": {}
+    },
+    {
+      "id": "xfc2z2",
+      "type": "action",
+      "x": 555,
+      "y": 1680,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Rescan the project folders (IProjectFolders)",
+      "parentId": "435dmd",
+      "props": {}
+    },
+    {
+      "id": "vnmptk",
+      "type": "end",
+      "x": 660,
+      "y": 1805,
+      "width": 30,
+      "height": 30,
+      "rotation": 0,
+      "text": "",
+      "parentId": "435dmd",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "nhxwui",
+      "type": "flow",
+      "from": "ihm3re",
+      "to": "e3mnr2",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "kbtuz6",
+      "type": "flow",
+      "from": "e3mnr2",
+      "to": "965ryn",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "5eqisi",
+      "type": "flow",
+      "from": "965ryn",
+      "to": "cb8pww",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 420,
+          "length": 469.5742752749558
+        },
+        {
+          "x": 675,
+          "y": 420,
+          "length": 795
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "3fuwxx",
+      "type": "flow",
+      "from": "cb8pww",
+      "to": "h997yn",
+      "text": "[a value isn't valid]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 532,
+          "length": 859.4469151727756
+        },
+        {
+          "x": 540,
+          "y": 532,
+          "length": 758.0395768032167
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "ik96ie",
+      "type": "flow",
+      "from": "h997yn",
+      "to": "965ryn",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 540,
+          "y": 632,
+          "length": 831.2785333448711
+        },
+        {
+          "x": 54,
+          "y": 632,
+          "length": 634.3027668235414
+        },
+        {
+          "x": 54,
+          "y": 364,
+          "length": 367.98369529097346
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "eyigj8",
+      "type": "flow",
+      "from": "cb8pww",
+      "to": "fsut9b",
+      "text": "[valid]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 532,
+          "length": 859.4469151727756
+        },
+        {
+          "x": 810,
+          "y": 532,
+          "length": 969.0841036772814
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "w6jqqs",
+      "type": "flow",
+      "from": "fsut9b",
+      "to": "tsgnbv",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 810,
+          "y": 644,
+          "length": 1034.8120602312285
+        },
+        {
+          "x": 210,
+          "y": 644,
+          "length": 677.3743425905649
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "2zwb6q",
+      "type": "flow",
+      "from": "tsgnbv",
+      "to": "93n97j",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 756,
+          "length": 784.624751075315
+        },
+        {
+          "x": 1265,
+          "y": 756,
+          "length": 1473.689587396206
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "p8upkk",
+      "type": "flow",
+      "from": "93n97j",
+      "to": "5crhve",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 1265,
+          "y": 868,
+          "length": 1534.1606825883657
+        },
+        {
+          "x": 210,
+          "y": 868,
+          "length": 893.0419922937555
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "4nqqz8",
+      "type": "flow",
+      "from": "5crhve",
+      "to": "j3t2dj",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "mx9cxd",
+      "type": "flow",
+      "from": "j3t2dj",
+      "to": "yfs8bb",
+      "text": "[Cancel]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 1092,
+          "length": 1112.008992769393
+        },
+        {
+          "x": 1130,
+          "y": 1092,
+          "length": 1571.4210129688352
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "v99key",
+      "type": "flow",
+      "from": "j3t2dj",
+      "to": "wfnd5x",
+      "text": "[Place]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 1092,
+          "length": 1112.008992769393
+        },
+        {
+          "x": 1400,
+          "y": 1092,
+          "length": 1775.5179525986214
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "ded4z2",
+      "type": "flow",
+      "from": "wfnd5x",
+      "to": "neaqwd",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 1400,
+          "y": 1204,
+          "length": 1846.5145545053253
+        },
+        {
+          "x": 1130,
+          "y": 1204,
+          "length": 1651.216521235177
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "hc7x6r",
+      "type": "flow",
+      "from": "neaqwd",
+      "to": "u5ca5h",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 1130,
+          "y": 1316,
+          "length": 1734.5766053997154
+        },
+        {
+          "x": 675,
+          "y": 1316,
+          "length": 1479.0135225886206
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "czkmig",
+      "type": "flow",
+      "from": "u5ca5h",
+      "to": "6ugr7z",
+      "text": "[Git is on]",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "djn886",
+      "type": "flow",
+      "from": "6ugr7z",
+      "to": "j63ur8",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "673tyt",
+      "type": "flow",
+      "from": "u5ca5h",
+      "to": "j63ur8",
+      "text": "[otherwise]",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "numffr",
+      "type": "flow",
+      "from": "j63ur8",
+      "to": "xfc2z2",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "eb2m4v",
+      "type": "flow",
+      "from": "xfc2z2",
+      "to": "vnmptk",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "gbieah",
+      "type": "flow",
+      "from": "yfs8bb",
+      "to": "gmjhxz",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 1130,
+          "y": 1204,
+          "length": 1651.216521235177
+        },
+        {
+          "x": 1400,
+          "y": 1204,
+          "length": 1846.5145545053253
+        }
+      ],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 40,
+    "y": 40,
+    "width": 1520,
+    "height": 1942,
+    "left": 40,
+    "top": 40,
+    "right": 1560,
+    "bottom": 1982,
+    "center": {
+      "x": 800,
+      "y": 1011,
+      "length": 1289.2327175494734
+    }
+  }
+}

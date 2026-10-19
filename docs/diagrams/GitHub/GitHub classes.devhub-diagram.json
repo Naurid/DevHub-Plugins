@@ -1,0 +1,523 @@
+{
+  "schemaVersion": 1,
+  "kind": "class",
+  "title": "GitHub: main classes",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "sbtv4j",
+      "type": "class",
+      "x": 1778,
+      "y": 243,
+      "width": 281,
+      "height": 76,
+      "rotation": 0,
+      "text": "GitHubPlugin",
+      "props": {
+        "attributes": "+ Info : PluginInfo",
+        "operations": "+ ConfigureServices(services, context)",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "2vf6de",
+      "type": "class",
+      "x": 930.5,
+      "y": 702,
+      "width": 501,
+      "height": 195,
+      "rotation": 0,
+      "text": "GitHubSession",
+      "props": {
+        "attributes": "+ GitHub : GitHubService\n+ IsAvailable : bool",
+        "operations": "+ GetProfileAsync(account : string) : Task<GitHubProfile>\n+ GetMyProfileAsync() : Task<GitHubProfile>\n+ ListAccountsAsync() : Task<IReadOnlyList<string>>\n+ IsCredentialManagerAvailableAsync() : Task<bool>\n+ SignInAsync() : Task<bool>\n+ SignOutAsync(account : string) : Task\n+ RequireAccountsAsync(purpose : string) : Task<IReadOnlyList<string>>",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "862du9",
+      "type": "class",
+      "x": 206,
+      "y": 243,
+      "width": 729,
+      "height": 161,
+      "rotation": 0,
+      "text": "GitHubRemoteHost",
+      "props": {
+        "attributes": "+ Name : string\n+ IsAvailable : bool",
+        "operations": "+ CreateRepositoryAsync(suggestedName, existingRemotes) : Task<CreatedHostRepository>\n+ GetMyIdentityAsync() : Task<HostIdentity>\n+ ListAccountsAsync() : Task<IReadOnlyList<string>>\n+ SignInAsync() : Task<bool>\n+ ListRepositoriesAsync(account : string, ct : CancellationToken) : Task<IReadOnlyList<HostRepository>>",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "dqp7se",
+      "type": "class",
+      "x": 0,
+      "y": 542,
+      "width": 515,
+      "height": 70,
+      "rotation": 0,
+      "text": "GitHubApiForPlugins",
+      "props": {
+        "attributes": "",
+        "operations": "+ GetAccountsAsync(ct : CancellationToken) : Task<IReadOnlyList<string>>\n+ SendAsync(request, ct) : Task<GitHubApiResponse>",
+        "showAttributes": "false",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "nrxabw",
+      "type": "class",
+      "x": 582,
+      "y": 34,
+      "width": 150,
+      "height": 85,
+      "rotation": 0,
+      "text": "GitHubProfile",
+      "props": {
+        "attributes": "+ User : GitHubUser\n+ Avatar : byte[]",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "tedsc6",
+      "type": "class",
+      "x": 985,
+      "y": 243,
+      "width": 432,
+      "height": 229,
+      "rotation": 0,
+      "text": "GitHubSettingsPageViewModel",
+      "props": {
+        "attributes": "+ Title : string\n+ Order : int\n+ Keywords : string\n+ Accounts : ObservableCollection<GitHubAccountRowViewModel>\n+ HasAccounts : bool\n+ EmptyText : string\n+ IsLoading : bool\n+ UnavailableReason : string\n+ IsBusy : bool\n+ SignInCommand : IAsyncRelayCommand",
+        "operations": "+ Apply()",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "hr3bge",
+      "type": "class",
+      "x": 1467,
+      "y": 243,
+      "width": 261,
+      "height": 206,
+      "rotation": 0,
+      "text": "PublishToGitHubDialogViewModel",
+      "props": {
+        "attributes": "+ Title : string\n+ OkText : string\n+ FitsContent : bool\n+ Width : double\n+ MinWidth : double\n+ MinHeight : double\n+ Accounts : IReadOnlyList<string>\n+ HasSeveralAccounts : bool\n+ Preview : string\n+ Created : GitHubRepository",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "m6sjkc",
+      "type": "class",
+      "x": 940.5,
+      "y": 987,
+      "width": 743,
+      "height": 195,
+      "rotation": 0,
+      "text": "GitHubService",
+      "props": {
+        "attributes": "+ Credentials : GitCredentialManager",
+        "operations": "+ ListAccountsAsync(ct : CancellationToken) : Task<IReadOnlyList<string>>\n+ ForgetCredentials()\n+ GetUserAsync(account : string, ct : CancellationToken) : Task<GitHubUser>\n+ GetAvatarAsync(user, size, ct) : Task<byte[]>\n+ ListRepositoriesAsync(account : string, ct : CancellationToken) : Task<IReadOnlyList<GitHubRepository>>\n+ CreateRepositoryAsync(account, name, description, isPrivate, ct) : Task<GitHubRepository>\n+ SendRawAsync(account, method, pathOrUrl, json, ifNoneMatch, accept, ct) : Task<GitHubRawResponse>\n+ static IsValidRepositoryName(name : string) : bool",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "b4ui6z",
+      "type": "class",
+      "x": 388.5,
+      "y": 1297.5,
+      "width": 495,
+      "height": 104,
+      "rotation": 0,
+      "text": "CredentialCache",
+      "props": {
+        "attributes": "",
+        "operations": "+ AccountsAsync(ct : CancellationToken) : Task<IReadOnlyList<string>>\n+ TokenAsync(account : string, ct : CancellationToken) : Task<string>\n+ ForgetToken(account : string)\n+ Forget()",
+        "showAttributes": "false",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "tanhi7",
+      "type": "class",
+      "x": 933.5,
+      "y": 1272,
+      "width": 564,
+      "height": 155,
+      "rotation": 0,
+      "text": "GitCredentialManager",
+      "props": {
+        "attributes": "",
+        "operations": "+ IsAvailableAsync(ct : CancellationToken) : Task<bool>\n+ ListGitHubAccountsAsync(ct : CancellationToken) : Task<IReadOnlyList<string>>\n+ static ParseAccounts(output : string) : IReadOnlyList<string>\n+ SignInAsync(ct : CancellationToken) : Task\n+ SignOutAsync(account : string, ct : CancellationToken) : Task\n+ GetTokenAsync(account : string, ct : CancellationToken) : Task<string>\n+ static ParsePassword(output : string) : string",
+        "showAttributes": "false",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "xpa4xz",
+      "type": "class",
+      "x": 1547.5,
+      "y": 1272,
+      "width": 688,
+      "height": 155,
+      "rotation": 0,
+      "text": "GitHubApi",
+      "props": {
+        "attributes": "",
+        "operations": "+ GetUserAsync(token : string, ct : CancellationToken) : Task<GitHubUser>\n+ GetAvatarAsync(avatarUrl, size, ct) : Task<byte[]>\n+ ListRepositoriesAsync(token, maxPages, ct) : Task<IReadOnlyList<GitHubRepository>>\n+ CreateRepositoryAsync(token, name, description, isPrivate, ct) : Task<GitHubRepository>\n+ static ApiUri(pathOrUrl : string) : Uri\n+ SendRawAsync(token, method, pathOrUrl, json, ifNoneMatch, accept, ct) : Task<GitHubRawResponse>\n+ static NextPage(response : HttpResponseMessage) : string",
+        "showAttributes": "false",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "cjzgv5",
+      "type": "class",
+      "x": 0,
+      "y": 243,
+      "width": 156,
+      "height": 102,
+      "rotation": 0,
+      "text": "GitHubUser",
+      "props": {
+        "attributes": "+ Login : string\n+ Name : string\n+ AvatarUrl : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "neeghn",
+      "type": "class",
+      "x": 1481.5,
+      "y": 714.5,
+      "width": 212,
+      "height": 170,
+      "rotation": 0,
+      "text": "GitHubRepository",
+      "props": {
+        "attributes": "+ FullName : string\n+ Name : string\n+ Description : string\n+ IsPrivate : bool\n+ CloneUrl : string\n+ HtmlUrl : string\n+ PushedAt : DateTimeOffset?",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "8r2hx3",
+      "type": "class",
+      "x": 782,
+      "y": 0,
+      "width": 253,
+      "height": 153,
+      "rotation": 0,
+      "text": "GitHubRawResponse",
+      "props": {
+        "attributes": "+ Status : HttpStatusCode\n+ Body : string\n+ ETag : string\n+ NextPageUrl : string\n+ RateLimitRemaining : int?\n+ RateLimitReset : DateTimeOffset?",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "iaefvw",
+      "type": "interface",
+      "x": 1752,
+      "y": 54,
+      "width": 120,
+      "height": 45,
+      "rotation": 0,
+      "text": "IPlugin",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "j7u2xz",
+      "type": "interface",
+      "x": 1085,
+      "y": 54,
+      "width": 120,
+      "height": 45,
+      "rotation": 0,
+      "text": "IRemoteHost",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "m9sd65",
+      "type": "interface",
+      "x": 1922,
+      "y": 54,
+      "width": 120,
+      "height": 45,
+      "rotation": 0,
+      "text": "IGitHubApi",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "rf5f8f",
+      "type": "class",
+      "x": 1255,
+      "y": 56,
+      "width": 222,
+      "height": 41,
+      "rotation": 0,
+      "text": "SettingsPageViewModelBase",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "9pziqf",
+      "type": "class",
+      "x": 1527,
+      "y": 56,
+      "width": 175,
+      "height": 41,
+      "rotation": 0,
+      "text": "DialogViewModelBase",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "adhwa8",
+      "type": "note",
+      "x": 0,
+      "y": 1477,
+      "width": 620,
+      "height": 76,
+      "rotation": 0,
+      "text": "Read from DevHub.GitHub.dll, DevHub.GitHub.Core.dll: each type's own public members (up to 10 properties and 8 methods). Grey: from the Sdk or another plugin.",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "a6au4e",
+      "type": "realization",
+      "from": "sbtv4j",
+      "to": "iaefvw",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "zeay5x",
+      "type": "association",
+      "from": "2vf6de",
+      "to": "m6sjkc",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "GitHub"
+      }
+    },
+    {
+      "id": "khgijw",
+      "type": "realization",
+      "from": "862du9",
+      "to": "j7u2xz",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "xq64xc",
+      "type": "dependency",
+      "from": "862du9",
+      "to": "2vf6de",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ws2rrw",
+      "type": "realization",
+      "from": "dqp7se",
+      "to": "m9sd65",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "7s5zrg",
+      "type": "dependency",
+      "from": "dqp7se",
+      "to": "m6sjkc",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "xec7r8",
+      "type": "association",
+      "from": "nrxabw",
+      "to": "cjzgv5",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "User"
+      }
+    },
+    {
+      "id": "q6tugt",
+      "type": "generalization",
+      "from": "tedsc6",
+      "to": "rf5f8f",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "rwhhct",
+      "type": "dependency",
+      "from": "tedsc6",
+      "to": "2vf6de",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "y9ix8x",
+      "type": "generalization",
+      "from": "hr3bge",
+      "to": "9pziqf",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "v84h25",
+      "type": "association",
+      "from": "hr3bge",
+      "to": "neeghn",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Created"
+      }
+    },
+    {
+      "id": "tmyrbi",
+      "type": "dependency",
+      "from": "hr3bge",
+      "to": "m6sjkc",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "dy8c3r",
+      "type": "association",
+      "from": "m6sjkc",
+      "to": "tanhi7",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Credentials"
+      }
+    },
+    {
+      "id": "h3n56x",
+      "type": "dependency",
+      "from": "m6sjkc",
+      "to": "xpa4xz",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "52y2wq",
+      "type": "dependency",
+      "from": "m6sjkc",
+      "to": "b4ui6z",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 0,
+    "y": 0,
+    "width": 2235.5,
+    "height": 1553,
+    "left": 0,
+    "top": 0,
+    "right": 2235.5,
+    "bottom": 1553,
+    "center": {
+      "x": 1117.75,
+      "y": 776.5,
+      "length": 1360.998645296901
+    }
+  }
+}

@@ -71,3 +71,7 @@ Documents: Generate (New Project), AddFiles, Templates, Import (single tabs) and
 
 These are asked for when needed (`Func<IProjectOpener?>`), not injected into New Project: injecting them directly
 would make a cycle through the shell's DocumentManager.
+
+## Diagrams
+
+`docs/diagrams/Templates/`: use cases, the activity of New Project (staging, preview, place, post-create), and the classes.

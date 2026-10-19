@@ -1,0 +1,418 @@
+{
+  "schemaVersion": 1,
+  "kind": "usecase",
+  "title": "Board: use cases",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "pmd2aa",
+      "type": "boundary",
+      "x": 340,
+      "y": 40,
+      "width": 998,
+      "height": 1120,
+      "rotation": 0,
+      "text": "Board plugin",
+      "props": {
+        "fill": "#383574F0",
+        "line": "#3574F0",
+        "bold": "true"
+      }
+    },
+    {
+      "id": "9rtxqt",
+      "type": "usecase",
+      "x": 467.5,
+      "y": 110,
+      "width": 214.4,
+      "height": 70,
+      "rotation": 0,
+      "text": "Create or open a board",
+      "parentId": "pmd2aa",
+      "props": {}
+    },
+    {
+      "id": "sm2nxv",
+      "type": "usecase",
+      "x": 521.3,
+      "y": 214,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Create an issue",
+      "parentId": "pmd2aa",
+      "props": {}
+    },
+    {
+      "id": "xa4xza",
+      "type": "usecase",
+      "x": 552.5,
+      "y": 318,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Edit an issue",
+      "parentId": "pmd2aa",
+      "props": {
+        "extensionPoints": "details"
+      }
+    },
+    {
+      "id": "kctpnq",
+      "type": "usecase",
+      "x": 994.4,
+      "y": 318,
+      "width": 279.20000000000005,
+      "height": 70,
+      "rotation": 0,
+      "text": "Comment, log work, attach files",
+      "parentId": "pmd2aa",
+      "props": {}
+    },
+    {
+      "id": "2apduj",
+      "type": "usecase",
+      "x": 535.9,
+      "y": 422,
+      "width": 264.8,
+      "height": 70,
+      "rotation": 0,
+      "text": "Move a card to another column",
+      "parentId": "pmd2aa",
+      "props": {}
+    },
+    {
+      "id": "rxed2w",
+      "type": "usecase",
+      "x": 990.8,
+      "y": 422,
+      "width": 286.4,
+      "height": 70,
+      "rotation": 0,
+      "text": "Check the workflow's transitions",
+      "parentId": "pmd2aa",
+      "props": {}
+    },
+    {
+      "id": "28edtj",
+      "type": "usecase",
+      "x": 583.7,
+      "y": 526,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Rank the backlog",
+      "parentId": "pmd2aa",
+      "props": {}
+    },
+    {
+      "id": "3hs352",
+      "type": "usecase",
+      "x": 583.7,
+      "y": 630,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Search issues",
+      "parentId": "pmd2aa",
+      "props": {
+        "extensionPoints": "save"
+      }
+    },
+    {
+      "id": "wm38n5",
+      "type": "usecase",
+      "x": 1039,
+      "y": 630,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Save a filter",
+      "parentId": "pmd2aa",
+      "props": {}
+    },
+    {
+      "id": "ypwkax",
+      "type": "usecase",
+      "x": 508.3,
+      "y": 734,
+      "width": 320,
+      "height": 84,
+      "rotation": 0,
+      "text": "Shape columns, statuses and workflows",
+      "parentId": "pmd2aa",
+      "props": {}
+    },
+    {
+      "id": "wjwb7s",
+      "type": "usecase",
+      "x": 504.3,
+      "y": 838,
+      "width": 286.4,
+      "height": 70,
+      "rotation": 0,
+      "text": "Import issues (Jira CSV, GitHub)",
+      "parentId": "pmd2aa",
+      "props": {}
+    },
+    {
+      "id": "awg62z",
+      "type": "usecase",
+      "x": 521.3,
+      "y": 942,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Export the board",
+      "parentId": "pmd2aa",
+      "props": {}
+    },
+    {
+      "id": "ef283q",
+      "type": "usecase",
+      "x": 474.7,
+      "y": 1046,
+      "width": 200,
+      "height": 70,
+      "rotation": 0,
+      "text": "Undo the last change",
+      "parentId": "pmd2aa",
+      "props": {}
+    },
+    {
+      "id": "7jj4vw",
+      "type": "usecase",
+      "x": 980,
+      "y": 214,
+      "width": 308,
+      "height": 84,
+      "rotation": 0,
+      "text": "Save each change (compare-and-swap)",
+      "parentId": "pmd2aa",
+      "props": {}
+    },
+    {
+      "id": "zxbcgp",
+      "type": "actor",
+      "x": 130,
+      "y": 539,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Developer",
+      "props": {}
+    },
+    {
+      "id": "55iidn",
+      "type": "actor",
+      "x": 1488,
+      "y": 203,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Board store (folder or branch)",
+      "props": {
+        "stereotype": "system"
+      }
+    },
+    {
+      "id": "y5vetn",
+      "type": "actor",
+      "x": 1488,
+      "y": 827,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "GitHub plugin",
+      "props": {
+        "stereotype": "system"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "4b7jjy",
+      "type": "association",
+      "from": "zxbcgp",
+      "to": "9rtxqt",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "i99x9v",
+      "type": "association",
+      "from": "zxbcgp",
+      "to": "sm2nxv",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "rnhz5i",
+      "type": "association",
+      "from": "zxbcgp",
+      "to": "xa4xza",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "4txktg",
+      "type": "association",
+      "from": "zxbcgp",
+      "to": "2apduj",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "7n5u5p",
+      "type": "association",
+      "from": "zxbcgp",
+      "to": "28edtj",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "uh362m",
+      "type": "association",
+      "from": "zxbcgp",
+      "to": "3hs352",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "jbvfxc",
+      "type": "association",
+      "from": "zxbcgp",
+      "to": "ypwkax",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "2wwpii",
+      "type": "association",
+      "from": "zxbcgp",
+      "to": "wjwb7s",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "kzgnbe",
+      "type": "association",
+      "from": "y5vetn",
+      "to": "wjwb7s",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "kw2ct7",
+      "type": "association",
+      "from": "zxbcgp",
+      "to": "awg62z",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "eajj4u",
+      "type": "association",
+      "from": "zxbcgp",
+      "to": "ef283q",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "zyi3h4",
+      "type": "association",
+      "from": "55iidn",
+      "to": "7jj4vw",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "v96e2b",
+      "type": "include",
+      "from": "sm2nxv",
+      "to": "7jj4vw",
+      "text": "«include»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "uhk4ya",
+      "type": "include",
+      "from": "2apduj",
+      "to": "rxed2w",
+      "text": "«include»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "v6kchm",
+      "type": "extend",
+      "from": "kctpnq",
+      "to": "xa4xza",
+      "text": "«extend» [in the issue's panel or tab]",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "wrbsjb",
+      "type": "extend",
+      "from": "wm38n5",
+      "to": "3hs352",
+      "text": "«extend» [you name the query]",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    }
+  ],
+  "bounds": {
+    "x": 130,
+    "y": 40,
+    "width": 1418,
+    "height": 1120,
+    "left": 130,
+    "top": 40,
+    "right": 1548,
+    "bottom": 1160,
+    "center": {
+      "x": 839,
+      "y": 600,
+      "length": 1031.4654623398692
+    }
+  }
+}

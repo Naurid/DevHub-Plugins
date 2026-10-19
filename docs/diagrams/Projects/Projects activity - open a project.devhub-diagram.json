@@ -1,0 +1,551 @@
+{
+  "schemaVersion": 1,
+  "kind": "activity",
+  "title": "Projects: from a folder to an open project",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "meievi",
+      "type": "lane",
+      "x": 40,
+      "y": 40,
+      "width": 340,
+      "height": 1606,
+      "rotation": 0,
+      "text": "You",
+      "props": {
+        "vertical": "true",
+        "fill": "#143574F0"
+      }
+    },
+    {
+      "id": "teiwpz",
+      "type": "lane",
+      "x": 380,
+      "y": 40,
+      "width": 590,
+      "height": 1606,
+      "rotation": 0,
+      "text": "Projects plugin",
+      "props": {
+        "vertical": "true",
+        "fill": "#14D98C1F"
+      }
+    },
+    {
+      "id": "t4rx8q",
+      "type": "lane",
+      "x": 970,
+      "y": 40,
+      "width": 590,
+      "height": 1606,
+      "rotation": 0,
+      "text": "File system and tools",
+      "props": {
+        "vertical": "true",
+        "fill": "#142E9E5B"
+      }
+    },
+    {
+      "id": "fhqvvs",
+      "type": "start",
+      "x": 197,
+      "y": 127,
+      "width": 26,
+      "height": 26,
+      "rotation": 0,
+      "text": "",
+      "parentId": "meievi",
+      "props": {}
+    },
+    {
+      "id": "bzgntd",
+      "type": "action",
+      "x": 90,
+      "y": 230,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Add Folder…: pick a folder",
+      "parentId": "meievi",
+      "props": {}
+    },
+    {
+      "id": "aedzny",
+      "type": "action",
+      "x": 555,
+      "y": 336,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Save it in the devhub.projects settings",
+      "parentId": "teiwpz",
+      "props": {}
+    },
+    {
+      "id": "gzwke9",
+      "type": "action",
+      "x": 1145,
+      "y": 448,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Look for folders with .git under it",
+      "parentId": "t4rx8q",
+      "props": {}
+    },
+    {
+      "id": "5d3mcd",
+      "type": "action",
+      "x": 1145,
+      "y": 553,
+      "width": 240,
+      "height": 70,
+      "rotation": 0,
+      "text": "Read the marker files at each top (Unity, .csproj, Cargo.toml, package.json…)",
+      "parentId": "t4rx8q",
+      "props": {}
+    },
+    {
+      "id": "e826t5",
+      "type": "action",
+      "x": 555,
+      "y": 672,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "List the repositories by folder, with their language",
+      "parentId": "teiwpz",
+      "props": {}
+    },
+    {
+      "id": "dt6eu8",
+      "type": "action",
+      "x": 90,
+      "y": 790,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Double-click a project",
+      "parentId": "meievi",
+      "props": {}
+    },
+    {
+      "id": "99diuu",
+      "type": "decision",
+      "x": 658,
+      "y": 907,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "teiwpz",
+      "props": {}
+    },
+    {
+      "id": "8hkp4x",
+      "type": "action",
+      "x": 420,
+      "y": 1008,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Open a repository tab (IProjectOpener)",
+      "parentId": "teiwpz",
+      "props": {}
+    },
+    {
+      "id": "y6ggu4",
+      "type": "action",
+      "x": 690,
+      "y": 1001,
+      "width": 240,
+      "height": 70,
+      "rotation": 0,
+      "text": "Pick the tool: your choice for the language, else the default policy",
+      "parentId": "teiwpz",
+      "props": {}
+    },
+    {
+      "id": "dmhrrv",
+      "type": "decision",
+      "x": 658,
+      "y": 1131,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "teiwpz",
+      "props": {}
+    },
+    {
+      "id": "3mfyqe",
+      "type": "action",
+      "x": 1010,
+      "y": 1238,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Start the tool on the folder",
+      "parentId": "t4rx8q",
+      "props": {}
+    },
+    {
+      "id": "p2hwuu",
+      "type": "action",
+      "x": 1280,
+      "y": 1232,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Open the folder with the program Windows associates",
+      "parentId": "t4rx8q",
+      "props": {}
+    },
+    {
+      "id": "kg2a9w",
+      "type": "decision",
+      "x": 658,
+      "y": 1355,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "teiwpz",
+      "props": {}
+    },
+    {
+      "id": "hppdzt",
+      "type": "end",
+      "x": 660,
+      "y": 1469,
+      "width": 30,
+      "height": 30,
+      "rotation": 0,
+      "text": "",
+      "parentId": "teiwpz",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "b8wn75",
+      "type": "flow",
+      "from": "fhqvvs",
+      "to": "bzgntd",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "5ghhtw",
+      "type": "flow",
+      "from": "bzgntd",
+      "to": "aedzny",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 308,
+          "length": 372.7787547594417
+        },
+        {
+          "x": 675,
+          "y": 308,
+          "length": 741.9494591951665
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "5ix2ht",
+      "type": "flow",
+      "from": "aedzny",
+      "to": "gzwke9",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 420,
+          "length": 795
+        },
+        {
+          "x": 1265,
+          "y": 420,
+          "length": 1332.9009715654047
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "pws2uk",
+      "type": "flow",
+      "from": "gzwke9",
+      "to": "5d3mcd",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "8e6u33",
+      "type": "flow",
+      "from": "5d3mcd",
+      "to": "e826t5",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 1265,
+          "y": 644,
+          "length": 1419.4932194272715
+        },
+        {
+          "x": 675,
+          "y": 644,
+          "length": 932.9314015510465
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "6c8ref",
+      "type": "flow",
+      "from": "e826t5",
+      "to": "dt6eu8",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 756,
+          "length": 1013.4895164726669
+        },
+        {
+          "x": 210,
+          "y": 756,
+          "length": 784.624751075315
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "ug6qmg",
+      "type": "flow",
+      "from": "dt6eu8",
+      "to": "99diuu",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 868,
+          "length": 893.0419922937555
+        },
+        {
+          "x": 675,
+          "y": 868,
+          "length": 1099.567642303101
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "dr88cq",
+      "type": "flow",
+      "from": "99diuu",
+      "to": "8hkp4x",
+      "text": "[Git is on]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 980,
+          "length": 1189.9684869777013
+        },
+        {
+          "x": 540,
+          "y": 980,
+          "length": 1118.9280584559492
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "z78rk7",
+      "type": "flow",
+      "from": "99diuu",
+      "to": "y6ggu4",
+      "text": "[otherwise]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 980,
+          "length": 1189.9684869777013
+        },
+        {
+          "x": 810,
+          "y": 980,
+          "length": 1271.416532848303
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "sxb5qm",
+      "type": "flow",
+      "from": "y6ggu4",
+      "to": "dmhrrv",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 810,
+          "y": 1092,
+          "length": 1359.6190642970553
+        },
+        {
+          "x": 675,
+          "y": 1092,
+          "length": 1283.779186620503
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "9q5sm5",
+      "type": "flow",
+      "from": "dmhrrv",
+      "to": "3mfyqe",
+      "text": "[installed]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 1204,
+          "length": 1380.304676511675
+        },
+        {
+          "x": 1130,
+          "y": 1204,
+          "length": 1651.216521235177
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "neyyag",
+      "type": "flow",
+      "from": "dmhrrv",
+      "to": "p2hwuu",
+      "text": "[not installed]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 1204,
+          "length": 1380.304676511675
+        },
+        {
+          "x": 1400,
+          "y": 1204,
+          "length": 1846.5145545053253
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "4n45fq",
+      "type": "flow",
+      "from": "8hkp4x",
+      "to": "kg2a9w",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 540,
+          "y": 1316,
+          "length": 1422.4823373244394
+        },
+        {
+          "x": 675,
+          "y": 1316,
+          "length": 1479.0135225886206
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "jf4986",
+      "type": "flow",
+      "from": "3mfyqe",
+      "to": "kg2a9w",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 1130,
+          "y": 1316,
+          "length": 1734.5766053997154
+        },
+        {
+          "x": 675,
+          "y": 1316,
+          "length": 1479.0135225886206
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "wk25mi",
+      "type": "flow",
+      "from": "p2hwuu",
+      "to": "kg2a9w",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 1400,
+          "y": 1316,
+          "length": 1921.4203080013492
+        },
+        {
+          "x": 675,
+          "y": 1316,
+          "length": 1479.0135225886206
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "498a5n",
+      "type": "flow",
+      "from": "kg2a9w",
+      "to": "hppdzt",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 40,
+    "y": 40,
+    "width": 1520,
+    "height": 1606,
+    "left": 40,
+    "top": 40,
+    "right": 1560,
+    "bottom": 1646,
+    "center": {
+      "x": 800,
+      "y": 843,
+      "length": 1162.1742554367654
+    }
+  }
+}

@@ -1,0 +1,359 @@
+{
+  "schemaVersion": 1,
+  "kind": "activity",
+  "title": "UML Diagrams: how a change is checked",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "v7nm3z",
+      "type": "lane",
+      "x": 40,
+      "y": 40,
+      "width": 340,
+      "height": 1158,
+      "rotation": 0,
+      "text": "You",
+      "props": {
+        "vertical": "true",
+        "fill": "#143574F0"
+      }
+    },
+    {
+      "id": "y3z9th",
+      "type": "lane",
+      "x": 380,
+      "y": 40,
+      "width": 340,
+      "height": 1158,
+      "rotation": 0,
+      "text": "Diagrams editor",
+      "props": {
+        "vertical": "true",
+        "fill": "#14D98C1F"
+      }
+    },
+    {
+      "id": "3hcryb",
+      "type": "lane",
+      "x": 720,
+      "y": 40,
+      "width": 340,
+      "height": 1158,
+      "rotation": 0,
+      "text": "UML kind",
+      "props": {
+        "vertical": "true",
+        "fill": "#142E9E5B"
+      }
+    },
+    {
+      "id": "xqjjnb",
+      "type": "start",
+      "x": 197,
+      "y": 127,
+      "width": 26,
+      "height": 26,
+      "rotation": 0,
+      "text": "",
+      "parentId": "v7nm3z",
+      "props": {}
+    },
+    {
+      "id": "mfedku",
+      "type": "action",
+      "x": 90,
+      "y": 224,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Change the diagram (add an «extend», a member line…)",
+      "parentId": "v7nm3z",
+      "props": {}
+    },
+    {
+      "id": "p7nsyr",
+      "type": "action",
+      "x": 430,
+      "y": 342,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Apply the operation",
+      "parentId": "y3z9th",
+      "props": {}
+    },
+    {
+      "id": "hdnxtj",
+      "type": "action",
+      "x": 770,
+      "y": 454,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "The kind's model runs its rules",
+      "parentId": "3hcryb",
+      "props": {}
+    },
+    {
+      "id": "694xda",
+      "type": "action",
+      "x": 770,
+      "y": 553,
+      "width": 240,
+      "height": 70,
+      "rotation": 0,
+      "text": "«extend» direction, one start, multiplicities, inheritance loops, member syntax",
+      "parentId": "3hcryb",
+      "props": {}
+    },
+    {
+      "id": "2guztw",
+      "type": "action",
+      "x": 430,
+      "y": 672,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Problems: errors, warnings, hints",
+      "parentId": "y3z9th",
+      "props": {}
+    },
+    {
+      "id": "rmrrbx",
+      "type": "decision",
+      "x": 533,
+      "y": 795,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "y3z9th",
+      "props": {}
+    },
+    {
+      "id": "u69c4v",
+      "type": "action",
+      "x": 90,
+      "y": 896,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Click one: its shapes are selected",
+      "parentId": "v7nm3z",
+      "props": {}
+    },
+    {
+      "id": "y5b8wp",
+      "type": "action",
+      "x": 770,
+      "y": 896,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Text exports read the same model (PlantUML, Mermaid)",
+      "parentId": "3hcryb",
+      "props": {}
+    },
+    {
+      "id": "sqkq6t",
+      "type": "end",
+      "x": 875,
+      "y": 1021,
+      "width": 30,
+      "height": 30,
+      "rotation": 0,
+      "text": "",
+      "parentId": "3hcryb",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "78h96v",
+      "type": "flow",
+      "from": "xqjjnb",
+      "to": "mfedku",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "m7tz9y",
+      "type": "flow",
+      "from": "mfedku",
+      "to": "p7nsyr",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 308,
+          "length": 372.7787547594417
+        },
+        {
+          "x": 550,
+          "y": 308,
+          "length": 630.3681464033538
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "d8xsdp",
+      "type": "flow",
+      "from": "p7nsyr",
+      "to": "hdnxtj",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 550,
+          "y": 420,
+          "length": 692.0260110718383
+        },
+        {
+          "x": 890,
+          "y": 420,
+          "length": 984.1239759298622
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "jy6mwm",
+      "type": "flow",
+      "from": "hdnxtj",
+      "to": "694xda",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "8vqzck",
+      "type": "flow",
+      "from": "694xda",
+      "to": "2guztw",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 890,
+          "y": 644,
+          "length": 1098.560876783804
+        },
+        {
+          "x": 550,
+          "y": 644,
+          "length": 846.8978686949212
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "xmcjae",
+      "type": "flow",
+      "from": "2guztw",
+      "to": "rmrrbx",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "hdcks3",
+      "type": "flow",
+      "from": "rmrrbx",
+      "to": "u69c4v",
+      "text": "[problems]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 550,
+          "y": 868,
+          "length": 1027.5816269280022
+        },
+        {
+          "x": 210,
+          "y": 868,
+          "length": 893.0419922937555
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "arkhd3",
+      "type": "flow",
+      "from": "u69c4v",
+      "to": "mfedku",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 968,
+          "length": 990.5170367035591
+        },
+        {
+          "x": 54,
+          "y": 968,
+          "length": 969.5050283520968
+        },
+        {
+          "x": 54,
+          "y": 252,
+          "length": 257.72077913897436
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "fy8cx7",
+      "type": "flow",
+      "from": "rmrrbx",
+      "to": "y5b8wp",
+      "text": "[none]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 550,
+          "y": 868,
+          "length": 1027.5816269280022
+        },
+        {
+          "x": 890,
+          "y": 868,
+          "length": 1243.1910553088774
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "tynppk",
+      "type": "flow",
+      "from": "y5b8wp",
+      "to": "sqkq6t",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 40,
+    "y": 40,
+    "width": 1020,
+    "height": 1158,
+    "left": 40,
+    "top": 40,
+    "right": 1060,
+    "bottom": 1198,
+    "center": {
+      "x": 550,
+      "y": 619,
+      "length": 828.0464962790435
+    }
+  }
+}

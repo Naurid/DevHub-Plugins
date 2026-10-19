@@ -1,0 +1,679 @@
+{
+  "schemaVersion": 1,
+  "kind": "class",
+  "title": "Board: main classes",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "usxwq4",
+      "type": "class",
+      "x": 727,
+      "y": 351,
+      "width": 281,
+      "height": 93,
+      "rotation": 0,
+      "text": "BoardPlugin",
+      "props": {
+        "attributes": "+ Info : PluginInfo\n+ Resources : IEnumerable<Uri>",
+        "operations": "+ ConfigureServices(services, context)",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "6qb6kd",
+      "type": "class",
+      "x": 489.5,
+      "y": 1536,
+      "width": 584,
+      "height": 246,
+      "rotation": 0,
+      "text": "BoardService",
+      "props": {
+        "attributes": "+ Providers : IReadOnlyList<IBoardStoreProvider>\n+ User : BoardUser\n+ RecentBoards : IReadOnlyList<RecentBoard>\n+ CompactCards : bool",
+        "operations": "+ Provider(kind : string) : IBoardStoreProvider\n+ AcquireAsync(location : BoardLocation, remember : bool) : Task<BoardContext>\n+ CreateAsync(location : BoardLocation, create : CreateBoard) : Task<BoardContext>\n+ Release(context : BoardContext)\n+ Remember(context : BoardContext)\n+ Forget(board : RecentBoard)\n+ LastBoardView(location : BoardLocation) : string\n+ SetLastBoardView(location : BoardLocation, boardId : string)",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "f6zxia",
+      "type": "class",
+      "x": 1058,
+      "y": 249,
+      "width": 350,
+      "height": 297,
+      "rotation": 0,
+      "text": "BoardDocumentViewModel",
+      "props": {
+        "attributes": "+ Location : BoardLocation\n+ Id : string\n+ Title : string\n+ Icon : string\n+ FillsEditorArea : bool\n+ ContextPath : string\n+ Context : BoardContext\n+ Boards : ObservableCollection<BoardDefinition>\n+ Pages : ObservableCollection<BoardPageTab>\n+ HasIssuePanel : bool",
+        "operations": "+ ShowIssue(issueId : string)\n+ ShowIssues(issueIds : IReadOnlyList<string>)\n+ OpenIssue(issueId : string)\n+ ShowSearch(query : string)\n+ GoToIssue(key : string) : bool",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "eunixv",
+      "type": "interface",
+      "x": 137.5,
+      "y": 0,
+      "width": 370,
+      "height": 159,
+      "rotation": 0,
+      "text": "IBoardPageProvider",
+      "props": {
+        "attributes": "+ Id : string\n+ Title : string\n+ Order : int\n+ Replaces : string",
+        "operations": "+ AppliesTo(definition : BoardDefinition) : bool\n+ Create(host : BoardPageHost) : BoardPageViewModel",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "vp5xvd",
+      "type": "class",
+      "x": 972,
+      "y": 636,
+      "width": 191,
+      "height": 144,
+      "rotation": 0,
+      "text": "BoardPageViewModel",
+      "props": {
+        "attributes": "+ Host : BoardPageHost\n+ Context : BoardContext\n+ abstract Title : string",
+        "operations": "+ OnBoardChanged()\n+ OnSearch(text : string)\n+ OnShown(shown : bool)",
+        "showAttributes": "true",
+        "showOperations": "true",
+        "abstract": "true"
+      }
+    },
+    {
+      "id": "f69m34",
+      "type": "class",
+      "x": 896,
+      "y": 870,
+      "width": 343,
+      "height": 155,
+      "rotation": 0,
+      "text": "BoardPageHost",
+      "props": {
+        "attributes": "+ Context : BoardContext\n+ SelectIssue : Action<string>\n+ SelectIssues : Action<IReadOnlyList<string>>\n+ OpenIssue : Action<string>\n+ CreateIssue : Func<CreateIssueDefaults, Task>\n+ ShowPage : Action<string>\n+ Definition : BoardDefinition",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "9ic5ri",
+      "type": "interface",
+      "x": 967.5,
+      "y": 34,
+      "width": 529,
+      "height": 91,
+      "rotation": 0,
+      "text": "IIssueSectionProvider",
+      "props": {
+        "attributes": "+ Order : int",
+        "operations": "+ Create(context : BoardContext, issueId : string) : IssueSectionViewModel",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "iwptns",
+      "type": "class",
+      "x": 879,
+      "y": 1115,
+      "width": 377,
+      "height": 331,
+      "rotation": 0,
+      "text": "BoardContext",
+      "props": {
+        "attributes": "+ Location : BoardLocation\n+ Session : BoardSession\n+ Service : BoardService\n+ Dialogs : IDialogService\n+ Status : IStatusService\n+ Project : BoardProject\n+ Me : string\n+ Title : string\n+ Snapshot : BoardSnapshot",
+        "operations": "+ QueryContext() : QueryContext\n+ RunAsync(operation : IBoardOperation) : Task<bool>\n+ UndoAsync() : Task\n+ ReloadAsync() : Task\n+ PersonName(id : string) : string\n+ StatusName(id : string) : string\n+ TypeName(id : string) : string\n+ PriorityName(id : string) : string",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "xsadbx",
+      "type": "class",
+      "x": 1123.5,
+      "y": 1553,
+      "width": 522,
+      "height": 212,
+      "rotation": 0,
+      "text": "BoardSession",
+      "props": {
+        "attributes": "+ Snapshot : BoardSnapshot\n+ Store : IBoardStore\n+ CurrentPersonId : string\n+ NewId : Func<string>\n+ UndoDescription : string",
+        "operations": "+ static OpenAsync(store, user, time, ct) : Task<BoardSession>\n+ static CreateAsync(store, create, time, newId, ct) : Task<BoardSession>\n+ ApplyAsync(operation, ct) : Task<BoardChange>\n+ ReloadAsync(ct : CancellationToken) : Task\n+ UndoAsync(ct : CancellationToken) : Task",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "v6xyrp",
+      "type": "class",
+      "x": 603,
+      "y": 1872,
+      "width": 474,
+      "height": 348,
+      "rotation": 0,
+      "text": "BoardSnapshot",
+      "props": {
+        "attributes": "+ Version : string\n+ Files : ImmutableDictionary<string, byte[]>\n+ Project : BoardProject\n+ Issues : ImmutableDictionary<string, Issue>\n+ Workflows : ImmutableDictionary<string, Workflow>\n+ Boards : ImmutableDictionary<string, BoardDefinition>\n+ Versions : ImmutableDictionary<string, FixVersion>\n+ Sprints : ImmutableDictionary<string, Sprint>\n+ Filters : ImmutableDictionary<string, SavedFilter>\n+ Problems : ImmutableDictionary<string, string>",
+        "operations": "+ static Load(files : BoardFiles) : BoardSnapshot\n+ Apply(change : BoardChange, newVersion : string) : BoardSnapshot\n+ Issue(id : string) : Issue\n+ IssueByKey(key : string) : Issue\n+ ChildrenOf(id : string) : IReadOnlyList<Issue>\n+ WorkflowFor(issueTypeId : string) : Workflow\n+ CategoryOf(issue : Issue) : StatusCategory\n+ IsDone(issue : Issue) : bool",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "7ix3e4",
+      "type": "interface",
+      "x": 1546.5,
+      "y": 45.5,
+      "width": 274,
+      "height": 68,
+      "rotation": 0,
+      "text": "IBoardOperation",
+      "props": {
+        "attributes": "",
+        "operations": "+ Apply(board, context) : BoardChange",
+        "showAttributes": "false",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "6t85jj",
+      "type": "interface",
+      "x": 1127,
+      "y": 1992,
+      "width": 405,
+      "height": 108,
+      "rotation": 0,
+      "text": "IBoardStore",
+      "props": {
+        "attributes": "+ DisplayLocation : string",
+        "operations": "+ LoadAsync(ct : CancellationToken) : Task<BoardFiles>\n+ WriteAsync(change, expectedVersion, ct) : Task<string>",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "4cat2g",
+      "type": "class",
+      "x": 1730,
+      "y": 2428,
+      "width": 405,
+      "height": 127,
+      "rotation": 0,
+      "text": "FolderBoardStore",
+      "props": {
+        "attributes": "+ Folder : string\n+ DisplayLocation : string",
+        "operations": "+ static HasBoard(folder : string) : bool\n+ LoadAsync(ct : CancellationToken) : Task<BoardFiles>\n+ WriteAsync(change, expectedVersion, ct) : Task<string>",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "7rt6sv",
+      "type": "class",
+      "x": 0,
+      "y": 2310,
+      "width": 343,
+      "height": 363,
+      "rotation": 0,
+      "text": "BoardProject",
+      "props": {
+        "attributes": "+ Schema : int\n+ Key : string\n+ Name : string\n+ NextNumber : int\n+ IssueTypes : IReadOnlyList<IssueType>\n+ Statuses : IReadOnlyList<Status>\n+ Priorities : IReadOnlyList<Priority>\n+ Resolutions : IReadOnlyList<Resolution>\n+ LinkTypes : IReadOnlyList<LinkType>\n+ CustomFields : IReadOnlyList<FieldDefinition>",
+        "operations": "+ IssueType(id : string) : IssueType\n+ Status(id : string) : Status\n+ Priority(id : string) : Priority\n+ Resolution(id : string) : Resolution\n+ LinkType(id : string) : LinkType\n+ CustomField(id : string) : FieldDefinition\n+ Component(id : string) : Component\n+ Person(id : string) : BoardPerson",
+        "showAttributes": "true",
+        "showOperations": "true",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "k77tyt",
+      "type": "class",
+      "x": 393,
+      "y": 2369.5,
+      "width": 315,
+      "height": 244,
+      "rotation": 0,
+      "text": "BoardDefinition",
+      "props": {
+        "attributes": "+ Schema : int\n+ Id : string\n+ Name : string\n+ Kind : BoardKind\n+ Columns : IReadOnlyList<BoardColumn>\n+ Filter : string\n+ HideSubtasks : bool\n+ HideEpics : bool\n+ HideDoneAfterDays : int?\n+ Swimlanes : SwimlaneMode",
+        "operations": "+ ColumnOf(statusId : string) : BoardColumn",
+        "showAttributes": "true",
+        "showOperations": "true",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "mz3qps",
+      "type": "class",
+      "x": 758,
+      "y": 2381,
+      "width": 246,
+      "height": 221,
+      "rotation": 0,
+      "text": "Issue",
+      "props": {
+        "attributes": "+ Schema : int\n+ Id : string\n+ Key : string\n+ OldKeys : IReadOnlyList<string>\n+ Type : string\n+ Summary : string\n+ Description : string\n+ Status : string\n+ Resolution : string\n+ Priority : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "ptbxc3",
+      "type": "class",
+      "x": 1054,
+      "y": 2386.5,
+      "width": 357,
+      "height": 210,
+      "rotation": 0,
+      "text": "Workflow",
+      "props": {
+        "attributes": "+ Schema : int\n+ Id : string\n+ Name : string\n+ Statuses : IReadOnlyList<string>\n+ AnyToAny : bool\n+ Transitions : IReadOnlyList<WorkflowTransition>\n+ Extra : Dictionary<string, JsonElement>\n+ InitialStatus : string",
+        "operations": "+ Allows(from : string, to : string) : bool",
+        "showAttributes": "true",
+        "showOperations": "true",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "hbq72p",
+      "type": "class",
+      "x": 1461,
+      "y": 2381,
+      "width": 219,
+      "height": 221,
+      "rotation": 0,
+      "text": "Sprint",
+      "props": {
+        "attributes": "+ Schema : int\n+ Id : string\n+ Name : string\n+ Goal : string\n+ State : SprintState\n+ Sequence : int\n+ Start : DateTimeOffset?\n+ End : DateTimeOffset?\n+ Completed : DateTimeOffset?\n+ Capacity : double?",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "3e2quw",
+      "type": "interface",
+      "x": 557.5,
+      "y": 57,
+      "width": 120,
+      "height": 45,
+      "rotation": 0,
+      "text": "IPlugin",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "39xdxq",
+      "type": "class",
+      "x": 727.5,
+      "y": 59,
+      "width": 190,
+      "height": 41,
+      "rotation": 0,
+      "text": "DocumentViewModelBase",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "9xn4kg",
+      "type": "class",
+      "x": 1870.5,
+      "y": 59,
+      "width": 127,
+      "height": 41,
+      "rotation": 0,
+      "text": "ViewModelBase",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "ishg6c",
+      "type": "note",
+      "x": 0,
+      "y": 2723,
+      "width": 620,
+      "height": 76,
+      "rotation": 0,
+      "text": "Read from DevHub.Board.dll, DevHub.Board.Core.dll: each type's own public members (up to 10 properties and 8 methods). Grey: from the Sdk or another plugin.",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "xtj285",
+      "type": "realization",
+      "from": "usxwq4",
+      "to": "3e2quw",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "wvjcsb",
+      "type": "generalization",
+      "from": "f6zxia",
+      "to": "39xdxq",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "psfv3e",
+      "type": "association",
+      "from": "f6zxia",
+      "to": "iwptns",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Context"
+      }
+    },
+    {
+      "id": "dctz4z",
+      "type": "association",
+      "from": "f6zxia",
+      "to": "k77tyt",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Boards"
+      }
+    },
+    {
+      "id": "kvjgmu",
+      "type": "association",
+      "from": "f6zxia",
+      "to": "vp5xvd",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Page"
+      }
+    },
+    {
+      "id": "frbqzg",
+      "type": "generalization",
+      "from": "vp5xvd",
+      "to": "9xn4kg",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "hm3vdp",
+      "type": "association",
+      "from": "vp5xvd",
+      "to": "f69m34",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Host"
+      }
+    },
+    {
+      "id": "g3s6is",
+      "type": "association",
+      "from": "vp5xvd",
+      "to": "iwptns",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Context"
+      }
+    },
+    {
+      "id": "xgbmvf",
+      "type": "association",
+      "from": "f69m34",
+      "to": "iwptns",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Context"
+      }
+    },
+    {
+      "id": "yvc8p8",
+      "type": "association",
+      "from": "f69m34",
+      "to": "k77tyt",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Definition"
+      }
+    },
+    {
+      "id": "nrvir4",
+      "type": "association",
+      "from": "iwptns",
+      "to": "xsadbx",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Session"
+      }
+    },
+    {
+      "id": "xwcb5v",
+      "type": "association",
+      "from": "iwptns",
+      "to": "6qb6kd",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Service"
+      }
+    },
+    {
+      "id": "p5sm8c",
+      "type": "association",
+      "from": "iwptns",
+      "to": "7rt6sv",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Project"
+      }
+    },
+    {
+      "id": "wp4v9p",
+      "type": "association",
+      "from": "iwptns",
+      "to": "v6xyrp",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Snapshot"
+      }
+    },
+    {
+      "id": "jq5wyv",
+      "type": "association",
+      "from": "xsadbx",
+      "to": "v6xyrp",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Snapshot"
+      }
+    },
+    {
+      "id": "upsv8e",
+      "type": "association",
+      "from": "xsadbx",
+      "to": "6t85jj",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Store"
+      }
+    },
+    {
+      "id": "87hvv2",
+      "type": "association",
+      "from": "v6xyrp",
+      "to": "7rt6sv",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Project"
+      }
+    },
+    {
+      "id": "88k5ki",
+      "type": "association",
+      "from": "v6xyrp",
+      "to": "mz3qps",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Issues"
+      }
+    },
+    {
+      "id": "a3hisd",
+      "type": "association",
+      "from": "v6xyrp",
+      "to": "ptbxc3",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Workflows"
+      }
+    },
+    {
+      "id": "2d85th",
+      "type": "association",
+      "from": "v6xyrp",
+      "to": "k77tyt",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Boards"
+      }
+    },
+    {
+      "id": "f524k8",
+      "type": "association",
+      "from": "v6xyrp",
+      "to": "hbq72p",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Sprints"
+      }
+    },
+    {
+      "id": "wwmrbn",
+      "type": "realization",
+      "from": "4cat2g",
+      "to": "6t85jj",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 0,
+    "y": 0,
+    "width": 2135,
+    "height": 2799,
+    "left": 0,
+    "top": 0,
+    "right": 2135,
+    "bottom": 2799,
+    "center": {
+      "x": 1067.5,
+      "y": 1399.5,
+      "length": 1760.1580894908275
+    }
+  }
+}

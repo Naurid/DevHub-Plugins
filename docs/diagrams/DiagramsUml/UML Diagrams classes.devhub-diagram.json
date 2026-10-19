@@ -1,0 +1,659 @@
+{
+  "schemaVersion": 1,
+  "kind": "class",
+  "title": "UML Diagrams: main classes",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "ajnw5b",
+      "type": "class",
+      "x": 0,
+      "y": 351,
+      "width": 281,
+      "height": 76,
+      "rotation": 0,
+      "text": "DiagramsUmlPlugin",
+      "props": {
+        "attributes": "+ Info : PluginInfo",
+        "operations": "+ ConfigureServices(services, context)",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "uyah4d",
+      "type": "class",
+      "x": 331,
+      "y": 351,
+      "width": 432,
+      "height": 195,
+      "rotation": 0,
+      "text": "UseCaseKind",
+      "props": {
+        "attributes": "+ Model : IDiagramKindModel\n+ IconKind : string\n+ Order : int\n+ DiagramFields : IReadOnlyList<PropertyField>",
+        "operations": "+ NodeFields(n : DiagramNode) : IReadOnlyList<PropertyField>\n+ EdgeFields(e : DiagramEdge) : IReadOnlyList<PropertyField>\n+ DrawNode(s, d, n)\n+ DrawEdge(s, d, e, path)\n+ Fit(n : DiagramNode, m : IDiagramSurface) : DRect?",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "7a63nc",
+      "type": "class",
+      "x": 813,
+      "y": 351,
+      "width": 432,
+      "height": 195,
+      "rotation": 0,
+      "text": "ActivityKind",
+      "props": {
+        "attributes": "+ Model : IDiagramKindModel\n+ IconKind : string\n+ Order : int\n+ DiagramFields : IReadOnlyList<PropertyField>",
+        "operations": "+ NodeFields(n : DiagramNode) : IReadOnlyList<PropertyField>\n+ EdgeFields(e : DiagramEdge) : IReadOnlyList<PropertyField>\n+ DrawNode(s, d, n)\n+ DrawEdge(s, d, e, path)\n+ Fit(n : DiagramNode, m : IDiagramSurface) : DRect?",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "p886gy",
+      "type": "class",
+      "x": 1295,
+      "y": 351,
+      "width": 432,
+      "height": 212,
+      "rotation": 0,
+      "text": "ClassKind",
+      "props": {
+        "attributes": "+ Model : IDiagramKindModel\n+ IconKind : string\n+ Order : int",
+        "operations": "+ MultilineText(n : DiagramNode) : bool\n+ NodeFields(n : DiagramNode) : IReadOnlyList<PropertyField>\n+ EdgeFields(e : DiagramEdge) : IReadOnlyList<PropertyField>\n+ HiddenText(d, n, measure) : string\n+ DrawNode(s, d, n)\n+ Fit(n : DiagramNode, m : IDiagramSurface) : DRect?\n+ DrawEdge(s, d, e, path)",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "ves5ka",
+      "type": "class",
+      "x": 1777,
+      "y": 351,
+      "width": 432,
+      "height": 178,
+      "rotation": 0,
+      "text": "SequenceKind",
+      "props": {
+        "attributes": "+ Model : IDiagramKindModel\n+ IconKind : string\n+ Order : int",
+        "operations": "+ NodeFields(n : DiagramNode) : IReadOnlyList<PropertyField>\n+ EdgeFields(e : DiagramEdge) : IReadOnlyList<PropertyField>\n+ DrawNode(s, d, n)\n+ DrawEdge(s, d, e, path)\n+ LabelAnchor(d, e, path) : DPoint",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "a5is4j",
+      "type": "class",
+      "x": 0,
+      "y": 633,
+      "width": 432,
+      "height": 161,
+      "rotation": 0,
+      "text": "StateKind",
+      "props": {
+        "attributes": "+ Model : IDiagramKindModel\n+ IconKind : string\n+ Order : int",
+        "operations": "+ NodeFields(n : DiagramNode) : IReadOnlyList<PropertyField>\n+ EdgeFields(e : DiagramEdge) : IReadOnlyList<PropertyField>\n+ DrawNode(s, d, n)\n+ Fit(n : DiagramNode, m : IDiagramSurface) : DRect?",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "4egip9",
+      "type": "class",
+      "x": 482,
+      "y": 633,
+      "width": 267,
+      "height": 127,
+      "rotation": 0,
+      "text": "StructureKind",
+      "props": {
+        "attributes": "+ Model : IDiagramKindModel\n+ IconKind : string\n+ Order : int",
+        "operations": "+ HiddenText(d, n, measure) : string\n+ DrawNode(s, d, n)",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "j3w2yv",
+      "type": "class",
+      "x": 182,
+      "y": 1019,
+      "width": 384,
+      "height": 195,
+      "rotation": 0,
+      "text": "UseCaseModel",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Description : string\n+ NodeTypes : IReadOnlyList<NodeTypeInfo>\n+ EdgeTypes : IReadOnlyList<EdgeTypeInfo>\n+ Rules : IReadOnlyList<IDiagramRule>\n+ TextExporters : IReadOnlyList<IDiagramTextExporter>\n+ Samples : IReadOnlyList<DiagramSample>",
+        "operations": "+ Create(title : string) : Diagram",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "f2cnid",
+      "type": "class",
+      "x": 616,
+      "y": 1019,
+      "width": 384,
+      "height": 195,
+      "rotation": 0,
+      "text": "ActivityModel",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Description : string\n+ NodeTypes : IReadOnlyList<NodeTypeInfo>\n+ EdgeTypes : IReadOnlyList<EdgeTypeInfo>\n+ Rules : IReadOnlyList<IDiagramRule>\n+ TextExporters : IReadOnlyList<IDiagramTextExporter>\n+ Samples : IReadOnlyList<DiagramSample>",
+        "operations": "+ Create(title : string) : Diagram",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "mb49hw",
+      "type": "class",
+      "x": 1050,
+      "y": 1019,
+      "width": 384,
+      "height": 195,
+      "rotation": 0,
+      "text": "ClassModel",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Description : string\n+ NodeTypes : IReadOnlyList<NodeTypeInfo>\n+ EdgeTypes : IReadOnlyList<EdgeTypeInfo>\n+ Rules : IReadOnlyList<IDiagramRule>\n+ TextExporters : IReadOnlyList<IDiagramTextExporter>\n+ Samples : IReadOnlyList<DiagramSample>",
+        "operations": "+ Create(title : string) : Diagram",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "edpqms",
+      "type": "class",
+      "x": 1484,
+      "y": 1019,
+      "width": 474,
+      "height": 246,
+      "rotation": 0,
+      "text": "SequenceModel",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Description : string\n+ NodeTypes : IReadOnlyList<NodeTypeInfo>\n+ EdgeTypes : IReadOnlyList<EdgeTypeInfo>\n+ Rules : IReadOnlyList<IDiagramRule>\n+ TextExporters : IReadOnlyList<IDiagramTextExporter>\n+ Samples : IReadOnlyList<DiagramSample>",
+        "operations": "+ Create(title : string) : Diagram\n+ static MessageY(d : Diagram, e : DiagramEdge) : double\n+ static Ordered(d : Diagram) : IReadOnlyList<DiagramEdge>\n+ CustomPath(d : Diagram, e : DiagramEdge) : IReadOnlyList<DPoint>",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "2ra3tz",
+      "type": "class",
+      "x": 2008,
+      "y": 1019,
+      "width": 384,
+      "height": 195,
+      "rotation": 0,
+      "text": "StateModel",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Description : string\n+ NodeTypes : IReadOnlyList<NodeTypeInfo>\n+ EdgeTypes : IReadOnlyList<EdgeTypeInfo>\n+ Rules : IReadOnlyList<IDiagramRule>\n+ TextExporters : IReadOnlyList<IDiagramTextExporter>\n+ Samples : IReadOnlyList<DiagramSample>",
+        "operations": "+ Create(title : string) : Diagram",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "bg9cjt",
+      "type": "class",
+      "x": 182,
+      "y": 1335,
+      "width": 384,
+      "height": 195,
+      "rotation": 0,
+      "text": "StructureModel",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Description : string\n+ NodeTypes : IReadOnlyList<NodeTypeInfo>\n+ EdgeTypes : IReadOnlyList<EdgeTypeInfo>\n+ Rules : IReadOnlyList<IDiagramRule>\n+ TextExporters : IReadOnlyList<IDiagramTextExporter>\n+ Samples : IReadOnlyList<DiagramSample>",
+        "operations": "+ Create(title : string) : Diagram",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "asq3sw",
+      "type": "class",
+      "x": 1137.5,
+      "y": 0,
+      "width": 370,
+      "height": 261,
+      "rotation": 0,
+      "text": "ClassMember",
+      "props": {
+        "attributes": "+ Visibility : char\n+ Name : string\n+ Parameters : string\n+ Type : string\n+ Default : string\n+ IsStatic : bool\n+ IsAbstract : bool\n+ IsOperation : bool\n+ Display : string",
+        "operations": "+ static Parse(line : string) : ClassMember\n+ ToLine() : string\n+ static Lines(text : string) : IEnumerable<string>",
+        "showAttributes": "true",
+        "showOperations": "true",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "xhfbr7",
+      "type": "class",
+      "x": 1391.5,
+      "y": 1755,
+      "width": 225,
+      "height": 93,
+      "rotation": 0,
+      "text": "ClassPlantUml",
+      "props": {
+        "attributes": "+ Name : string\n+ Extension : string",
+        "operations": "+ Export(d : Diagram) : string",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "st9t4h",
+      "type": "interface",
+      "x": 1557.5,
+      "y": 108,
+      "width": 120,
+      "height": 45,
+      "rotation": 0,
+      "text": "IPlugin",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "ueym3x",
+      "type": "class",
+      "x": 1727.5,
+      "y": 110,
+      "width": 143,
+      "height": 41,
+      "rotation": 0,
+      "text": "DiagramKindBase",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "vjmuv3",
+      "type": "interface",
+      "x": 1424.5,
+      "y": 884,
+      "width": 159,
+      "height": 45,
+      "rotation": 0,
+      "text": "IDiagramKindModel",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "kjm27z",
+      "type": "interface",
+      "x": 1413,
+      "y": 1620,
+      "width": 182,
+      "height": 45,
+      "rotation": 0,
+      "text": "IDiagramTextExporter",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "9aeh8x",
+      "type": "note",
+      "x": 0,
+      "y": 1898,
+      "width": 620,
+      "height": 76,
+      "rotation": 0,
+      "text": "Read from DevHub.Diagrams.Uml.dll, DevHub.Diagrams.Uml.Core.dll: each type's own public members (up to 10 properties and 8 methods). Grey: from the Sdk or another plugin.",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "tiq3rj",
+      "type": "realization",
+      "from": "ajnw5b",
+      "to": "st9t4h",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "v42gv3",
+      "type": "generalization",
+      "from": "uyah4d",
+      "to": "ueym3x",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "k6h26v",
+      "type": "association",
+      "from": "uyah4d",
+      "to": "vjmuv3",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Model"
+      }
+    },
+    {
+      "id": "32qy6r",
+      "type": "generalization",
+      "from": "7a63nc",
+      "to": "ueym3x",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ffiy9g",
+      "type": "association",
+      "from": "7a63nc",
+      "to": "vjmuv3",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Model"
+      }
+    },
+    {
+      "id": "c5vqmt",
+      "type": "generalization",
+      "from": "p886gy",
+      "to": "ueym3x",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "pickfu",
+      "type": "association",
+      "from": "p886gy",
+      "to": "vjmuv3",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Model"
+      }
+    },
+    {
+      "id": "jvkp7x",
+      "type": "generalization",
+      "from": "ves5ka",
+      "to": "ueym3x",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "47avpc",
+      "type": "association",
+      "from": "ves5ka",
+      "to": "vjmuv3",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Model"
+      }
+    },
+    {
+      "id": "xk432d",
+      "type": "generalization",
+      "from": "a5is4j",
+      "to": "ueym3x",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "pefqkh",
+      "type": "association",
+      "from": "a5is4j",
+      "to": "vjmuv3",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Model"
+      }
+    },
+    {
+      "id": "szegmi",
+      "type": "generalization",
+      "from": "4egip9",
+      "to": "ueym3x",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "kdiibu",
+      "type": "association",
+      "from": "4egip9",
+      "to": "vjmuv3",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Model"
+      }
+    },
+    {
+      "id": "qpmrfd",
+      "type": "realization",
+      "from": "j3w2yv",
+      "to": "vjmuv3",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "nw8pj8",
+      "type": "association",
+      "from": "j3w2yv",
+      "to": "kjm27z",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "TextExporters"
+      }
+    },
+    {
+      "id": "yjcqws",
+      "type": "realization",
+      "from": "f2cnid",
+      "to": "vjmuv3",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "6j6zpi",
+      "type": "association",
+      "from": "f2cnid",
+      "to": "kjm27z",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "TextExporters"
+      }
+    },
+    {
+      "id": "nr5x2a",
+      "type": "realization",
+      "from": "mb49hw",
+      "to": "vjmuv3",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "dxc7xt",
+      "type": "association",
+      "from": "mb49hw",
+      "to": "kjm27z",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "TextExporters"
+      }
+    },
+    {
+      "id": "bwmxh2",
+      "type": "realization",
+      "from": "edpqms",
+      "to": "vjmuv3",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "mrr6ut",
+      "type": "association",
+      "from": "edpqms",
+      "to": "kjm27z",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "TextExporters"
+      }
+    },
+    {
+      "id": "3n6v8y",
+      "type": "realization",
+      "from": "2ra3tz",
+      "to": "vjmuv3",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "nmzys2",
+      "type": "association",
+      "from": "2ra3tz",
+      "to": "kjm27z",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "TextExporters"
+      }
+    },
+    {
+      "id": "qtx4it",
+      "type": "realization",
+      "from": "bg9cjt",
+      "to": "vjmuv3",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "nqc3xp",
+      "type": "association",
+      "from": "bg9cjt",
+      "to": "kjm27z",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "TextExporters"
+      }
+    },
+    {
+      "id": "6n7gns",
+      "type": "realization",
+      "from": "xhfbr7",
+      "to": "kjm27z",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 0,
+    "y": 0,
+    "width": 2392,
+    "height": 1974,
+    "left": 0,
+    "top": 0,
+    "right": 2392,
+    "bottom": 1974,
+    "center": {
+      "x": 1196,
+      "y": 987,
+      "length": 1550.6724347843422
+    }
+  }
+}

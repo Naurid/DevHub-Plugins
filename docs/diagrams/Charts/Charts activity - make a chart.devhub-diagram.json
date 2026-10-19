@@ -1,0 +1,482 @@
+{
+  "schemaVersion": 1,
+  "kind": "activity",
+  "title": "Charts: from a table to an image",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "mqmz2x",
+      "type": "lane",
+      "x": 40,
+      "y": 40,
+      "width": 340,
+      "height": 1718,
+      "rotation": 0,
+      "text": "You",
+      "props": {
+        "vertical": "true",
+        "fill": "#143574F0"
+      }
+    },
+    {
+      "id": "cjxh5p",
+      "type": "lane",
+      "x": 380,
+      "y": 40,
+      "width": 590,
+      "height": 1718,
+      "rotation": 0,
+      "text": "Charts plugin",
+      "props": {
+        "vertical": "true",
+        "fill": "#14D98C1F"
+      }
+    },
+    {
+      "id": "csb9ye",
+      "type": "start",
+      "x": 197,
+      "y": 127,
+      "width": 26,
+      "height": 26,
+      "rotation": 0,
+      "text": "",
+      "parentId": "mqmz2x",
+      "props": {}
+    },
+    {
+      "id": "rqxrey",
+      "type": "action",
+      "x": 90,
+      "y": 230,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Open the Chart Maker",
+      "parentId": "mqmz2x",
+      "props": {}
+    },
+    {
+      "id": "6xp5ja",
+      "type": "action",
+      "x": 90,
+      "y": 336,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Paste a table (Excel, Sheets, CSV)",
+      "parentId": "mqmz2x",
+      "props": {}
+    },
+    {
+      "id": "4v3jmz",
+      "type": "action",
+      "x": 555,
+      "y": 448,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Read it: tabs or CSV, numbers as people type them",
+      "parentId": "cjxh5p",
+      "props": {}
+    },
+    {
+      "id": "34qk2d",
+      "type": "decision",
+      "x": 658,
+      "y": 571,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "cjxh5p",
+      "props": {}
+    },
+    {
+      "id": "6anymm",
+      "type": "action",
+      "x": 555,
+      "y": 672,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Leave out the cells that aren't numbers",
+      "parentId": "cjxh5p",
+      "props": {}
+    },
+    {
+      "id": "g42kmf",
+      "type": "decision",
+      "x": 658,
+      "y": 795,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "cjxh5p",
+      "props": {}
+    },
+    {
+      "id": "vpre6u",
+      "type": "action",
+      "x": 555,
+      "y": 896,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Offer the chart types that fit the data",
+      "parentId": "cjxh5p",
+      "props": {}
+    },
+    {
+      "id": "24j2p2",
+      "type": "action",
+      "x": 90,
+      "y": 1008,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Pick a type, titles and series styles",
+      "parentId": "mqmz2x",
+      "props": {}
+    },
+    {
+      "id": "p5z376",
+      "type": "action",
+      "x": 555,
+      "y": 1126,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Draw it with the Sdk's charts",
+      "parentId": "cjxh5p",
+      "props": {}
+    },
+    {
+      "id": "q4ss8j",
+      "type": "decision",
+      "x": 193,
+      "y": 1243,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "mqmz2x",
+      "props": {}
+    },
+    {
+      "id": "58vnn7",
+      "type": "action",
+      "x": 420,
+      "y": 1350,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Write <name>.devhub-chart.json",
+      "parentId": "cjxh5p",
+      "props": {}
+    },
+    {
+      "id": "3y8va5",
+      "type": "action",
+      "x": 690,
+      "y": 1350,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "PNG or copy as an image",
+      "parentId": "cjxh5p",
+      "props": {}
+    },
+    {
+      "id": "cxp335",
+      "type": "decision",
+      "x": 193,
+      "y": 1467,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "mqmz2x",
+      "props": {}
+    },
+    {
+      "id": "nvktjv",
+      "type": "end",
+      "x": 195,
+      "y": 1581,
+      "width": 30,
+      "height": 30,
+      "rotation": 0,
+      "text": "",
+      "parentId": "mqmz2x",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "egrezx",
+      "type": "flow",
+      "from": "csb9ye",
+      "to": "rqxrey",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "kzenrp",
+      "type": "flow",
+      "from": "rqxrey",
+      "to": "6xp5ja",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "nkcbzu",
+      "type": "flow",
+      "from": "6xp5ja",
+      "to": "4v3jmz",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 420,
+          "length": 469.5742752749558
+        },
+        {
+          "x": 675,
+          "y": 420,
+          "length": 795
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "74whyz",
+      "type": "flow",
+      "from": "4v3jmz",
+      "to": "34qk2d",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "8hwyfx",
+      "type": "flow",
+      "from": "34qk2d",
+      "to": "6anymm",
+      "text": "[some cells unreadable]",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "wpb7p9",
+      "type": "flow",
+      "from": "6anymm",
+      "to": "g42kmf",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "rfun2b",
+      "type": "flow",
+      "from": "34qk2d",
+      "to": "g42kmf",
+      "text": "[all read]",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "r4xm32",
+      "type": "flow",
+      "from": "g42kmf",
+      "to": "vpre6u",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "bu36ci",
+      "type": "flow",
+      "from": "vpre6u",
+      "to": "24j2p2",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 980,
+          "length": 1189.9684869777013
+        },
+        {
+          "x": 210,
+          "y": 980,
+          "length": 1002.2474744293447
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "zsiqkw",
+      "type": "flow",
+      "from": "24j2p2",
+      "to": "p5z376",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 1092,
+          "length": 1112.008992769393
+        },
+        {
+          "x": 675,
+          "y": 1092,
+          "length": 1283.779186620503
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "22t3gf",
+      "type": "flow",
+      "from": "p5z376",
+      "to": "q4ss8j",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 1204,
+          "length": 1380.304676511675
+        },
+        {
+          "x": 210,
+          "y": 1204,
+          "length": 1222.1767466287354
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "kbimdu",
+      "type": "flow",
+      "from": "q4ss8j",
+      "to": "58vnn7",
+      "text": "[save]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 1316,
+          "length": 1332.6499915581735
+        },
+        {
+          "x": 540,
+          "y": 1316,
+          "length": 1422.4823373244394
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "tdab3t",
+      "type": "flow",
+      "from": "q4ss8j",
+      "to": "3y8va5",
+      "text": "[export]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 1316,
+          "length": 1332.6499915581735
+        },
+        {
+          "x": 810,
+          "y": 1316,
+          "length": 1545.3012651259949
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "xcmqhr",
+      "type": "flow",
+      "from": "58vnn7",
+      "to": "cxp335",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 540,
+          "y": 1428,
+          "length": 1526.690538386873
+        },
+        {
+          "x": 210,
+          "y": 1428,
+          "length": 1443.3585833049249
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "6rgj8t",
+      "type": "flow",
+      "from": "3y8va5",
+      "to": "cxp335",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 810,
+          "y": 1428,
+          "length": 1641.7320122358583
+        },
+        {
+          "x": 210,
+          "y": 1428,
+          "length": 1443.3585833049249
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "5waec5",
+      "type": "flow",
+      "from": "cxp335",
+      "to": "nvktjv",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 40,
+    "y": 40,
+    "width": 930,
+    "height": 1718,
+    "left": 40,
+    "top": 40,
+    "right": 970,
+    "bottom": 1758,
+    "center": {
+      "x": 505,
+      "y": 899,
+      "length": 1031.1285079950026
+    }
+  }
+}

@@ -1,0 +1,566 @@
+{
+  "schemaVersion": 1,
+  "kind": "class",
+  "title": "Board Scrum: main classes",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "rfhrtz",
+      "type": "class",
+      "x": 1019,
+      "y": 294,
+      "width": 281,
+      "height": 76,
+      "rotation": 0,
+      "text": "BoardScrumPlugin",
+      "props": {
+        "attributes": "+ Info : PluginInfo",
+        "operations": "+ ConfigureServices(services, context)",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "u97xbj",
+      "type": "class",
+      "x": 1350,
+      "y": 294,
+      "width": 288,
+      "height": 53,
+      "rotation": 0,
+      "text": "ScrumActionProvider",
+      "props": {
+        "attributes": "",
+        "operations": "+ GetActions() : IEnumerable<AppAction>",
+        "showAttributes": "false",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "rzs2xa",
+      "type": "class",
+      "x": 0,
+      "y": 570,
+      "width": 370,
+      "height": 144,
+      "rotation": 0,
+      "text": "ScrumPlanningPageProvider",
+      "props": {
+        "attributes": "+ Id : string\n+ Title : string\n+ Order : int\n+ Replaces : string",
+        "operations": "+ AppliesTo(definition : BoardDefinition) : bool\n+ Create(host : BoardPageHost) : BoardPageViewModel",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "kwsqse",
+      "type": "class",
+      "x": 840,
+      "y": 570,
+      "width": 230,
+      "height": 53,
+      "rotation": 0,
+      "text": "ScrumPlanningPageViewModel",
+      "props": {
+        "attributes": "+ Title : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "q2iz7i",
+      "type": "class",
+      "x": 420,
+      "y": 570,
+      "width": 370,
+      "height": 127,
+      "rotation": 0,
+      "text": "RetrospectivePageProvider",
+      "props": {
+        "attributes": "+ Id : string\n+ Title : string\n+ Order : int",
+        "operations": "+ AppliesTo(definition : BoardDefinition) : bool\n+ Create(host : BoardPageHost) : BoardPageViewModel",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "wv3cvu",
+      "type": "class",
+      "x": 1120,
+      "y": 570,
+      "width": 350,
+      "height": 229,
+      "rotation": 0,
+      "text": "RetrospectivePageViewModel",
+      "props": {
+        "attributes": "+ Title : string\n+ Sprints : ObservableCollection<NamedItem>\n+ WentWell : RetroColumnViewModel\n+ ToImprove : RetroColumnViewModel\n+ Problems : RetroColumnViewModel\n+ Columns : IReadOnlyList<RetroColumnViewModel>\n+ Actions : ObservableCollection<RetroActionRow>\n+ FollowUps : ObservableCollection<FollowUpRow>\n+ HasFollowUps : bool\n+ Sprint : NamedItem",
+        "operations": "+ OnBoardChanged()",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "sef2vw",
+      "type": "class",
+      "x": 351,
+      "y": 294,
+      "width": 246,
+      "height": 206,
+      "rotation": 0,
+      "text": "StartSprintDialogViewModel",
+      "props": {
+        "attributes": "+ Title : string\n+ OkText : string\n+ FitsContent : bool\n+ Width : double\n+ MinHeight : double\n+ Lengths : IReadOnlyList<string>\n+ Summary : string\n+ StartAt : DateTimeOffset\n+ EndAt : DateTimeOffset\n+ Name : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "pddiaq",
+      "type": "class",
+      "x": 1688,
+      "y": 294,
+      "width": 254,
+      "height": 206,
+      "rotation": 0,
+      "text": "CompleteSprintDialogViewModel",
+      "props": {
+        "attributes": "+ Title : string\n+ OkText : string\n+ FitsContent : bool\n+ Width : double\n+ MinHeight : double\n+ SprintName : string\n+ Summary : string\n+ HasOpen : bool\n+ OpenText : string\n+ Targets : IReadOnlyList<string>",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "v7q66f",
+      "type": "class",
+      "x": 647,
+      "y": 294,
+      "width": 322,
+      "height": 206,
+      "rotation": 0,
+      "text": "EditSprintDialogViewModel",
+      "props": {
+        "attributes": "+ Title : string\n+ OkText : string\n+ FitsContent : bool\n+ Width : double\n+ MinHeight : double\n+ Team : ObservableCollection<MemberDaysRow>\n+ StartAt : DateTimeOffset?\n+ EndAt : DateTimeOffset?\n+ CapacityValue : double?\n+ Availability : IReadOnlyList<MemberDays>",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "evff44",
+      "type": "class",
+      "x": 1520,
+      "y": 570,
+      "width": 274,
+      "height": 125,
+      "rotation": 0,
+      "text": "CreateSprint",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Goal : string",
+        "operations": "+ Apply(board, context) : BoardChange",
+        "showAttributes": "true",
+        "showOperations": "true",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "tae9f3",
+      "type": "class",
+      "x": 1844,
+      "y": 570,
+      "width": 274,
+      "height": 159,
+      "rotation": 0,
+      "text": "StartSprint",
+      "props": {
+        "attributes": "+ SprintId : string\n+ Start : DateTimeOffset\n+ End : DateTimeOffset\n+ Goal : string\n+ Name : string",
+        "operations": "+ Apply(board, context) : BoardChange",
+        "showAttributes": "true",
+        "showOperations": "true",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "hxtb48",
+      "type": "class",
+      "x": 0,
+      "y": 869,
+      "width": 274,
+      "height": 142,
+      "rotation": 0,
+      "text": "CompleteSprint",
+      "props": {
+        "attributes": "+ SprintId : string\n+ MoveTo : OpenIssuesGoTo\n+ NextSprint : string\n+ NewSprintId : string",
+        "operations": "+ Apply(board, context) : BoardChange",
+        "showAttributes": "true",
+        "showOperations": "true",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "jegrh8",
+      "type": "class",
+      "x": 2107.5,
+      "y": 1101,
+      "width": 219,
+      "height": 221,
+      "rotation": 0,
+      "text": "Sprint",
+      "props": {
+        "attributes": "+ Schema : int\n+ Id : string\n+ Name : string\n+ Goal : string\n+ State : SprintState\n+ Sequence : int\n+ Start : DateTimeOffset?\n+ End : DateTimeOffset?\n+ Completed : DateTimeOffset?\n+ Capacity : double?",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "r6w7h3",
+      "type": "class",
+      "x": 1339,
+      "y": 0,
+      "width": 301,
+      "height": 204,
+      "rotation": 0,
+      "text": "Retrospective",
+      "props": {
+        "attributes": "+ Schema : int\n+ Sprint : string\n+ WentWell : IReadOnlyList<RetroNote>\n+ ToImprove : IReadOnlyList<RetroNote>\n+ Problems : IReadOnlyList<RetroNote>\n+ Actions : IReadOnlyList<RetroAction>\n+ FollowUp : string\n+ Updated : DateTimeOffset\n+ Extra : Dictionary<string, JsonElement>",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "am38x6",
+      "type": "class",
+      "x": 0,
+      "y": 294,
+      "width": 301,
+      "height": 153,
+      "rotation": 0,
+      "text": "RetroAction",
+      "props": {
+        "attributes": "+ Id : string\n+ Text : string\n+ Owner : string\n+ Done : bool\n+ Issue : string\n+ Extra : Dictionary<string, JsonElement>",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "eha9nz",
+      "type": "interface",
+      "x": 1915,
+      "y": 79.5,
+      "width": 120,
+      "height": 45,
+      "rotation": 0,
+      "text": "IPlugin",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "ztt4mi",
+      "type": "interface",
+      "x": 2085,
+      "y": 79.5,
+      "width": 143,
+      "height": 45,
+      "rotation": 0,
+      "text": "IActionProvider",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "gg7y79",
+      "type": "interface",
+      "x": 2278,
+      "y": 79.5,
+      "width": 167,
+      "height": 45,
+      "rotation": 0,
+      "text": "IBoardPageProvider",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "4thha8",
+      "type": "class",
+      "x": 2495,
+      "y": 81.5,
+      "width": 190,
+      "height": 41,
+      "rotation": 0,
+      "text": "PlanningPageViewModel",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "iu8fym",
+      "type": "class",
+      "x": 2735,
+      "y": 81.5,
+      "width": 167,
+      "height": 41,
+      "rotation": 0,
+      "text": "BoardPageViewModel",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "fjbkhi",
+      "type": "class",
+      "x": 1690,
+      "y": 81.5,
+      "width": 175,
+      "height": 41,
+      "rotation": 0,
+      "text": "DialogViewModelBase",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "hj9954",
+      "type": "interface",
+      "x": 2952,
+      "y": 79.5,
+      "width": 143,
+      "height": 45,
+      "rotation": 0,
+      "text": "IBoardOperation",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "qx8vqs",
+      "type": "note",
+      "x": 0,
+      "y": 1372,
+      "width": 620,
+      "height": 76,
+      "rotation": 0,
+      "text": "Read from DevHub.Board.Scrum.dll, DevHub.Board.dll, DevHub.Board.Core.dll: each type's own public members (up to 10 properties and 8 methods). Grey: from the Sdk or another plugin.",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "4254gs",
+      "type": "realization",
+      "from": "rfhrtz",
+      "to": "eha9nz",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "heug3s",
+      "type": "realization",
+      "from": "u97xbj",
+      "to": "ztt4mi",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ypfgxy",
+      "type": "realization",
+      "from": "rzs2xa",
+      "to": "gg7y79",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ei9w5r",
+      "type": "generalization",
+      "from": "kwsqse",
+      "to": "4thha8",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ir8yzb",
+      "type": "realization",
+      "from": "q2iz7i",
+      "to": "gg7y79",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "bca9a7",
+      "type": "generalization",
+      "from": "wv3cvu",
+      "to": "iu8fym",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "fj3nfv",
+      "type": "generalization",
+      "from": "sef2vw",
+      "to": "fjbkhi",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "39igkn",
+      "type": "dependency",
+      "from": "sef2vw",
+      "to": "jegrh8",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "xwrz5e",
+      "type": "generalization",
+      "from": "pddiaq",
+      "to": "fjbkhi",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "n737ei",
+      "type": "generalization",
+      "from": "v7q66f",
+      "to": "fjbkhi",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "99qmuz",
+      "type": "dependency",
+      "from": "v7q66f",
+      "to": "jegrh8",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ba8u3u",
+      "type": "realization",
+      "from": "evff44",
+      "to": "hj9954",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "jt3f3k",
+      "type": "realization",
+      "from": "tae9f3",
+      "to": "hj9954",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "fh5pm9",
+      "type": "realization",
+      "from": "hxtb48",
+      "to": "hj9954",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "nfx695",
+      "type": "association",
+      "from": "r6w7h3",
+      "to": "am38x6",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Actions"
+      }
+    }
+  ],
+  "bounds": {
+    "x": 0,
+    "y": 0,
+    "width": 3095,
+    "height": 1448,
+    "left": 0,
+    "top": 0,
+    "right": 3095,
+    "bottom": 1448,
+    "center": {
+      "x": 1547.5,
+      "y": 724,
+      "length": 1708.4882937848886
+    }
+  }
+}

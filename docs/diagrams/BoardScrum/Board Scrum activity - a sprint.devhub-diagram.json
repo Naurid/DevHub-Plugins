@@ -1,0 +1,567 @@
+{
+  "schemaVersion": 1,
+  "kind": "activity",
+  "title": "Board Scrum: a sprint from planning to the retrospective",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "scg9bw",
+      "type": "lane",
+      "x": 40,
+      "y": 40,
+      "width": 340,
+      "height": 1830,
+      "rotation": 0,
+      "text": "Scrum master",
+      "props": {
+        "vertical": "true",
+        "fill": "#143574F0"
+      }
+    },
+    {
+      "id": "njd4ju",
+      "type": "lane",
+      "x": 380,
+      "y": 40,
+      "width": 340,
+      "height": 1830,
+      "rotation": 0,
+      "text": "Team",
+      "props": {
+        "vertical": "true",
+        "fill": "#14D98C1F"
+      }
+    },
+    {
+      "id": "i5cqx4",
+      "type": "lane",
+      "x": 720,
+      "y": 40,
+      "width": 340,
+      "height": 1830,
+      "rotation": 0,
+      "text": "Board",
+      "props": {
+        "vertical": "true",
+        "fill": "#142E9E5B"
+      }
+    },
+    {
+      "id": "detn2d",
+      "type": "start",
+      "x": 197,
+      "y": 127,
+      "width": 26,
+      "height": 26,
+      "rotation": 0,
+      "text": "",
+      "parentId": "scg9bw",
+      "props": {}
+    },
+    {
+      "id": "8qh9t8",
+      "type": "action",
+      "x": 90,
+      "y": 230,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Create Sprint",
+      "parentId": "scg9bw",
+      "props": {}
+    },
+    {
+      "id": "e94gmy",
+      "type": "action",
+      "x": 90,
+      "y": 336,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Set each person's days and focus factor",
+      "parentId": "scg9bw",
+      "props": {}
+    },
+    {
+      "id": "67dzax",
+      "type": "action",
+      "x": 770,
+      "y": 448,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Suggest a capacity from the last sprints",
+      "parentId": "i5cqx4",
+      "props": {}
+    },
+    {
+      "id": "dvhxx9",
+      "type": "action",
+      "x": 430,
+      "y": 566,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Drag issues into the sprint",
+      "parentId": "njd4ju",
+      "props": {}
+    },
+    {
+      "id": "iy7x2n",
+      "type": "decision",
+      "x": 873,
+      "y": 683,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "i5cqx4",
+      "props": {}
+    },
+    {
+      "id": "4mmq22",
+      "type": "action",
+      "x": 770,
+      "y": 790,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Show the sprint over capacity",
+      "parentId": "i5cqx4",
+      "props": {}
+    },
+    {
+      "id": "nsmd5t",
+      "type": "action",
+      "x": 90,
+      "y": 790,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Start Sprint: goal and dates",
+      "parentId": "scg9bw",
+      "props": {}
+    },
+    {
+      "id": "344agv",
+      "type": "action",
+      "x": 770,
+      "y": 902,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Record what was committed",
+      "parentId": "i5cqx4",
+      "props": {}
+    },
+    {
+      "id": "u9m3vi",
+      "type": "action",
+      "x": 430,
+      "y": 1014,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Work the issues on the board",
+      "parentId": "njd4ju",
+      "props": {}
+    },
+    {
+      "id": "s2hp3k",
+      "type": "action",
+      "x": 90,
+      "y": 1126,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Complete Sprint",
+      "parentId": "scg9bw",
+      "props": {}
+    },
+    {
+      "id": "uaikc3",
+      "type": "decision",
+      "x": 873,
+      "y": 1243,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "i5cqx4",
+      "props": {}
+    },
+    {
+      "id": "ypk3ux",
+      "type": "action",
+      "x": 90,
+      "y": 1344,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Move them to the next sprint or the backlog",
+      "parentId": "scg9bw",
+      "props": {}
+    },
+    {
+      "id": "j6nd39",
+      "type": "decision",
+      "x": 873,
+      "y": 1467,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "i5cqx4",
+      "props": {}
+    },
+    {
+      "id": "j5mt8t",
+      "type": "action",
+      "x": 430,
+      "y": 1568,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Retrospective: went well, to improve, actions",
+      "parentId": "njd4ju",
+      "props": {}
+    },
+    {
+      "id": "irj7j5",
+      "type": "end",
+      "x": 535,
+      "y": 1693,
+      "width": 30,
+      "height": 30,
+      "rotation": 0,
+      "text": "",
+      "parentId": "njd4ju",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "7mgbmb",
+      "type": "flow",
+      "from": "detn2d",
+      "to": "8qh9t8",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "rpnpnr",
+      "type": "flow",
+      "from": "8qh9t8",
+      "to": "e94gmy",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "xqwp57",
+      "type": "flow",
+      "from": "e94gmy",
+      "to": "67dzax",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 420,
+          "length": 469.5742752749558
+        },
+        {
+          "x": 890,
+          "y": 420,
+          "length": 984.1239759298622
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "igkupq",
+      "type": "flow",
+      "from": "67dzax",
+      "to": "dvhxx9",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 890,
+          "y": 532,
+          "length": 1036.881864052024
+        },
+        {
+          "x": 550,
+          "y": 532,
+          "length": 765.195399881625
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "ptdbmn",
+      "type": "flow",
+      "from": "dvhxx9",
+      "to": "iy7x2n",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 550,
+          "y": 644,
+          "length": 846.8978686949212
+        },
+        {
+          "x": 890,
+          "y": 644,
+          "length": 1098.560876783804
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "u8tsh5",
+      "type": "flow",
+      "from": "iy7x2n",
+      "to": "4mmq22",
+      "text": "[points over capacity]",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "rfvmey",
+      "type": "flow",
+      "from": "4mmq22",
+      "to": "dvhxx9",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 890,
+          "y": 856,
+          "length": 1234.8425000784514
+        },
+        {
+          "x": 394,
+          "y": 856,
+          "length": 942.3226623614652
+        },
+        {
+          "x": 394,
+          "y": 588,
+          "length": 707.7994066117885
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "2955aj",
+      "type": "flow",
+      "from": "iy7x2n",
+      "to": "nsmd5t",
+      "text": "[it fits]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 890,
+          "y": 756,
+          "length": 1167.7482605424852
+        },
+        {
+          "x": 210,
+          "y": 756,
+          "length": 784.624751075315
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "snndbm",
+      "type": "flow",
+      "from": "nsmd5t",
+      "to": "344agv",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 868,
+          "length": 893.0419922937555
+        },
+        {
+          "x": 890,
+          "y": 868,
+          "length": 1243.1910553088774
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "88btcv",
+      "type": "flow",
+      "from": "344agv",
+      "to": "u9m3vi",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 890,
+          "y": 980,
+          "length": 1323.8202294873727
+        },
+        {
+          "x": 550,
+          "y": 980,
+          "length": 1123.7882362794157
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "p3wemu",
+      "type": "flow",
+      "from": "u9m3vi",
+      "to": "s2hp3k",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 550,
+          "y": 1092,
+          "length": 1222.687204480361
+        },
+        {
+          "x": 210,
+          "y": 1092,
+          "length": 1112.008992769393
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "fwwkm4",
+      "type": "flow",
+      "from": "s2hp3k",
+      "to": "uaikc3",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 1204,
+          "length": 1222.1767466287354
+        },
+        {
+          "x": 890,
+          "y": 1204,
+          "length": 1497.2361203230437
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "e9pysp",
+      "type": "flow",
+      "from": "uaikc3",
+      "to": "ypk3ux",
+      "text": "[unfinished issues]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 890,
+          "y": 1316,
+          "length": 1588.6963208870347
+        },
+        {
+          "x": 210,
+          "y": 1316,
+          "length": 1332.6499915581735
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "5zs2sb",
+      "type": "flow",
+      "from": "ypk3ux",
+      "to": "j6nd39",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 1428,
+          "length": 1443.3585833049249
+        },
+        {
+          "x": 890,
+          "y": 1428,
+          "length": 1682.6419702360927
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "ghpdkk",
+      "type": "flow",
+      "from": "uaikc3",
+      "to": "j6nd39",
+      "text": "[all done]",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "uauu6s",
+      "type": "flow",
+      "from": "j6nd39",
+      "to": "j5mt8t",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 890,
+          "y": 1540,
+          "length": 1778.6792853125603
+        },
+        {
+          "x": 550,
+          "y": 1540,
+          "length": 1635.2675622050356
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "9ck2mt",
+      "type": "flow",
+      "from": "j5mt8t",
+      "to": "irj7j5",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 40,
+    "y": 40,
+    "width": 1020,
+    "height": 1830,
+    "left": 40,
+    "top": 40,
+    "right": 1060,
+    "bottom": 1870,
+    "center": {
+      "x": 550,
+      "y": 955,
+      "length": 1102.0548988140292
+    }
+  }
+}

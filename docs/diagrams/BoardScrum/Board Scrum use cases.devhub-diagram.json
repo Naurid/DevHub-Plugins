@@ -1,0 +1,305 @@
+{
+  "schemaVersion": 1,
+  "kind": "usecase",
+  "title": "Board Scrum: use cases",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "itcx4h",
+      "type": "boundary",
+      "x": 340,
+      "y": 40,
+      "width": 870.8000000000002,
+      "height": 704,
+      "rotation": 0,
+      "text": "Board Scrum plugin",
+      "props": {
+        "fill": "#383574F0",
+        "line": "#3574F0",
+        "bold": "true"
+      }
+    },
+    {
+      "id": "rtwzjj",
+      "type": "usecase",
+      "x": 456.32222222222225,
+      "y": 110,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Create a sprint",
+      "parentId": "itcx4h",
+      "props": {}
+    },
+    {
+      "id": "7vstp7",
+      "type": "usecase",
+      "x": 487.5,
+      "y": 214,
+      "width": 243.20000000000002,
+      "height": 70,
+      "rotation": 0,
+      "text": "Set each person's capacity",
+      "parentId": "itcx4h",
+      "props": {}
+    },
+    {
+      "id": "jfurzs",
+      "type": "usecase",
+      "x": 542.9888888888889,
+      "y": 318,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Plan the sprint",
+      "parentId": "itcx4h",
+      "props": {}
+    },
+    {
+      "id": "rj93s4",
+      "type": "usecase",
+      "x": 903.2,
+      "y": 318,
+      "width": 257.6,
+      "height": 70,
+      "rotation": 0,
+      "text": "Compare points with capacity",
+      "parentId": "itcx4h",
+      "props": {}
+    },
+    {
+      "id": "jps39j",
+      "type": "usecase",
+      "x": 542.9888888888889,
+      "y": 422,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Start the sprint",
+      "parentId": "itcx4h",
+      "props": {}
+    },
+    {
+      "id": "h3idut",
+      "type": "usecase",
+      "x": 914,
+      "y": 422,
+      "width": 236,
+      "height": 70,
+      "rotation": 0,
+      "text": "Record what was committed",
+      "parentId": "itcx4h",
+      "props": {}
+    },
+    {
+      "id": "whgdnp",
+      "type": "usecase",
+      "x": 512.7,
+      "y": 526,
+      "width": 192.8,
+      "height": 70,
+      "rotation": 0,
+      "text": "Complete the sprint",
+      "parentId": "itcx4h",
+      "props": {
+        "extensionPoints": "leftovers"
+      }
+    },
+    {
+      "id": "2zsruy",
+      "type": "usecase",
+      "x": 914,
+      "y": 526,
+      "width": 236,
+      "height": 70,
+      "rotation": 0,
+      "text": "Move unfinished issues on",
+      "parentId": "itcx4h",
+      "props": {}
+    },
+    {
+      "id": "c3c2py",
+      "type": "usecase",
+      "x": 451.32222222222225,
+      "y": 630,
+      "width": 200,
+      "height": 70,
+      "rotation": 0,
+      "text": "Hold a retrospective",
+      "parentId": "itcx4h",
+      "props": {
+        "extensionPoints": "actions"
+      }
+    },
+    {
+      "id": "x5gsfb",
+      "type": "usecase",
+      "x": 928.4000000000001,
+      "y": 630,
+      "width": 207.20000000000002,
+      "height": 70,
+      "rotation": 0,
+      "text": "Follow up the actions",
+      "parentId": "itcx4h",
+      "props": {}
+    },
+    {
+      "id": "c22nmi",
+      "type": "actor",
+      "x": 130,
+      "y": 359,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Scrum master",
+      "props": {}
+    },
+    {
+      "id": "qsjpa7",
+      "type": "actor",
+      "x": 130,
+      "y": 509,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Team member",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "wqhzc9",
+      "type": "association",
+      "from": "c22nmi",
+      "to": "rtwzjj",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "g28s7e",
+      "type": "association",
+      "from": "c22nmi",
+      "to": "7vstp7",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "kvv4ng",
+      "type": "association",
+      "from": "qsjpa7",
+      "to": "jfurzs",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "stmrd9",
+      "type": "association",
+      "from": "c22nmi",
+      "to": "jps39j",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "6crkfy",
+      "type": "association",
+      "from": "c22nmi",
+      "to": "whgdnp",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "uv6hfb",
+      "type": "association",
+      "from": "qsjpa7",
+      "to": "c3c2py",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "xgvz7p",
+      "type": "include",
+      "from": "jfurzs",
+      "to": "rj93s4",
+      "text": "«include»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "q3ww8c",
+      "type": "include",
+      "from": "jps39j",
+      "to": "h3idut",
+      "text": "«include»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "2rez8r",
+      "type": "extend",
+      "from": "2zsruy",
+      "to": "whgdnp",
+      "text": "«extend» [issues not done]",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "vwxbi3",
+      "type": "extend",
+      "from": "x5gsfb",
+      "to": "c3c2py",
+      "text": "«extend» [the team agreed on some]",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "ik9e9e",
+      "type": "generalization",
+      "from": "c22nmi",
+      "to": "qsjpa7",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 130,
+    "y": 40,
+    "width": 1080.8000000000002,
+    "height": 704,
+    "left": 130,
+    "top": 40,
+    "right": 1210.8000000000002,
+    "bottom": 744,
+    "center": {
+      "x": 670.4000000000001,
+      "y": 392,
+      "length": 776.59523562793
+    }
+  }
+}

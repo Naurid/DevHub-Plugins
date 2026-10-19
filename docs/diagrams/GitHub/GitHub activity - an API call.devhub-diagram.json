@@ -1,0 +1,581 @@
+{
+  "schemaVersion": 1,
+  "kind": "activity",
+  "title": "GitHub: a request through IGitHubApi",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "ttk48f",
+      "type": "lane",
+      "x": 40,
+      "y": 40,
+      "width": 340,
+      "height": 1606,
+      "rotation": 0,
+      "text": "Calling plugin",
+      "props": {
+        "vertical": "true",
+        "fill": "#143574F0"
+      }
+    },
+    {
+      "id": "7mbuqq",
+      "type": "lane",
+      "x": 380,
+      "y": 40,
+      "width": 590,
+      "height": 1606,
+      "rotation": 0,
+      "text": "GitHub plugin",
+      "props": {
+        "vertical": "true",
+        "fill": "#14D98C1F"
+      }
+    },
+    {
+      "id": "iynp3i",
+      "type": "lane",
+      "x": 970,
+      "y": 40,
+      "width": 340,
+      "height": 1606,
+      "rotation": 0,
+      "text": "Git Credential Manager",
+      "props": {
+        "vertical": "true",
+        "fill": "#142E9E5B"
+      }
+    },
+    {
+      "id": "ny8vh5",
+      "type": "lane",
+      "x": 1310,
+      "y": 40,
+      "width": 340,
+      "height": 1606,
+      "rotation": 0,
+      "text": "api.github.com",
+      "props": {
+        "vertical": "true",
+        "fill": "#148C8F96"
+      }
+    },
+    {
+      "id": "sa42mj",
+      "type": "start",
+      "x": 197,
+      "y": 127,
+      "width": 26,
+      "height": 26,
+      "rotation": 0,
+      "text": "",
+      "parentId": "ttk48f",
+      "props": {}
+    },
+    {
+      "id": "p76bv9",
+      "type": "action",
+      "x": 90,
+      "y": 230,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "SendAsync(request, last ETag)",
+      "parentId": "ttk48f",
+      "props": {}
+    },
+    {
+      "id": "pxfyr2",
+      "type": "decision",
+      "x": 658,
+      "y": 347,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "7mbuqq",
+      "props": {}
+    },
+    {
+      "id": "qfx3nr",
+      "type": "action",
+      "x": 1020,
+      "y": 448,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "git credential-manager github list",
+      "parentId": "iynp3i",
+      "props": {}
+    },
+    {
+      "id": "q6p3qb",
+      "type": "decision",
+      "x": 658,
+      "y": 571,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "7mbuqq",
+      "props": {}
+    },
+    {
+      "id": "cdecqr",
+      "type": "action",
+      "x": 555,
+      "y": 672,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Throw GitHubApiUnavailableException",
+      "parentId": "7mbuqq",
+      "props": {}
+    },
+    {
+      "id": "s3bjrn",
+      "type": "action",
+      "x": 1020,
+      "y": 672,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "git credential fill (output never logged)",
+      "parentId": "iynp3i",
+      "props": {}
+    },
+    {
+      "id": "qa4yuq",
+      "type": "action",
+      "x": 555,
+      "y": 784,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Keep the accounts and the token in memory",
+      "parentId": "7mbuqq",
+      "props": {}
+    },
+    {
+      "id": "fi6v6u",
+      "type": "decision",
+      "x": 658,
+      "y": 907,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "7mbuqq",
+      "props": {}
+    },
+    {
+      "id": "c5343k",
+      "type": "action",
+      "x": 1360,
+      "y": 1014,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "HTTPS request with If-None-Match",
+      "parentId": "ny8vh5",
+      "props": {}
+    },
+    {
+      "id": "6c42b5",
+      "type": "decision",
+      "x": 658,
+      "y": 1131,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "7mbuqq",
+      "props": {}
+    },
+    {
+      "id": "j9ufyc",
+      "type": "action",
+      "x": 420,
+      "y": 1232,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Forget the token; borrow it again once",
+      "parentId": "7mbuqq",
+      "props": {}
+    },
+    {
+      "id": "q8qrab",
+      "type": "action",
+      "x": 690,
+      "y": 1232,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Status, body, ETag, next page, rate limit (304 costs nothing)",
+      "parentId": "7mbuqq",
+      "props": {}
+    },
+    {
+      "id": "xbw2a3",
+      "type": "action",
+      "x": 90,
+      "y": 1350,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Use the answer; keep the ETag",
+      "parentId": "ttk48f",
+      "props": {}
+    },
+    {
+      "id": "iqbf66",
+      "type": "end",
+      "x": 195,
+      "y": 1469,
+      "width": 30,
+      "height": 30,
+      "rotation": 0,
+      "text": "",
+      "parentId": "ttk48f",
+      "props": {}
+    },
+    {
+      "id": "vtvb54",
+      "type": "end",
+      "x": 195,
+      "y": 797,
+      "width": 30,
+      "height": 30,
+      "rotation": 0,
+      "text": "",
+      "parentId": "ttk48f",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "jdityv",
+      "type": "flow",
+      "from": "sa42mj",
+      "to": "p76bv9",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "g7476f",
+      "type": "flow",
+      "from": "p76bv9",
+      "to": "pxfyr2",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 308,
+          "length": 372.7787547594417
+        },
+        {
+          "x": 675,
+          "y": 308,
+          "length": 741.9494591951665
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "yp5iyh",
+      "type": "flow",
+      "from": "pxfyr2",
+      "to": "qfx3nr",
+      "text": "[nothing kept, or older than 10 min]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 420,
+          "length": 795
+        },
+        {
+          "x": 1140,
+          "y": 420,
+          "length": 1214.9074038789952
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "96d874",
+      "type": "flow",
+      "from": "qfx3nr",
+      "to": "q6p3qb",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 1140,
+          "y": 532,
+          "length": 1258.0238471507605
+        },
+        {
+          "x": 675,
+          "y": 532,
+          "length": 859.4469151727756
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "exuniu",
+      "type": "flow",
+      "from": "q6p3qb",
+      "to": "cdecqr",
+      "text": "[nobody signed in]",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "4imyj8",
+      "type": "flow",
+      "from": "q6p3qb",
+      "to": "s3bjrn",
+      "text": "[an account]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 644,
+          "length": 932.9314015510465
+        },
+        {
+          "x": 1140,
+          "y": 644,
+          "length": 1309.3265444494739
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "ueaarh",
+      "type": "flow",
+      "from": "s3bjrn",
+      "to": "qa4yuq",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 1140,
+          "y": 756,
+          "length": 1367.8947327919645
+        },
+        {
+          "x": 675,
+          "y": 756,
+          "length": 1013.4895164726669
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "mfkf6w",
+      "type": "flow",
+      "from": "qa4yuq",
+      "to": "fi6v6u",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "h5w745",
+      "type": "flow",
+      "from": "pxfyr2",
+      "to": "fi6v6u",
+      "text": "[kept]",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "nmpvpm",
+      "type": "flow",
+      "from": "fi6v6u",
+      "to": "c5343k",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 980,
+          "length": 1189.9684869777013
+        },
+        {
+          "x": 1480,
+          "y": 980,
+          "length": 1775.0492950901391
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "p5jf76",
+      "type": "flow",
+      "from": "c5343k",
+      "to": "6c42b5",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 1480,
+          "y": 1092,
+          "length": 1839.2563714719056
+        },
+        {
+          "x": 675,
+          "y": 1092,
+          "length": 1283.779186620503
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "ecdzav",
+      "type": "flow",
+      "from": "6c42b5",
+      "to": "j9ufyc",
+      "text": "[401, first time]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 1204,
+          "length": 1380.304676511675
+        },
+        {
+          "x": 540,
+          "y": 1204,
+          "length": 1319.551438936732
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "zu3t3d",
+      "type": "flow",
+      "from": "j9ufyc",
+      "to": "s3bjrn",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 540,
+          "y": 1304,
+          "length": 1411.3879693408187
+        },
+        {
+          "x": 984,
+          "y": 1304,
+          "length": 1633.6070518946715
+        },
+        {
+          "x": 984,
+          "y": 700,
+          "length": 1207.5827093826742
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "wnxskx",
+      "type": "flow",
+      "from": "6c42b5",
+      "to": "q8qrab",
+      "text": "[otherwise]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 1204,
+          "length": 1380.304676511675
+        },
+        {
+          "x": 810,
+          "y": 1204,
+          "length": 1451.1085417707388
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "b9kr38",
+      "type": "flow",
+      "from": "q8qrab",
+      "to": "xbw2a3",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 810,
+          "y": 1316,
+          "length": 1545.3012651259949
+        },
+        {
+          "x": 210,
+          "y": 1316,
+          "length": 1332.6499915581735
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "49cyb3",
+      "type": "flow",
+      "from": "xbw2a3",
+      "to": "iqbf66",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "encmpw",
+      "type": "flow",
+      "from": "cdecqr",
+      "to": "vtvb54",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 756,
+          "length": 1013.4895164726669
+        },
+        {
+          "x": 210,
+          "y": 756,
+          "length": 784.624751075315
+        }
+      ],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 40,
+    "y": 40,
+    "width": 1610,
+    "height": 1606,
+    "left": 40,
+    "top": 40,
+    "right": 1650,
+    "bottom": 1646,
+    "center": {
+      "x": 845,
+      "y": 843,
+      "length": 1193.5970844468413
+    }
+  }
+}

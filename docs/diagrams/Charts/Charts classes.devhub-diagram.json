@@ -1,0 +1,299 @@
+{
+  "schemaVersion": 1,
+  "kind": "class",
+  "title": "Charts: main classes",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "drgwxh",
+      "type": "class",
+      "x": 190,
+      "y": 368,
+      "width": 281,
+      "height": 93,
+      "rotation": 0,
+      "text": "ChartsPlugin",
+      "props": {
+        "attributes": "+ Info : PluginInfo\n+ Resources : IEnumerable<Uri>",
+        "operations": "+ ConfigureServices(services, context)",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "x6enud",
+      "type": "class",
+      "x": 521,
+      "y": 388,
+      "width": 308,
+      "height": 53,
+      "rotation": 0,
+      "text": "ChartMaker",
+      "props": {
+        "attributes": "",
+        "operations": "+ Open(kind : ChartKind, data : ChartData)",
+        "showAttributes": "false",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "u3ptn7",
+      "type": "class",
+      "x": 334.5,
+      "y": 551,
+      "width": 350,
+      "height": 229,
+      "rotation": 0,
+      "text": "ChartMakerViewModel",
+      "props": {
+        "attributes": "+ Title : string\n+ Icon : string\n+ FillsEditorArea : bool\n+ Navigation : DocumentNavigation\n+ HasUnsavedChanges : bool\n+ KindChoices : ObservableCollection<KindChoice>\n+ Series : ObservableCollection<SeriesStyleRow>\n+ IsHeatmap : bool\n+ Kind : KindChoice\n+ Table : string",
+        "operations": "+ Show(kind : ChartKind, data : ChartData)",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "v3mzvf",
+      "type": "class",
+      "x": 259,
+      "y": 950.5,
+      "width": 143,
+      "height": 68,
+      "rotation": 0,
+      "text": "KindChoice",
+      "props": {
+        "attributes": "+ Kind : ChartKind",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "75axfq",
+      "type": "class",
+      "x": 452,
+      "y": 870,
+      "width": 308,
+      "height": 229,
+      "rotation": 0,
+      "text": "SeriesStyleRow",
+      "props": {
+        "attributes": "+ Name : string\n+ static Dashes : IReadOnlyList<LineDash>\n+ static Kinds : IReadOnlyList<SeriesKind>\n+ static Colors : IReadOnlyList<string>\n+ Dash : LineDash\n+ Markers : bool\n+ ValueLabels : bool\n+ Curved : bool\n+ Kind : SeriesKind\n+ Color : string",
+        "operations": "+ ToSpec() : SeriesSpec",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "w66dhx",
+      "type": "class",
+      "x": 0,
+      "y": 0,
+      "width": 439,
+      "height": 278,
+      "rotation": 0,
+      "text": "ChartSpec",
+      "props": {
+        "attributes": "+ Schema : int\n+ Title : string\n+ XTitle : string\n+ YTitle : string\n+ ValueSuffix : string\n+ Kind : ChartKind\n+ Table : string\n+ SeriesInRows : bool\n+ TrafficColors : bool\n+ Series : IReadOnlyList<SeriesSpec>",
+        "operations": "+ ToJson() : string\n+ static FromJson(json : string) : ChartSpec\n+ static From(kind : ChartKind, data : ChartData) : ChartSpec",
+        "showAttributes": "true",
+        "showOperations": "true",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "yraxin",
+      "type": "class",
+      "x": 431.5,
+      "y": 1189,
+      "width": 156,
+      "height": 170,
+      "rotation": 0,
+      "text": "SeriesSpec",
+      "props": {
+        "attributes": "+ Name : string\n+ Dash : LineDash\n+ Markers : bool\n+ ValueLabels : bool\n+ Curved : bool\n+ Kind : SeriesKind\n+ Color : int?",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "vcgfpn",
+      "type": "interface",
+      "x": 489,
+      "y": 116.5,
+      "width": 120,
+      "height": 45,
+      "rotation": 0,
+      "text": "IPlugin",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "uc3m5u",
+      "type": "interface",
+      "x": 659,
+      "y": 116.5,
+      "width": 120,
+      "height": 45,
+      "rotation": 0,
+      "text": "IChartMaker",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "ymvmjg",
+      "type": "class",
+      "x": 829,
+      "y": 118.5,
+      "width": 190,
+      "height": 41,
+      "rotation": 0,
+      "text": "DocumentViewModelBase",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "cvgntn",
+      "type": "note",
+      "x": 0,
+      "y": 1409,
+      "width": 620,
+      "height": 76,
+      "rotation": 0,
+      "text": "Read from DevHub.Charts.dll, DevHub.Charts.Core.dll: each type's own public members (up to 10 properties and 8 methods). Grey: from the Sdk or another plugin.",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "4j73sn",
+      "type": "realization",
+      "from": "drgwxh",
+      "to": "vcgfpn",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "v3n539",
+      "type": "realization",
+      "from": "x6enud",
+      "to": "uc3m5u",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "txxgzn",
+      "type": "dependency",
+      "from": "x6enud",
+      "to": "u3ptn7",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "cnxnbn",
+      "type": "generalization",
+      "from": "u3ptn7",
+      "to": "ymvmjg",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "9p7nm4",
+      "type": "association",
+      "from": "u3ptn7",
+      "to": "v3mzvf",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "KindChoices"
+      }
+    },
+    {
+      "id": "7ahn6v",
+      "type": "association",
+      "from": "u3ptn7",
+      "to": "75axfq",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Series"
+      }
+    },
+    {
+      "id": "c3wkz4",
+      "type": "dependency",
+      "from": "75axfq",
+      "to": "yraxin",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "25wark",
+      "type": "association",
+      "from": "w66dhx",
+      "to": "yraxin",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Series"
+      }
+    }
+  ],
+  "bounds": {
+    "x": 0,
+    "y": 0,
+    "width": 1019,
+    "height": 1485,
+    "left": 0,
+    "top": 0,
+    "right": 1019,
+    "bottom": 1485,
+    "center": {
+      "x": 509.5,
+      "y": 742.5,
+      "length": 900.4979178210242
+    }
+  }
+}

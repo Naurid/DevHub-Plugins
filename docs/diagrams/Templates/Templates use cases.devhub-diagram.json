@@ -1,0 +1,425 @@
+{
+  "schemaVersion": 1,
+  "kind": "usecase",
+  "title": "Templates: use cases",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "mzxann",
+      "type": "boundary",
+      "x": 340,
+      "y": 40,
+      "width": 976.4000000000001,
+      "height": 912,
+      "rotation": 0,
+      "text": "Templates plugin",
+      "props": {
+        "fill": "#383574F0",
+        "line": "#3574F0",
+        "bold": "true"
+      }
+    },
+    {
+      "id": "djkb55",
+      "type": "usecase",
+      "x": 420.46875,
+      "y": 110,
+      "width": 286.4,
+      "height": 70,
+      "rotation": 0,
+      "text": "Create a project from a template",
+      "parentId": "mzxann",
+      "props": {
+        "extensionPoints": "after placing"
+      }
+    },
+    {
+      "id": "jknwpr",
+      "type": "usecase",
+      "x": 1011.4,
+      "y": 110,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Fill the variables",
+      "parentId": "mzxann",
+      "props": {}
+    },
+    {
+      "id": "masck2",
+      "type": "usecase",
+      "x": 1011.4,
+      "y": 318,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Edit the preview",
+      "parentId": "mzxann",
+      "props": {}
+    },
+    {
+      "id": "jwrcrs",
+      "type": "usecase",
+      "x": 946.4,
+      "y": 214,
+      "width": 320,
+      "height": 84,
+      "rotation": 0,
+      "text": "Place it and run the post-create commands",
+      "parentId": "mzxann",
+      "props": {}
+    },
+    {
+      "id": "22in3n",
+      "type": "usecase",
+      "x": 981.1999999999999,
+      "y": 422,
+      "width": 250.4,
+      "height": 70,
+      "rotation": 0,
+      "text": "Open it as a repository tab",
+      "parentId": "mzxann",
+      "props": {}
+    },
+    {
+      "id": "8zfb4z",
+      "type": "usecase",
+      "x": 494.41875,
+      "y": 214,
+      "width": 236,
+      "height": 70,
+      "rotation": 0,
+      "text": "Add files from a template",
+      "parentId": "mzxann",
+      "props": {}
+    },
+    {
+      "id": "f54s9s",
+      "type": "usecase",
+      "x": 544.91875,
+      "y": 318,
+      "width": 200,
+      "height": 70,
+      "rotation": 0,
+      "text": "Browse the templates",
+      "parentId": "mzxann",
+      "props": {}
+    },
+    {
+      "id": "xvpwqj",
+      "type": "usecase",
+      "x": 566.16875,
+      "y": 422,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Edit a template",
+      "parentId": "mzxann",
+      "props": {}
+    },
+    {
+      "id": "af5dms",
+      "type": "usecase",
+      "x": 566.16875,
+      "y": 526,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Create a template",
+      "parentId": "mzxann",
+      "props": {}
+    },
+    {
+      "id": "ituzvt",
+      "type": "usecase",
+      "x": 512.51875,
+      "y": 630,
+      "width": 264.8,
+      "height": 70,
+      "rotation": 0,
+      "text": "Import a folder as a template",
+      "parentId": "mzxann",
+      "props": {}
+    },
+    {
+      "id": "krgzqk",
+      "type": "usecase",
+      "x": 498.01874999999995,
+      "y": 734,
+      "width": 228.8,
+      "height": 70,
+      "rotation": 0,
+      "text": "Share templates as a zip",
+      "parentId": "mzxann",
+      "props": {}
+    },
+    {
+      "id": "qec5ay",
+      "type": "usecase",
+      "x": 445.66875,
+      "y": 838,
+      "width": 236,
+      "height": 70,
+      "rotation": 0,
+      "text": "Set where new projects go",
+      "parentId": "mzxann",
+      "props": {}
+    },
+    {
+      "id": "b42ars",
+      "type": "actor",
+      "x": 130,
+      "y": 411,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Developer",
+      "props": {}
+    },
+    {
+      "id": "2yescw",
+      "type": "actor",
+      "x": 1466.4,
+      "y": 203,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Command-line tools",
+      "props": {
+        "stereotype": "system"
+      }
+    },
+    {
+      "id": "k3k8hi",
+      "type": "actor",
+      "x": 1466.4,
+      "y": 411,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Git plugin",
+      "props": {
+        "stereotype": "system"
+      }
+    },
+    {
+      "id": "623c6u",
+      "type": "actor",
+      "x": 1466.4,
+      "y": 561,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "File system",
+      "props": {
+        "stereotype": "system"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "kb63ih",
+      "type": "association",
+      "from": "b42ars",
+      "to": "djkb55",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "afdfz9",
+      "type": "association",
+      "from": "2yescw",
+      "to": "jwrcrs",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "jkf5r8",
+      "type": "association",
+      "from": "623c6u",
+      "to": "jwrcrs",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "fkav5p",
+      "type": "association",
+      "from": "k3k8hi",
+      "to": "22in3n",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "9uy9ir",
+      "type": "association",
+      "from": "b42ars",
+      "to": "8zfb4z",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "89uiw3",
+      "type": "association",
+      "from": "623c6u",
+      "to": "8zfb4z",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "57a4za",
+      "type": "association",
+      "from": "b42ars",
+      "to": "f54s9s",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "fiugw5",
+      "type": "association",
+      "from": "b42ars",
+      "to": "xvpwqj",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "rdcajm",
+      "type": "association",
+      "from": "b42ars",
+      "to": "af5dms",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "a3m8uq",
+      "type": "association",
+      "from": "b42ars",
+      "to": "ituzvt",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "nbagej",
+      "type": "association",
+      "from": "623c6u",
+      "to": "ituzvt",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "dtsid2",
+      "type": "association",
+      "from": "b42ars",
+      "to": "krgzqk",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "paxyzh",
+      "type": "association",
+      "from": "623c6u",
+      "to": "krgzqk",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "nza9n7",
+      "type": "association",
+      "from": "b42ars",
+      "to": "qec5ay",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "mdade8",
+      "type": "include",
+      "from": "djkb55",
+      "to": "jknwpr",
+      "text": "«include»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "upetb3",
+      "type": "include",
+      "from": "djkb55",
+      "to": "masck2",
+      "text": "«include»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "vidrfe",
+      "type": "include",
+      "from": "djkb55",
+      "to": "jwrcrs",
+      "text": "«include»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "yv4zpv",
+      "type": "extend",
+      "from": "22in3n",
+      "to": "djkb55",
+      "text": "«extend» [Git is on]",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    }
+  ],
+  "bounds": {
+    "x": 130,
+    "y": 40,
+    "width": 1396.4,
+    "height": 912,
+    "left": 130,
+    "top": 40,
+    "right": 1526.4,
+    "bottom": 952,
+    "center": {
+      "x": 828.2,
+      "y": 496,
+      "length": 965.3658581076918
+    }
+  }
+}

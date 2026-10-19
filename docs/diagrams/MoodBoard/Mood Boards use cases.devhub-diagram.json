@@ -1,0 +1,219 @@
+{
+  "schemaVersion": 1,
+  "kind": "usecase",
+  "title": "Mood Boards: use cases",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "g6q2p5",
+      "type": "boundary",
+      "x": 340,
+      "y": 40,
+      "width": 928.4000000000001,
+      "height": 600,
+      "rotation": 0,
+      "text": "Mood Boards plugin",
+      "props": {
+        "fill": "#383574F0",
+        "line": "#3574F0",
+        "bold": "true"
+      }
+    },
+    {
+      "id": "8yeyq8",
+      "type": "usecase",
+      "x": 451.19999999999993,
+      "y": 110,
+      "width": 286.4,
+      "height": 70,
+      "rotation": 0,
+      "text": "Add pictures (drop, paste, pick)",
+      "parentId": "g6q2p5",
+      "props": {}
+    },
+    {
+      "id": "mac4q3",
+      "type": "usecase",
+      "x": 975.2,
+      "y": 110,
+      "width": 243.20000000000002,
+      "height": 70,
+      "rotation": 0,
+      "text": "Copy them beside the board",
+      "parentId": "g6q2p5",
+      "props": {}
+    },
+    {
+      "id": "fxyvwr",
+      "type": "usecase",
+      "x": 524.4,
+      "y": 214,
+      "width": 264.8,
+      "height": 70,
+      "rotation": 0,
+      "text": "Make a palette from a picture",
+      "parentId": "g6q2p5",
+      "props": {}
+    },
+    {
+      "id": "kn7zg5",
+      "type": "usecase",
+      "x": 520,
+      "y": 318,
+      "width": 315.2,
+      "height": 84,
+      "rotation": 0,
+      "text": "Add swatches, shapes, text and links",
+      "parentId": "g6q2p5",
+      "props": {}
+    },
+    {
+      "id": "nrb5u8",
+      "type": "usecase",
+      "x": 561.8,
+      "y": 422,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Draw with the pen",
+      "parentId": "g6q2p5",
+      "props": {}
+    },
+    {
+      "id": "xq9255",
+      "type": "usecase",
+      "x": 487.19999999999993,
+      "y": 526,
+      "width": 214.4,
+      "height": 70,
+      "rotation": 0,
+      "text": "Export CSS or Markdown",
+      "parentId": "g6q2p5",
+      "props": {}
+    },
+    {
+      "id": "rd57qy",
+      "type": "actor",
+      "x": 130,
+      "y": 307,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Developer",
+      "props": {}
+    },
+    {
+      "id": "gz692e",
+      "type": "actor",
+      "x": 1418.4,
+      "y": 307,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "File system",
+      "props": {
+        "stereotype": "system"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "adf23t",
+      "type": "association",
+      "from": "rd57qy",
+      "to": "8yeyq8",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "hnu6py",
+      "type": "association",
+      "from": "gz692e",
+      "to": "mac4q3",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "v8ahzs",
+      "type": "association",
+      "from": "rd57qy",
+      "to": "fxyvwr",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "998est",
+      "type": "association",
+      "from": "rd57qy",
+      "to": "kn7zg5",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "4hspqp",
+      "type": "association",
+      "from": "rd57qy",
+      "to": "nrb5u8",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "vu7gbp",
+      "type": "association",
+      "from": "rd57qy",
+      "to": "xq9255",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ui7ytf",
+      "type": "association",
+      "from": "gz692e",
+      "to": "xq9255",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "kjb7x6",
+      "type": "include",
+      "from": "8yeyq8",
+      "to": "mac4q3",
+      "text": "«include»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    }
+  ],
+  "bounds": {
+    "x": 130,
+    "y": 40,
+    "width": 1348.4,
+    "height": 600,
+    "left": 130,
+    "top": 40,
+    "right": 1478.4,
+    "bottom": 640,
+    "center": {
+      "x": 804.2,
+      "y": 340,
+      "length": 873.119487813667
+    }
+  }
+}
