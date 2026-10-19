@@ -83,7 +83,7 @@ Panel widths are saved with the tab layout (`RepositoryTabLayout`).
 | `IRepositoryEvents`: `BranchChanged`, `Committed` (also commits made outside DevHub while the tab is open), `Pushed`, `Fetched` | Board Git |
 
 **Uses** (optional): `IProjectFileEditor` and `IProjectFolders` (Projects), `IAddFilesFromTemplate` (Templates),
-`ICommitMessageSuggester` and `IGitDecorator` (Board Git).
+`ICommitMessageSuggester` (Board Git) and `IGitDecorator` (Board Git: issue keys; CI: ✓ ✗ ● run marks).
 
 **Its own extension point, for plugins that require Git: `IRemoteHost`** (`DevHub.Git`). A hosting service Git can use
 without knowing it; GitHub implements it.

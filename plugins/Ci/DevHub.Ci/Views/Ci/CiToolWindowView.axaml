@@ -1,0 +1,124 @@
+<!--
+  CI tool window (bottom): the runs of the repository tab in front, newest first. A run expands to its jobs; a failed
+  job shows the failed steps, Show Log (a tab) and Re-run. The state symbol is coloured: green passed, red failed,
+  accent running.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:DevHub.Localization"
+             xmlns:vm="using:DevHub.ViewModels.Ci"
+             xmlns:c="using:DevHub.Controls"
+             x:Class="DevHub.Views.Ci.CiToolWindowView"
+             x:DataType="vm:CiToolWindowViewModel">
+
+    <UserControl.Styles>
+        <Style Selector="TextBlock.state">
+            <Setter Property="Width" Value="{DynamicResource Size.CiState}" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+        </Style>
+        <Style Selector="TextBlock.state.passed">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Success}" />
+        </Style>
+        <Style Selector="TextBlock.state.failed">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Error}" />
+        </Style>
+        <Style Selector="TextBlock.state.active">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+        </Style>
+    </UserControl.Styles>
+
+    <c:ToolWindowFrame Header="{Binding Title}">
+        <c:ToolWindowFrame.HeaderActions>
+            <c:Toolbar>
+                <c:ActionButton IconKind="refresh" ToolTip.Tip="{l:T 'Refresh'}" AutomationProperties.Name="{l:T 'Refresh'}"
+                                Command="{Binding RefreshCommand}" />
+                <c:ToolbarSeparator />
+                <c:ActionButton IconKind="close" ToolTip.Tip="{l:T 'Hide'}" AutomationProperties.Name="{l:T 'Hide'}"
+                                Command="{Binding ToggleCommand}" />
+            </c:Toolbar>
+        </c:ToolWindowFrame.HeaderActions>
+
+        <DockPanel>
+            <!-- Which repository, and the filters. -->
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="{DynamicResource Spacing}"
+                        Margin="{DynamicResource Padding.ListItem}" IsVisible="{Binding RepositoryText, Converter={x:Static ObjectConverters.IsNotNull}}">
+                <TextBlock Classes="secondary" Text="{Binding RepositoryText}" VerticalAlignment="Center" />
+                <ComboBox ItemsSource="{Binding Branches}" SelectedItem="{Binding Branch}" Width="{DynamicResource Size.CiFilter}"
+                          AutomationProperties.Name="{l:T 'Branch'}" IsVisible="{Binding HasRuns}" />
+                <ComboBox ItemsSource="{Binding Workflows}" SelectedItem="{Binding Workflow}" Width="{DynamicResource Size.CiFilter}"
+                          AutomationProperties.Name="{l:T 'Workflow'}" IsVisible="{Binding HasRuns}" />
+            </StackPanel>
+
+            <Panel>
+                <c:EmptyState IconKind="run" Title="{Binding EmptyTitle}" Description="{Binding EmptyDescription}"
+                              IsVisible="{Binding !HasRuns}" />
+
+                <ScrollViewer IsVisible="{Binding HasRuns}">
+                    <StackPanel>
+                        <ItemsControl ItemsSource="{Binding Runs}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:RunRowViewModel">
+                                    <StackPanel>
+                                        <!-- The run: click the arrow (or the row) to see its jobs. -->
+                                        <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}"
+                                              Margin="{DynamicResource Padding.ListItem}">
+                                            <ToggleButton Classes="flat" IsChecked="{Binding IsExpanded}" Padding="0"
+                                                          AutomationProperties.Name="{l:T 'Jobs'}" ToolTip.Tip="{l:T 'Jobs'}">
+                                                <c:Icon Kind="chevronRight" />
+                                            </ToggleButton>
+                                            <TextBlock Grid.Column="1" Classes="state" Classes.passed="{Binding IsPassed}"
+                                                       Classes.failed="{Binding IsFailed}" Classes.active="{Binding IsActive}"
+                                                       Text="{Binding Symbol}" ToolTip.Tip="{Binding StateText}" VerticalAlignment="Center" />
+                                            <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Classes="small secondary" Text="{Binding Meta}" TextTrimming="CharacterEllipsis" />
+                                            </StackPanel>
+                                            <TextBlock Grid.Column="3" Classes="small secondary" Text="{Binding DurationText}" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="4" Classes="small secondary" Text="{Binding When}" VerticalAlignment="Center" />
+                                            <Button Grid.Column="5" Classes="flat" Content="{l:T 'Re-run failed'}" Command="{Binding RerunFailedCommand}"
+                                                    IsVisible="{Binding CanRerunFailed}" VerticalAlignment="Center" />
+                                            <c:ActionButton Grid.Column="6" IconKind="externalTools" Command="{Binding OpenInBrowserCommand}"
+                                                            ToolTip.Tip="{l:T 'Open in Browser'}" AutomationProperties.Name="{l:T 'Open in Browser'}" />
+                                        </Grid>
+
+                                        <!-- Its jobs. -->
+                                        <StackPanel IsVisible="{Binding IsExpanded}" Margin="{DynamicResource Padding.CiJobs}">
+                                            <TextBlock Classes="small secondary" Text="{l:T 'Loading the jobs…'}" IsVisible="{Binding IsLoadingJobs}" />
+                                            <TextBlock Classes="small" Foreground="{DynamicResource Brush.Status.Error}" Text="{Binding JobsProblem}"
+                                                       IsVisible="{Binding JobsProblem, Converter={x:Static ObjectConverters.IsNotNull}}" TextWrapping="Wrap" />
+                                            <ItemsControl ItemsSource="{Binding Jobs}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate x:DataType="vm:JobRowViewModel">
+                                                        <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Spacing}">
+                                                            <TextBlock Classes="state" Classes.passed="{Binding IsPassed}" Classes.failed="{Binding IsFailed}"
+                                                                       Classes.active="{Binding IsActive}" Text="{Binding Symbol}" VerticalAlignment="Center" />
+                                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                                <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                                                <TextBlock Classes="small" Foreground="{DynamicResource Brush.Status.Error}" Text="{Binding FailedSteps}"
+                                                                           IsVisible="{Binding FailedSteps, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                                                            </StackPanel>
+                                                            <TextBlock Grid.Column="2" Classes="small secondary" Text="{Binding DurationText}" VerticalAlignment="Center" />
+                                                            <Button Grid.Column="3" Classes="flat" Content="{l:T 'Show Log'}" Command="{Binding ShowLogCommand}"
+                                                                    IsVisible="{Binding HasLog}" VerticalAlignment="Center" />
+                                                            <Button Grid.Column="4" Classes="flat" Content="{l:T 'Re-run'}" Command="{Binding RerunCommand}"
+                                                                    IsVisible="{Binding CanRerun}" VerticalAlignment="Center" />
+                                                            <c:ActionButton Grid.Column="5" IconKind="externalTools" Command="{Binding OpenInBrowserCommand}"
+                                                                            ToolTip.Tip="{l:T 'Open in Browser'}" AutomationProperties.Name="{l:T 'Open in Browser'}" />
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Button Classes="flat" HorizontalAlignment="Center" Content="{l:T 'Load more'}" Command="{Binding LoadMoreCommand}"
+                                IsVisible="{Binding HasMore}" IsEnabled="{Binding !IsLoadingMore}" Margin="{DynamicResource Padding.ListItem}" />
+                    </StackPanel>
+                </ScrollViewer>
+            </Panel>
+        </DockPanel>
+    </c:ToolWindowFrame>
+</UserControl>
