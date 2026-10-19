@@ -1,0 +1,460 @@
+{
+  "schemaVersion": 1,
+  "kind": "usecase",
+  "title": "Git: use cases",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "qx6wyn",
+      "type": "boundary",
+      "x": 340,
+      "y": 40,
+      "width": 1005.2,
+      "height": 1120,
+      "rotation": 0,
+      "text": "Git plugin",
+      "props": {
+        "fill": "#383574F0",
+        "line": "#3574F0",
+        "bold": "true"
+      }
+    },
+    {
+      "id": "mwfj5c",
+      "type": "usecase",
+      "x": 471.09999999999997,
+      "y": 110,
+      "width": 207.20000000000002,
+      "height": 70,
+      "rotation": 0,
+      "text": "Open a repository tab",
+      "parentId": "qx6wyn",
+      "props": {}
+    },
+    {
+      "id": "jtsz6j",
+      "type": "usecase",
+      "x": 521.3,
+      "y": 214,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Clone a repository",
+      "parentId": "qx6wyn",
+      "props": {
+        "extensionPoints": "where from"
+      }
+    },
+    {
+      "id": "9vx25q",
+      "type": "usecase",
+      "x": 980,
+      "y": 110,
+      "width": 315.2,
+      "height": 84,
+      "rotation": 0,
+      "text": "Pick one of your host's repositories",
+      "parentId": "qx6wyn",
+      "props": {}
+    },
+    {
+      "id": "xtsa6k",
+      "type": "usecase",
+      "x": 522.3,
+      "y": 318,
+      "width": 250.4,
+      "height": 70,
+      "rotation": 0,
+      "text": "Stage files, hunks or lines",
+      "parentId": "qx6wyn",
+      "props": {}
+    },
+    {
+      "id": "xwczge",
+      "type": "usecase",
+      "x": 543.1,
+      "y": 422,
+      "width": 250.4,
+      "height": 70,
+      "rotation": 0,
+      "text": "Commit (or Commit and Push)",
+      "parentId": "qx6wyn",
+      "props": {}
+    },
+    {
+      "id": "n3ejhj",
+      "type": "usecase",
+      "x": 583.7,
+      "y": 526,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Push",
+      "parentId": "qx6wyn",
+      "props": {
+        "extensionPoints": "rejected\nno remote"
+      }
+    },
+    {
+      "id": "uzgguw",
+      "type": "usecase",
+      "x": 1042.6,
+      "y": 422,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Rebase and push",
+      "parentId": "qx6wyn",
+      "props": {}
+    },
+    {
+      "id": "hx97pw",
+      "type": "usecase",
+      "x": 1042.6,
+      "y": 318,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Publish to a host",
+      "parentId": "qx6wyn",
+      "props": {}
+    },
+    {
+      "id": "6cepxt",
+      "type": "usecase",
+      "x": 583.7,
+      "y": 630,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Fetch and update",
+      "parentId": "qx6wyn",
+      "props": {}
+    },
+    {
+      "id": "tmd7h3",
+      "type": "usecase",
+      "x": 539.5,
+      "y": 734,
+      "width": 257.6,
+      "height": 70,
+      "rotation": 0,
+      "text": "Browse the history and diffs",
+      "parentId": "qx6wyn",
+      "props": {}
+    },
+    {
+      "id": "fcbvip",
+      "type": "usecase",
+      "x": 533.1,
+      "y": 838,
+      "width": 228.8,
+      "height": 70,
+      "rotation": 0,
+      "text": "Merge or rebase a branch",
+      "parentId": "qx6wyn",
+      "props": {
+        "extensionPoints": "conflicts"
+      }
+    },
+    {
+      "id": "e68kdd",
+      "type": "usecase",
+      "x": 1042.6,
+      "y": 838,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Resolve conflicts",
+      "parentId": "qx6wyn",
+      "props": {}
+    },
+    {
+      "id": "irkcb6",
+      "type": "usecase",
+      "x": 521.3,
+      "y": 942,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Stash, tag, blame",
+      "parentId": "qx6wyn",
+      "props": {}
+    },
+    {
+      "id": "ppiv7f",
+      "type": "usecase",
+      "x": 414.7,
+      "y": 1046,
+      "width": 320,
+      "height": 84,
+      "rotation": 0,
+      "text": "Watch every git command (Git Console)",
+      "parentId": "qx6wyn",
+      "props": {}
+    },
+    {
+      "id": "bhvykc",
+      "type": "actor",
+      "x": 130,
+      "y": 590.6363636363636,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Developer",
+      "props": {}
+    },
+    {
+      "id": "3xtnmp",
+      "type": "actor",
+      "x": 1495.2,
+      "y": 203,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "GitHub plugin",
+      "props": {
+        "stereotype": "system"
+      }
+    },
+    {
+      "id": "a8uvup",
+      "type": "actor",
+      "x": 1495.2,
+      "y": 437,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Remote repository",
+      "props": {
+        "stereotype": "system"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "4byxpx",
+      "type": "association",
+      "from": "bhvykc",
+      "to": "mwfj5c",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "pgee9m",
+      "type": "association",
+      "from": "bhvykc",
+      "to": "jtsz6j",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "2ruzxc",
+      "type": "association",
+      "from": "a8uvup",
+      "to": "jtsz6j",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "6uwm5c",
+      "type": "association",
+      "from": "3xtnmp",
+      "to": "9vx25q",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "mwkr5d",
+      "type": "association",
+      "from": "bhvykc",
+      "to": "xtsa6k",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "hivc39",
+      "type": "association",
+      "from": "bhvykc",
+      "to": "xwczge",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "kxd4jc",
+      "type": "association",
+      "from": "bhvykc",
+      "to": "n3ejhj",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "wf3eui",
+      "type": "association",
+      "from": "a8uvup",
+      "to": "n3ejhj",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "vhwny6",
+      "type": "association",
+      "from": "a8uvup",
+      "to": "uzgguw",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "zfc74x",
+      "type": "association",
+      "from": "3xtnmp",
+      "to": "hx97pw",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "di44y3",
+      "type": "association",
+      "from": "bhvykc",
+      "to": "6cepxt",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "26mvpa",
+      "type": "association",
+      "from": "a8uvup",
+      "to": "6cepxt",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "kpq8rs",
+      "type": "association",
+      "from": "bhvykc",
+      "to": "tmd7h3",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "wk9yw8",
+      "type": "association",
+      "from": "bhvykc",
+      "to": "fcbvip",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "zzj2e9",
+      "type": "association",
+      "from": "bhvykc",
+      "to": "irkcb6",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "3zi44i",
+      "type": "association",
+      "from": "bhvykc",
+      "to": "ppiv7f",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "5vtr8e",
+      "type": "extend",
+      "from": "9vx25q",
+      "to": "jtsz6j",
+      "text": "«extend» [a host plugin is on]",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "mp7ezf",
+      "type": "extend",
+      "from": "uzgguw",
+      "to": "n3ejhj",
+      "text": "«extend» [the remote moved on]",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "szpifk",
+      "type": "extend",
+      "from": "hx97pw",
+      "to": "n3ejhj",
+      "text": "«extend» [the repository has none]",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "6n73mx",
+      "type": "extend",
+      "from": "e68kdd",
+      "to": "fcbvip",
+      "text": "«extend» [files conflict]",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    }
+  ],
+  "bounds": {
+    "x": 130,
+    "y": 40,
+    "width": 1425.2,
+    "height": 1120,
+    "left": 130,
+    "top": 40,
+    "right": 1555.2,
+    "bottom": 1160,
+    "center": {
+      "x": 842.6,
+      "y": 600,
+      "length": 1034.3958429924203
+    }
+  }
+}

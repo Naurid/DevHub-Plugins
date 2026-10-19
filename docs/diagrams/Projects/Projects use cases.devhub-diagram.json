@@ -1,0 +1,451 @@
+{
+  "schemaVersion": 1,
+  "kind": "usecase",
+  "title": "Projects: use cases",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "uwzivp",
+      "type": "boundary",
+      "x": 340,
+      "y": 40,
+      "width": 906.8,
+      "height": 912,
+      "rotation": 0,
+      "text": "Projects plugin",
+      "props": {
+        "fill": "#383574F0",
+        "line": "#3574F0",
+        "bold": "true"
+      }
+    },
+    {
+      "id": "jsutg7",
+      "type": "usecase",
+      "x": 452.86875,
+      "y": 110,
+      "width": 200,
+      "height": 70,
+      "rotation": 0,
+      "text": "Add a folder to scan",
+      "parentId": "uwzivp",
+      "props": {}
+    },
+    {
+      "id": "b3syu3",
+      "type": "usecase",
+      "x": 490.81875,
+      "y": 214,
+      "width": 221.6,
+      "height": 70,
+      "rotation": 0,
+      "text": "Rescan the folders (F5)",
+      "parentId": "uwzivp",
+      "props": {}
+    },
+    {
+      "id": "gwrevs",
+      "type": "usecase",
+      "x": 942.8,
+      "y": 110,
+      "width": 236,
+      "height": 70,
+      "rotation": 0,
+      "text": "Find the git repositories",
+      "parentId": "uwzivp",
+      "props": {}
+    },
+    {
+      "id": "y4trjh",
+      "type": "usecase",
+      "x": 924.8,
+      "y": 214,
+      "width": 272,
+      "height": 70,
+      "rotation": 0,
+      "text": "Detect each project's language",
+      "parentId": "uwzivp",
+      "props": {}
+    },
+    {
+      "id": "enhhun",
+      "type": "usecase",
+      "x": 539.11875,
+      "y": 318,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Open a project",
+      "parentId": "uwzivp",
+      "props": {
+        "extensionPoints": "how it opens\nhow it opens"
+      }
+    },
+    {
+      "id": "n96mnp",
+      "type": "usecase",
+      "x": 935.5999999999999,
+      "y": 318,
+      "width": 250.4,
+      "height": 70,
+      "rotation": 0,
+      "text": "Open it in a repository tab",
+      "parentId": "uwzivp",
+      "props": {}
+    },
+    {
+      "id": "izttpz",
+      "type": "usecase",
+      "x": 932,
+      "y": 422,
+      "width": 257.6,
+      "height": 70,
+      "rotation": 0,
+      "text": "Open it in its external tool",
+      "parentId": "uwzivp",
+      "props": {}
+    },
+    {
+      "id": "9n2t3i",
+      "type": "usecase",
+      "x": 521.56875,
+      "y": 422,
+      "width": 257.6,
+      "height": 70,
+      "rotation": 0,
+      "text": "Choose the tool per language",
+      "parentId": "uwzivp",
+      "props": {}
+    },
+    {
+      "id": "w9qzgt",
+      "type": "usecase",
+      "x": 555.36875,
+      "y": 526,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Open in Explorer",
+      "parentId": "uwzivp",
+      "props": {}
+    },
+    {
+      "id": "jt8nmk",
+      "type": "usecase",
+      "x": 539.11875,
+      "y": 630,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Remove a folder",
+      "parentId": "uwzivp",
+      "props": {}
+    },
+    {
+      "id": "spekvs",
+      "type": "usecase",
+      "x": 483.61875,
+      "y": 734,
+      "width": 236,
+      "height": 70,
+      "rotation": 0,
+      "text": "Add files from a template",
+      "parentId": "uwzivp",
+      "props": {}
+    },
+    {
+      "id": "jkww26",
+      "type": "usecase",
+      "x": 420.46875,
+      "y": 838,
+      "width": 264.8,
+      "height": 70,
+      "rotation": 0,
+      "text": "Browse the project's diagrams",
+      "parentId": "uwzivp",
+      "props": {}
+    },
+    {
+      "id": "tsg7zd",
+      "type": "actor",
+      "x": 130,
+      "y": 463,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Developer",
+      "props": {}
+    },
+    {
+      "id": "vj38tv",
+      "type": "actor",
+      "x": 1396.8,
+      "y": 151,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "File system",
+      "props": {
+        "stereotype": "system"
+      }
+    },
+    {
+      "id": "mbaz6d",
+      "type": "actor",
+      "x": 1396.8,
+      "y": 307,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Git plugin",
+      "props": {
+        "stereotype": "system"
+      }
+    },
+    {
+      "id": "fp5rqk",
+      "type": "actor",
+      "x": 1396.8,
+      "y": 457,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "External tool",
+      "props": {
+        "stereotype": "system"
+      }
+    },
+    {
+      "id": "qtf8is",
+      "type": "actor",
+      "x": 1396.8,
+      "y": 723,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Templates plugin",
+      "props": {
+        "stereotype": "system"
+      }
+    },
+    {
+      "id": "qbz2v7",
+      "type": "actor",
+      "x": 1396.8,
+      "y": 873,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Diagrams plugin",
+      "props": {
+        "stereotype": "system"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "4btim3",
+      "type": "association",
+      "from": "tsg7zd",
+      "to": "jsutg7",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "yxraz8",
+      "type": "association",
+      "from": "tsg7zd",
+      "to": "b3syu3",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ye6ve9",
+      "type": "association",
+      "from": "vj38tv",
+      "to": "gwrevs",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "acwyrm",
+      "type": "association",
+      "from": "vj38tv",
+      "to": "y4trjh",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "fjtqq6",
+      "type": "association",
+      "from": "tsg7zd",
+      "to": "enhhun",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "aqxj6x",
+      "type": "association",
+      "from": "mbaz6d",
+      "to": "n96mnp",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "zvppd4",
+      "type": "association",
+      "from": "fp5rqk",
+      "to": "izttpz",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "dywp32",
+      "type": "association",
+      "from": "tsg7zd",
+      "to": "9n2t3i",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "wwxi9s",
+      "type": "association",
+      "from": "tsg7zd",
+      "to": "w9qzgt",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "vzdynm",
+      "type": "association",
+      "from": "tsg7zd",
+      "to": "jt8nmk",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "57arxy",
+      "type": "association",
+      "from": "tsg7zd",
+      "to": "spekvs",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "37getp",
+      "type": "association",
+      "from": "qtf8is",
+      "to": "spekvs",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "d6dwad",
+      "type": "association",
+      "from": "tsg7zd",
+      "to": "jkww26",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "zj6gje",
+      "type": "association",
+      "from": "qbz2v7",
+      "to": "jkww26",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "za4ahx",
+      "type": "include",
+      "from": "jsutg7",
+      "to": "gwrevs",
+      "text": "«include»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "nes6ur",
+      "type": "include",
+      "from": "b3syu3",
+      "to": "y4trjh",
+      "text": "«include»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "xm6mgp",
+      "type": "extend",
+      "from": "n96mnp",
+      "to": "enhhun",
+      "text": "«extend» [Git is on]",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "nbbj6a",
+      "type": "extend",
+      "from": "izttpz",
+      "to": "enhhun",
+      "text": "«extend» [Git is off, or Open in External Tool]",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    }
+  ],
+  "bounds": {
+    "x": 130,
+    "y": 40,
+    "width": 1326.8,
+    "height": 925,
+    "left": 130,
+    "top": 40,
+    "right": 1456.8,
+    "bottom": 965,
+    "center": {
+      "x": 793.4,
+      "y": 502.5,
+      "length": 939.1431254074109
+    }
+  }
+}

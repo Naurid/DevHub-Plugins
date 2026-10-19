@@ -1,0 +1,381 @@
+{
+  "schemaVersion": 1,
+  "kind": "usecase",
+  "title": "Board Git: use cases",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "ehyqzw",
+      "type": "boundary",
+      "x": 340,
+      "y": 40,
+      "width": 933.2,
+      "height": 912,
+      "rotation": 0,
+      "text": "Board Git plugin",
+      "props": {
+        "fill": "#383574F0",
+        "line": "#3574F0",
+        "bold": "true"
+      }
+    },
+    {
+      "id": "55674m",
+      "type": "usecase",
+      "x": 420.46875,
+      "y": 110,
+      "width": 320,
+      "height": 84,
+      "rotation": 0,
+      "text": "Keep a board on the devhub/board branch",
+      "parentId": "ehyqzw",
+      "props": {}
+    },
+    {
+      "id": "k3fzhk",
+      "type": "usecase",
+      "x": 522.01875,
+      "y": 214,
+      "width": 214.4,
+      "height": 70,
+      "rotation": 0,
+      "text": "Push or pull the board",
+      "parentId": "ehyqzw",
+      "props": {
+        "extensionPoints": "pull"
+      }
+    },
+    {
+      "id": "xxgmwm",
+      "type": "usecase",
+      "x": 994.4,
+      "y": 422,
+      "width": 214.4,
+      "height": 70,
+      "rotation": 0,
+      "text": "Report a diverged pull",
+      "parentId": "ehyqzw",
+      "props": {}
+    },
+    {
+      "id": "wm84yx",
+      "type": "usecase",
+      "x": 529.31875,
+      "y": 318,
+      "width": 264.8,
+      "height": 70,
+      "rotation": 0,
+      "text": "Create a branch from an issue",
+      "parentId": "ehyqzw",
+      "props": {}
+    },
+    {
+      "id": "ygqpfb",
+      "type": "usecase",
+      "x": 523.96875,
+      "y": 422,
+      "width": 308,
+      "height": 84,
+      "rotation": 0,
+      "text": "See an issue's branches and commits",
+      "parentId": "ehyqzw",
+      "props": {
+        "extensionPoints": "pull requests"
+      }
+    },
+    {
+      "id": "es4tf2",
+      "type": "usecase",
+      "x": 998,
+      "y": 630,
+      "width": 207.20000000000002,
+      "height": 70,
+      "rotation": 0,
+      "text": "See its pull requests",
+      "parentId": "ehyqzw",
+      "props": {}
+    },
+    {
+      "id": "sb3ra4",
+      "type": "usecase",
+      "x": 523.96875,
+      "y": 526,
+      "width": 308,
+      "height": 84,
+      "rotation": 0,
+      "text": "Commit with the issue key suggested",
+      "parentId": "ehyqzw",
+      "props": {}
+    },
+    {
+      "id": "cywkim",
+      "type": "usecase",
+      "x": 536.51875,
+      "y": 630,
+      "width": 250.4,
+      "height": 70,
+      "rotation": 0,
+      "text": "Apply smart commit commands",
+      "parentId": "ehyqzw",
+      "props": {}
+    },
+    {
+      "id": "zghxzk",
+      "type": "usecase",
+      "x": 980,
+      "y": 838,
+      "width": 243.20000000000002,
+      "height": 70,
+      "rotation": 0,
+      "text": "Confirm the commands first",
+      "parentId": "ehyqzw",
+      "props": {}
+    },
+    {
+      "id": "2pjiw6",
+      "type": "usecase",
+      "x": 496.81875,
+      "y": 734,
+      "width": 264.8,
+      "height": 70,
+      "rotation": 0,
+      "text": "See issue keys in Git's lists",
+      "parentId": "ehyqzw",
+      "props": {}
+    },
+    {
+      "id": "vthawj",
+      "type": "actor",
+      "x": 130,
+      "y": 457.22222222222223,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Developer",
+      "props": {}
+    },
+    {
+      "id": "mqt26j",
+      "type": "actor",
+      "x": 1423.2,
+      "y": 203,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "git",
+      "props": {
+        "stereotype": "system"
+      }
+    },
+    {
+      "id": "2vq6eg",
+      "type": "actor",
+      "x": 1423.2,
+      "y": 619,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "GitHub plugin",
+      "props": {
+        "stereotype": "system"
+      }
+    },
+    {
+      "id": "b6xms5",
+      "type": "actor",
+      "x": 1423.2,
+      "y": 769,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Git plugin",
+      "props": {
+        "stereotype": "system"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "eq9r7n",
+      "type": "association",
+      "from": "vthawj",
+      "to": "55674m",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "cd4c2p",
+      "type": "association",
+      "from": "mqt26j",
+      "to": "55674m",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "yejbrn",
+      "type": "association",
+      "from": "vthawj",
+      "to": "k3fzhk",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "s5yfhf",
+      "type": "association",
+      "from": "mqt26j",
+      "to": "k3fzhk",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ga9tf5",
+      "type": "association",
+      "from": "vthawj",
+      "to": "wm84yx",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "6xbdyg",
+      "type": "association",
+      "from": "mqt26j",
+      "to": "wm84yx",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "sgnvxv",
+      "type": "association",
+      "from": "vthawj",
+      "to": "ygqpfb",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "pjx3di",
+      "type": "association",
+      "from": "2vq6eg",
+      "to": "es4tf2",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "a4gg24",
+      "type": "association",
+      "from": "vthawj",
+      "to": "sb3ra4",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "5dzj6a",
+      "type": "association",
+      "from": "b6xms5",
+      "to": "sb3ra4",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "3x4tnj",
+      "type": "association",
+      "from": "vthawj",
+      "to": "cywkim",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "vdcw7m",
+      "type": "association",
+      "from": "vthawj",
+      "to": "2pjiw6",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "njwwes",
+      "type": "association",
+      "from": "b6xms5",
+      "to": "2pjiw6",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ts8sne",
+      "type": "include",
+      "from": "cywkim",
+      "to": "zghxzk",
+      "text": "«include»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "ep63ud",
+      "type": "extend",
+      "from": "xxgmwm",
+      "to": "k3fzhk",
+      "text": "«extend» [both sides changed]",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "xx8dwu",
+      "type": "extend",
+      "from": "es4tf2",
+      "to": "ygqpfb",
+      "text": "«extend» [GitHub is on]",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    }
+  ],
+  "bounds": {
+    "x": 130,
+    "y": 40,
+    "width": 1353.2,
+    "height": 912,
+    "left": 130,
+    "top": 40,
+    "right": 1483.2,
+    "bottom": 952,
+    "center": {
+      "x": 806.6,
+      "y": 496,
+      "length": 946.8999735980565
+    }
+  }
+}

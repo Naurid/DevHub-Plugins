@@ -130,3 +130,7 @@ one Undo step.
 | `IProjectCatalog` | Projects | Link to Project… |
 | `IIssueLinks` | Board | shapes linked to issues, Create Story |
 | `IExportService`, `IDialogService`, `IStatusService` | the shell | export, pickers, messages |
+
+## Diagrams
+
+Three per plugin (use cases, an activity, the classes): `docs/diagrams/Diagrams/` (editing a diagram), `DiagramsUml/` (how a change is checked), `DiagramsDatabase/` (MCD to SQL), `DiagramsBusiness/` (a mind map), `MoodBoard/` (a palette from a picture).

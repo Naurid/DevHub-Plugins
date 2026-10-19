@@ -1,0 +1,498 @@
+{
+  "schemaVersion": 1,
+  "kind": "class",
+  "title": "Database Diagrams: main classes",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "5xqge5",
+      "type": "class",
+      "x": 469,
+      "y": 294,
+      "width": 281,
+      "height": 76,
+      "rotation": 0,
+      "text": "DiagramsDatabasePlugin",
+      "props": {
+        "attributes": "+ Info : PluginInfo",
+        "operations": "+ ConfigureServices(services, context)",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "kgkdyy",
+      "type": "class",
+      "x": 800,
+      "y": 234.5,
+      "width": 432,
+      "height": 195,
+      "rotation": 0,
+      "text": "MeriseKind",
+      "props": {
+        "attributes": "+ Model : IDiagramKindModel\n+ IconKind : string\n+ Order : int\n+ Commands : IReadOnlyList<KindCommand>",
+        "operations": "+ NodeFields(n : DiagramNode) : IReadOnlyList<PropertyField>\n+ EdgeFields(e : DiagramEdge) : IReadOnlyList<PropertyField>\n+ DrawNode(s, d, n)\n+ DrawEdge(s, d, e, path)\n+ Fit(n : DiagramNode, m : IDiagramSurface) : DRect?",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "jrufus",
+      "type": "class",
+      "x": 1282,
+      "y": 209,
+      "width": 432,
+      "height": 246,
+      "rotation": 0,
+      "text": "ErdKind",
+      "props": {
+        "attributes": "+ Model : IDiagramKindModel\n+ IconKind : string\n+ Order : int\n+ DiagramFields : IReadOnlyList<PropertyField>\n+ Commands : IReadOnlyList<KindCommand>",
+        "operations": "+ MultilineText(n : DiagramNode) : bool\n+ NodeFields(n : DiagramNode) : IReadOnlyList<PropertyField>\n+ EdgeFields(e : DiagramEdge) : IReadOnlyList<PropertyField>\n+ DrawNode(s, d, n)\n+ DrawEdge(s, d, e, path)\n+ static CrowsFoot(s, tip, from, end, pen)\n+ Fit(n : DiagramNode, m : IDiagramSurface) : DRect?",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "u2yug7",
+      "type": "class",
+      "x": 306.5,
+      "y": 915,
+      "width": 605,
+      "height": 229,
+      "rotation": 0,
+      "text": "MeriseModel",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Description : string\n+ NodeTypes : IReadOnlyList<NodeTypeInfo>\n+ EdgeTypes : IReadOnlyList<EdgeTypeInfo>\n+ Rules : IReadOnlyList<IDiagramRule>\n+ TextExporters : IReadOnlyList<IDiagramTextExporter>\n+ Samples : IReadOnlyList<DiagramSample>",
+        "operations": "+ Create(title : string) : Diagram\n+ static Ends(d : Diagram, leg : DiagramEdge) : ValueTuple<DiagramNode, DiagramNode>?\n+ static LegsOf(d : Diagram, association : DiagramNode) : IReadOnlyList<DiagramEdge>",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "nrhay5",
+      "type": "class",
+      "x": 961.5,
+      "y": 898,
+      "width": 446,
+      "height": 263,
+      "rotation": 0,
+      "text": "ErdModel",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Description : string\n+ NodeTypes : IReadOnlyList<NodeTypeInfo>\n+ EdgeTypes : IReadOnlyList<EdgeTypeInfo>\n+ Rules : IReadOnlyList<IDiagramRule>\n+ TextExporters : IReadOnlyList<IDiagramTextExporter>\n+ Samples : IReadOnlyList<DiagramSample>",
+        "operations": "+ Create(title : string) : Diagram\n+ static Columns(table : DiagramNode) : IReadOnlyList<Column>\n+ static Display(c : Column, notation : string) : string\n+ static DisplayLength(line : string, notation : string) : int\n+ static ToSchema(d : Diagram) : Schema",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "sbp6ne",
+      "type": "class",
+      "x": 180.5,
+      "y": 4.5,
+      "width": 322,
+      "height": 110,
+      "rotation": 0,
+      "text": "Schema",
+      "props": {
+        "attributes": "+ Tables : List<Table>",
+        "operations": "+ Table(name : string) : Table\n+ FreeName(name : string) : string\n+ InDependencyOrder() : IReadOnlyList<Table>",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "tqsnvs",
+      "type": "class",
+      "x": 0,
+      "y": 243,
+      "width": 419,
+      "height": 178,
+      "rotation": 0,
+      "text": "Table",
+      "props": {
+        "attributes": "+ Name : string\n+ Columns : List<Column>\n+ NodeId : string\n+ At : DPoint?\n+ Comment : string\n+ PrimaryKey : IReadOnlyList<Column>",
+        "operations": "+ Column(name : string) : Column\n+ ForeignKeys(schema : Schema) : IReadOnlyList<ForeignKey>",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "symku5",
+      "type": "class",
+      "x": 612,
+      "y": 545,
+      "width": 281,
+      "height": 263,
+      "rotation": 0,
+      "text": "Column",
+      "props": {
+        "attributes": "+ Name : string\n+ Type : string\n+ PrimaryKey : bool\n+ Foreign : bool\n+ NotNull : bool\n+ Unique : bool\n+ AutoIncrement : bool\n+ RefTable : string\n+ RefColumn : string\n+ Default : string",
+        "operations": "+ static Parse(line : string) : Column\n+ ToLine() : string\n+ Clone() : Column",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "xg474z",
+      "type": "class",
+      "x": 552.5,
+      "y": 0,
+      "width": 246,
+      "height": 119,
+      "rotation": 0,
+      "text": "ForeignKey",
+      "props": {
+        "attributes": "+ Table : string\n+ Columns : IReadOnlyList<Column>\n+ Nullable : bool\n+ Unique : bool",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "bpmx29",
+      "type": "class",
+      "x": 1211.5,
+      "y": 5.5,
+      "width": 322,
+      "height": 108,
+      "rotation": 0,
+      "text": "Cardinality",
+      "props": {
+        "attributes": "+ Min : int\n+ Many : bool",
+        "operations": "+ static Parse(text : string) : Cardinality?",
+        "showAttributes": "true",
+        "showOperations": "true",
+        "stereotype": "struct"
+      }
+    },
+    {
+      "id": "g6mq28",
+      "type": "class",
+      "x": 565,
+      "y": 1386,
+      "width": 267,
+      "height": 93,
+      "rotation": 0,
+      "text": "SchemaSqlExporter",
+      "props": {
+        "attributes": "+ Name : string\n+ Extension : string",
+        "operations": "+ Export(diagram : Diagram) : string",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "i68kgx",
+      "type": "enumeration",
+      "x": 793,
+      "y": 1569,
+      "width": 128,
+      "height": 119,
+      "rotation": 0,
+      "text": "SqlDialect",
+      "props": {
+        "attributes": "MySql\nPostgreSql\nSqlServer\nSqlite",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "t26yf9",
+      "type": "class",
+      "x": 882,
+      "y": 1386,
+      "width": 267,
+      "height": 93,
+      "rotation": 0,
+      "text": "DataDictionaryExporter",
+      "props": {
+        "attributes": "+ Name : string\n+ Extension : string",
+        "operations": "+ Export(diagram : Diagram) : string",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "upgw84",
+      "type": "interface",
+      "x": 848.5,
+      "y": 37,
+      "width": 120,
+      "height": 45,
+      "rotation": 0,
+      "text": "IPlugin",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "f3d8cu",
+      "type": "class",
+      "x": 1018.5,
+      "y": 39,
+      "width": 143,
+      "height": 41,
+      "rotation": 0,
+      "text": "DiagramKindBase",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "96ebeg",
+      "type": "interface",
+      "x": 943,
+      "y": 654,
+      "width": 159,
+      "height": 45,
+      "rotation": 0,
+      "text": "IDiagramKindModel",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "drwt2z",
+      "type": "interface",
+      "x": 766,
+      "y": 1251,
+      "width": 182,
+      "height": 45,
+      "rotation": 0,
+      "text": "IDiagramTextExporter",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "gfz6a7",
+      "type": "note",
+      "x": 0,
+      "y": 1738,
+      "width": 620,
+      "height": 76,
+      "rotation": 0,
+      "text": "Read from DevHub.Diagrams.Database.dll, DevHub.Diagrams.Database.Core.dll: each type's own public members (up to 10 properties and 8 methods). Grey: from the Sdk or another plugin.",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "w2y65k",
+      "type": "realization",
+      "from": "5xqge5",
+      "to": "upgw84",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "eqabyx",
+      "type": "generalization",
+      "from": "kgkdyy",
+      "to": "f3d8cu",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "suw9bk",
+      "type": "association",
+      "from": "kgkdyy",
+      "to": "96ebeg",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Model"
+      }
+    },
+    {
+      "id": "rx94zs",
+      "type": "generalization",
+      "from": "jrufus",
+      "to": "f3d8cu",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "q2dazr",
+      "type": "association",
+      "from": "jrufus",
+      "to": "96ebeg",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Model"
+      }
+    },
+    {
+      "id": "e7cc5u",
+      "type": "realization",
+      "from": "u2yug7",
+      "to": "96ebeg",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "5hqfv9",
+      "type": "association",
+      "from": "u2yug7",
+      "to": "drwt2z",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "TextExporters"
+      }
+    },
+    {
+      "id": "3kz99j",
+      "type": "realization",
+      "from": "nrhay5",
+      "to": "96ebeg",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "479pqb",
+      "type": "association",
+      "from": "nrhay5",
+      "to": "drwt2z",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "TextExporters"
+      }
+    },
+    {
+      "id": "f82s92",
+      "type": "association",
+      "from": "sbp6ne",
+      "to": "tqsnvs",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Tables"
+      }
+    },
+    {
+      "id": "rhuaw8",
+      "type": "association",
+      "from": "tqsnvs",
+      "to": "symku5",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Columns"
+      }
+    },
+    {
+      "id": "fbjusp",
+      "type": "association",
+      "from": "xg474z",
+      "to": "symku5",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Columns"
+      }
+    },
+    {
+      "id": "z2amfp",
+      "type": "realization",
+      "from": "g6mq28",
+      "to": "drwt2z",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "b2rxpb",
+      "type": "dependency",
+      "from": "g6mq28",
+      "to": "i68kgx",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ryvs9i",
+      "type": "realization",
+      "from": "t26yf9",
+      "to": "drwt2z",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 0,
+    "y": 0,
+    "width": 1714,
+    "height": 1814,
+    "left": 0,
+    "top": 0,
+    "right": 1714,
+    "bottom": 1814,
+    "center": {
+      "x": 857,
+      "y": 907,
+      "length": 1247.8373291419039
+    }
+  }
+}

@@ -1,0 +1,629 @@
+{
+  "schemaVersion": 1,
+  "kind": "class",
+  "title": "Diagrams: main classes",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "v2757p",
+      "type": "class",
+      "x": 1451.5,
+      "y": 777.5,
+      "width": 281,
+      "height": 93,
+      "rotation": 0,
+      "text": "DiagramsPlugin",
+      "props": {
+        "attributes": "+ Info : PluginInfo\n+ Resources : IEnumerable<Uri>",
+        "operations": "+ ConfigureServices(services, context)",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "bwctzb",
+      "type": "class",
+      "x": 793,
+      "y": 1130.5,
+      "width": 536,
+      "height": 229,
+      "rotation": 0,
+      "text": "DiagramsService",
+      "props": {
+        "attributes": "+ Kinds : IReadOnlyList<IDiagramKind>\n+ Catalog : IProjectCatalog\n+ ActiveProject : string",
+        "operations": "+ Kind(id : string) : IDiagramKind\n+ RaiseChanged()\n+ static IdFor(path : string) : string\n+ Open(path : string)\n+ OpenFromDiskAsync() : Task\n+ CreateAsync(projectFolder : string) : Task<string>\n+ CreateFileAsync(kind, folder, name, projectFolder, sample) : Task<string>\n+ DiagramsOf(projectFolder : string) : IReadOnlyList<DiagramFileInfo>",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "igfydc",
+      "type": "class",
+      "x": 920.5,
+      "y": 650,
+      "width": 481,
+      "height": 348,
+      "rotation": 0,
+      "text": "DiagramDocumentViewModel",
+      "props": {
+        "attributes": "+ Id : string\n+ Title : string\n+ Icon : string\n+ FillsEditorArea : bool\n+ ContextPath : string\n+ HasUnsavedChanges : bool\n+ FilePath : string\n+ Diagram : Diagram\n+ Dialogs : IDialogService\n+ Export : IExportService",
+        "operations": "+ Do(operation : IDiagramOperation) : bool\n+ SaveAsync() : Task\n+ ConfirmCloseAsync() : Task<bool>\n+ ViewportChanged(width : double, height : double)\n+ CreateNode(type : string, center : DPoint)\n+ Connect(edgeType, fromId, toId)\n+ AddStroke(points : IReadOnlyList<DPoint>)\n+ DropFilesAsync(paths : IReadOnlyList<string>, at : DPoint) : Task",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "5y39nm",
+      "type": "interface",
+      "x": 489,
+      "y": 0,
+      "width": 439,
+      "height": 278,
+      "rotation": 0,
+      "text": "IDiagramEditor",
+      "props": {
+        "attributes": "+ Diagram : Diagram\n+ Kind : IDiagramKind\n+ FilePath : string\n+ ProjectFolder : string\n+ Selection : IReadOnlyList<string>\n+ ViewCenter : DPoint\n+ Dialogs : IDialogService\n+ Export : IExportService\n+ Status : IStatusService\n+ Issues : IIssueLinks",
+        "operations": "+ Select(ids : IEnumerable<string>, add : bool)\n+ Do(operation : IDiagramOperation) : bool\n+ OpenGeneratedAsync(diagram : Diagram, path : string) : Task",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "78kxrk",
+      "type": "interface",
+      "x": 665.5,
+      "y": 1492,
+      "width": 453,
+      "height": 295,
+      "rotation": 0,
+      "text": "IDiagramKind",
+      "props": {
+        "attributes": "+ Model : IDiagramKindModel\n+ IconKind : string\n+ Order : int\n+ DiagramFields : IReadOnlyList<PropertyField>\n+ Commands : IReadOnlyList<KindCommand>\n+ HasPen : bool",
+        "operations": "+ DrawNode(surface, diagram, node)\n+ DrawEdge(surface, diagram, edge, path)\n+ NodeFields(node : DiagramNode) : IReadOnlyList<PropertyField>\n+ EdgeFields(edge : DiagramEdge) : IReadOnlyList<PropertyField>\n+ Fit(node : DiagramNode, measure : IDiagramSurface) : DRect?\n+ MultilineText(node : DiagramNode) : bool\n+ PasteAsync(editor : IDiagramEditor, at : DPoint) : Task<bool>\n+ DropFilesAsync(editor, paths, at) : Task<bool>",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "cx54e3",
+      "type": "class",
+      "x": 1065.5,
+      "y": 1877,
+      "width": 453,
+      "height": 348,
+      "rotation": 0,
+      "text": "DiagramKindBase",
+      "props": {
+        "attributes": "+ abstract Model : IDiagramKindModel\n+ abstract IconKind : string\n+ Order : int\n+ HasPen : bool\n+ Commands : IReadOnlyList<KindCommand>\n+ static StyleFields : IReadOnlyList<PropertyField>\n+ static LineStyleFields : IReadOnlyList<PropertyField>\n+ static LabelBackgroundField : PropertyField\n+ static DashChoices : IReadOnlyList<FieldChoice>\n+ static ArrowChoices : IReadOnlyList<FieldChoice>",
+        "operations": "+ PasteAsync(editor : IDiagramEditor, at : DPoint) : Task<bool>\n+ DropFilesAsync(editor, paths, at) : Task<bool>\n+ Stroke(diagram, points, color, width) : IDiagramOperation\n+ NodeFields(node : DiagramNode) : IReadOnlyList<PropertyField>\n+ EdgeFields(edge : DiagramEdge) : IReadOnlyList<PropertyField>\n+ static StartOf(e : DiagramEdge, notation : LineEnd) : LineEnd\n+ static EndOf(e : DiagramEdge, notation : LineEnd) : LineEnd\n+ static HasArrow(e : DiagramEdge, atStart : bool) : bool",
+        "showAttributes": "true",
+        "showOperations": "true",
+        "abstract": "true"
+      }
+    },
+    {
+      "id": "uymf79",
+      "type": "interface",
+      "x": 0,
+      "y": 0,
+      "width": 439,
+      "height": 227,
+      "rotation": 0,
+      "text": "IDiagramSurface",
+      "props": {
+        "attributes": "+ Style : DiagramStyle\n+ Folder : string",
+        "operations": "+ Rect(r, fill, pen, radius)\n+ Ellipse(r : DRect, fill : Color?, pen : DPen)\n+ Polygon(points, fill, pen)\n+ Polyline(points : IReadOnlyList<DPoint>, pen : DPen)\n+ Line(a : DPoint, b : DPoint, pen : DPen)\n+ Curve(points : IReadOnlyList<DPoint>, pen : DPen)\n+ Text(text, box, style, wrap)\n+ Measure(text, style, maxWidth) : ValueTuple<double, double>",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "ah9xxu",
+      "type": "class",
+      "x": 431.5,
+      "y": 718,
+      "width": 439,
+      "height": 212,
+      "rotation": 0,
+      "text": "AvaloniaSurface",
+      "props": {
+        "attributes": "+ Style : DiagramStyle\n+ Folder : string",
+        "operations": "+ Rect(r, fill, pen, radius)\n+ Ellipse(r : DRect, fill : Color?, pen : DPen)\n+ Polygon(points, fill, pen)\n+ Polyline(points : IReadOnlyList<DPoint>, pen : DPen)\n+ Line(a : DPoint, b : DPoint, pen : DPen)\n+ Curve(points : IReadOnlyList<DPoint>, pen : DPen)\n+ Text(text, box, style, wrap)\n+ Measure(text, style, maxWidth) : ValueTuple<double, double>",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "dvqdtq",
+      "type": "interface",
+      "x": 1024,
+      "y": 2315,
+      "width": 536,
+      "height": 227,
+      "rotation": 0,
+      "text": "IDiagramKindModel",
+      "props": {
+        "attributes": "+ Id : string\n+ Name : string\n+ Description : string\n+ NodeTypes : IReadOnlyList<NodeTypeInfo>\n+ EdgeTypes : IReadOnlyList<EdgeTypeInfo>\n+ Rules : IReadOnlyList<IDiagramRule>\n+ TextExporters : IReadOnlyList<IDiagramTextExporter>\n+ Samples : IReadOnlyList<DiagramSample>",
+        "operations": "+ Create(title : string) : Diagram\n+ CustomPath(diagram : Diagram, edge : DiagramEdge) : IReadOnlyList<DPoint>",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "rurvc4",
+      "type": "class",
+      "x": 1379,
+      "y": 1088,
+      "width": 412,
+      "height": 314,
+      "rotation": 0,
+      "text": "Diagram",
+      "props": {
+        "attributes": "+ SchemaVersion : int\n+ Kind : string\n+ Title : string\n+ Project : string\n+ Props : Dictionary<string, string>\n+ Nodes : List<DiagramNode>\n+ Edges : List<DiagramEdge>\n+ Extra : Dictionary<string, JsonElement>\n+ Bounds : DRect",
+        "operations": "+ Node(id : string) : DiagramNode\n+ Edge(id : string) : DiagramEdge\n+ Has(id : string) : bool\n+ Children(id : string) : IEnumerable<DiagramNode>\n+ WithDescendants(id : string) : IEnumerable<DiagramNode>\n+ EdgesOf(nodeId : string) : IEnumerable<DiagramEdge>\n+ Clone() : Diagram",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "7jtavj",
+      "type": "class",
+      "x": 1168.5,
+      "y": 1516.5,
+      "width": 350,
+      "height": 246,
+      "rotation": 0,
+      "text": "DiagramNode",
+      "props": {
+        "attributes": "+ Id : string\n+ Type : string\n+ X : double\n+ Y : double\n+ Width : double\n+ Height : double\n+ Rotation : double\n+ Text : string\n+ ParentId : string\n+ Props : Dictionary<string, string>",
+        "operations": "+ Prop(key : string, fallback : string) : string\n+ Flag(key : string) : bool",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "u2zjuw",
+      "type": "class",
+      "x": 1568.5,
+      "y": 1516.5,
+      "width": 350,
+      "height": 246,
+      "rotation": 0,
+      "text": "DiagramEdge",
+      "props": {
+        "attributes": "+ Id : string\n+ Type : string\n+ From : string\n+ To : string\n+ Text : string\n+ Routing : EdgeRouting\n+ Waypoints : List<DPoint>\n+ LabelAt : double?\n+ Props : Dictionary<string, string>\n+ Extra : Dictionary<string, JsonElement>",
+        "operations": "+ Prop(key : string, fallback : string) : string\n+ Flag(key : string) : bool",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "hgizkk",
+      "type": "interface",
+      "x": 1806,
+      "y": 0,
+      "width": 336,
+      "height": 91,
+      "rotation": 0,
+      "text": "IDiagramOperation",
+      "props": {
+        "attributes": "+ Name : string",
+        "operations": "+ Apply(diagram : Diagram) : IDiagramOperation",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "dgpe3r",
+      "type": "class",
+      "x": 0,
+      "y": 348,
+      "width": 191,
+      "height": 212,
+      "rotation": 0,
+      "text": "UndoStack",
+      "props": {
+        "attributes": "+ Diagram : Diagram\n+ CanUndo : bool\n+ CanRedo : bool\n+ UndoName : string\n+ RedoName : string\n+ IsDirty : bool",
+        "operations": "+ Do(operation, mergeKey)\n+ Undo()\n+ Redo()\n+ MarkSaved()",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "rrb4qf",
+      "type": "interface",
+      "x": 1089.5,
+      "y": 2632,
+      "width": 405,
+      "height": 68,
+      "rotation": 0,
+      "text": "IDiagramRule",
+      "props": {
+        "attributes": "",
+        "operations": "+ Check(diagram : Diagram) : IEnumerable<DiagramProblem>",
+        "showAttributes": "false",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "kk462x",
+      "type": "class",
+      "x": 1782.5,
+      "y": 760.5,
+      "width": 370,
+      "height": 127,
+      "rotation": 0,
+      "text": "DiagramsSettings",
+      "props": {
+        "attributes": "+ static SectionId : string\n+ ExportPlace : ExportPlace\n+ ExportFolder : string\n+ BesideSubfolder : string",
+        "operations": "+ TargetFor(diagramPath, title, extension) : string",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "cimx49",
+      "type": "interface",
+      "x": 1435,
+      "y": 0,
+      "width": 120,
+      "height": 45,
+      "rotation": 0,
+      "text": "IPlugin",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "njfeuj",
+      "type": "interface",
+      "x": 241,
+      "y": 348,
+      "width": 151,
+      "height": 45,
+      "rotation": 0,
+      "text": "IProjectDiagrams",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "tp2zwy",
+      "type": "class",
+      "x": 978,
+      "y": 0,
+      "width": 190,
+      "height": 41,
+      "rotation": 0,
+      "text": "DocumentViewModelBase",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "c6yme7",
+      "type": "interface",
+      "x": 1218,
+      "y": 0,
+      "width": 167,
+      "height": 45,
+      "rotation": 0,
+      "text": "IDiagramCanvasHost",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "x9htmz",
+      "type": "interface",
+      "x": 1605,
+      "y": 0,
+      "width": 151,
+      "height": 45,
+      "rotation": 0,
+      "text": "ISettingsSection",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "ym4dnz",
+      "type": "note",
+      "x": 0,
+      "y": 2750,
+      "width": 620,
+      "height": 76,
+      "rotation": 0,
+      "text": "Read from DevHub.Diagrams.dll, DevHub.Diagrams.Core.dll: each type's own public members (up to 10 properties and 8 methods). Grey: from the Sdk or another plugin.",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "a5yfdm",
+      "type": "realization",
+      "from": "v2757p",
+      "to": "cimx49",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "qi33uw",
+      "type": "realization",
+      "from": "bwctzb",
+      "to": "njfeuj",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "x6dt3y",
+      "type": "association",
+      "from": "bwctzb",
+      "to": "78kxrk",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Kinds"
+      }
+    },
+    {
+      "id": "btqdrd",
+      "type": "generalization",
+      "from": "igfydc",
+      "to": "tp2zwy",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "6fzgvj",
+      "type": "realization",
+      "from": "igfydc",
+      "to": "c6yme7",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "pbfn6b",
+      "type": "realization",
+      "from": "igfydc",
+      "to": "5y39nm",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "6cbx4j",
+      "type": "association",
+      "from": "igfydc",
+      "to": "rurvc4",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Diagram"
+      }
+    },
+    {
+      "id": "upt6ny",
+      "type": "association",
+      "from": "igfydc",
+      "to": "78kxrk",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Kind"
+      }
+    },
+    {
+      "id": "afh5cq",
+      "type": "dependency",
+      "from": "igfydc",
+      "to": "bwctzb",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "t33cma",
+      "type": "association",
+      "from": "5y39nm",
+      "to": "rurvc4",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Diagram"
+      }
+    },
+    {
+      "id": "v3hfiq",
+      "type": "association",
+      "from": "5y39nm",
+      "to": "78kxrk",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Kind"
+      }
+    },
+    {
+      "id": "wfhmug",
+      "type": "association",
+      "from": "78kxrk",
+      "to": "dvqdtq",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Model"
+      }
+    },
+    {
+      "id": "g46zh3",
+      "type": "realization",
+      "from": "cx54e3",
+      "to": "78kxrk",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "y3x8vj",
+      "type": "association",
+      "from": "cx54e3",
+      "to": "dvqdtq",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Model"
+      }
+    },
+    {
+      "id": "3xn6rh",
+      "type": "realization",
+      "from": "ah9xxu",
+      "to": "uymf79",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "x77ej4",
+      "type": "association",
+      "from": "dvqdtq",
+      "to": "rrb4qf",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Rules"
+      }
+    },
+    {
+      "id": "fp7frq",
+      "type": "association",
+      "from": "rurvc4",
+      "to": "7jtavj",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Nodes"
+      }
+    },
+    {
+      "id": "869cci",
+      "type": "association",
+      "from": "rurvc4",
+      "to": "u2zjuw",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Edges"
+      }
+    },
+    {
+      "id": "8zhsub",
+      "type": "association",
+      "from": "dgpe3r",
+      "to": "rurvc4",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Diagram"
+      }
+    },
+    {
+      "id": "ap9hng",
+      "type": "realization",
+      "from": "kk462x",
+      "to": "x9htmz",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 0,
+    "y": 0,
+    "width": 2152.5,
+    "height": 2826,
+    "left": 0,
+    "top": 0,
+    "right": 2152.5,
+    "bottom": 2826,
+    "center": {
+      "x": 1076.25,
+      "y": 1413,
+      "length": 1776.199049234066
+    }
+  }
+}

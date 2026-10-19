@@ -59,6 +59,37 @@ Open them in DevHub (Diagrams + UML Diagrams plugins on), or from the Projects t
 | Diagram kinds | the `IDiagramKind` extension point and the kinds that plug in |
 | Publishing a plugin | from a push to an install in someone's DevHub |
 
+### Three diagrams per plugin
+
+Each plugin has a folder in `docs/diagrams/` with a **use case** diagram (who uses it for what, with «include» and
+«extend»), an **activity** diagram of its main workflow (swimlanes, decisions with guards, loops) and a **class**
+diagram of its main types. The class diagrams are read from the built DLLs, so every name, member, base type and
+line matches the code at the time they were made: each type's own public members (up to 10 properties and 8
+methods), grey boxes for what comes from the Sdk or another plugin, «uses» for a constructor parameter.
+
+| Folder | Plugin | Activity |
+|---|---|---|
+| `Projects/` | Projects | open a project |
+| `Git/` | Git | commit and push |
+| `GitHub/` | GitHub | an API call |
+| `Templates/` | Templates | new project |
+| `Board/` | Board | an issue's life |
+| `BoardScrum/` | Board Scrum | a sprint |
+| `BoardGit/` | Board Git | a smart commit |
+| `BoardReports/` | Board Reports | a release forecast |
+| `BoardTimeline/` | Board Timeline | the roadmap |
+| `BoardRisks/` | Board Risks | a risk |
+| `Charts/` | Charts | make a chart |
+| `Diagrams/` | Diagrams | edit a diagram |
+| `DiagramsUml/` | UML Diagrams | checking the notation |
+| `DiagramsDatabase/` | Database Diagrams | MCD to SQL |
+| `DiagramsBusiness/` | Business Diagrams | a mind map |
+| `MoodBoard/` | Mood Boards | a palette from a picture |
+| `CI/` | CI | from push to re-run |
+
+The files are `<Plugin> use cases`, `<Plugin> activity - <workflow>` and `<Plugin> classes` (`.devhub-diagram.json`).
+They show the code as of 2026-10-19; after a big change to a plugin, update its diagrams in DevHub.
+
 ## Rules the plugins follow
 
 - **Projects and Git never depend on each other**; they meet through hooks in `DevHub.Integration` (the Sdk), each

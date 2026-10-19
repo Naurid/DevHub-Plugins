@@ -1,0 +1,710 @@
+{
+  "schemaVersion": 1,
+  "kind": "class",
+  "title": "Git: main classes",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "ve24sy",
+      "type": "class",
+      "x": 860,
+      "y": 545,
+      "width": 281,
+      "height": 93,
+      "rotation": 0,
+      "text": "GitPlugin",
+      "props": {
+        "attributes": "+ Info : PluginInfo\n+ Resources : IEnumerable<Uri>",
+        "operations": "+ ConfigureServices(services, context)",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "thes9r",
+      "type": "class",
+      "x": 1191,
+      "y": 426,
+      "width": 281,
+      "height": 331,
+      "rotation": 0,
+      "text": "RepositoryDocumentViewModel",
+      "props": {
+        "attributes": "+ Id : string\n+ Title : string\n+ Icon : string\n+ FillsEditorArea : bool\n+ MinWidth : double\n+ Path : string\n+ ContextPath : string\n+ Name : string\n+ IsGitAvailable : bool\n+ LocalChanges : LocalChangesViewModel",
+        "operations": "+ OpenTerminal()\n+ NewBranchAsync() : Task\n+ RefreshAsync() : Task\n+ FocusCommit()\n+ DiscardSelectionAsync() : Task\n+ StashChangesAsync() : Task\n+ ShowStashes()",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "2ssfbr",
+      "type": "class",
+      "x": 564,
+      "y": 876.5,
+      "width": 370,
+      "height": 204,
+      "rotation": 0,
+      "text": "RepositoryTabServices",
+      "props": {
+        "attributes": "+ Editor : RepositoryFileOpener\n+ Dialogs : IDialogService\n+ Status : IStatusService\n+ Terminal : TerminalLauncher\n+ Events : GitRepositoryEvents\n+ Suggesters : IEnumerable<ICommitMessageSuggester>\n+ Decorators : IEnumerable<IGitDecorator>\n+ Host : IRemoteHost\n+ AddFiles : IAddFilesFromTemplate",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "59v9zx",
+      "type": "class",
+      "x": 984,
+      "y": 855.5,
+      "width": 412,
+      "height": 246,
+      "rotation": 0,
+      "text": "LocalChangesViewModel",
+      "props": {
+        "attributes": "+ Commit : CommitViewModel\n+ Unstaged : ObservableCollection<FileChangeViewModel>\n+ Staged : ObservableCollection<FileChangeViewModel>\n+ UnstagedRows : ObservableCollection<ChangeRowViewModel>\n+ StagedRows : ObservableCollection<ChangeRowViewModel>\n+ ChangesAsTree : bool\n+ UnstagedCount : int\n+ StagedCount : int\n+ Diff : DiffViewModel\n+ HasChanges : bool",
+        "operations": "+ Update(status : RepoStatus)\n+ DiscardSelectionAsync() : Task",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "yyrenp",
+      "type": "class",
+      "x": 1446,
+      "y": 847,
+      "width": 363,
+      "height": 263,
+      "rotation": 0,
+      "text": "CommitLogViewModel",
+      "props": {
+        "attributes": "+ Layout : RepositoryTabLayout\n+ Details : CommitDetailsViewModel\n+ HasRows : bool\n+ IsFiltering : bool\n+ PlaceholderText : string\n+ Rows : IReadOnlyList<CommitRowViewModel>\n+ IsLoading : bool\n+ Error : string\n+ Filter : string\n+ HasMore : bool",
+        "operations": "+ Reveal(commitId : string)\n+ EnsureLoadedAsync(signature : string) : Task\n+ RefreshIfChangedAsync(signature : string) : Task",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "dxfgyb",
+      "type": "class",
+      "x": 856.5,
+      "y": 1200,
+      "width": 301,
+      "height": 246,
+      "rotation": 0,
+      "text": "CommitDetailsViewModel",
+      "props": {
+        "attributes": "+ Layout : RepositoryTabLayout\n+ EmptyTitle : string\n+ EmptyText : string\n+ Diff : DiffViewModel\n+ HasCommit : bool\n+ AuthorText : string\n+ DateText : string\n+ IdText : string\n+ ParentsText : string\n+ FilesText : string",
+        "operations": "+ LoadAsync(commit : GitCommit) : Task\n+ LoadStashAsync(stash : GitStash) : Task",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "7bv4wv",
+      "type": "class",
+      "x": 760,
+      "y": 1536,
+      "width": 543,
+      "height": 263,
+      "rotation": 0,
+      "text": "DiffViewModel",
+      "props": {
+        "attributes": "+ Layout : RepositoryTabLayout\n+ HasFile : bool\n+ HasRows : bool\n+ BannerText : string\n+ PlaceholderText : string\n+ CanOpenInEditor : bool\n+ CanOpenInTab : bool\n+ CanAnnotate : bool\n+ SelectedRows : ObservableCollection<DiffRowViewModel>\n+ SelectedChangeCount : int",
+        "operations": "+ LoadAsync(file : FileChangeViewModel) : Task\n+ LoadCommitFileAsync(commit : GitCommit, file : FileChangeViewModel) : Task\n+ ShowMessage(message : string)",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "zntcu3",
+      "type": "class",
+      "x": 1522,
+      "y": 514,
+      "width": 322,
+      "height": 155,
+      "rotation": 0,
+      "text": "GitConsoleViewModel",
+      "props": {
+        "attributes": "+ Id : string\n+ Title : string\n+ IconKind : string\n+ Slot : ToolWindowSlot\n+ Rows : ObservableCollection<GitConsoleRow>\n+ HasRows : bool\n+ ClearCommand : IRelayCommand",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "xq38bi",
+      "type": "class",
+      "x": 436.5,
+      "y": 1288,
+      "width": 370,
+      "height": 70,
+      "rotation": 0,
+      "text": "GitRepositoryEvents",
+      "props": {
+        "attributes": "",
+        "operations": "+ Watch(client : GitRepositoryClient) : IDisposable\n+ ReportHead(client, branch, commitId)",
+        "showAttributes": "false",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "vynean",
+      "type": "interface",
+      "x": 1207.5,
+      "y": 1235,
+      "width": 729,
+      "height": 176,
+      "rotation": 0,
+      "text": "IRemoteHost",
+      "props": {
+        "attributes": "+ Name : string\n+ IsAvailable : bool",
+        "operations": "+ CreateRepositoryAsync(suggestedName, existingRemotes) : Task<CreatedHostRepository>\n+ GetMyIdentityAsync() : Task<HostIdentity>\n+ ListAccountsAsync() : Task<IReadOnlyList<string>>\n+ SignInAsync() : Task<bool>\n+ ListRepositoriesAsync(account : string, ct : CancellationToken) : Task<IReadOnlyList<HostRepository>>",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "e84fch",
+      "type": "class",
+      "x": 932.5,
+      "y": 1889,
+      "width": 508,
+      "height": 195,
+      "rotation": 0,
+      "text": "GitRepositoryClient",
+      "props": {
+        "attributes": "+ RepositoryPath : string",
+        "operations": "+ IsRepositoryAsync(ct : CancellationToken) : Task<bool>\n+ GetTopLevelAsync(ct : CancellationToken) : Task<string>\n+ GetStatusAsync(ct : CancellationToken) : Task<RepoStatus>\n+ GetIgnoredAsync(ct : CancellationToken) : Task<IReadOnlyList<string>>\n+ GetOperationAsync(ct : CancellationToken) : Task<RepositoryOperation>\n+ GetDiffAsync(change, staged, ct, maxLines) : Task<FileDiff>\n+ StageAsync(paths, ct) : Task\n+ UnstageAsync(paths, ct) : Task",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "s2az5w",
+      "type": "class",
+      "x": 842.5,
+      "y": 2174,
+      "width": 688,
+      "height": 70,
+      "rotation": 0,
+      "text": "GitRunner",
+      "props": {
+        "attributes": "",
+        "operations": "+ RunAsync(workingDirectory, arguments, options, ct) : Task<GitResult>\n+ RunBinaryAsync(workingDirectory, arguments, standardInput, options, ct) : Task<GitBinaryResult>",
+        "showAttributes": "false",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "7mbfma",
+      "type": "class",
+      "x": 0,
+      "y": 0,
+      "width": 591,
+      "height": 87,
+      "rotation": 0,
+      "text": "RepositoryWatcher",
+      "props": {
+        "attributes": "",
+        "operations": "+ static SetIgnored(repositoryRoot, ignored)\n+ static Classify(relativePath : string, ignored : IgnoredPaths) : RepositoryChange\n+ static IsRelevant(relativePath : string) : bool",
+        "showAttributes": "false",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "uyzfq5",
+      "type": "class",
+      "x": 641,
+      "y": 0,
+      "width": 274,
+      "height": 187,
+      "rotation": 0,
+      "text": "RepoStatus",
+      "props": {
+        "attributes": "+ Branch : string\n+ CommitId : string\n+ Upstream : string\n+ Ahead : int\n+ Behind : int\n+ IsDetached : bool\n+ Changes : IReadOnlyList<FileChange>\n+ DisplayBranch : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "5bzsmc",
+      "type": "class",
+      "x": 529,
+      "y": 481,
+      "width": 281,
+      "height": 221,
+      "rotation": 0,
+      "text": "FileChange",
+      "props": {
+        "attributes": "+ Path : string\n+ IndexStatus : char\n+ WorkTreeStatus : char\n+ Kind : FileChangeKind\n+ OriginalPath : string\n+ IsStaged : bool\n+ IsUnstaged : bool\n+ IsConflicted : bool\n+ StagePaths : IReadOnlyList<string>\n+ UnstagePaths : IReadOnlyList<string>",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "ymnu3f",
+      "type": "class",
+      "x": 1353,
+      "y": 1557,
+      "width": 260,
+      "height": 221,
+      "rotation": 0,
+      "text": "GitCommit",
+      "props": {
+        "attributes": "+ Id : string\n+ ParentIds : IReadOnlyList<string>\n+ AuthorName : string\n+ AuthorEmail : string\n+ AuthorDate : DateTimeOffset\n+ CommitterName : string\n+ CommitDate : DateTimeOffset\n+ Subject : string\n+ Refs : IReadOnlyList<GitRefLabel>\n+ ShortId : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "hm5zt3",
+      "type": "class",
+      "x": 1375,
+      "y": 0,
+      "width": 156,
+      "height": 221,
+      "rotation": 0,
+      "text": "GitBranch",
+      "props": {
+        "attributes": "+ Ref : string\n+ Name : string\n+ Remote : string\n+ IsRemote : bool\n+ ShortName : string\n+ IsCurrent : bool\n+ CommitId : string\n+ Upstream : string\n+ Ahead : int\n+ Behind : int",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "dcjg6x",
+      "type": "class",
+      "x": 1837,
+      "y": 0,
+      "width": 150,
+      "height": 102,
+      "rotation": 0,
+      "text": "GitRemote",
+      "props": {
+        "attributes": "+ Name : string\n+ FetchUrl : string\n+ PushUrl : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "a9akbu",
+      "type": "interface",
+      "x": 965,
+      "y": 0,
+      "width": 120,
+      "height": 45,
+      "rotation": 0,
+      "text": "IPlugin",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "dvjiz6",
+      "type": "class",
+      "x": 1135,
+      "y": 0,
+      "width": 190,
+      "height": 41,
+      "rotation": 0,
+      "text": "DocumentViewModelBase",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "vy8hrw",
+      "type": "class",
+      "x": 2037,
+      "y": 0,
+      "width": 127,
+      "height": 41,
+      "rotation": 0,
+      "text": "ViewModelBase",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "3t7gg9",
+      "type": "class",
+      "x": 1581,
+      "y": 0,
+      "width": 206,
+      "height": 41,
+      "rotation": 0,
+      "text": "ToolWindowViewModelBase",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "u9bcwi",
+      "type": "interface",
+      "x": 0,
+      "y": 291,
+      "width": 159,
+      "height": 45,
+      "rotation": 0,
+      "text": "IRepositoryEvents",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "fhg657",
+      "type": "note",
+      "x": 0,
+      "y": 2294,
+      "width": 620,
+      "height": 76,
+      "rotation": 0,
+      "text": "Read from DevHub.Git.dll, DevHub.Git.Core.dll: each type's own public members (up to 10 properties and 8 methods). Grey: from the Sdk or another plugin.",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "fixg2b",
+      "type": "realization",
+      "from": "ve24sy",
+      "to": "a9akbu",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "7tu3y2",
+      "type": "generalization",
+      "from": "thes9r",
+      "to": "dvjiz6",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "jhdxzn",
+      "type": "association",
+      "from": "thes9r",
+      "to": "59v9zx",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "LocalChanges"
+      }
+    },
+    {
+      "id": "y4kd99",
+      "type": "association",
+      "from": "thes9r",
+      "to": "yyrenp",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "CommitLog"
+      }
+    },
+    {
+      "id": "a84rws",
+      "type": "dependency",
+      "from": "thes9r",
+      "to": "e84fch",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "kma2gp",
+      "type": "dependency",
+      "from": "thes9r",
+      "to": "2ssfbr",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "86nsci",
+      "type": "association",
+      "from": "2ssfbr",
+      "to": "xq38bi",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Events"
+      }
+    },
+    {
+      "id": "7wfa37",
+      "type": "association",
+      "from": "2ssfbr",
+      "to": "vynean",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Host"
+      }
+    },
+    {
+      "id": "khzc33",
+      "type": "generalization",
+      "from": "59v9zx",
+      "to": "vy8hrw",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "m2wxz5",
+      "type": "association",
+      "from": "59v9zx",
+      "to": "7bv4wv",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Diff"
+      }
+    },
+    {
+      "id": "qberrq",
+      "type": "dependency",
+      "from": "59v9zx",
+      "to": "e84fch",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "uw35cu",
+      "type": "generalization",
+      "from": "yyrenp",
+      "to": "vy8hrw",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "w8zp64",
+      "type": "association",
+      "from": "yyrenp",
+      "to": "dxfgyb",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Details"
+      }
+    },
+    {
+      "id": "3m3vf3",
+      "type": "dependency",
+      "from": "yyrenp",
+      "to": "e84fch",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "bn5cix",
+      "type": "dependency",
+      "from": "yyrenp",
+      "to": "vynean",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ws6qc7",
+      "type": "generalization",
+      "from": "dxfgyb",
+      "to": "vy8hrw",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "dza749",
+      "type": "association",
+      "from": "dxfgyb",
+      "to": "7bv4wv",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Diff"
+      }
+    },
+    {
+      "id": "4tpdh3",
+      "type": "association",
+      "from": "dxfgyb",
+      "to": "ymnu3f",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Commit"
+      }
+    },
+    {
+      "id": "5fgr6u",
+      "type": "dependency",
+      "from": "dxfgyb",
+      "to": "e84fch",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "xjuffk",
+      "type": "generalization",
+      "from": "7bv4wv",
+      "to": "vy8hrw",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "7hqp8b",
+      "type": "dependency",
+      "from": "7bv4wv",
+      "to": "e84fch",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "stxsxe",
+      "type": "generalization",
+      "from": "zntcu3",
+      "to": "3t7gg9",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "gwx6is",
+      "type": "realization",
+      "from": "xq38bi",
+      "to": "u9bcwi",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "b7np93",
+      "type": "dependency",
+      "from": "e84fch",
+      "to": "s2az5w",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "g25pbr",
+      "type": "association",
+      "from": "uyzfq5",
+      "to": "5bzsmc",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Changes"
+      }
+    }
+  ],
+  "bounds": {
+    "x": 0,
+    "y": 0,
+    "width": 2164,
+    "height": 2370,
+    "left": 0,
+    "top": 0,
+    "right": 2164,
+    "bottom": 2370,
+    "center": {
+      "x": 1082,
+      "y": 1185,
+      "length": 1604.6647624971392
+    }
+  }
+}

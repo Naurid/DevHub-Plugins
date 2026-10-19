@@ -1,0 +1,653 @@
+{
+  "schemaVersion": 1,
+  "kind": "class",
+  "title": "Templates: main classes",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "gphsg3",
+      "type": "class",
+      "x": 0,
+      "y": 192,
+      "width": 281,
+      "height": 93,
+      "rotation": 0,
+      "text": "TemplatesPlugin",
+      "props": {
+        "attributes": "+ Info : PluginInfo\n+ Resources : IEnumerable<Uri>",
+        "operations": "+ ConfigureServices(services, context)",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "ka4r55",
+      "type": "class",
+      "x": 666.5,
+      "y": 804,
+      "width": 536,
+      "height": 348,
+      "rotation": 0,
+      "text": "TemplatesService",
+      "props": {
+        "attributes": "+ Runner : CommandRunner\n+ Generator : ProjectGenerator\n+ Libraries : IReadOnlyList<TemplateLibrary>\n+ PersonalLibrary : TemplateLibrary\n+ Author : string\n+ LastLocation : string\n+ RecentProjects : IReadOnlyList<RecentProject>\n+ GroupByLanguage : bool\n+ ChangeCount : int\n+ VsCodePath : string",
+        "operations": "+ LoadAllAsync(ct : CancellationToken) : Task<IReadOnlyList<TemplateEntry>>\n+ NewContext(values : IReadOnlyDictionary<string, string>) : RenderContext\n+ LocationFor(manifest : TemplateManifest) : string\n+ Remember(projectPath : string, template : TemplateEntry)\n+ NotifyChanged()\n+ LibraryOf(templateFolder : string) : TemplateLibrary\n+ OpenInVsCode(folder : string)\n+ static OpenWithDefaultProgram(file : string)",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "bwnbz6",
+      "type": "class",
+      "x": 331,
+      "y": 192,
+      "width": 398,
+      "height": 263,
+      "rotation": 0,
+      "text": "TemplateBrowserViewModel",
+      "props": {
+        "attributes": "+ GroupByCategory : bool\n+ Libraries : ObservableCollection<string>\n+ Kinds : IReadOnlyList<string>\n+ Groups : ObservableCollection<TemplateGroupViewModel>\n+ Selected : TemplateEntry\n+ ShowEmpty : bool\n+ Search : string\n+ Library : string\n+ Kind : string\n+ GroupByLanguage : bool",
+        "operations": "+ ReloadAsync(select : string) : Task\n+ ReloadIfChangedAsync() : Task\n+ Select(reference : string) : bool",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "ibf9r6",
+      "type": "class",
+      "x": 779,
+      "y": 192,
+      "width": 267,
+      "height": 229,
+      "rotation": 0,
+      "text": "TemplateFormViewModel",
+      "props": {
+        "attributes": "+ ForItems : bool\n+ Template : TemplateEntry\n+ Manifest : TemplateManifest\n+ Name : string\n+ Description : string\n+ HasDescription : bool\n+ Language : string\n+ Categories : IReadOnlyList<string>\n+ LibraryText : string\n+ IsBroken : bool",
+        "operations": "+ Validate() : bool",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "zwrddp",
+      "type": "class",
+      "x": 1558,
+      "y": 192,
+      "width": 405,
+      "height": 263,
+      "rotation": 0,
+      "text": "PreviewPageViewModel",
+      "props": {
+        "attributes": "+ TargetPath : string\n+ Nodes : ObservableCollection<PreviewNodeViewModel>\n+ IsRaw : bool\n+ SaveText : string\n+ IsItem : bool\n+ Heading : string\n+ TargetText : string\n+ CreateText : string\n+ Conflicts : ObservableCollection<ConflictRowViewModel>\n+ HasConflicts : bool",
+        "operations": "+ ShowError(error : string)\n+ CanDrop(source : object, target : object) : bool\n+ Drop(source : object, target : object)",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "aqvpzq",
+      "type": "class",
+      "x": 1096,
+      "y": 192,
+      "width": 412,
+      "height": 263,
+      "rotation": 0,
+      "text": "TemplateEditorViewModel",
+      "props": {
+        "attributes": "+ Id : string\n+ Title : string\n+ Icon : string\n+ FillsEditorArea : bool\n+ HasUnsavedChanges : bool\n+ Library : TemplateLibrary\n+ IsReadOnly : bool\n+ Sections : ObservableCollection<EditorSectionViewModel>\n+ SectionEnabled : bool\n+ HasProblems : bool",
+        "operations": "+ static IdFor(folder : string) : string\n+ SaveAsync() : Task\n+ ConfirmCloseAsync() : Task<bool>",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "wfziut",
+      "type": "class",
+      "x": 1158.5,
+      "y": 1242,
+      "width": 329,
+      "height": 221,
+      "rotation": 0,
+      "text": "TemplateManifest",
+      "props": {
+        "attributes": "+ SchemaVersion : int?\n+ Id : string\n+ Kind : TemplateKind\n+ Name : string\n+ Description : string\n+ Language : string\n+ Categories : IReadOnlyList<string>\n+ Variables : IReadOnlyList<TemplateVariable>\n+ RootFolder : string\n+ Steps : IReadOnlyList<TemplateStep>",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "d7nkac",
+      "type": "class",
+      "x": 673,
+      "y": 1553,
+      "width": 301,
+      "height": 204,
+      "rotation": 0,
+      "text": "TemplateVariable",
+      "props": {
+        "attributes": "+ Name : string\n+ Label : string\n+ Type : VariableType\n+ Default : JsonElement?\n+ Required : bool\n+ Pattern : string\n+ Choices : IReadOnlyList<string>\n+ Extra : Dictionary<string, JsonElement>\n+ DefaultText : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "6un74s",
+      "type": "class",
+      "x": 1375,
+      "y": 1587,
+      "width": 301,
+      "height": 136,
+      "rotation": 0,
+      "text": "TemplateStep",
+      "props": {
+        "attributes": "+ Op : StepOp\n+ Path : string\n+ From : string\n+ To : string\n+ Extra : Dictionary<string, JsonElement>",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "rjmgin",
+      "type": "class",
+      "x": 1024,
+      "y": 1570,
+      "width": 301,
+      "height": 170,
+      "rotation": 0,
+      "text": "PostCreateCommand",
+      "props": {
+        "attributes": "+ Name : string\n+ Args : IReadOnlyList<string>\n+ WorkingDirectory : string\n+ When : string\n+ ContinueOnError : bool\n+ Extra : Dictionary<string, JsonElement>\n+ Command : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "i8zqzd",
+      "type": "class",
+      "x": 1252.5,
+      "y": 876,
+      "width": 253,
+      "height": 204,
+      "rotation": 0,
+      "text": "TemplateEntry",
+      "props": {
+        "attributes": "+ Library : TemplateLibrary\n+ Folder : string\n+ Manifest : TemplateManifest\n+ Problems : IReadOnlyList<string>\n+ Id : string\n+ Reference : string\n+ ContentFolder : string\n+ HasContent : bool\n+ IsUsable : bool",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "ew7nz2",
+      "type": "class",
+      "x": 406.5,
+      "y": 1317.5,
+      "width": 702,
+      "height": 70,
+      "rotation": 0,
+      "text": "ProjectGenerator",
+      "props": {
+        "attributes": "",
+        "operations": "+ StageAsync(template, context, parentFolder, raw, progress, ct) : Task<StageResult<StagedProject>>\n+ static TargetFor(manifest, context, parentFolder) : RenderedPath",
+        "showAttributes": "false",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "zfwy39",
+      "type": "class",
+      "x": 1537.5,
+      "y": 1246.5,
+      "width": 405,
+      "height": 212,
+      "rotation": 0,
+      "text": "StagedProject",
+      "props": {
+        "attributes": "+ StagingFolder : string\n+ ParentFolder : string\n+ RootName : string\n+ TargetPath : string\n+ Tree : FileTree\n+ Edits : IReadOnlyList<TemplateStep>\n+ CanUndo : bool",
+        "operations": "+ ApplyEdit(edit : TemplateStep) : string\n+ UndoEdit() : TemplateStep\n+ PlaceAsync(ct : CancellationToken) : Task<PlaceResult>",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "7x25ac",
+      "type": "class",
+      "x": 608.5,
+      "y": 0,
+      "width": 143,
+      "height": 102,
+      "rotation": 0,
+      "text": "PlaceResult",
+      "props": {
+        "attributes": "+ Path : string\n+ Error : string\n+ Succeeded : bool",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "e25d43",
+      "type": "class",
+      "x": 0,
+      "y": 525,
+      "width": 336,
+      "height": 189,
+      "rotation": 0,
+      "text": "TemplatesSettings",
+      "props": {
+        "attributes": "+ static SectionId : string\n+ PersonalLibrary : string\n+ ExtraLibraries : List<string>\n+ Author : string\n+ LastLocation : string\n+ GroupByLanguage : bool\n+ DefaultProjectFolder : string\n+ ProjectFolderRules : List<ProjectFolderRule>\n+ RecentProjects : List<RecentProject>",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "h6ia2r",
+      "type": "interface",
+      "x": 801.5,
+      "y": 28.5,
+      "width": 120,
+      "height": 45,
+      "rotation": 0,
+      "text": "IPlugin",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "dsbsck",
+      "type": "class",
+      "x": 971.5,
+      "y": 30.5,
+      "width": 127,
+      "height": 41,
+      "rotation": 0,
+      "text": "ViewModelBase",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "g872eq",
+      "type": "interface",
+      "x": 1388.5,
+      "y": 28.5,
+      "width": 151,
+      "height": 45,
+      "rotation": 0,
+      "text": "ITreeDropHandler",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "sm5tnk",
+      "type": "class",
+      "x": 1148.5,
+      "y": 30.5,
+      "width": 190,
+      "height": 41,
+      "rotation": 0,
+      "text": "DocumentViewModelBase",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "mdyuat",
+      "type": "interface",
+      "x": 1555.5,
+      "y": 955.5,
+      "width": 127,
+      "height": 45,
+      "rotation": 0,
+      "text": "IStagedResult",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "34fyi2",
+      "type": "interface",
+      "x": 1589.5,
+      "y": 28.5,
+      "width": 151,
+      "height": 45,
+      "rotation": 0,
+      "text": "ISettingsSection",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "cy22fz",
+      "type": "note",
+      "x": 0,
+      "y": 1807,
+      "width": 620,
+      "height": 76,
+      "rotation": 0,
+      "text": "Read from DevHub.Templates.dll, DevHub.Templates.Core.dll: each type's own public members (up to 10 properties and 8 methods). Grey: from the Sdk or another plugin.",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "29hhig",
+      "type": "realization",
+      "from": "gphsg3",
+      "to": "h6ia2r",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "8u56hi",
+      "type": "association",
+      "from": "ka4r55",
+      "to": "ew7nz2",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Generator"
+      }
+    },
+    {
+      "id": "7dsgfz",
+      "type": "generalization",
+      "from": "bwnbz6",
+      "to": "dsbsck",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "xyy9m7",
+      "type": "association",
+      "from": "bwnbz6",
+      "to": "i8zqzd",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Selected"
+      }
+    },
+    {
+      "id": "difmfr",
+      "type": "dependency",
+      "from": "bwnbz6",
+      "to": "ka4r55",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "6f3dkv",
+      "type": "generalization",
+      "from": "ibf9r6",
+      "to": "dsbsck",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "m359gv",
+      "type": "association",
+      "from": "ibf9r6",
+      "to": "i8zqzd",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Template"
+      }
+    },
+    {
+      "id": "an8vnn",
+      "type": "association",
+      "from": "ibf9r6",
+      "to": "wfziut",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Manifest"
+      }
+    },
+    {
+      "id": "m5v4tq",
+      "type": "dependency",
+      "from": "ibf9r6",
+      "to": "ka4r55",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "6gsedz",
+      "type": "generalization",
+      "from": "zwrddp",
+      "to": "dsbsck",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "jzxwvv",
+      "type": "realization",
+      "from": "zwrddp",
+      "to": "g872eq",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ic9vyp",
+      "type": "dependency",
+      "from": "zwrddp",
+      "to": "mdyuat",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "xhq9vq",
+      "type": "generalization",
+      "from": "aqvpzq",
+      "to": "sm5tnk",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "69dsy6",
+      "type": "association",
+      "from": "aqvpzq",
+      "to": "i8zqzd",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Entry"
+      }
+    },
+    {
+      "id": "jiatg6",
+      "type": "dependency",
+      "from": "aqvpzq",
+      "to": "ka4r55",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "5m3fb3",
+      "type": "association",
+      "from": "wfziut",
+      "to": "d7nkac",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Variables"
+      }
+    },
+    {
+      "id": "zvafwh",
+      "type": "association",
+      "from": "wfziut",
+      "to": "6un74s",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Steps"
+      }
+    },
+    {
+      "id": "7wnspv",
+      "type": "association",
+      "from": "wfziut",
+      "to": "rjmgin",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "PostCreate"
+      }
+    },
+    {
+      "id": "3bbwrn",
+      "type": "association",
+      "from": "i8zqzd",
+      "to": "wfziut",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Manifest"
+      }
+    },
+    {
+      "id": "7dvibq",
+      "type": "realization",
+      "from": "zfwy39",
+      "to": "mdyuat",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "tngjjf",
+      "type": "association",
+      "from": "zfwy39",
+      "to": "6un74s",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Edits"
+      }
+    },
+    {
+      "id": "bzcgnc",
+      "type": "realization",
+      "from": "e25d43",
+      "to": "34fyi2",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 0,
+    "y": 0,
+    "width": 1963,
+    "height": 1883,
+    "left": 0,
+    "top": 0,
+    "right": 1963,
+    "bottom": 1883,
+    "center": {
+      "x": 981.5,
+      "y": 941.5,
+      "length": 1360.0604765965372
+    }
+  }
+}

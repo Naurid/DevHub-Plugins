@@ -1,0 +1,241 @@
+{
+  "schemaVersion": 1,
+  "kind": "usecase",
+  "title": "Database Diagrams: use cases",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "6xgmg3",
+      "type": "boundary",
+      "x": 340,
+      "y": 40,
+      "width": 863.5999999999999,
+      "height": 704,
+      "rotation": 0,
+      "text": "Database Diagrams plugin",
+      "props": {
+        "fill": "#383574F0",
+        "line": "#3574F0",
+        "bold": "true"
+      }
+    },
+    {
+      "id": "tvvxag",
+      "type": "usecase",
+      "x": 463.52222222222224,
+      "y": 110,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Draw a Merise MCD",
+      "parentId": "6xgmg3",
+      "props": {}
+    },
+    {
+      "id": "vpwex9",
+      "type": "usecase",
+      "x": 521.3,
+      "y": 214,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Generate the MLD",
+      "parentId": "6xgmg3",
+      "props": {}
+    },
+    {
+      "id": "378znx",
+      "type": "usecase",
+      "x": 917.6,
+      "y": 214,
+      "width": 236,
+      "height": 70,
+      "rotation": 0,
+      "text": "Apply the MCD → MLD rules",
+      "parentId": "6xgmg3",
+      "props": {}
+    },
+    {
+      "id": "f7tfic",
+      "type": "usecase",
+      "x": 527.1888888888889,
+      "y": 318,
+      "width": 236,
+      "height": 70,
+      "rotation": 0,
+      "text": "Draw an ERD (crow's foot)",
+      "parentId": "6xgmg3",
+      "props": {}
+    },
+    {
+      "id": "ftuvsi",
+      "type": "usecase",
+      "x": 527.1888888888889,
+      "y": 422,
+      "width": 236,
+      "height": 70,
+      "rotation": 0,
+      "text": "Export SQL for a database",
+      "parentId": "6xgmg3",
+      "props": {}
+    },
+    {
+      "id": "i4xkbk",
+      "type": "usecase",
+      "x": 487.5,
+      "y": 526,
+      "width": 257.6,
+      "height": 70,
+      "rotation": 0,
+      "text": "Import a CREATE TABLE script",
+      "parentId": "6xgmg3",
+      "props": {}
+    },
+    {
+      "id": "3rsgum",
+      "type": "usecase",
+      "x": 436.9222222222222,
+      "y": 630,
+      "width": 243.20000000000002,
+      "height": 70,
+      "rotation": 0,
+      "text": "Export the data dictionary",
+      "parentId": "6xgmg3",
+      "props": {}
+    },
+    {
+      "id": "z5ab47",
+      "type": "actor",
+      "x": 130,
+      "y": 336.7142857142857,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Student or developer",
+      "props": {}
+    },
+    {
+      "id": "p9i5nd",
+      "type": "actor",
+      "x": 1353.6,
+      "y": 463,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Database",
+      "props": {
+        "stereotype": "system"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "murw8z",
+      "type": "association",
+      "from": "z5ab47",
+      "to": "tvvxag",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "u7aapu",
+      "type": "association",
+      "from": "z5ab47",
+      "to": "vpwex9",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "x8hzcb",
+      "type": "association",
+      "from": "z5ab47",
+      "to": "f7tfic",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "vds5g8",
+      "type": "association",
+      "from": "z5ab47",
+      "to": "ftuvsi",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "qxij97",
+      "type": "association",
+      "from": "p9i5nd",
+      "to": "ftuvsi",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "pkcj5p",
+      "type": "association",
+      "from": "z5ab47",
+      "to": "i4xkbk",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "qh6guf",
+      "type": "association",
+      "from": "p9i5nd",
+      "to": "i4xkbk",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "vvmeqg",
+      "type": "association",
+      "from": "z5ab47",
+      "to": "3rsgum",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "2pca2u",
+      "type": "include",
+      "from": "vpwex9",
+      "to": "378znx",
+      "text": "«include»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    }
+  ],
+  "bounds": {
+    "x": 130,
+    "y": 40,
+    "width": 1283.6,
+    "height": 704,
+    "left": 130,
+    "top": 40,
+    "right": 1413.6,
+    "bottom": 744,
+    "center": {
+      "x": 771.8,
+      "y": 392,
+      "length": 865.6438297590989
+    }
+  }
+}

@@ -1,0 +1,315 @@
+{
+  "schemaVersion": 1,
+  "kind": "usecase",
+  "title": "UML Diagrams: use cases",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "z68sxu",
+      "type": "boundary",
+      "x": 340,
+      "y": 40,
+      "width": 983.5999999999999,
+      "height": 808,
+      "rotation": 0,
+      "text": "UML Diagrams plugin",
+      "props": {
+        "fill": "#383574F0",
+        "line": "#3574F0",
+        "bold": "true"
+      }
+    },
+    {
+      "id": "er2trq",
+      "type": "usecase",
+      "x": 473.68979591836734,
+      "y": 110,
+      "width": 221.6,
+      "height": 70,
+      "rotation": 0,
+      "text": "Draw a use case diagram",
+      "parentId": "z68sxu",
+      "props": {}
+    },
+    {
+      "id": "hurej6",
+      "type": "usecase",
+      "x": 523.1510204081633,
+      "y": 214,
+      "width": 228.8,
+      "height": 70,
+      "rotation": 0,
+      "text": "Draw an activity diagram",
+      "parentId": "z68sxu",
+      "props": {}
+    },
+    {
+      "id": "nj4dbc",
+      "type": "usecase",
+      "x": 533.3877551020408,
+      "y": 318,
+      "width": 272,
+      "height": 70,
+      "rotation": 0,
+      "text": "Draw a class or object diagram",
+      "parentId": "z68sxu",
+      "props": {
+        "extensionPoints": "start"
+      }
+    },
+    {
+      "id": "6e7epq",
+      "type": "usecase",
+      "x": 569.2,
+      "y": 422,
+      "width": 221.6,
+      "height": 70,
+      "rotation": 0,
+      "text": "Draw a sequence diagram",
+      "parentId": "z68sxu",
+      "props": {}
+    },
+    {
+      "id": "wk6f5i",
+      "type": "usecase",
+      "x": 569.3877551020408,
+      "y": 526,
+      "width": 200,
+      "height": 70,
+      "rotation": 0,
+      "text": "Draw a state machine",
+      "parentId": "z68sxu",
+      "props": {}
+    },
+    {
+      "id": "b9yjpu",
+      "type": "usecase",
+      "x": 477.55102040816325,
+      "y": 630,
+      "width": 320,
+      "height": 84,
+      "rotation": 0,
+      "text": "Draw a component, deployment or package diagram",
+      "parentId": "z68sxu",
+      "props": {}
+    },
+    {
+      "id": "vjxceu",
+      "type": "usecase",
+      "x": 980,
+      "y": 110,
+      "width": 293.6,
+      "height": 70,
+      "rotation": 0,
+      "text": "Check the course's notation rules",
+      "parentId": "z68sxu",
+      "props": {}
+    },
+    {
+      "id": "75b277",
+      "type": "usecase",
+      "x": 462.8897959183673,
+      "y": 734,
+      "width": 243.20000000000002,
+      "height": 70,
+      "rotation": 0,
+      "text": "Export PlantUML or Mermaid",
+      "parentId": "z68sxu",
+      "props": {}
+    },
+    {
+      "id": "m4fi4e",
+      "type": "usecase",
+      "x": 1001.6,
+      "y": 318,
+      "width": 250.4,
+      "height": 70,
+      "rotation": 0,
+      "text": "Start from a course example",
+      "parentId": "z68sxu",
+      "props": {}
+    },
+    {
+      "id": "6dqie2",
+      "type": "actor",
+      "x": 130,
+      "y": 398,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Student or developer",
+      "props": {}
+    },
+    {
+      "id": "yfxbcn",
+      "type": "actor",
+      "x": 1473.6,
+      "y": 99,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Diagrams plugin",
+      "props": {
+        "stereotype": "system"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "3xt2bk",
+      "type": "association",
+      "from": "6dqie2",
+      "to": "er2trq",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "uitxcc",
+      "type": "association",
+      "from": "6dqie2",
+      "to": "hurej6",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "zf7fek",
+      "type": "association",
+      "from": "6dqie2",
+      "to": "nj4dbc",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "q6phvr",
+      "type": "association",
+      "from": "6dqie2",
+      "to": "6e7epq",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "9npfjq",
+      "type": "association",
+      "from": "6dqie2",
+      "to": "wk6f5i",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ie6qrb",
+      "type": "association",
+      "from": "6dqie2",
+      "to": "b9yjpu",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ewiqtc",
+      "type": "association",
+      "from": "yfxbcn",
+      "to": "vjxceu",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "54g6tn",
+      "type": "association",
+      "from": "6dqie2",
+      "to": "75b277",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ymzbna",
+      "type": "include",
+      "from": "er2trq",
+      "to": "vjxceu",
+      "text": "«include»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "rc9ny6",
+      "type": "include",
+      "from": "hurej6",
+      "to": "vjxceu",
+      "text": "«include»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "bub7qp",
+      "type": "include",
+      "from": "nj4dbc",
+      "to": "vjxceu",
+      "text": "«include»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "6gsd4x",
+      "type": "include",
+      "from": "wk6f5i",
+      "to": "vjxceu",
+      "text": "«include»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "k5gxbg",
+      "type": "extend",
+      "from": "m4fi4e",
+      "to": "nj4dbc",
+      "text": "«extend» [a sample chosen]",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    }
+  ],
+  "bounds": {
+    "x": 130,
+    "y": 40,
+    "width": 1403.6,
+    "height": 808,
+    "left": 130,
+    "top": 40,
+    "right": 1533.6,
+    "bottom": 848,
+    "center": {
+      "x": 831.8,
+      "y": 444,
+      "length": 942.8824104839372
+    }
+  }
+}

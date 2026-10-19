@@ -1,0 +1,698 @@
+{
+  "schemaVersion": 1,
+  "kind": "activity",
+  "title": "Git: stage, commit and push",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "jdq5vp",
+      "type": "lane",
+      "x": 40,
+      "y": 40,
+      "width": 340,
+      "height": 2054,
+      "rotation": 0,
+      "text": "You",
+      "props": {
+        "vertical": "true",
+        "fill": "#143574F0"
+      }
+    },
+    {
+      "id": "f4a3w2",
+      "type": "lane",
+      "x": 380,
+      "y": 40,
+      "width": 590,
+      "height": 2054,
+      "rotation": 0,
+      "text": "Git plugin",
+      "props": {
+        "vertical": "true",
+        "fill": "#14D98C1F"
+      }
+    },
+    {
+      "id": "a2x6fc",
+      "type": "lane",
+      "x": 970,
+      "y": 40,
+      "width": 590,
+      "height": 2054,
+      "rotation": 0,
+      "text": "git and the remote",
+      "props": {
+        "vertical": "true",
+        "fill": "#142E9E5B"
+      }
+    },
+    {
+      "id": "mi26m8",
+      "type": "start",
+      "x": 197,
+      "y": 127,
+      "width": 26,
+      "height": 26,
+      "rotation": 0,
+      "text": "",
+      "parentId": "jdq5vp",
+      "props": {}
+    },
+    {
+      "id": "8c6q2t",
+      "type": "action",
+      "x": 90,
+      "y": 230,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Change files in the repository",
+      "parentId": "jdq5vp",
+      "props": {}
+    },
+    {
+      "id": "gabkby",
+      "type": "action",
+      "x": 555,
+      "y": 336,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "The watcher notices; status refreshes (ignored folders skipped)",
+      "parentId": "f4a3w2",
+      "props": {}
+    },
+    {
+      "id": "2sx7a5",
+      "type": "action",
+      "x": 90,
+      "y": 454,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Stage files, hunks or lines",
+      "parentId": "jdq5vp",
+      "props": {}
+    },
+    {
+      "id": "eetiyb",
+      "type": "action",
+      "x": 1145,
+      "y": 566,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "git add / git apply --cached",
+      "parentId": "a2x6fc",
+      "props": {}
+    },
+    {
+      "id": "kmt3hr",
+      "type": "action",
+      "x": 90,
+      "y": 672,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Write the message (a suggestion may show above the box)",
+      "parentId": "jdq5vp",
+      "props": {}
+    },
+    {
+      "id": "jiayuj",
+      "type": "action",
+      "x": 1145,
+      "y": 790,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "git commit (the hooks run)",
+      "parentId": "a2x6fc",
+      "props": {}
+    },
+    {
+      "id": "jfrf7i",
+      "type": "decision",
+      "x": 658,
+      "y": 907,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "f4a3w2",
+      "props": {}
+    },
+    {
+      "id": "hknnsp",
+      "type": "action",
+      "x": 420,
+      "y": 1014,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Show the hook's output",
+      "parentId": "f4a3w2",
+      "props": {}
+    },
+    {
+      "id": "g6ys4h",
+      "type": "action",
+      "x": 690,
+      "y": 1008,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Raise Committed (IRepositoryEvents)",
+      "parentId": "f4a3w2",
+      "props": {}
+    },
+    {
+      "id": "utzhui",
+      "type": "action",
+      "x": 90,
+      "y": 1126,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Push",
+      "parentId": "jdq5vp",
+      "props": {}
+    },
+    {
+      "id": "24upng",
+      "type": "decision",
+      "x": 658,
+      "y": 1243,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "f4a3w2",
+      "props": {}
+    },
+    {
+      "id": "r5ggk7",
+      "type": "action",
+      "x": 1010,
+      "y": 1350,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "git push -u origin <branch>",
+      "parentId": "a2x6fc",
+      "props": {}
+    },
+    {
+      "id": "zptvyt",
+      "type": "action",
+      "x": 1280,
+      "y": 1350,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "git push",
+      "parentId": "a2x6fc",
+      "props": {}
+    },
+    {
+      "id": "2878bg",
+      "type": "decision",
+      "x": 658,
+      "y": 1467,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "f4a3w2",
+      "props": {}
+    },
+    {
+      "id": "nhkhvy",
+      "type": "action",
+      "x": 555,
+      "y": 1568,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Explain the rejection; offer Rebase and Push",
+      "parentId": "f4a3w2",
+      "props": {}
+    },
+    {
+      "id": "99g2ic",
+      "type": "action",
+      "x": 1145,
+      "y": 1686,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "git pull --rebase, then git push",
+      "parentId": "a2x6fc",
+      "props": {}
+    },
+    {
+      "id": "uvsdst",
+      "type": "action",
+      "x": 555,
+      "y": 1792,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Raise Pushed; refresh the branches",
+      "parentId": "f4a3w2",
+      "props": {}
+    },
+    {
+      "id": "xsusru",
+      "type": "end",
+      "x": 660,
+      "y": 1917,
+      "width": 30,
+      "height": 30,
+      "rotation": 0,
+      "text": "",
+      "parentId": "f4a3w2",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "bc838d",
+      "type": "flow",
+      "from": "mi26m8",
+      "to": "8c6q2t",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ic8kyq",
+      "type": "flow",
+      "from": "8c6q2t",
+      "to": "gabkby",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 308,
+          "length": 372.7787547594417
+        },
+        {
+          "x": 675,
+          "y": 308,
+          "length": 741.9494591951665
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "qq336m",
+      "type": "flow",
+      "from": "gabkby",
+      "to": "2sx7a5",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 420,
+          "length": 795
+        },
+        {
+          "x": 210,
+          "y": 420,
+          "length": 469.5742752749558
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "ywrves",
+      "type": "flow",
+      "from": "2sx7a5",
+      "to": "eetiyb",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 532,
+          "length": 571.9475500428339
+        },
+        {
+          "x": 1265,
+          "y": 532,
+          "length": 1372.3151970301867
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "4tbt6c",
+      "type": "flow",
+      "from": "eetiyb",
+      "to": "kmt3hr",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 1265,
+          "y": 644,
+          "length": 1419.4932194272715
+        },
+        {
+          "x": 210,
+          "y": 644,
+          "length": 677.3743425905649
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "q2s9xb",
+      "type": "flow",
+      "from": "kmt3hr",
+      "to": "jiayuj",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 756,
+          "length": 784.624751075315
+        },
+        {
+          "x": 1265,
+          "y": 756,
+          "length": 1473.689587396206
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "4pt3gk",
+      "type": "flow",
+      "from": "jiayuj",
+      "to": "jfrf7i",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 1265,
+          "y": 868,
+          "length": 1534.1606825883657
+        },
+        {
+          "x": 675,
+          "y": 868,
+          "length": 1099.567642303101
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "fivcza",
+      "type": "flow",
+      "from": "jfrf7i",
+      "to": "hknnsp",
+      "text": "[a hook failed]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 980,
+          "length": 1189.9684869777013
+        },
+        {
+          "x": 540,
+          "y": 980,
+          "length": 1118.9280584559492
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "z5gquy",
+      "type": "flow",
+      "from": "hknnsp",
+      "to": "kmt3hr",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 540,
+          "y": 1080,
+          "length": 1207.4767078498865
+        },
+        {
+          "x": 54,
+          "y": 1080,
+          "length": 1081.3491573030424
+        },
+        {
+          "x": 54,
+          "y": 700,
+          "length": 702.0797675478193
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "jvtsr4",
+      "type": "flow",
+      "from": "jfrf7i",
+      "to": "g6ys4h",
+      "text": "[committed]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 980,
+          "length": 1189.9684869777013
+        },
+        {
+          "x": 810,
+          "y": 980,
+          "length": 1271.416532848303
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "vmafus",
+      "type": "flow",
+      "from": "g6ys4h",
+      "to": "utzhui",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 810,
+          "y": 1092,
+          "length": 1359.6190642970553
+        },
+        {
+          "x": 210,
+          "y": 1092,
+          "length": 1112.008992769393
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "qhyvue",
+      "type": "flow",
+      "from": "utzhui",
+      "to": "24upng",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 1204,
+          "length": 1222.1767466287354
+        },
+        {
+          "x": 675,
+          "y": 1204,
+          "length": 1380.304676511675
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "5v76d5",
+      "type": "flow",
+      "from": "24upng",
+      "to": "r5ggk7",
+      "text": "[no upstream yet]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 1316,
+          "length": 1479.0135225886206
+        },
+        {
+          "x": 1130,
+          "y": 1316,
+          "length": 1734.5766053997154
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "c3nxsb",
+      "type": "flow",
+      "from": "24upng",
+      "to": "zptvyt",
+      "text": "[has an upstream]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 1316,
+          "length": 1479.0135225886206
+        },
+        {
+          "x": 1400,
+          "y": 1316,
+          "length": 1921.4203080013492
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "hphwvx",
+      "type": "flow",
+      "from": "r5ggk7",
+      "to": "2878bg",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 1130,
+          "y": 1428,
+          "length": 1821.0118066613406
+        },
+        {
+          "x": 675,
+          "y": 1428,
+          "length": 1579.496438742424
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "pnuw6y",
+      "type": "flow",
+      "from": "zptvyt",
+      "to": "2878bg",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 1400,
+          "y": 1428,
+          "length": 1999.7959895949386
+        },
+        {
+          "x": 675,
+          "y": 1428,
+          "length": 1579.496438742424
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "qd7jif",
+      "type": "flow",
+      "from": "2878bg",
+      "to": "nhkhvy",
+      "text": "[rejected]",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "axa8ka",
+      "type": "flow",
+      "from": "nhkhvy",
+      "to": "99g2ic",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 1652,
+          "length": 1784.5809031814724
+        },
+        {
+          "x": 1265,
+          "y": 1652,
+          "length": 2080.7039674110297
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "74fusm",
+      "type": "flow",
+      "from": "2878bg",
+      "to": "uvsdst",
+      "text": "[pushed]",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "kf7wha",
+      "type": "flow",
+      "from": "99g2ic",
+      "to": "uvsdst",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 1265,
+          "y": 1764,
+          "length": 2170.6959713419105
+        },
+        {
+          "x": 675,
+          "y": 1764,
+          "length": 1888.7352911406088
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "nhmzfh",
+      "type": "flow",
+      "from": "uvsdst",
+      "to": "xsusru",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 40,
+    "y": 40,
+    "width": 1520,
+    "height": 2054,
+    "left": 40,
+    "top": 40,
+    "right": 1560,
+    "bottom": 2094,
+    "center": {
+      "x": 800,
+      "y": 1067,
+      "length": 1333.6000149970005
+    }
+  }
+}

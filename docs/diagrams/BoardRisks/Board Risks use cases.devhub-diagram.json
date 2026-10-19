@@ -1,0 +1,190 @@
+{
+  "schemaVersion": 1,
+  "kind": "usecase",
+  "title": "Board Risks: use cases",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "3cvntf",
+      "type": "boundary",
+      "x": 340,
+      "y": 40,
+      "width": 964.4000000000001,
+      "height": 496,
+      "rotation": 0,
+      "text": "Board Risks plugin",
+      "props": {
+        "fill": "#383574F0",
+        "line": "#3574F0",
+        "bold": "true"
+      }
+    },
+    {
+      "id": "dtjs37",
+      "type": "usecase",
+      "x": 509.475,
+      "y": 110,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Register a risk",
+      "parentId": "3cvntf",
+      "props": {
+        "extensionPoints": "plans"
+      }
+    },
+    {
+      "id": "9jfftc",
+      "type": "usecase",
+      "x": 989.6,
+      "y": 110,
+      "width": 250.4,
+      "height": 70,
+      "rotation": 0,
+      "text": "Rate probability and impact",
+      "parentId": "3cvntf",
+      "props": {}
+    },
+    {
+      "id": "5b7c2x",
+      "type": "usecase",
+      "x": 975.2,
+      "y": 214,
+      "width": 279.20000000000005,
+      "height": 70,
+      "rotation": 0,
+      "text": "Plan mitigation and contingency",
+      "parentId": "3cvntf",
+      "props": {}
+    },
+    {
+      "id": "eizwix",
+      "type": "usecase",
+      "x": 565.875,
+      "y": 214,
+      "width": 207.20000000000002,
+      "height": 70,
+      "rotation": 0,
+      "text": "Link issues to a risk",
+      "parentId": "3cvntf",
+      "props": {}
+    },
+    {
+      "id": "z87rhg",
+      "type": "usecase",
+      "x": 511.875,
+      "y": 318,
+      "width": 315.2,
+      "height": 84,
+      "rotation": 0,
+      "text": "Read the probability × impact matrix",
+      "parentId": "3cvntf",
+      "props": {}
+    },
+    {
+      "id": "th76rb",
+      "type": "usecase",
+      "x": 508.075,
+      "y": 422,
+      "width": 192.8,
+      "height": 70,
+      "rotation": 0,
+      "text": "Export the register",
+      "parentId": "3cvntf",
+      "props": {}
+    },
+    {
+      "id": "fs2jbn",
+      "type": "actor",
+      "x": 130,
+      "y": 220.33333333333331,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Developer",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "kw9q7t",
+      "type": "association",
+      "from": "fs2jbn",
+      "to": "dtjs37",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "c7ja28",
+      "type": "association",
+      "from": "fs2jbn",
+      "to": "eizwix",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ry6b5q",
+      "type": "association",
+      "from": "fs2jbn",
+      "to": "z87rhg",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "x356mk",
+      "type": "association",
+      "from": "fs2jbn",
+      "to": "th76rb",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "gsmcta",
+      "type": "include",
+      "from": "dtjs37",
+      "to": "9jfftc",
+      "text": "«include»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "rjkxdd",
+      "type": "extend",
+      "from": "5b7c2x",
+      "to": "dtjs37",
+      "text": "«extend» [the score is high]",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    }
+  ],
+  "bounds": {
+    "x": 130,
+    "y": 40,
+    "width": 1174.4,
+    "height": 496,
+    "left": 130,
+    "top": 40,
+    "right": 1304.4,
+    "bottom": 536,
+    "center": {
+      "x": 717.2,
+      "y": 288,
+      "length": 772.8646970848132
+    }
+  }
+}

@@ -1,0 +1,657 @@
+{
+  "schemaVersion": 1,
+  "kind": "class",
+  "title": "Board Git: main classes",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "q7siyd",
+      "type": "class",
+      "x": 713,
+      "y": 629,
+      "width": 281,
+      "height": 76,
+      "rotation": 0,
+      "text": "BoardGitPlugin",
+      "props": {
+        "attributes": "+ Info : PluginInfo",
+        "operations": "+ ConfigureServices(services, context)",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "bmsyy3",
+      "type": "class",
+      "x": 1858.5,
+      "y": 1139,
+      "width": 743,
+      "height": 246,
+      "rotation": 0,
+      "text": "BoardGitServices",
+      "props": {
+        "attributes": "+ Runner : GitRunner\n+ Queries : DevelopmentQueries\n+ Boards : BoardService\n+ Status : IStatusService\n+ Dialogs : IDialogService\n+ GitHub : IGitHubApi\n+ Settings : BoardGitSettings",
+        "operations": "+ RepositoryForAsync(location, ct) : Task<string>\n+ LinkRepository(location : BoardLocation, repository : string)\n+ BoardsOfRepositoryAsync(repository : string, ct : CancellationToken) : Task<IReadOnlyList<RecentBoard>>\n+ WithBoardAsync<T>(recent, action) : Task<T>\n+ CurrentBranchAsync(repository : string, ct : CancellationToken) : Task<string>",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "bwchn3",
+      "type": "class",
+      "x": 0,
+      "y": 313,
+      "width": 736,
+      "height": 70,
+      "rotation": 0,
+      "text": "BoardGitDecorator",
+      "props": {
+        "attributes": "",
+        "operations": "+ DecorateCommits(repositoryFolder, commitShas) : IReadOnlyDictionary<string, IReadOnlyList<Decoration>>\n+ DecorateBranches(repositoryFolder, branches) : IReadOnlyDictionary<string, IReadOnlyList<Decoration>>",
+        "showAttributes": "false",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "yagu99",
+      "type": "class",
+      "x": 786,
+      "y": 313,
+      "width": 308,
+      "height": 53,
+      "rotation": 0,
+      "text": "BoardCommitSuggester",
+      "props": {
+        "attributes": "",
+        "operations": "+ SuggestAsync(context, ct) : Task<string>",
+        "showAttributes": "false",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "2mpe9v",
+      "type": "class",
+      "x": 1144,
+      "y": 313,
+      "width": 529,
+      "height": 76,
+      "rotation": 0,
+      "text": "DevelopmentSectionProvider",
+      "props": {
+        "attributes": "+ Order : int",
+        "operations": "+ Create(context : BoardContext, issueId : string) : IssueSectionViewModel",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "sxh4xa",
+      "type": "class",
+      "x": 1723,
+      "y": 313,
+      "width": 384,
+      "height": 246,
+      "rotation": 0,
+      "text": "DevelopmentSectionViewModel",
+      "props": {
+        "attributes": "+ Title : string\n+ Branches : ObservableCollection<BranchRow>\n+ Commits : ObservableCollection<CommitRow>\n+ PullRequests : ObservableCollection<PullRequestRow>\n+ HasPullRequests : bool\n+ RepositoryText : string\n+ HasRepository : bool\n+ IsLoading : bool\n+ Summary : string\n+ RefreshCommand : IAsyncRelayCommand",
+        "operations": "+ Update(issue : Issue, board : BoardSnapshot)\n+ static GitHubRepository(url : string) : string",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "9hzy63",
+      "type": "class",
+      "x": 1044,
+      "y": 629,
+      "width": 238,
+      "height": 206,
+      "rotation": 0,
+      "text": "CreateBranchDialogViewModel",
+      "props": {
+        "attributes": "+ Title : string\n+ OkText : string\n+ FitsContent : bool\n+ Width : double\n+ MinHeight : double\n+ BaseText : string\n+ CanStart : bool\n+ StartText : string\n+ Name : string\n+ Checkout : bool",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "fqjv8u",
+      "type": "class",
+      "x": 0,
+      "y": 629,
+      "width": 230,
+      "height": 121,
+      "rotation": 0,
+      "text": "BranchIssueWidgetViewModel",
+      "props": {
+        "attributes": "+ Order : int\n+ IsVisible : bool\n+ Text : string\n+ ToolTip : string\n+ OpenCommand : IRelayCommand",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "vfx6mq",
+      "type": "class",
+      "x": 1332,
+      "y": 629,
+      "width": 495,
+      "height": 110,
+      "rotation": 0,
+      "text": "BranchBoardStoreProvider",
+      "props": {
+        "attributes": "+ Kind : string\n+ DisplayName : string",
+        "operations": "+ CanUseAsync(location : string, ct : CancellationToken) : Task<bool>\n+ Open(location : string) : IBoardStore",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "p28wim",
+      "type": "class",
+      "x": 0,
+      "y": 905,
+      "width": 426,
+      "height": 144,
+      "rotation": 0,
+      "text": "BranchBoardStore",
+      "props": {
+        "attributes": "+ Repository : string\n+ DisplayLocation : string",
+        "operations": "+ static IsRepositoryAsync(runner, folder, ct) : Task<bool>\n+ GetVersionAsync(ct : CancellationToken) : Task<string>\n+ LoadAsync(ct : CancellationToken) : Task<BoardFiles>\n+ WriteAsync(change, expectedVersion, ct) : Task<string>",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "gx749z",
+      "type": "class",
+      "x": 2412,
+      "y": 0,
+      "width": 288,
+      "height": 102,
+      "rotation": 0,
+      "text": "DevelopmentInfo",
+      "props": {
+        "attributes": "+ Branches : IReadOnlyList<IssueBranch>\n+ Commits : IReadOnlyList<IssueCommit>\n+ static Empty : DevelopmentInfo",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "x89fj2",
+      "type": "class",
+      "x": 280,
+      "y": 629,
+      "width": 156,
+      "height": 102,
+      "rotation": 0,
+      "text": "IssueBranch",
+      "props": {
+        "attributes": "+ Name : string\n+ IsRemote : bool\n+ CommitSha : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "ibqnxb",
+      "type": "class",
+      "x": 486,
+      "y": 629,
+      "width": 177,
+      "height": 136,
+      "rotation": 0,
+      "text": "IssueCommit",
+      "props": {
+        "attributes": "+ Sha : string\n+ ShortSha : string\n+ Author : string\n+ Date : DateTimeOffset\n+ Subject : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "q7552j",
+      "type": "class",
+      "x": 769,
+      "y": 0,
+      "width": 384,
+      "height": 108,
+      "rotation": 0,
+      "text": "SmartCommand",
+      "props": {
+        "attributes": "+ Issue : Issue",
+        "operations": "+ Describe(settings : ProjectSettings) : string\n+ ToOperation(now : DateTimeOffset) : IBoardOperation",
+        "showAttributes": "true",
+        "showOperations": "true",
+        "stereotype": "record",
+        "abstract": "true"
+      }
+    },
+    {
+      "id": "jdee7q",
+      "type": "class",
+      "x": 2072.5,
+      "y": 1475,
+      "width": 315,
+      "height": 104,
+      "rotation": 0,
+      "text": "BoardGitSettings",
+      "props": {
+        "attributes": "+ static SectionId : string\n+ Repositories : Dictionary<string, string>\n+ SmartCommits : bool\n+ SuggestCommitMessage : bool",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "rwd4pa",
+      "type": "interface",
+      "x": 2750,
+      "y": 0,
+      "width": 120,
+      "height": 45,
+      "rotation": 0,
+      "text": "IPlugin",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "8i3psy",
+      "type": "interface",
+      "x": 1203,
+      "y": 0,
+      "width": 127,
+      "height": 45,
+      "rotation": 0,
+      "text": "IGitDecorator",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "95evvp",
+      "type": "interface",
+      "x": 1380,
+      "y": 0,
+      "width": 206,
+      "height": 45,
+      "rotation": 0,
+      "text": "ICommitMessageSuggester",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "cnxrwp",
+      "type": "interface",
+      "x": 1636,
+      "y": 0,
+      "width": 190,
+      "height": 45,
+      "rotation": 0,
+      "text": "IIssueSectionProvider",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "4ikykr",
+      "type": "class",
+      "x": 1876,
+      "y": 0,
+      "width": 190,
+      "height": 41,
+      "rotation": 0,
+      "text": "IssueSectionViewModel",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "zz6k7i",
+      "type": "class",
+      "x": 769,
+      "y": 178,
+      "width": 175,
+      "height": 41,
+      "rotation": 0,
+      "text": "DialogViewModelBase",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "kg5mgp",
+      "type": "class",
+      "x": 2116,
+      "y": 0,
+      "width": 246,
+      "height": 41,
+      "rotation": 0,
+      "text": "StatusBarWidgetViewModelBase",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "7g427k",
+      "type": "interface",
+      "x": 994,
+      "y": 178,
+      "width": 175,
+      "height": 45,
+      "rotation": 0,
+      "text": "IBoardStoreProvider",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "txbfzj",
+      "type": "interface",
+      "x": 1219,
+      "y": 178,
+      "width": 120,
+      "height": 45,
+      "rotation": 0,
+      "text": "IBoardStore",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "mpseef",
+      "type": "interface",
+      "x": 1389,
+      "y": 178,
+      "width": 151,
+      "height": 45,
+      "rotation": 0,
+      "text": "ISettingsSection",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "kuqu5r",
+      "type": "note",
+      "x": 0,
+      "y": 1629,
+      "width": 620,
+      "height": 76,
+      "rotation": 0,
+      "text": "Read from DevHub.Board.Git.dll, DevHub.Board.Git.Core.dll: each type's own public members (up to 10 properties and 8 methods). Grey: from the Sdk or another plugin.",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "xws7ns",
+      "type": "realization",
+      "from": "q7siyd",
+      "to": "rwd4pa",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "4yudpc",
+      "type": "association",
+      "from": "bmsyy3",
+      "to": "jdee7q",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Settings"
+      }
+    },
+    {
+      "id": "xypd67",
+      "type": "realization",
+      "from": "bwchn3",
+      "to": "8i3psy",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "nmagxt",
+      "type": "dependency",
+      "from": "bwchn3",
+      "to": "bmsyy3",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "rpxdcw",
+      "type": "realization",
+      "from": "yagu99",
+      "to": "95evvp",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ynbir3",
+      "type": "dependency",
+      "from": "yagu99",
+      "to": "bmsyy3",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "4q4yx5",
+      "type": "realization",
+      "from": "2mpe9v",
+      "to": "cnxrwp",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "fh9gw7",
+      "type": "dependency",
+      "from": "2mpe9v",
+      "to": "bmsyy3",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "wtta2b",
+      "type": "generalization",
+      "from": "sxh4xa",
+      "to": "4ikykr",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "gf35hh",
+      "type": "dependency",
+      "from": "sxh4xa",
+      "to": "bmsyy3",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "n669ya",
+      "type": "generalization",
+      "from": "9hzy63",
+      "to": "zz6k7i",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "knmap4",
+      "type": "generalization",
+      "from": "fqjv8u",
+      "to": "kg5mgp",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "vfbifx",
+      "type": "dependency",
+      "from": "fqjv8u",
+      "to": "bmsyy3",
+      "text": "uses",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "akix78",
+      "type": "realization",
+      "from": "vfx6mq",
+      "to": "7g427k",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "rtkegw",
+      "type": "realization",
+      "from": "p28wim",
+      "to": "txbfzj",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "i8x5u3",
+      "type": "association",
+      "from": "gx749z",
+      "to": "x89fj2",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Branches"
+      }
+    },
+    {
+      "id": "zu8kjn",
+      "type": "association",
+      "from": "gx749z",
+      "to": "ibqnxb",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Commits"
+      }
+    },
+    {
+      "id": "yy94ts",
+      "type": "realization",
+      "from": "jdee7q",
+      "to": "mpseef",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 0,
+    "y": 0,
+    "width": 2870,
+    "height": 1705,
+    "left": 0,
+    "top": 0,
+    "right": 2870,
+    "bottom": 1705,
+    "center": {
+      "x": 1435,
+      "y": 852.5,
+      "length": 1669.1258939936197
+    }
+  }
+}

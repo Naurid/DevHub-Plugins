@@ -1,0 +1,376 @@
+{
+  "schemaVersion": 1,
+  "kind": "activity",
+  "title": "Mood Boards: a palette from a picture",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "uau4cy",
+      "type": "lane",
+      "x": 40,
+      "y": 40,
+      "width": 340,
+      "height": 1382,
+      "rotation": 0,
+      "text": "You",
+      "props": {
+        "vertical": "true",
+        "fill": "#143574F0"
+      }
+    },
+    {
+      "id": "vbhem4",
+      "type": "lane",
+      "x": 380,
+      "y": 40,
+      "width": 340,
+      "height": 1382,
+      "rotation": 0,
+      "text": "Mood Boards plugin",
+      "props": {
+        "vertical": "true",
+        "fill": "#14D98C1F"
+      }
+    },
+    {
+      "id": "9ps7yz",
+      "type": "lane",
+      "x": 720,
+      "y": 40,
+      "width": 340,
+      "height": 1382,
+      "rotation": 0,
+      "text": "File system",
+      "props": {
+        "vertical": "true",
+        "fill": "#142E9E5B"
+      }
+    },
+    {
+      "id": "wpe68n",
+      "type": "start",
+      "x": 197,
+      "y": 127,
+      "width": 26,
+      "height": 26,
+      "rotation": 0,
+      "text": "",
+      "parentId": "uau4cy",
+      "props": {}
+    },
+    {
+      "id": "bxf4th",
+      "type": "action",
+      "x": 90,
+      "y": 230,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Drop a picture on the board",
+      "parentId": "uau4cy",
+      "props": {}
+    },
+    {
+      "id": "hztjrd",
+      "type": "action",
+      "x": 430,
+      "y": 342,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Name it by its content",
+      "parentId": "vbhem4",
+      "props": {}
+    },
+    {
+      "id": "fvrj75",
+      "type": "decision",
+      "x": 533,
+      "y": 459,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "vbhem4",
+      "props": {}
+    },
+    {
+      "id": "wbxzhr",
+      "type": "action",
+      "x": 770,
+      "y": 566,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Copy it into <board>.assets/",
+      "parentId": "9ps7yz",
+      "props": {}
+    },
+    {
+      "id": "readqv",
+      "type": "decision",
+      "x": 533,
+      "y": 683,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "vbhem4",
+      "props": {}
+    },
+    {
+      "id": "8ri5hq",
+      "type": "action",
+      "x": 430,
+      "y": 790,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Place the picture",
+      "parentId": "vbhem4",
+      "props": {}
+    },
+    {
+      "id": "qwc4r8",
+      "type": "action",
+      "x": 90,
+      "y": 902,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Palette from Picture",
+      "parentId": "uau4cy",
+      "props": {}
+    },
+    {
+      "id": "g2vms3",
+      "type": "action",
+      "x": 430,
+      "y": 1008,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Pick the main colours as swatches",
+      "parentId": "vbhem4",
+      "props": {}
+    },
+    {
+      "id": "ubfg2u",
+      "type": "action",
+      "x": 90,
+      "y": 1126,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Export the palette as CSS",
+      "parentId": "uau4cy",
+      "props": {}
+    },
+    {
+      "id": "vm36xc",
+      "type": "end",
+      "x": 195,
+      "y": 1245,
+      "width": 30,
+      "height": 30,
+      "rotation": 0,
+      "text": "",
+      "parentId": "uau4cy",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "ggjphn",
+      "type": "flow",
+      "from": "wpe68n",
+      "to": "bxf4th",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "d7vps5",
+      "type": "flow",
+      "from": "bxf4th",
+      "to": "hztjrd",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 308,
+          "length": 372.7787547594417
+        },
+        {
+          "x": 550,
+          "y": 308,
+          "length": 630.3681464033538
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "4aehqy",
+      "type": "flow",
+      "from": "hztjrd",
+      "to": "fvrj75",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "923tyw",
+      "type": "flow",
+      "from": "fvrj75",
+      "to": "wbxzhr",
+      "text": "[new picture]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 550,
+          "y": 532,
+          "length": 765.195399881625
+        },
+        {
+          "x": 890,
+          "y": 532,
+          "length": 1036.881864052024
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "tjat3u",
+      "type": "flow",
+      "from": "wbxzhr",
+      "to": "readqv",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 890,
+          "y": 644,
+          "length": 1098.560876783804
+        },
+        {
+          "x": 550,
+          "y": 644,
+          "length": 846.8978686949212
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "8zz52z",
+      "type": "flow",
+      "from": "fvrj75",
+      "to": "readqv",
+      "text": "[already there]",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "fj948z",
+      "type": "flow",
+      "from": "readqv",
+      "to": "8ri5hq",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "igtx4c",
+      "type": "flow",
+      "from": "8ri5hq",
+      "to": "qwc4r8",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 550,
+          "y": 868,
+          "length": 1027.5816269280022
+        },
+        {
+          "x": 210,
+          "y": 868,
+          "length": 893.0419922937555
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "73jkzk",
+      "type": "flow",
+      "from": "qwc4r8",
+      "to": "g2vms3",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 980,
+          "length": 1002.2474744293447
+        },
+        {
+          "x": 550,
+          "y": 980,
+          "length": 1123.7882362794157
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "xh42yu",
+      "type": "flow",
+      "from": "g2vms3",
+      "to": "ubfg2u",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 550,
+          "y": 1092,
+          "length": 1222.687204480361
+        },
+        {
+          "x": 210,
+          "y": 1092,
+          "length": 1112.008992769393
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "twcks7",
+      "type": "flow",
+      "from": "ubfg2u",
+      "to": "vm36xc",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 40,
+    "y": 40,
+    "width": 1020,
+    "height": 1382,
+    "left": 40,
+    "top": 40,
+    "right": 1060,
+    "bottom": 1422,
+    "center": {
+      "x": 550,
+      "y": 731,
+      "length": 914.801071271782
+    }
+  }
+}

@@ -1,0 +1,420 @@
+{
+  "schemaVersion": 1,
+  "kind": "usecase",
+  "title": "CI: use cases",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "7r4g8h",
+      "type": "boundary",
+      "x": 340,
+      "y": 40,
+      "width": 880,
+      "height": 1120,
+      "rotation": 0,
+      "text": "CI plugin",
+      "props": {
+        "fill": "#383574F0",
+        "line": "#3574F0",
+        "bold": "true"
+      }
+    },
+    {
+      "id": "gvfhqs",
+      "type": "usecase",
+      "x": 478.29999999999995,
+      "y": 110,
+      "width": 192.8,
+      "height": 70,
+      "rotation": 0,
+      "text": "See the run history",
+      "parentId": "7r4g8h",
+      "props": {
+        "extensionPoints": "older runs"
+      }
+    },
+    {
+      "id": "jtx23t",
+      "type": "usecase",
+      "x": 980,
+      "y": 214,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Load more runs",
+      "parentId": "7r4g8h",
+      "props": {}
+    },
+    {
+      "id": "y9awq9",
+      "type": "usecase",
+      "x": 483.9,
+      "y": 214,
+      "width": 264.8,
+      "height": 70,
+      "rotation": 0,
+      "text": "Filter by branch and workflow",
+      "parentId": "7r4g8h",
+      "props": {}
+    },
+    {
+      "id": "c9gr9q",
+      "type": "usecase",
+      "x": 500.7,
+      "y": 318,
+      "width": 293.6,
+      "height": 70,
+      "rotation": 0,
+      "text": "See a run's jobs and failed steps",
+      "parentId": "7r4g8h",
+      "props": {}
+    },
+    {
+      "id": "db4z39",
+      "type": "usecase",
+      "x": 557.5,
+      "y": 422,
+      "width": 221.6,
+      "height": 70,
+      "rotation": 0,
+      "text": "Read a failed job's log",
+      "parentId": "7r4g8h",
+      "props": {}
+    },
+    {
+      "id": "45bske",
+      "type": "usecase",
+      "x": 583.7,
+      "y": 526,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Re-run a job",
+      "parentId": "7r4g8h",
+      "props": {}
+    },
+    {
+      "id": "dsvaw6",
+      "type": "usecase",
+      "x": 557.1,
+      "y": 630,
+      "width": 243.20000000000002,
+      "height": 70,
+      "rotation": 0,
+      "text": "Re-run a run's failed jobs",
+      "parentId": "7r4g8h",
+      "props": {}
+    },
+    {
+      "id": "b8ihht",
+      "type": "usecase",
+      "x": 980,
+      "y": 734,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Confirm the re-run",
+      "parentId": "7r4g8h",
+      "props": {}
+    },
+    {
+      "id": "bqbvnj",
+      "type": "usecase",
+      "x": 508.3,
+      "y": 734,
+      "width": 320,
+      "height": 84,
+      "rotation": 0,
+      "text": "See the branch's CI in the status bar",
+      "parentId": "7r4g8h",
+      "props": {}
+    },
+    {
+      "id": "bxwjcz",
+      "type": "usecase",
+      "x": 518.7,
+      "y": 838,
+      "width": 257.6,
+      "height": 70,
+      "rotation": 0,
+      "text": "Hear when a watched run ends",
+      "parentId": "7r4g8h",
+      "props": {}
+    },
+    {
+      "id": "vefhne",
+      "type": "usecase",
+      "x": 456.3,
+      "y": 942,
+      "width": 320,
+      "height": 84,
+      "rotation": 0,
+      "text": "See ✓ ✗ ● next to commits and branches",
+      "parentId": "7r4g8h",
+      "props": {}
+    },
+    {
+      "id": "nb9n6t",
+      "type": "usecase",
+      "x": 456.7,
+      "y": 1046,
+      "width": 236,
+      "height": 70,
+      "rotation": 0,
+      "text": "Open a run in the browser",
+      "parentId": "7r4g8h",
+      "props": {}
+    },
+    {
+      "id": "fm8whb",
+      "type": "actor",
+      "x": 130,
+      "y": 549.6666666666666,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Developer",
+      "props": {}
+    },
+    {
+      "id": "z4rsp3",
+      "type": "actor",
+      "x": 1370,
+      "y": 390.2,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "GitHub Actions",
+      "props": {
+        "stereotype": "system"
+      }
+    },
+    {
+      "id": "swtrzw",
+      "type": "actor",
+      "x": 1370,
+      "y": 931,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Git plugin",
+      "props": {
+        "stereotype": "system"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "bv4nfb",
+      "type": "association",
+      "from": "fm8whb",
+      "to": "gvfhqs",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "qem6px",
+      "type": "association",
+      "from": "z4rsp3",
+      "to": "gvfhqs",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "b4ra5s",
+      "type": "association",
+      "from": "fm8whb",
+      "to": "y9awq9",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ymrgv9",
+      "type": "association",
+      "from": "fm8whb",
+      "to": "c9gr9q",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "b87jx6",
+      "type": "association",
+      "from": "z4rsp3",
+      "to": "c9gr9q",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "4d36ai",
+      "type": "association",
+      "from": "fm8whb",
+      "to": "db4z39",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "dth8ig",
+      "type": "association",
+      "from": "z4rsp3",
+      "to": "db4z39",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "2rktr5",
+      "type": "association",
+      "from": "fm8whb",
+      "to": "45bske",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "cysvz3",
+      "type": "association",
+      "from": "z4rsp3",
+      "to": "45bske",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "m59frv",
+      "type": "association",
+      "from": "fm8whb",
+      "to": "dsvaw6",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "v8zukj",
+      "type": "association",
+      "from": "z4rsp3",
+      "to": "dsvaw6",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "3zzeai",
+      "type": "association",
+      "from": "fm8whb",
+      "to": "bqbvnj",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "7wz588",
+      "type": "association",
+      "from": "fm8whb",
+      "to": "bxwjcz",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "473fht",
+      "type": "association",
+      "from": "fm8whb",
+      "to": "vefhne",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "anqf9i",
+      "type": "association",
+      "from": "swtrzw",
+      "to": "vefhne",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "2ih2tj",
+      "type": "association",
+      "from": "fm8whb",
+      "to": "nb9n6t",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "pmaa65",
+      "type": "include",
+      "from": "45bske",
+      "to": "b8ihht",
+      "text": "«include»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "qn48fg",
+      "type": "include",
+      "from": "dsvaw6",
+      "to": "b8ihht",
+      "text": "«include»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "84bnd3",
+      "type": "extend",
+      "from": "jtx23t",
+      "to": "gvfhqs",
+      "text": "«extend» [past the first 20]",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    }
+  ],
+  "bounds": {
+    "x": 130,
+    "y": 40,
+    "width": 1300,
+    "height": 1120,
+    "left": 130,
+    "top": 40,
+    "right": 1430,
+    "bottom": 1160,
+    "center": {
+      "x": 780,
+      "y": 600,
+      "length": 984.0731680114035
+    }
+  }
+}

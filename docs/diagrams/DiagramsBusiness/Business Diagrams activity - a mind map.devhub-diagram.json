@@ -1,0 +1,279 @@
+{
+  "schemaVersion": 1,
+  "kind": "activity",
+  "title": "Business Diagrams: growing a mind map",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "fn7rh5",
+      "type": "lane",
+      "x": 40,
+      "y": 40,
+      "width": 340,
+      "height": 1046,
+      "rotation": 0,
+      "text": "You",
+      "props": {
+        "vertical": "true",
+        "fill": "#143574F0"
+      }
+    },
+    {
+      "id": "3tpder",
+      "type": "lane",
+      "x": 380,
+      "y": 40,
+      "width": 340,
+      "height": 1046,
+      "rotation": 0,
+      "text": "Business Diagrams plugin",
+      "props": {
+        "vertical": "true",
+        "fill": "#14D98C1F"
+      }
+    },
+    {
+      "id": "anggx3",
+      "type": "start",
+      "x": 197,
+      "y": 127,
+      "width": 26,
+      "height": 26,
+      "rotation": 0,
+      "text": "",
+      "parentId": "fn7rh5",
+      "props": {}
+    },
+    {
+      "id": "xtzx9b",
+      "type": "action",
+      "x": 90,
+      "y": 230,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "New mind map: the central idea",
+      "parentId": "fn7rh5",
+      "props": {}
+    },
+    {
+      "id": "nmmg6t",
+      "type": "action",
+      "x": 90,
+      "y": 342,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Select an idea",
+      "parentId": "fn7rh5",
+      "props": {}
+    },
+    {
+      "id": "xadqsj",
+      "type": "action",
+      "x": 90,
+      "y": 454,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Add Idea",
+      "parentId": "fn7rh5",
+      "props": {}
+    },
+    {
+      "id": "h4k3at",
+      "type": "action",
+      "x": 430,
+      "y": 560,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Lay out the two-sided tree; colour the branch",
+      "parentId": "3tpder",
+      "props": {}
+    },
+    {
+      "id": "9w7x9g",
+      "type": "decision",
+      "x": 193,
+      "y": 683,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "fn7rh5",
+      "props": {}
+    },
+    {
+      "id": "386i27",
+      "type": "action",
+      "x": 430,
+      "y": 784,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Export a Markdown outline or Mermaid",
+      "parentId": "3tpder",
+      "props": {}
+    },
+    {
+      "id": "6q5fas",
+      "type": "end",
+      "x": 535,
+      "y": 909,
+      "width": 30,
+      "height": 30,
+      "rotation": 0,
+      "text": "",
+      "parentId": "3tpder",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "4gqwcx",
+      "type": "flow",
+      "from": "anggx3",
+      "to": "xtzx9b",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "g3mfw3",
+      "type": "flow",
+      "from": "xtzx9b",
+      "to": "nmmg6t",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "a6i937",
+      "type": "flow",
+      "from": "nmmg6t",
+      "to": "xadqsj",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "7ke9mw",
+      "type": "flow",
+      "from": "xadqsj",
+      "to": "h4k3at",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 532,
+          "length": 571.9475500428339
+        },
+        {
+          "x": 550,
+          "y": 532,
+          "length": 765.195399881625
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "2pahsp",
+      "type": "flow",
+      "from": "h4k3at",
+      "to": "9w7x9g",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 550,
+          "y": 644,
+          "length": 846.8978686949212
+        },
+        {
+          "x": 210,
+          "y": 644,
+          "length": 677.3743425905649
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "3swnbr",
+      "type": "flow",
+      "from": "9w7x9g",
+      "to": "nmmg6t",
+      "text": "[more ideas]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 744,
+          "length": 773.0692077686189
+        },
+        {
+          "x": 54,
+          "y": 744,
+          "length": 745.9571033243132
+        },
+        {
+          "x": 54,
+          "y": 364,
+          "length": 367.98369529097346
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "y6qdg7",
+      "type": "flow",
+      "from": "9w7x9g",
+      "to": "386i27",
+      "text": "[done]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 756,
+          "length": 784.624751075315
+        },
+        {
+          "x": 550,
+          "y": 756,
+          "length": 934.8989250181005
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "atxwtt",
+      "type": "flow",
+      "from": "386i27",
+      "to": "6q5fas",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 40,
+    "y": 40,
+    "width": 680,
+    "height": 1046,
+    "left": 40,
+    "top": 40,
+    "right": 720,
+    "bottom": 1086,
+    "center": {
+      "x": 380,
+      "y": 563,
+      "length": 679.2414887210587
+    }
+  }
+}

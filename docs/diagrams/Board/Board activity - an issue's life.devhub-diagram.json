@@ -1,0 +1,663 @@
+{
+  "schemaVersion": 1,
+  "kind": "activity",
+  "title": "Board: an issue's life across the columns",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "bqbt7y",
+      "type": "lane",
+      "x": 40,
+      "y": 40,
+      "width": 340,
+      "height": 1830,
+      "rotation": 0,
+      "text": "You",
+      "props": {
+        "vertical": "true",
+        "fill": "#143574F0"
+      }
+    },
+    {
+      "id": "e3j4ij",
+      "type": "lane",
+      "x": 380,
+      "y": 40,
+      "width": 590,
+      "height": 1830,
+      "rotation": 0,
+      "text": "Board plugin",
+      "props": {
+        "vertical": "true",
+        "fill": "#14D98C1F"
+      }
+    },
+    {
+      "id": "3yh4eh",
+      "type": "lane",
+      "x": 970,
+      "y": 40,
+      "width": 340,
+      "height": 1830,
+      "rotation": 0,
+      "text": "Board store",
+      "props": {
+        "vertical": "true",
+        "fill": "#142E9E5B"
+      }
+    },
+    {
+      "id": "5n772m",
+      "type": "start",
+      "x": 197,
+      "y": 127,
+      "width": 26,
+      "height": 26,
+      "rotation": 0,
+      "text": "",
+      "parentId": "bqbt7y",
+      "props": {}
+    },
+    {
+      "id": "swnkqh",
+      "type": "action",
+      "x": 90,
+      "y": 224,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Create Issue…: type, summary, fields",
+      "parentId": "bqbt7y",
+      "props": {}
+    },
+    {
+      "id": "txk3vd",
+      "type": "action",
+      "x": 555,
+      "y": 336,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "CreateIssue through the BoardSession",
+      "parentId": "e3j4ij",
+      "props": {}
+    },
+    {
+      "id": "zff33y",
+      "type": "action",
+      "x": 1020,
+      "y": 448,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Write issues/<id>.json and its history line (compare-and-swap)",
+      "parentId": "3yh4eh",
+      "props": {}
+    },
+    {
+      "id": "3qnbxw",
+      "type": "decision",
+      "x": 1123,
+      "y": 571,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "3yh4eh",
+      "props": {}
+    },
+    {
+      "id": "nwdmxj",
+      "type": "action",
+      "x": 420,
+      "y": 672,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Reload and apply the change again",
+      "parentId": "e3j4ij",
+      "props": {}
+    },
+    {
+      "id": "9n5s6j",
+      "type": "action",
+      "x": 690,
+      "y": 672,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Show the card in its status's column",
+      "parentId": "e3j4ij",
+      "props": {}
+    },
+    {
+      "id": "s9j2f6",
+      "type": "action",
+      "x": 90,
+      "y": 790,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Drag the card to another column",
+      "parentId": "bqbt7y",
+      "props": {}
+    },
+    {
+      "id": "bb9wvb",
+      "type": "decision",
+      "x": 658,
+      "y": 907,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "e3j4ij",
+      "props": {}
+    },
+    {
+      "id": "xjb8rn",
+      "type": "action",
+      "x": 420,
+      "y": 1008,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Refuse the drop; the card goes back",
+      "parentId": "e3j4ij",
+      "props": {}
+    },
+    {
+      "id": "q46n3q",
+      "type": "decision",
+      "x": 793,
+      "y": 1019,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "e3j4ij",
+      "props": {}
+    },
+    {
+      "id": "fpd76c",
+      "type": "action",
+      "x": 90,
+      "y": 1126,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Tick the Definition of Done",
+      "parentId": "bqbt7y",
+      "props": {}
+    },
+    {
+      "id": "3rbs4e",
+      "type": "decision",
+      "x": 658,
+      "y": 1243,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "e3j4ij",
+      "props": {}
+    },
+    {
+      "id": "8nxkrd",
+      "type": "action",
+      "x": 555,
+      "y": 1350,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "TransitionIssue; history line",
+      "parentId": "e3j4ij",
+      "props": {}
+    },
+    {
+      "id": "r5xi7d",
+      "type": "action",
+      "x": 1020,
+      "y": 1462,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Write the change",
+      "parentId": "3yh4eh",
+      "props": {}
+    },
+    {
+      "id": "de6yy9",
+      "type": "decision",
+      "x": 658,
+      "y": 1579,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "e3j4ij",
+      "props": {}
+    },
+    {
+      "id": "2d7wn8",
+      "type": "end",
+      "x": 660,
+      "y": 1693,
+      "width": 30,
+      "height": 30,
+      "rotation": 0,
+      "text": "",
+      "parentId": "e3j4ij",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "bmts3k",
+      "type": "flow",
+      "from": "5n772m",
+      "to": "swnkqh",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "cghgxh",
+      "type": "flow",
+      "from": "swnkqh",
+      "to": "txk3vd",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 308,
+          "length": 372.7787547594417
+        },
+        {
+          "x": 675,
+          "y": 308,
+          "length": 741.9494591951665
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "uirz7u",
+      "type": "flow",
+      "from": "txk3vd",
+      "to": "zff33y",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 420,
+          "length": 795
+        },
+        {
+          "x": 1140,
+          "y": 420,
+          "length": 1214.9074038789952
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "5wybwb",
+      "type": "flow",
+      "from": "zff33y",
+      "to": "3qnbxw",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "a4g8sg",
+      "type": "flow",
+      "from": "3qnbxw",
+      "to": "nwdmxj",
+      "text": "[the files changed meanwhile]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 1140,
+          "y": 644,
+          "length": 1309.3265444494739
+        },
+        {
+          "x": 540,
+          "y": 644,
+          "length": 840.4379810551163
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "fvkgkp",
+      "type": "flow",
+      "from": "nwdmxj",
+      "to": "zff33y",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 540,
+          "y": 744,
+          "length": 919.3127868141506
+        },
+        {
+          "x": 984,
+          "y": 744,
+          "length": 1233.6093384860542
+        },
+        {
+          "x": 984,
+          "y": 476,
+          "length": 1093.0837113414507
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "mk63zr",
+      "type": "flow",
+      "from": "3qnbxw",
+      "to": "9n5s6j",
+      "text": "[written]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 1140,
+          "y": 644,
+          "length": 1309.3265444494739
+        },
+        {
+          "x": 810,
+          "y": 644,
+          "length": 1034.8120602312285
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "5wew7n",
+      "type": "flow",
+      "from": "9n5s6j",
+      "to": "s9j2f6",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 810,
+          "y": 756,
+          "length": 1107.9873645488924
+        },
+        {
+          "x": 210,
+          "y": 756,
+          "length": 784.624751075315
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "n6cqsz",
+      "type": "flow",
+      "from": "s9j2f6",
+      "to": "bb9wvb",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 868,
+          "length": 893.0419922937555
+        },
+        {
+          "x": 675,
+          "y": 868,
+          "length": 1099.567642303101
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "qvtis2",
+      "type": "flow",
+      "from": "bb9wvb",
+      "to": "xjb8rn",
+      "text": "[the workflow forbids it]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 980,
+          "length": 1189.9684869777013
+        },
+        {
+          "x": 540,
+          "y": 980,
+          "length": 1118.9280584559492
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "z7x3u4",
+      "type": "flow",
+      "from": "xjb8rn",
+      "to": "s9j2f6",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 540,
+          "y": 1080,
+          "length": 1207.4767078498865
+        },
+        {
+          "x": 54,
+          "y": 1080,
+          "length": 1081.3491573030424
+        },
+        {
+          "x": 54,
+          "y": 812,
+          "length": 813.7935856223002
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "phsa4v",
+      "type": "flow",
+      "from": "bb9wvb",
+      "to": "q46n3q",
+      "text": "[allowed]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 980,
+          "length": 1189.9684869777013
+        },
+        {
+          "x": 810,
+          "y": 980,
+          "length": 1271.416532848303
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "iarq9t",
+      "type": "flow",
+      "from": "q46n3q",
+      "to": "fpd76c",
+      "text": "[into Done, DoD Ask or Strict]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 810,
+          "y": 1092,
+          "length": 1359.6190642970553
+        },
+        {
+          "x": 210,
+          "y": 1092,
+          "length": 1112.008992769393
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "rtnfva",
+      "type": "flow",
+      "from": "fpd76c",
+      "to": "3rbs4e",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 210,
+          "y": 1204,
+          "length": 1222.1767466287354
+        },
+        {
+          "x": 675,
+          "y": 1204,
+          "length": 1380.304676511675
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "7tguxi",
+      "type": "flow",
+      "from": "q46n3q",
+      "to": "3rbs4e",
+      "text": "[otherwise]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 810,
+          "y": 1092,
+          "length": 1359.6190642970553
+        },
+        {
+          "x": 675,
+          "y": 1092,
+          "length": 1283.779186620503
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "m4nqat",
+      "type": "flow",
+      "from": "3rbs4e",
+      "to": "8nxkrd",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "t95kwv",
+      "type": "flow",
+      "from": "8nxkrd",
+      "to": "r5xi7d",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 1428,
+          "length": 1579.496438742424
+        },
+        {
+          "x": 1140,
+          "y": 1428,
+          "length": 1827.233975165742
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "xtci47",
+      "type": "flow",
+      "from": "r5xi7d",
+      "to": "de6yy9",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 1140,
+          "y": 1540,
+          "length": 1916.037577919598
+        },
+        {
+          "x": 675,
+          "y": 1540,
+          "length": 1681.4353986995754
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "4n8wep",
+      "type": "flow",
+      "from": "de6yy9",
+      "to": "s9j2f6",
+      "text": "[not done yet]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 675,
+          "y": 1640,
+          "length": 1773.478220898131
+        },
+        {
+          "x": 64,
+          "y": 1640,
+          "length": 1641.248305406589
+        },
+        {
+          "x": 64,
+          "y": 812,
+          "length": 814.5182625331369
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "r4cg82",
+      "type": "flow",
+      "from": "de6yy9",
+      "to": "2d7wn8",
+      "text": "[in a Done column]",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 40,
+    "y": 40,
+    "width": 1270,
+    "height": 1830,
+    "left": 40,
+    "top": 40,
+    "right": 1310,
+    "bottom": 1870,
+    "center": {
+      "x": 675,
+      "y": 955,
+      "length": 1169.4656899627282
+    }
+  }
+}

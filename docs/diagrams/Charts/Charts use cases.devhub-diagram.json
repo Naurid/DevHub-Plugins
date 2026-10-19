@@ -1,0 +1,223 @@
+{
+  "schemaVersion": 1,
+  "kind": "usecase",
+  "title": "Charts: use cases",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "tw6evw",
+      "type": "boundary",
+      "x": 340,
+      "y": 40,
+      "width": 788.8,
+      "height": 704,
+      "rotation": 0,
+      "text": "Charts plugin",
+      "props": {
+        "fill": "#383574F0",
+        "line": "#3574F0",
+        "bold": "true"
+      }
+    },
+    {
+      "id": "h237qw",
+      "type": "usecase",
+      "x": 440.52222222222224,
+      "y": 110,
+      "width": 207.20000000000002,
+      "height": 70,
+      "rotation": 0,
+      "text": "Paste or type a table",
+      "parentId": "tw6evw",
+      "props": {}
+    },
+    {
+      "id": "zmzt8z",
+      "type": "usecase",
+      "x": 506.9,
+      "y": 214,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Open a CSV",
+      "parentId": "tw6evw",
+      "props": {}
+    },
+    {
+      "id": "3y8w7k",
+      "type": "usecase",
+      "x": 535.7888888888889,
+      "y": 318,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Pick a chart type",
+      "parentId": "tw6evw",
+      "props": {
+        "extensionPoints": "style"
+      }
+    },
+    {
+      "id": "a983jf",
+      "type": "usecase",
+      "x": 888.8,
+      "y": 318,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Style the series",
+      "parentId": "tw6evw",
+      "props": {}
+    },
+    {
+      "id": "b8c32q",
+      "type": "usecase",
+      "x": 535.7888888888889,
+      "y": 422,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Save the chart",
+      "parentId": "tw6evw",
+      "props": {}
+    },
+    {
+      "id": "ya2njz",
+      "type": "usecase",
+      "x": 487.5,
+      "y": 526,
+      "width": 228.8,
+      "height": 70,
+      "rotation": 0,
+      "text": "Export as PNG or copy it",
+      "parentId": "tw6evw",
+      "props": {}
+    },
+    {
+      "id": "cefdhe",
+      "type": "usecase",
+      "x": 440.52222222222224,
+      "y": 630,
+      "width": 207.20000000000002,
+      "height": 70,
+      "rotation": 0,
+      "text": "Open a report's chart",
+      "parentId": "tw6evw",
+      "props": {}
+    },
+    {
+      "id": "b2gbmb",
+      "type": "actor",
+      "x": 130,
+      "y": 307,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Developer",
+      "props": {}
+    },
+    {
+      "id": "tzwhmf",
+      "type": "actor",
+      "x": 1278.8,
+      "y": 619,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Board Reports plugin",
+      "props": {
+        "stereotype": "system"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "xcnjbf",
+      "type": "association",
+      "from": "b2gbmb",
+      "to": "h237qw",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "vvje5m",
+      "type": "association",
+      "from": "b2gbmb",
+      "to": "zmzt8z",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "aiy854",
+      "type": "association",
+      "from": "b2gbmb",
+      "to": "3y8w7k",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "f5ywnb",
+      "type": "association",
+      "from": "b2gbmb",
+      "to": "b8c32q",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "bbmxrx",
+      "type": "association",
+      "from": "b2gbmb",
+      "to": "ya2njz",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "6kvxvy",
+      "type": "association",
+      "from": "tzwhmf",
+      "to": "cefdhe",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "qvudmb",
+      "type": "extend",
+      "from": "a983jf",
+      "to": "3y8w7k",
+      "text": "«extend» [per series]",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    }
+  ],
+  "bounds": {
+    "x": 130,
+    "y": 40,
+    "width": 1208.8,
+    "height": 704,
+    "left": 130,
+    "top": 40,
+    "right": 1338.8,
+    "bottom": 744,
+    "center": {
+      "x": 734.4,
+      "y": 392,
+      "length": 832.4706361187763
+    }
+  }
+}

@@ -1,0 +1,378 @@
+{
+  "schemaVersion": 1,
+  "kind": "activity",
+  "title": "Database Diagrams: from the MCD to SQL",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "utbaf8",
+      "type": "lane",
+      "x": 40,
+      "y": 40,
+      "width": 590,
+      "height": 1270,
+      "rotation": 0,
+      "text": "You",
+      "props": {
+        "vertical": "true",
+        "fill": "#143574F0"
+      }
+    },
+    {
+      "id": "h7g3db",
+      "type": "lane",
+      "x": 630,
+      "y": 40,
+      "width": 340,
+      "height": 1270,
+      "rotation": 0,
+      "text": "Database Diagrams plugin",
+      "props": {
+        "vertical": "true",
+        "fill": "#14D98C1F"
+      }
+    },
+    {
+      "id": "kqzjws",
+      "type": "start",
+      "x": 322,
+      "y": 127,
+      "width": 26,
+      "height": 26,
+      "rotation": 0,
+      "text": "",
+      "parentId": "utbaf8",
+      "props": {}
+    },
+    {
+      "id": "w9kk29",
+      "type": "action",
+      "x": 215,
+      "y": 224,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Draw entities, associations, cardinalities, identifiers",
+      "parentId": "utbaf8",
+      "props": {}
+    },
+    {
+      "id": "x8yy5d",
+      "type": "action",
+      "x": 680,
+      "y": 336,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Check the MCD (identifiers, cardinalities)",
+      "parentId": "h7g3db",
+      "props": {}
+    },
+    {
+      "id": "p23m4i",
+      "type": "decision",
+      "x": 783,
+      "y": 459,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "h7g3db",
+      "props": {}
+    },
+    {
+      "id": "r8rh6s",
+      "type": "action",
+      "x": 80,
+      "y": 566,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Fix what Problems lists",
+      "parentId": "utbaf8",
+      "props": {}
+    },
+    {
+      "id": "u74ybe",
+      "type": "action",
+      "x": 350,
+      "y": 566,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Generate MLD",
+      "parentId": "utbaf8",
+      "props": {}
+    },
+    {
+      "id": "d6v7zz",
+      "type": "action",
+      "x": 680,
+      "y": 672,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Entities → tables; 1,n → foreign keys; n,n → link tables",
+      "parentId": "h7g3db",
+      "props": {}
+    },
+    {
+      "id": "kzpyba",
+      "type": "action",
+      "x": 680,
+      "y": 790,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Open the MLD as a table diagram",
+      "parentId": "h7g3db",
+      "props": {}
+    },
+    {
+      "id": "abtgh5",
+      "type": "action",
+      "x": 215,
+      "y": 896,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Export SQL: pick MySQL, PostgreSQL, SQL Server or SQLite",
+      "parentId": "utbaf8",
+      "props": {}
+    },
+    {
+      "id": "rj9zam",
+      "type": "action",
+      "x": 680,
+      "y": 1008,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Write CREATE TABLE with the dialect's type names",
+      "parentId": "h7g3db",
+      "props": {}
+    },
+    {
+      "id": "2zmd9r",
+      "type": "end",
+      "x": 785,
+      "y": 1133,
+      "width": 30,
+      "height": 30,
+      "rotation": 0,
+      "text": "",
+      "parentId": "h7g3db",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "pc7bqx",
+      "type": "flow",
+      "from": "kqzjws",
+      "to": "w9kk29",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "zutudn",
+      "type": "flow",
+      "from": "w9kk29",
+      "to": "x8yy5d",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 335,
+          "y": 308,
+          "length": 455.0703242357163
+        },
+        {
+          "x": 800,
+          "y": 308,
+          "length": 857.2420894939772
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "iqg3d7",
+      "type": "flow",
+      "from": "x8yy5d",
+      "to": "p23m4i",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "vnexzy",
+      "type": "flow",
+      "from": "p23m4i",
+      "to": "r8rh6s",
+      "text": "[problems]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 800,
+          "y": 532,
+          "length": 960.7413803932877
+        },
+        {
+          "x": 200,
+          "y": 532,
+          "length": 568.3520036034007
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "eskmad",
+      "type": "flow",
+      "from": "r8rh6s",
+      "to": "w9kk29",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 200,
+          "y": 632,
+          "length": 662.8906395477311
+        },
+        {
+          "x": 54,
+          "y": 632,
+          "length": 634.3027668235414
+        },
+        {
+          "x": 54,
+          "y": 252,
+          "length": 257.72077913897436
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "re2be3",
+      "type": "flow",
+      "from": "p23m4i",
+      "to": "u74ybe",
+      "text": "[none]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 800,
+          "y": 532,
+          "length": 960.7413803932877
+        },
+        {
+          "x": 470,
+          "y": 532,
+          "length": 709.8760455178073
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "ditxac",
+      "type": "flow",
+      "from": "u74ybe",
+      "to": "d6v7zz",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 470,
+          "y": 644,
+          "length": 797.2678345449539
+        },
+        {
+          "x": 800,
+          "y": 644,
+          "length": 1027.003407978766
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "84gdpf",
+      "type": "flow",
+      "from": "d6v7zz",
+      "to": "kzpyba",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "ce39br",
+      "type": "flow",
+      "from": "kzpyba",
+      "to": "abtgh5",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 800,
+          "y": 868,
+          "length": 1180.4338185599395
+        },
+        {
+          "x": 335,
+          "y": 868,
+          "length": 930.4026010281785
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "6vgaju",
+      "type": "flow",
+      "from": "abtgh5",
+      "to": "rj9zam",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 335,
+          "y": 980,
+          "length": 1035.676107670733
+        },
+        {
+          "x": 800,
+          "y": 980,
+          "length": 1265.0691680694774
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "ady5tz",
+      "type": "flow",
+      "from": "rj9zam",
+      "to": "2zmd9r",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 40,
+    "y": 40,
+    "width": 930,
+    "height": 1270,
+    "left": 40,
+    "top": 40,
+    "right": 970,
+    "bottom": 1310,
+    "center": {
+      "x": 505,
+      "y": 675,
+      "length": 843.0005931196016
+    }
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 1,
+  "kind": "usecase",
+  "title": "Board Timeline: use cases",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "3pwcjs",
+      "type": "boundary",
+      "x": 340,
+      "y": 40,
+      "width": 856.4000000000001,
+      "height": 392,
+      "rotation": 0,
+      "text": "Board Timeline plugin",
+      "props": {
+        "fill": "#383574F0",
+        "line": "#3574F0",
+        "bold": "true"
+      }
+    },
+    {
+      "id": "ae9va9",
+      "type": "usecase",
+      "x": 462.22222222222223,
+      "y": 110,
+      "width": 228.8,
+      "height": 70,
+      "rotation": 0,
+      "text": "See the roadmap of epics",
+      "parentId": "3pwcjs",
+      "props": {
+        "extensionPoints": "warnings"
+      }
+    },
+    {
+      "id": "csp3rh",
+      "type": "usecase",
+      "x": 888.8,
+      "y": 110,
+      "width": 257.6,
+      "height": 70,
+      "rotation": 0,
+      "text": "Spot late epics and blockers",
+      "parentId": "3pwcjs",
+      "props": {}
+    },
+    {
+      "id": "k32xsf",
+      "type": "usecase",
+      "x": 539.4,
+      "y": 214,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Open an epic",
+      "parentId": "3pwcjs",
+      "props": {}
+    },
+    {
+      "id": "7ai6zi",
+      "type": "usecase",
+      "x": 480.22222222222223,
+      "y": 318,
+      "width": 192.8,
+      "height": 70,
+      "rotation": 0,
+      "text": "Follow the releases",
+      "parentId": "3pwcjs",
+      "props": {
+        "extensionPoints": "notes"
+      }
+    },
+    {
+      "id": "jqjkkq",
+      "type": "usecase",
+      "x": 910.4,
+      "y": 318,
+      "width": 214.4,
+      "height": 70,
+      "rotation": 0,
+      "text": "Read a release's notes",
+      "parentId": "3pwcjs",
+      "props": {}
+    },
+    {
+      "id": "hu32pw",
+      "type": "actor",
+      "x": 130,
+      "y": 203,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Developer",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "4xmszz",
+      "type": "association",
+      "from": "hu32pw",
+      "to": "ae9va9",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "twf5r2",
+      "type": "association",
+      "from": "hu32pw",
+      "to": "k32xsf",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "rk4uqr",
+      "type": "association",
+      "from": "hu32pw",
+      "to": "7ai6zi",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "d6rj8h",
+      "type": "extend",
+      "from": "csp3rh",
+      "to": "ae9va9",
+      "text": "«extend» [an epic is late or blocked]",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "rbc8iz",
+      "type": "extend",
+      "from": "jqjkkq",
+      "to": "7ai6zi",
+      "text": "«extend» [a release is selected]",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    }
+  ],
+  "bounds": {
+    "x": 130,
+    "y": 40,
+    "width": 1066.4,
+    "height": 392,
+    "left": 130,
+    "top": 40,
+    "right": 1196.4,
+    "bottom": 432,
+    "center": {
+      "x": 663.2,
+      "y": 236,
+      "length": 703.9390882739784
+    }
+  }
+}

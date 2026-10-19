@@ -1,0 +1,406 @@
+{
+  "schemaVersion": 1,
+  "kind": "class",
+  "title": "Board Risks: main classes",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "nphbxa",
+      "type": "class",
+      "x": 0,
+      "y": 211.5,
+      "width": 281,
+      "height": 76,
+      "rotation": 0,
+      "text": "BoardRisksPlugin",
+      "props": {
+        "attributes": "+ Info : PluginInfo",
+        "operations": "+ ConfigureServices(services, context)",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "zmua68",
+      "type": "class",
+      "x": 738,
+      "y": 194.5,
+      "width": 370,
+      "height": 110,
+      "rotation": 0,
+      "text": "RisksPageProvider",
+      "props": {
+        "attributes": "+ Id : string\n+ Title : string\n+ Order : int",
+        "operations": "+ Create(host : BoardPageHost) : BoardPageViewModel",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "tegejw",
+      "type": "class",
+      "x": 331,
+      "y": 135,
+      "width": 357,
+      "height": 229,
+      "rotation": 0,
+      "text": "RisksPageViewModel",
+      "props": {
+        "attributes": "+ Title : string\n+ Risks : ObservableCollection<RiskRow>\n+ HasRisks : bool\n+ HasSelection : bool\n+ Levels : IReadOnlyList<NamedItem>\n+ Statuses : IReadOnlyList<NamedItem>\n+ Categories : IReadOnlyList<string>\n+ People : ObservableCollection<NamedItem>\n+ EditIssues : ObservableCollection<RiskIssueRow>\n+ Selected : RiskRow",
+        "operations": "+ OnBoardChanged()",
+        "showAttributes": "true",
+        "showOperations": "true"
+      }
+    },
+    {
+      "id": "9bpq28",
+      "type": "class",
+      "x": 845,
+      "y": 454,
+      "width": 156,
+      "height": 204,
+      "rotation": 0,
+      "text": "RiskRow",
+      "props": {
+        "attributes": "+ Risk : Risk\n+ OwnerName : string\n+ Key : string\n+ Title : string\n+ Score : string\n+ Detail : string\n+ IsClosed : bool\n+ IsCritical : bool\n+ IsHigh : bool",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "rmsenc",
+      "type": "class",
+      "x": 1051,
+      "y": 488,
+      "width": 184,
+      "height": 136,
+      "rotation": 0,
+      "text": "RiskIssueRow",
+      "props": {
+        "attributes": "+ Id : string\n+ Key : string\n+ Summary : string\n+ Remove : IRelayCommand\n+ Open : IRelayCommand",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "tepjur",
+      "type": "class",
+      "x": 955,
+      "y": 748,
+      "width": 170,
+      "height": 221,
+      "rotation": 0,
+      "text": "Risk",
+      "props": {
+        "attributes": "+ Schema : int\n+ Id : string\n+ Number : int\n+ Title : string\n+ Description : string\n+ Category : string\n+ Probability : int\n+ Impact : int\n+ Status : RiskStatus\n+ Owner : string",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "wtwcj2",
+      "type": "enumeration",
+      "x": 976,
+      "y": 1059,
+      "width": 128,
+      "height": 119,
+      "rotation": 0,
+      "text": "RiskStatus",
+      "props": {
+        "attributes": "Open\nMitigating\nOccurred\nClosed",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false"
+      }
+    },
+    {
+      "id": "89rt8p",
+      "type": "class",
+      "x": 1158,
+      "y": 161.5,
+      "width": 274,
+      "height": 176,
+      "rotation": 0,
+      "text": "AddRisk",
+      "props": {
+        "attributes": "+ Title : string\n+ Id : string\n+ Probability : int\n+ Impact : int\n+ Category : string\n+ Owner : string",
+        "operations": "+ Apply(board, context) : BoardChange",
+        "showAttributes": "true",
+        "showOperations": "true",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "msan3d",
+      "type": "class",
+      "x": 1482,
+      "y": 204,
+      "width": 274,
+      "height": 91,
+      "rotation": 0,
+      "text": "EditRisk",
+      "props": {
+        "attributes": "+ Risk : Risk",
+        "operations": "+ Apply(board, context) : BoardChange",
+        "showAttributes": "true",
+        "showOperations": "true",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "puc9j8",
+      "type": "class",
+      "x": 1806,
+      "y": 204,
+      "width": 274,
+      "height": 91,
+      "rotation": 0,
+      "text": "DeleteRisk",
+      "props": {
+        "attributes": "+ RiskId : string",
+        "operations": "+ Apply(board, context) : BoardChange",
+        "showAttributes": "true",
+        "showOperations": "true",
+        "stereotype": "record"
+      }
+    },
+    {
+      "id": "qwv4ix",
+      "type": "interface",
+      "x": 666.5,
+      "y": 0,
+      "width": 120,
+      "height": 45,
+      "rotation": 0,
+      "text": "IPlugin",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "4g2v6m",
+      "type": "interface",
+      "x": 1053.5,
+      "y": 0,
+      "width": 167,
+      "height": 45,
+      "rotation": 0,
+      "text": "IBoardPageProvider",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "bpbu5m",
+      "type": "class",
+      "x": 836.5,
+      "y": 2,
+      "width": 167,
+      "height": 41,
+      "rotation": 0,
+      "text": "BoardPageViewModel",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "true",
+        "showOperations": "false",
+        "abstract": "true",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "jkc98u",
+      "type": "interface",
+      "x": 1270.5,
+      "y": 0,
+      "width": 143,
+      "height": 45,
+      "rotation": 0,
+      "text": "IBoardOperation",
+      "props": {
+        "attributes": "",
+        "operations": "",
+        "showAttributes": "false",
+        "showOperations": "false",
+        "fill": "#1A8C8F96",
+        "line": "#8C8F96"
+      }
+    },
+    {
+      "id": "pzgfgu",
+      "type": "note",
+      "x": 0,
+      "y": 1228,
+      "width": 620,
+      "height": 76,
+      "rotation": 0,
+      "text": "Read from DevHub.Board.Risks.dll, DevHub.Board.Risks.Core.dll: each type's own public members (up to 10 properties and 8 methods). Grey: from the Sdk or another plugin.",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "jq282m",
+      "type": "realization",
+      "from": "nphbxa",
+      "to": "qwv4ix",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "3hcqbb",
+      "type": "realization",
+      "from": "zmua68",
+      "to": "4g2v6m",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "56emir",
+      "type": "generalization",
+      "from": "tegejw",
+      "to": "bpbu5m",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "mr6rj3",
+      "type": "association",
+      "from": "tegejw",
+      "to": "9bpq28",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "Risks"
+      }
+    },
+    {
+      "id": "vfzn4v",
+      "type": "association",
+      "from": "tegejw",
+      "to": "rmsenc",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "*",
+        "toRole": "EditIssues"
+      }
+    },
+    {
+      "id": "39cf8e",
+      "type": "association",
+      "from": "9bpq28",
+      "to": "tepjur",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Risk"
+      }
+    },
+    {
+      "id": "g6jr25",
+      "type": "association",
+      "from": "tepjur",
+      "to": "wtwcj2",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Status"
+      }
+    },
+    {
+      "id": "csec4n",
+      "type": "realization",
+      "from": "89rt8p",
+      "to": "jkc98u",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "m94kzj",
+      "type": "realization",
+      "from": "msan3d",
+      "to": "jkc98u",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "c9fauz",
+      "type": "association",
+      "from": "msan3d",
+      "to": "tepjur",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "navigable": "true",
+        "toMultiplicity": "1",
+        "toRole": "Risk"
+      }
+    },
+    {
+      "id": "j7ypwi",
+      "type": "realization",
+      "from": "puc9j8",
+      "to": "jkc98u",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 0,
+    "y": 0,
+    "width": 2080,
+    "height": 1304,
+    "left": 0,
+    "top": 0,
+    "right": 2080,
+    "bottom": 1304,
+    "center": {
+      "x": 1040,
+      "y": 652,
+      "length": 1227.4787167197646
+    }
+  }
+}

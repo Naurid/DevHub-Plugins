@@ -1,0 +1,534 @@
+{
+  "schemaVersion": 1,
+  "kind": "activity",
+  "title": "Diagrams: creating and editing a diagram",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "8y7ht5",
+      "type": "lane",
+      "x": 40,
+      "y": 40,
+      "width": 590,
+      "height": 1718,
+      "rotation": 0,
+      "text": "You",
+      "props": {
+        "vertical": "true",
+        "fill": "#143574F0"
+      }
+    },
+    {
+      "id": "gvzygj",
+      "type": "lane",
+      "x": 630,
+      "y": 40,
+      "width": 340,
+      "height": 1718,
+      "rotation": 0,
+      "text": "Diagrams plugin",
+      "props": {
+        "vertical": "true",
+        "fill": "#14D98C1F"
+      }
+    },
+    {
+      "id": "p3fe82",
+      "type": "lane",
+      "x": 970,
+      "y": 40,
+      "width": 340,
+      "height": 1718,
+      "rotation": 0,
+      "text": "File system",
+      "props": {
+        "vertical": "true",
+        "fill": "#142E9E5B"
+      }
+    },
+    {
+      "id": "m7au8e",
+      "type": "start",
+      "x": 322,
+      "y": 127,
+      "width": 26,
+      "height": 26,
+      "rotation": 0,
+      "text": "",
+      "parentId": "8y7ht5",
+      "props": {}
+    },
+    {
+      "id": "98unir",
+      "type": "action",
+      "x": 215,
+      "y": 224,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "New Diagram…: kind, name, sample, where",
+      "parentId": "8y7ht5",
+      "props": {}
+    },
+    {
+      "id": "25fa7n",
+      "type": "action",
+      "x": 680,
+      "y": 336,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Build it from the kind's model or sample",
+      "parentId": "gvzygj",
+      "props": {}
+    },
+    {
+      "id": "d54qfk",
+      "type": "action",
+      "x": 1020,
+      "y": 448,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Write <name>.devhub-diagram.json; open its tab",
+      "parentId": "p3fe82",
+      "props": {}
+    },
+    {
+      "id": "x2je2m",
+      "type": "action",
+      "x": 215,
+      "y": 566,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Draw, move, connect, edit text",
+      "parentId": "8y7ht5",
+      "props": {}
+    },
+    {
+      "id": "epae74",
+      "type": "action",
+      "x": 680,
+      "y": 672,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Apply it as an IDiagramOperation (one Undo step)",
+      "parentId": "gvzygj",
+      "props": {}
+    },
+    {
+      "id": "ncq8yr",
+      "type": "action",
+      "x": 680,
+      "y": 784,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Run the kind's rules; refresh Problems",
+      "parentId": "gvzygj",
+      "props": {}
+    },
+    {
+      "id": "bxhdpi",
+      "type": "decision",
+      "x": 783,
+      "y": 907,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "gvzygj",
+      "props": {}
+    },
+    {
+      "id": "c6tg7x",
+      "type": "action",
+      "x": 80,
+      "y": 1008,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Click a problem; fix what it selects",
+      "parentId": "8y7ht5",
+      "props": {}
+    },
+    {
+      "id": "c34g25",
+      "type": "action",
+      "x": 350,
+      "y": 1014,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Save (Ctrl+S)",
+      "parentId": "8y7ht5",
+      "props": {}
+    },
+    {
+      "id": "mjurdh",
+      "type": "action",
+      "x": 1020,
+      "y": 1126,
+      "width": 240,
+      "height": 44,
+      "rotation": 0,
+      "text": "Write the file",
+      "parentId": "p3fe82",
+      "props": {}
+    },
+    {
+      "id": "eyf54c",
+      "type": "decision",
+      "x": 318,
+      "y": 1243,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "8y7ht5",
+      "props": {}
+    },
+    {
+      "id": "8xe5fn",
+      "type": "action",
+      "x": 1020,
+      "y": 1344,
+      "width": 240,
+      "height": 56,
+      "rotation": 0,
+      "text": "Export where Settings → Diagrams says",
+      "parentId": "p3fe82",
+      "props": {}
+    },
+    {
+      "id": "4uk7zm",
+      "type": "decision",
+      "x": 318,
+      "y": 1467,
+      "width": 34,
+      "height": 34,
+      "rotation": 0,
+      "text": "",
+      "parentId": "8y7ht5",
+      "props": {}
+    },
+    {
+      "id": "jgv657",
+      "type": "end",
+      "x": 320,
+      "y": 1581,
+      "width": 30,
+      "height": 30,
+      "rotation": 0,
+      "text": "",
+      "parentId": "8y7ht5",
+      "props": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "92ughc",
+      "type": "flow",
+      "from": "m7au8e",
+      "to": "98unir",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "vtyj27",
+      "type": "flow",
+      "from": "98unir",
+      "to": "25fa7n",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 335,
+          "y": 308,
+          "length": 455.0703242357163
+        },
+        {
+          "x": 800,
+          "y": 308,
+          "length": 857.2420894939772
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "fe48fz",
+      "type": "flow",
+      "from": "25fa7n",
+      "to": "d54qfk",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 800,
+          "y": 420,
+          "length": 903.5485598461214
+        },
+        {
+          "x": 1140,
+          "y": 420,
+          "length": 1214.9074038789952
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "32z5vu",
+      "type": "flow",
+      "from": "d54qfk",
+      "to": "x2je2m",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 1140,
+          "y": 532,
+          "length": 1258.0238471507605
+        },
+        {
+          "x": 335,
+          "y": 532,
+          "length": 628.6883170538482
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "umf347",
+      "type": "flow",
+      "from": "x2je2m",
+      "to": "epae74",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 335,
+          "y": 644,
+          "length": 725.92079457748
+        },
+        {
+          "x": 800,
+          "y": 644,
+          "length": 1027.003407978766
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "h9t4tw",
+      "type": "flow",
+      "from": "epae74",
+      "to": "ncq8yr",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "c7y9vn",
+      "type": "flow",
+      "from": "ncq8yr",
+      "to": "bxhdpi",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "495ur9",
+      "type": "flow",
+      "from": "bxhdpi",
+      "to": "c6tg7x",
+      "text": "[problems]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 800,
+          "y": 980,
+          "length": 1265.0691680694774
+        },
+        {
+          "x": 200,
+          "y": 980,
+          "length": 1000.199980003999
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "ysdurg",
+      "type": "flow",
+      "from": "c6tg7x",
+      "to": "x2je2m",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 200,
+          "y": 1080,
+          "length": 1098.3624174196784
+        },
+        {
+          "x": 54,
+          "y": 1080,
+          "length": 1081.3491573030424
+        },
+        {
+          "x": 54,
+          "y": 588,
+          "length": 590.4743855579173
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "wbhnsa",
+      "type": "flow",
+      "from": "bxhdpi",
+      "to": "c34g25",
+      "text": "[none]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 800,
+          "y": 980,
+          "length": 1265.0691680694774
+        },
+        {
+          "x": 470,
+          "y": 980,
+          "length": 1086.8762579061151
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "6jbg7n",
+      "type": "flow",
+      "from": "c34g25",
+      "to": "mjurdh",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 470,
+          "y": 1092,
+          "length": 1188.8498643647144
+        },
+        {
+          "x": 1140,
+          "y": 1092,
+          "length": 1578.6272517602122
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "48hf3s",
+      "type": "flow",
+      "from": "mjurdh",
+      "to": "eyf54c",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 1140,
+          "y": 1204,
+          "length": 1658.0759934333528
+        },
+        {
+          "x": 335,
+          "y": 1204,
+          "length": 1249.7363722001533
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "83gj54",
+      "type": "flow",
+      "from": "eyf54c",
+      "to": "8xe5fn",
+      "text": "[export]",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 335,
+          "y": 1316,
+          "length": 1357.969440009605
+        },
+        {
+          "x": 1140,
+          "y": 1316,
+          "length": 1741.1076933952133
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "te7j9w",
+      "type": "flow",
+      "from": "8xe5fn",
+      "to": "4uk7zm",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [
+        {
+          "x": 1140,
+          "y": 1428,
+          "length": 1827.233975165742
+        },
+        {
+          "x": 335,
+          "y": 1428,
+          "length": 1466.7682161814116
+        }
+      ],
+      "props": {}
+    },
+    {
+      "id": "69rgak",
+      "type": "flow",
+      "from": "eyf54c",
+      "to": "4uk7zm",
+      "text": "[done]",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "majr47",
+      "type": "flow",
+      "from": "4uk7zm",
+      "to": "jgv657",
+      "text": "",
+      "routing": "orthogonal",
+      "waypoints": [],
+      "props": {}
+    }
+  ],
+  "bounds": {
+    "x": 40,
+    "y": 40,
+    "width": 1270,
+    "height": 1718,
+    "left": 40,
+    "top": 40,
+    "right": 1310,
+    "bottom": 1758,
+    "center": {
+      "x": 675,
+      "y": 899,
+      "length": 1124.2001601138472
+    }
+  }
+}

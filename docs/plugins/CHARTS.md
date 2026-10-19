@@ -42,3 +42,7 @@ suffix, traffic colours and each series' style.
 | Open a chart's data in the Chart Maker | `IChartMaker.Open(kind, data)` | Board Reports |
 
 Inject it as `IChartMaker? chartMaker = null` and show "Open in Chart Maker" only when it's there.
+
+## Diagrams
+
+`docs/diagrams/Charts/`: use cases, the activity from a table to an image, and the classes.

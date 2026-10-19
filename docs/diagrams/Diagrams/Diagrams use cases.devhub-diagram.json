@@ -1,0 +1,339 @@
+{
+  "schemaVersion": 1,
+  "kind": "usecase",
+  "title": "Diagrams: use cases",
+  "project": "../../..",
+  "props": {},
+  "nodes": [
+    {
+      "id": "iipnih",
+      "type": "boundary",
+      "x": 340,
+      "y": 40,
+      "width": 863.5999999999999,
+      "height": 808,
+      "rotation": 0,
+      "text": "Diagrams plugin",
+      "props": {
+        "fill": "#383574F0",
+        "line": "#3574F0",
+        "bold": "true"
+      }
+    },
+    {
+      "id": "uau6xn",
+      "type": "usecase",
+      "x": 443.8897959183673,
+      "y": 110,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Create a diagram",
+      "parentId": "iipnih",
+      "props": {
+        "extensionPoints": "start from"
+      }
+    },
+    {
+      "id": "3tfqvr",
+      "type": "usecase",
+      "x": 924.8,
+      "y": 214,
+      "width": 192.8,
+      "height": 70,
+      "rotation": 0,
+      "text": "Start from a sample",
+      "parentId": "iipnih",
+      "props": {}
+    },
+    {
+      "id": "kth4h4",
+      "type": "usecase",
+      "x": 488.35102040816327,
+      "y": 214,
+      "width": 207.20000000000002,
+      "height": 70,
+      "rotation": 0,
+      "text": "Draw shapes and lines",
+      "parentId": "iipnih",
+      "props": {}
+    },
+    {
+      "id": "rf9rws",
+      "type": "usecase",
+      "x": 528.7877551020408,
+      "y": 318,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Undo and redo",
+      "parentId": "iipnih",
+      "props": {}
+    },
+    {
+      "id": "6mvje2",
+      "type": "usecase",
+      "x": 888.8,
+      "y": 318,
+      "width": 264.8,
+      "height": 70,
+      "rotation": 0,
+      "text": "Check the notation (Problems)",
+      "parentId": "iipnih",
+      "props": {}
+    },
+    {
+      "id": "hqyreg",
+      "type": "usecase",
+      "x": 523.6,
+      "y": 422,
+      "width": 221.6,
+      "height": 70,
+      "rotation": 0,
+      "text": "Export (PNG, SVG, text)",
+      "parentId": "iipnih",
+      "props": {}
+    },
+    {
+      "id": "eiabdk",
+      "type": "usecase",
+      "x": 528.7877551020408,
+      "y": 526,
+      "width": 190,
+      "height": 70,
+      "rotation": 0,
+      "text": "Link to a project",
+      "parentId": "iipnih",
+      "props": {}
+    },
+    {
+      "id": "djq2p7",
+      "type": "usecase",
+      "x": 477.55102040816325,
+      "y": 630,
+      "width": 228.8,
+      "height": 70,
+      "rotation": 0,
+      "text": "Link a shape to an issue",
+      "parentId": "iipnih",
+      "props": {
+        "extensionPoints": "new issue"
+      }
+    },
+    {
+      "id": "pns2cv",
+      "type": "usecase",
+      "x": 896,
+      "y": 734,
+      "width": 250.4,
+      "height": 70,
+      "rotation": 0,
+      "text": "Create a story from a shape",
+      "parentId": "iipnih",
+      "props": {}
+    },
+    {
+      "id": "g976cw",
+      "type": "actor",
+      "x": 130,
+      "y": 385,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Developer",
+      "props": {}
+    },
+    {
+      "id": "duyt3j",
+      "type": "actor",
+      "x": 1353.6,
+      "y": 203,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Kind plugins",
+      "props": {
+        "stereotype": "system"
+      }
+    },
+    {
+      "id": "n8jb8b",
+      "type": "actor",
+      "x": 1353.6,
+      "y": 515,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Projects plugin",
+      "props": {
+        "stereotype": "system"
+      }
+    },
+    {
+      "id": "7xpkbp",
+      "type": "actor",
+      "x": 1353.6,
+      "y": 665,
+      "width": 60,
+      "height": 92,
+      "rotation": 0,
+      "text": "Board plugin",
+      "props": {
+        "stereotype": "system"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "j3gdww",
+      "type": "association",
+      "from": "g976cw",
+      "to": "uau6xn",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "kx8nuz",
+      "type": "association",
+      "from": "duyt3j",
+      "to": "uau6xn",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "3umrk9",
+      "type": "association",
+      "from": "g976cw",
+      "to": "kth4h4",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "txzkde",
+      "type": "association",
+      "from": "g976cw",
+      "to": "rf9rws",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "8ces8b",
+      "type": "association",
+      "from": "duyt3j",
+      "to": "6mvje2",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "7ihrvz",
+      "type": "association",
+      "from": "g976cw",
+      "to": "hqyreg",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "6ey7db",
+      "type": "association",
+      "from": "g976cw",
+      "to": "eiabdk",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "zpphfs",
+      "type": "association",
+      "from": "n8jb8b",
+      "to": "eiabdk",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "6vvj2a",
+      "type": "association",
+      "from": "g976cw",
+      "to": "djq2p7",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "qziziv",
+      "type": "association",
+      "from": "7xpkbp",
+      "to": "djq2p7",
+      "text": "",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {}
+    },
+    {
+      "id": "mmrw8a",
+      "type": "include",
+      "from": "kth4h4",
+      "to": "6mvje2",
+      "text": "«include»",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "8uitwg",
+      "type": "extend",
+      "from": "3tfqvr",
+      "to": "uau6xn",
+      "text": "«extend» [a sample chosen]",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    },
+    {
+      "id": "p974pu",
+      "type": "extend",
+      "from": "pns2cv",
+      "to": "djq2p7",
+      "text": "«extend» [no issue yet]",
+      "routing": "straight",
+      "waypoints": [],
+      "props": {
+        "dash": "dashed"
+      }
+    }
+  ],
+  "bounds": {
+    "x": 130,
+    "y": 40,
+    "width": 1283.6,
+    "height": 808,
+    "left": 130,
+    "top": 40,
+    "right": 1413.6,
+    "bottom": 848,
+    "center": {
+      "x": 771.8,
+      "y": 444,
+      "length": 890.399483378107
+    }
+  }
+}

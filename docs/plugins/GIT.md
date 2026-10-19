@@ -99,3 +99,7 @@ without knowing it; GitHub implements it.
 
 **Services for plugins that require Git** (Board Git): `GitRunner` (runs git, logs every command to the Git Console;
 registered only when git is installed), `GitPlugin.Executable`.
+
+## Diagrams
+
+`docs/diagrams/Git/`: use cases, the activity of staging, committing and pushing (with the rejected-push path), and the classes.
