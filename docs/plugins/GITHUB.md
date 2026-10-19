@@ -17,9 +17,11 @@ Code: `plugins/GitHub/DevHub.GitHub` and `DevHub.GitHub.Core` (`GitCredentialMan
 - **Avatars**: your GitHub picture next to your own commits in All Commits (matched by user.email, your no-reply
   address or your name). Other authors show their initial: no e-mail hashes are sent to a third party.
 
-**DevHub stores no credentials.** For each API call the plugin borrows the token from GCM (`git credential fill`,
-shown in the Git Console without its output); requests go only to api.github.com. Pictures come from
-avatars.githubusercontent.com without the token.
+**DevHub stores no credentials.** The plugin borrows the token from GCM (`git credential fill`, shown in the Git
+Console without its output) and keeps it, with the account list, **in memory only** for 10 minutes, so a burst of
+calls (avatars, a board's pull requests, CI) doesn't start two GCM processes per call (`CredentialCache`). Signing in
+or out forgets them; a token GitHub refuses (401) is borrowed again once. Requests go only to api.github.com.
+Pictures come from avatars.githubusercontent.com without the token.
 
 ## Settings
 

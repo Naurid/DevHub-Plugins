@@ -110,6 +110,7 @@ public sealed class GitHubSession(IDialogService dialogs, IStatusService status,
         finally
         {
             task.Dispose();
+            github.ForgetCredentials();   // a new account, or a renewed token
         }
 
         _profiles.Clear(); // a renewed sign-in may fix a profile that failed
@@ -132,6 +133,7 @@ public sealed class GitHubSession(IDialogService dialogs, IStatusService status,
         try
         {
             await github.Credentials.SignOutAsync(account);
+            github.ForgetCredentials();
             _profiles.Remove(account);
             status.Show(L.T($"Signed out {account}."));
         }

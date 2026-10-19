@@ -310,6 +310,7 @@ public sealed class DiagramCanvas : Control
 
     public override void Render(DrawingContext context)
     {
+        _labelBoxes = null;   // the diagram, the zoom or the selection may have changed
         if (Host is not { } host)
             return;
         var style = host.Style;
@@ -420,8 +421,19 @@ public sealed class DiagramCanvas : Control
         DiagramKindBase.LabelBox(MeasureSurface.Instance, e.Text, host.Kind.LabelAnchor(host.Diagram, e, PathOf(e)), new DText(11)).Inflate(2);
 
     /// <summary>The line whose label is under the pointer (the topmost), or null.</summary>
-    private DiagramEdge? LabelUnder(IDiagramCanvasHost host, DPoint at) =>
-        host.Diagram.Edges.LastOrDefault(e => e.Text.Length > 0 && LabelRect(host, e).Contains(at));
+    private DiagramEdge? LabelUnder(IDiagramCanvasHost host, DPoint at)
+    {
+        // Worked out once per frame (Render clears it), not for every label on every mouse move.
+        _labelBoxes ??= host.Diagram.Edges.Where(e => e.Text.Length > 0).Select(e => (e, LabelRect(host, e))).ToList();
+        for (var i = _labelBoxes.Count - 1; i >= 0; i--)
+            if (_labelBoxes[i].Box.Contains(at))
+                return _labelBoxes[i].Edge;
+        return null;
+    }
+
+    private List<(DiagramEdge Edge, DRect Box)>? _labelBoxes;
+    private string? _tipNode;
+    private static readonly Cursor MoveCursor = new(StandardCursorType.SizeAll);
 
     /// <summary>A label at <paramref name="at"/> unless a shape (not a container) is on top of it there.</summary>
     private DiagramEdge? DraggableLabel(IDiagramCanvasHost host, DPoint at) =>
@@ -655,7 +667,7 @@ public sealed class DiagramCanvas : Control
         _drag = drag;
         e.Pointer.Capture(this);
         e.Handled = true;
-        Cursor = drag == Drag.Pan ? new Cursor(StandardCursorType.SizeAll) : Cursor;
+        Cursor = drag == Drag.Pan ? MoveCursor : Cursor;
         InvalidateVisual();
     }
 
@@ -692,12 +704,20 @@ public sealed class DiagramCanvas : Control
         }
         if (_drag == Drag.None && host.Tool == CanvasTool.Select && !_space)
         {
-            // A cut-off name shows in full on hover; a label shows it can be picked up.
+            // A cut-off name shows in full on hover (asked only when another shape is under the pointer); a label shows
+            // it can be picked up. One hit test, one cursor object: this runs on every mouse move.
             var under = HitAt(host, world).Node;
-            var tip = under is null ? null : host.Kind.HiddenText(diagram, under, MeasureSurface.Instance);
-            if (!Equals(ToolTip.GetTip(this), tip))
-                ToolTip.SetTip(this, tip);
-            Cursor = DraggableLabel(host, world) is not null ? new Cursor(StandardCursorType.SizeAll) : Cursor.Default;
+            if (under?.Id != _tipNode)
+            {
+                _tipNode = under?.Id;
+                var tip = under is null ? null : host.Kind.HiddenText(diagram, under, MeasureSurface.Instance);
+                if (!Equals(ToolTip.GetTip(this), tip))
+                    ToolTip.SetTip(this, tip);
+            }
+            var overLabel = (under is null || host.Kind.Model.IsContainer(under)) && LabelUnder(host, world) is not null;
+            var cursor = overLabel ? MoveCursor : Cursor.Default;
+            if (!ReferenceEquals(Cursor, cursor))
+                Cursor = cursor;
         }
 
         switch (_drag)

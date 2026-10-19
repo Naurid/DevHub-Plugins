@@ -112,8 +112,13 @@ public sealed class DiffDocumentViewModel : DocumentViewModelBase, IDisposable
             _ = RefreshAsync();
     }
 
-    private void OnRepositoryChanged(object? sender, EventArgs e) =>
-        Dispatcher.UIThread.Post(() => _ = RefreshAsync());
+    // Only file changes can change a diff; a tab in the background catches up when it's shown (above).
+    private void OnRepositoryChanged(object? sender, RepositoryChangedEventArgs e) =>
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (IsActive && e.Change.HasFlag(RepositoryChange.Files))
+                _ = RefreshAsync();
+        });
 
     public void Dispose()
     {

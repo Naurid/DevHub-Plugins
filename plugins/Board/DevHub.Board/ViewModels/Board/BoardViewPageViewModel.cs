@@ -86,6 +86,35 @@ public sealed class CellViewModel(string columnId, string laneKey, IEnumerable<I
     public string LaneKey { get; } = laneKey;
     public ObservableCollection<IssueItemViewModel> Cards { get; } = new(cards);
     public bool IsEmpty => Cards.Count == 0;
+
+    /// <summary>Drops the cards that left this cell (first pass of <see cref="BoardViewPageViewModel.Rebuild"/>).</summary>
+    public void RemoveAllBut(IReadOnlyList<IssueItemViewModel> cards)
+    {
+        var keep = cards.ToHashSet();
+        for (var i = Cards.Count - 1; i >= 0; i--)
+            if (!keep.Contains(Cards[i]))
+                Cards.RemoveAt(i);
+    }
+
+    /// <summary>
+    /// Makes the cell show <paramref name="cards"/> in that order by moving and inserting only what changed (second
+    /// pass): the cards that stay keep their visuals, so a drag doesn't redraw the whole board.
+    /// </summary>
+    public void Show(IReadOnlyList<IssueItemViewModel> cards)
+    {
+        RemoveAllBut(cards);
+        for (var i = 0; i < cards.Count; i++)
+        {
+            if (i < Cards.Count && ReferenceEquals(Cards[i], cards[i]))
+                continue;
+            var at = Cards.IndexOf(cards[i]);
+            if (at >= 0)
+                Cards.Move(at, i);
+            else
+                Cards.Insert(i, cards[i]);
+        }
+        OnPropertyChanged(nameof(IsEmpty));
+    }
 }
 
 /// <summary>A swimlane: its title (none when the board has no swimlanes) and a cell per column.</summary>
@@ -94,7 +123,11 @@ public sealed partial class LaneViewModel(string key, string title, int count, I
     public string Key { get; } = key;
     public string Title { get; } = title;
     public bool HasHeader => Title.Length > 0;
-    public string CountText => count == 1 ? L.T("1 issue") : L.T($"{count} issues");
+    public string CountText => Count == 1 ? L.T("1 issue") : L.T($"{Count} issues");
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CountText))]
+    private int _count = count;
     public IReadOnlyList<CellViewModel> Cells { get; } = cells;
     [ObservableProperty] private bool _isExpanded = true;
     public override string ToString() => Title;
@@ -151,6 +184,27 @@ public sealed partial class BoardViewPageViewModel : BoardPageViewModel, IItemsD
     }
 
     private bool _rebuilding;
+    private string? _laneShape;
+    private Dictionary<string, (IssueItemViewModel Card, CardKey Key)> _cards = new(StringComparer.Ordinal);
+
+    /// <summary>
+    /// What a card shows, by reference (the snapshot keeps unchanged objects as they are): the issue, the project
+    /// (names of statuses, types, people), its epic, its sub-tasks, the card fields. Same key: the card can be kept.
+    /// </summary>
+    private sealed class CardKey(Issue issue, BoardSnapshot board, IReadOnlyList<string> fields)
+    {
+        private readonly Issue _issue = issue;
+        private readonly BoardProject _project = board.Project;
+        private readonly Issue? _epic = board.EpicOf(issue);
+        private readonly Issue[] _children = board.ChildrenOf(issue.Id).ToArray();
+        private readonly IReadOnlyList<string> _fields = fields;
+        private readonly DateOnly _today = DateOnly.FromDateTime(DateTime.Today);   // "overdue"
+
+        public bool Same(CardKey other) =>
+            ReferenceEquals(_issue, other._issue) && ReferenceEquals(_project, other._project) && ReferenceEquals(_epic, other._epic)
+            && _children.Length == other._children.Length && _children.Zip(other._children).All(p => ReferenceEquals(p.First, p.Second))
+            && _fields.SequenceEqual(other._fields) && _today == other._today;
+    }
 
     /// <summary>Recomputes everything from the snapshot (quick filter and assignee choices are kept).</summary>
     public void Rebuild()
@@ -180,9 +234,12 @@ public sealed partial class BoardViewPageViewModel : BoardPageViewModel, IItemsD
             };
             var layout = BoardLayout.Build(snapshot, definition, options, Context.QueryContext());
 
-            // The avatar row: everyone with a card on the board (before the assignee filter narrows it).
-            var withCards = BoardLayout.Build(snapshot, definition, options with { Assignees = new HashSet<string>() }, Context.QueryContext())
-                .Columns.SelectMany(c => c.Cards).Select(i => i.Assignee).OfType<string>().Distinct().ToList();
+            // The avatar row: everyone with a card on the board (before the assignee filter narrows it; without one,
+            // that's this layout, so it's only built twice while someone's cards are picked).
+            var unfiltered = onPeople.Count == 0
+                ? layout
+                : BoardLayout.Build(snapshot, definition, options with { Assignees = new HashSet<string>() }, Context.QueryContext());
+            var withCards = unfiltered.Columns.SelectMany(c => c.Cards).Select(i => i.Assignee).OfType<string>().Distinct().ToList();
             Assignees.Clear();
             foreach (var id in withCards.OrderBy(Context.PersonName, StringComparer.CurrentCultureIgnoreCase))
                 Assignees.Add(new AssigneeToggle(id, Context.PersonName(id), Rebuild) { IsOn = onPeople.Contains(id) });
@@ -202,13 +259,47 @@ public sealed partial class BoardViewPageViewModel : BoardPageViewModel, IItemsD
             for (var i = 0; i < layout.Columns.Count; i++)
                 Columns.Add(new ColumnViewModel(this, layout.Columns[i], i, layout.Columns.Count));
 
-            Lanes.Clear();
-            foreach (var lane in layout.Swimlanes)
+            // Cards whose issue (and what the card shows of others: its epic, its sub-tasks, the project's names) didn't
+            // change keep their ViewModel, and so their visuals.
+            var cards = new Dictionary<string, (IssueItemViewModel Card, CardKey Key)>(StringComparer.Ordinal);
+            IssueItemViewModel Card(Issue issue)
             {
-                var cells = layout.Columns.Select((c, i) => new CellViewModel(c.Column.Id, lane.Key,
-                    lane.Cells[i].Select(issue => new IssueItemViewModel(issue, snapshot, Context, definition.CardFields) { Host = this }))).ToList();
-                Lanes.Add(new LaneViewModel(lane.Key, lane.Title, lane.Count, cells));
+                var key = new CardKey(issue, snapshot, definition.CardFields);
+                var card = _cards.TryGetValue(issue.Id, out var kept) && kept.Key.Same(key)
+                    ? kept.Card
+                    : new IssueItemViewModel(issue, snapshot, Context, definition.CardFields) { Host = this };
+                cards[issue.Id] = (card, key);
+                return card;
             }
+
+            // Same lanes and columns as before: patch each cell (a drag moves one card), else build them anew.
+            var shape = string.Join(",", layout.Columns.Select(c => c.Column.Id)) + "\n"
+                        + string.Join("\n", layout.Swimlanes.Select(l => l.Key + "\t" + l.Title));
+            if (shape == _laneShape && Lanes.Count == layout.Swimlanes.Count)
+            {
+                var wanted = layout.Swimlanes.Select(lane => lane.Cells.Select(cell => (IReadOnlyList<IssueItemViewModel>)cell.Select(Card).ToList()).ToList()).ToList();
+                // Removals first everywhere, so a card moving between cells is never in two at once for long.
+                for (var l = 0; l < Lanes.Count; l++)
+                    for (var c = 0; c < Lanes[l].Cells.Count; c++)
+                        Lanes[l].Cells[c].RemoveAllBut(wanted[l][c]);
+                for (var l = 0; l < Lanes.Count; l++)
+                {
+                    for (var c = 0; c < Lanes[l].Cells.Count; c++)
+                        Lanes[l].Cells[c].Show(wanted[l][c]);
+                    Lanes[l].Count = layout.Swimlanes[l].Count;
+                }
+            }
+            else
+            {
+                Lanes.Clear();
+                foreach (var lane in layout.Swimlanes)
+                {
+                    var cells = layout.Columns.Select((c, i) => new CellViewModel(c.Column.Id, lane.Key, lane.Cells[i].Select(Card))).ToList();
+                    Lanes.Add(new LaneViewModel(lane.Key, lane.Title, lane.Count, cells));
+                }
+            }
+            _laneShape = shape;
+            _cards = cards;
             _picked.IntersectWith(AllCards.Select(c => c.Id));
             ShowPicks();
         }

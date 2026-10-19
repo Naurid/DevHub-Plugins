@@ -78,9 +78,7 @@ public sealed class AvaloniaSurface(DrawingContext context, DiagramStyle style, 
     {
         if (string.IsNullOrEmpty(text))
             return;
-        var formatted = Format(text, style, Style, wrap ? Math.Max(1, box.Width) : double.PositiveInfinity);
-        if (!wrap)
-            formatted.TextAlignment = TextAlignment.Left;
+        var formatted = Format(text, style, Style, wrap ? Math.Max(1, box.Width) : double.PositiveInfinity, leftAligned: !wrap);
         var width = wrap ? box.Width : formatted.Width;
         var x = wrap ? box.X : style.Align switch
         {
@@ -146,21 +144,38 @@ public sealed class AvaloniaSurface(DrawingContext context, DiagramStyle style, 
 
     private static readonly FontFamily MonoFont = new("JetBrains Mono, Cascadia Mono, Consolas, monospace");
 
-    internal static FormattedText Format(string text, DText style, DiagramStyle colours, double maxWidth)
+    /// <summary>
+    /// A text laid out, from a cache shared by every surface: the canvas draws every shape's text on every frame (pan,
+    /// zoom, drag), and laying the same texts out again each time was most of a frame's work. Same text, style, width
+    /// and colour: the same laid-out text. Used on the UI thread only (the canvas and image exports).
+    /// </summary>
+    internal static FormattedText Format(string text, DText style, DiagramStyle colours, double maxWidth, bool leftAligned = false)
     {
+        var color = style.Color ?? colours.Text;
+        var key = (text, style, color, double.IsInfinity(maxWidth) ? -1 : Math.Round(maxWidth, 1), leftAligned);
+        if (Layouts.TryGetValue(key, out var cached))
+            return cached;
+        if (Layouts.Count >= MaxLayouts)
+            Layouts.Clear();   // a big diagram, or the theme changed: start over rather than track ages
+
         var typeface = new Typeface(style.Mono ? MonoFont : UiFont, style.Italic ? FontStyle.Italic : FontStyle.Normal,
             style.Bold ? FontWeight.SemiBold : FontWeight.Normal);
         var formatted = new FormattedText(text, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, style.Size,
-            new SolidColorBrush(style.Color ?? colours.Text))
+            new SolidColorBrush(color))
         {
-            TextAlignment = style.Align switch { TextAlign.Left => TextAlignment.Left, TextAlign.Right => TextAlignment.Right, _ => TextAlignment.Center },
+            TextAlignment = leftAligned ? TextAlignment.Left
+                : style.Align switch { TextAlign.Left => TextAlignment.Left, TextAlign.Right => TextAlignment.Right, _ => TextAlignment.Center },
         };
         if (!double.IsInfinity(maxWidth))
             formatted.MaxTextWidth = maxWidth;
         if (style.Underline)
             formatted.SetTextDecorations(TextDecorations.Underline);
+        Layouts[key] = formatted;
         return formatted;
     }
+
+    private const int MaxLayouts = 4000;
+    private static readonly Dictionary<(string, DText, Color, double, bool), FormattedText> Layouts = new();
 
     internal static (double Width, double Height) MeasureText(string text, DText style, double maxWidth)
     {
